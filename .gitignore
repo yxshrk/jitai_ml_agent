@@ -1,0 +1,6 @@
+.env
+data/real
+__pycache__/
+*.egg-info
+.venv/
+logs/run_*
