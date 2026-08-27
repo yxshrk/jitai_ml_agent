@@ -6,6 +6,23 @@ buckets). Beating primary 0.5946 (test) / 0.6016 (valid) is the goal. Published
 KuaiRand-Pure reference: CWM (KDD'24) reaches GAUC ~0.713-0.715 → target band 0.70+.
 Research basis: ../research/*.md. Expected gains are estimates, not promises.
 
+## BINDING CONSTRAINT (measured, run_real_01 + manual campaign E1-E8)
+Every architecture/feature variant plateaus at valid primary ~0.604-0.605, because
+ALL models overfit by epoch 2-3 (val GAUC peaks then falls). Single-lever changes
+from that plateau land within noise and get rejected. Priorities that follow:
+A. **Fight the overfit FIRST**: dropout on embeddings/MLP, weight decay / per-row
+   embedding L2, lr decay schedules, label smoothing, smaller lr + more epochs —
+   anything that lets training survive past epoch 3. UNEXPLORED and the most
+   plausible route past 0.605.
+B. **Unexplored objectives**: per-user listwise softmax loss; ordinal watch-ratio
+   auxiliary (play_time/duration buckets, TPM-lite); CWM-style censored watch-time
+   loss (one-sided regression on play_time truncated at duration).
+C. **Compound hypotheses are allowed and encouraged** when single levers plateau:
+   one coherent THEME per iteration (e.g. "regularization package: dropout 0.1 +
+   weight decay 1e-5 + lr decay"), not one micro-knob.
+D. Do NOT re-test dead branches: item-side aggregates, video content features,
+   k=32, LightGBM blends, pure BPR or pure logloss (all measured worse, see below).
+
 Ranked by expected gain per unit implementation risk:
 
 ## Tier 1 — do first
