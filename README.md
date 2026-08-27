@@ -8,3 +8,7 @@ See CONTRACTS.md first. Layout:
 - evidence/  log renderer: trajectory chart, results table, resource totals
 - data/      synthetic/ fixtures now; real KuaiRand-Pure + starter kit when provided
 - tests/     pytest; every module gated
+
+Status: baseline reproduced (valid 0.6015); best model valid primary 0.6041 (dcn_lite).
+See MENU.md (search space), zoo/RESULTS.md + zoo/EXPERIMENTS.md (measured results),
+CONTRACTS.md (frozen interfaces). Budget: $25 hard cap via agent/budget.py ledger.
