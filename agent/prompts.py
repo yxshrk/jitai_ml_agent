@@ -18,7 +18,14 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
 - Emit ONE WHOLE runnable Python script. Never a diff, never a fragment.
 - CLI: `python <script> --data-dir <d> --out-dir <o> [--seed 42]` via argparse.
   Default seed 42. Deterministic given the seed.
-- Read ONLY `<data-dir>/train.csv` and `<data-dir>/val.csv`. The test split does
+- FAST PATH (use it when present): `<data-dir>/train.npz` and `<data-dir>/val.npz` hold
+  pre-encoded arrays — X (int32, 5 offset-encoded fields: user,video,author,tab,dur_bucket),
+  y (long_view float32), user, click, play_time_ms, duration_ms, hourmin, date, field_dims.
+  Loading them takes ~1s vs ~90s of CSV parsing; training-time budget is scored, so prefer npz.
+  Score with the official evaluator: `from data.official.evaluate import evaluate` ->
+  dict keys 'GAUC', 'nDCG@5', 'primary' (write metrics.json keys gauc/ndcg5/primary).
+  A known-good exemplar of the full pattern is the baseline parent script itself.
+- Otherwise read ONLY `<data-dir>/train.csv` and `<data-dir>/val.csv`. The test split does
   not exist in your workspace; any attempt to reference a test file fails the run.
 - Train on train.csv, score val.csv, then:
   * write `<out-dir>/predictions.csv` with header row_id,user_id,video_id,score

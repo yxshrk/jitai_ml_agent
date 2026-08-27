@@ -114,11 +114,17 @@ class Loop:
     def prepare_workspace(self) -> None:
         self.nodes_dir.mkdir(parents=True, exist_ok=True)
         self.workspace.mkdir(parents=True, exist_ok=True)
-        for split in ("train.csv", "val.csv"):
+        required = ["train.csv", "val.csv"]
+        optional = ["train.npz", "val.npz"]
+        for split in required:
             source = self.config.data_dir / split
             if not source.exists():
                 raise FileNotFoundError(source)
             shutil.copy(source, self.workspace / split)
+        for split in optional:
+            source = self.config.data_dir / split
+            if source.exists():
+                shutil.copy(source, self.workspace / split)
         leaked = [p for p in self.workspace.rglob("*") if "test" in p.name.lower()]
         if leaked:
             raise LeakageError(f"test files reachable from workspace: {leaked}")

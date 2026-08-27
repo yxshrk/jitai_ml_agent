@@ -31,6 +31,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--timeout-s", type=int, default=600)
     run.add_argument("--sigma", type=float, default=None,
                      help="skip baseline calibration and use this sigma")
+    run.add_argument("--baseline-script", type=Path, default=None,
+                     help="baseline node script (default: zoo/fm_torch.py)")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -43,6 +45,7 @@ def main(argv: list[str] | None = None) -> int:
     config = LoopConfig(
         data_dir=args.data_dir.resolve(),
         run_dir=args.run_dir,
+        **({"baseline_script": args.baseline_script.resolve()} if args.baseline_script else {}),
         max_iters=args.max_iters,
         max_hours=args.max_hours,
         max_tokens=args.max_tokens,
