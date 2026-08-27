@@ -49,6 +49,7 @@ def test_loop_stops_gracefully_on_budget_exhausted(tmp_path):
     summary = loop.run()
     assert summary["stop_reason"] == "budget_exhausted"
     records = [json.loads(l) for l in (loop.run_dir / "journal.jsonl").read_text().splitlines()]
+    records = [r for r in records if r.get("action") != "reproduce_baseline"]
     assert len(records) == 1
     assert "budget_exhausted" in records[0]["error"]
     assert "usd_total" in records[0]

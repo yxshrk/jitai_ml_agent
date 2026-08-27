@@ -13,8 +13,8 @@ DATA_DIR = ROOT / "data" / "synthetic"
 
 RECORD_KEYS = {
     "n", "hypothesis", "node_id", "parent", "action", "code_path", "change_summary",
-    "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in", "tokens_out",
-    "error", "recovery", "intervention", "usd_total",
+    "diff", "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in",
+    "tokens_out", "error", "recovery", "intervention", "usd_total",
 }
 
 CRASHING_SCRIPT = "import sys\nraise RuntimeError('boom')\n"
@@ -40,6 +40,8 @@ def test_dry_run_journal_conforms_to_contract(tmp_path):
     summary = loop.run()
     assert summary["iterations"] == 3
     lines = (loop.run_dir / "journal.jsonl").read_text().splitlines()
+    assert json.loads(lines[0])["action"] == "reproduce_baseline"
+    lines = lines[1:]  # iteration records
     assert len(lines) == 3
     for i, line in enumerate(lines, start=1):
         record = json.loads(line)
@@ -112,12 +114,14 @@ def test_sigma_floor_applies(tmp_path):
 
 
 def test_convergence_detection(tmp_path):
+    # OFFICIAL rule: converged after N=3 consecutive completed iterations whose
+    # best-so-far improvement is <= epsilon; any >epsilon improvement resets.
     loop = make_loop(tmp_path, fake_brain())
-    loop.accepted_deltas = [0.01, 0.001, 0.0015, 0.0005]
+    loop.no_improve_streak = 3
     assert loop.converged()
-    loop.accepted_deltas = [0.001, 0.001, 0.01]
+    loop.no_improve_streak = 2
     assert not loop.converged()
-    loop.accepted_deltas = [0.001, 0.001]
+    loop.no_improve_streak = 0
     assert not loop.converged()
 
 
@@ -129,7 +133,7 @@ def test_crash_then_fixer_patches(tmp_path):
     )
     loop = make_loop(tmp_path, brain, max_iters=1)
     loop.run()
-    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[0])
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
     assert record["recovery"] == "patched"
     assert record["metrics"]["primary"] > 0
     assert loop.nodes["node_001"].status in ("accepted", "rejected")
@@ -139,7 +143,7 @@ def test_timeout_marks_reverted_without_fix(tmp_path):
     brain = fake_brain(scripts=[{"hypothesis": "too slow", "code": SLOW_SCRIPT}], fixes=[])
     loop = make_loop(tmp_path, brain, max_iters=1, timeout_s=2)
     loop.run()
-    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[0])
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
     assert record["recovery"] == "reverted"
     assert "timeout" in record["error"]
     assert not record["accepted"]
@@ -149,7 +153,7 @@ def test_leakage_guard_rejects_test_path(tmp_path):
     brain = fake_brain(scripts=[{"hypothesis": "tries to peek", "code": LEAKY_SCRIPT}])
     loop = make_loop(tmp_path, brain, max_iters=1)
     loop.run()
-    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[0])
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
     assert not record["accepted"]
     assert "leakage guard" in record["error"]
 
@@ -182,6 +186,7 @@ def test_debug_policy_after_persistent_failure(tmp_path):
     loop = make_loop(tmp_path, brain, max_iters=2)
     loop.run()
     records = [json.loads(l) for l in (loop.run_dir / "journal.jsonl").read_text().splitlines()]
+    records = [r for r in records if r.get("action") != "reproduce_baseline"]
     assert records[0]["recovery"] == "reverted"
     assert records[1]["action"] == "debug"
     assert records[1]["parent"] == "node_001"

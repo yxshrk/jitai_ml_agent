@@ -50,7 +50,7 @@ def aggregate(records: list[dict]) -> dict:
             slot["out"] += int(tok.get("out", 0))
 
     return {
-        "n_iterations": len(records),
+        "n_iterations": len([r for r in records if r.get("action") != "reproduce_baseline"]),
         "n_accepted": len(accepted),
         "n_rejected": len(rejected),
         "n_errors": len(errors),
@@ -116,6 +116,16 @@ def render_trajectory(records: list[dict], out_path: Path, baseline: float) -> N
 
 # ---------------------------------------------------------------- results.md
 
+def baseline_reproduction_line(records: list[dict]) -> str | None:
+    for r in records:
+        b = r.get("baseline_reproduction")
+        if b:
+            status = "PASS" if b.get("pass") else "FAIL"
+            return (f"| baseline reproduction | {status}: seed primaries {b['seed_primaries']}, "
+                    f"mean {b['mean']:.4f} vs published {b['published_valid_primary']:.4f} |")
+    return None
+
+
 def render_results(records: list[dict], agg: dict, out_path: Path, baseline: float) -> None:
     best = agg["best"]
     lines = ["# Run results", ""]
@@ -139,7 +149,9 @@ def render_results(records: list[dict], agg: dict, out_path: Path, baseline: flo
         "",
         "| | |",
         "|---|---|",
-        f"| iterations | {agg['n_iterations']} |",
+        f"| iterations used | {agg['n_iterations']} / 50 (official cap) |",
+        f"| GPU-hours | 0 (CPU-only) |",
+        *( [line] if (line := baseline_reproduction_line(records)) else [] ),
         f"| accepted | {agg['n_accepted']} |",
         f"| rejected | {agg['n_rejected']} |",
         f"| errors | {agg['n_errors']} |",

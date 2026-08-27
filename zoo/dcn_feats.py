@@ -59,6 +59,34 @@ def add_item_aggregates(ds: dict, prior_strength: float = 20.0,
     return ds
 
 
+def add_content_features(ds: dict, top_k_music: int = 200) -> dict:
+    """MENU #8: video_type, upload_type, music_id (top-K by train frequency, else
+    OTHER), first tag — read straight from the raw KuaiRand video_features_basic
+    CSV (data/ untouched), keyed by raw video_id, encoded with train vocab + UNK."""
+    from data.real_loader import REAL_DATA_DIR
+    import csv as _csv
+    feat = {}
+    with open(REAL_DATA_DIR / "video_features_basic_pure.csv") as fh:
+        for r in _csv.DictReader(fh):
+            tag = (r.get("tag") or "").split(",")[0] or "NONE"
+            feat[int(r["video_id"])] = (r.get("video_type") or "UNK",
+                                        r.get("upload_type") or "UNK",
+                                        r.get("music_id") or "UNK", tag)
+    miss = ("UNK", "UNK", "UNK", "NONE")
+    cols = {n: [feat.get(int(v), miss) for v in ds[n]["videos"]] for n in SPLITS}
+    from collections import Counter
+    music_top = {m for m, _ in Counter(c[2] for c in cols["train"]).most_common(top_k_music)}
+    offset = ds["field_dims_total"]
+    for j in range(4):
+        raw = {n: np.asarray([c[j] if j != 2 or c[j] in music_top else "OTHER"
+                              for c in cols[n]]) for n in SPLITS}
+        enc, offset = encode_extra_column(raw["train"], raw, offset)
+        for n in SPLITS:
+            ds[n]["X"] = np.hstack([ds[n]["X"].astype(np.int64), enc[n][:, None]])
+    ds["field_dims_total"] = offset
+    return ds
+
+
 class DCNLite(nn.Module):
     def __init__(self, dim: int, n_fields: int, k: int, n_cross: int = 2,
                  hidden: int = 64, aux_names: tuple[str, ...] = ()):
@@ -89,11 +117,15 @@ def main() -> None:
     ap.add_argument("--aux-weight", type=float, default=0.0,
                     help=">0 enables click + effective-view aux heads")
     ap.add_argument("--item-agg", action="store_true")
+    ap.add_argument("--content", action="store_true",
+                    help="add video_type/upload_type/music_id/first-tag fields")
     ap.add_argument("--bpr-weight", type=float, default=0.5)
     args = ap.parse_args()
     ds = add_features(load_for_args(args))
     if args.item_agg:
         ds = add_item_aggregates(ds)
+    if args.content:
+        ds = add_content_features(ds)
     set_seed(args.seed)
     tr = ds["train"]
     aux_targets = None

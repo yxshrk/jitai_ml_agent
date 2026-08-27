@@ -18,6 +18,7 @@ reference test paths (CONTRACTS.md section 4).
 
 from __future__ import annotations
 
+import difflib
 import json
 import re
 import shutil
@@ -101,6 +102,7 @@ class Loop:
         self.champion: Node | None = None
         self.sigma: float = 0.0
         self.accepted_deltas: list[float] = []
+        self.no_improve_streak = 0  # official convergence: consecutive iters with best-improvement <= epsilon
         self.stagnation = 0
         self.focus_note: str | None = None
         self.forced_tiers_used: list[str] = []
@@ -191,6 +193,47 @@ class Loop:
             f'node_000 [baseline] draft "baseline FM" primary={node.primary:.4f} '
             f"ACCEPTED (sigma={self.sigma:.4f})"
         )
+        self.record_calibration(primaries)
+
+    def node_diff(self, node: Node, max_lines: int = 400) -> str:
+        """Unified diff of this node's code vs its parent's (brief: 'the code diff applied')."""
+        try:
+            new = node.code_path.read_text().splitlines(keepends=True)
+        except OSError:
+            return "(code unavailable)"
+        parent = self.nodes.get(node.parent)
+        old = []
+        old_name = "(new file)"
+        if parent is not None and parent.code_path.exists():
+            old = parent.code_path.read_text().splitlines(keepends=True)
+            old_name = parent.node_id
+        lines = list(difflib.unified_diff(old, new, fromfile=old_name, tofile=node.node_id, n=2))
+        if len(lines) > max_lines:
+            lines = lines[:max_lines] + [f"... (diff truncated at {max_lines} lines)\n"]
+        return "".join(lines)
+
+    def record_calibration(self, primaries: list[float]) -> None:
+        """Iteration-0 journal entry: the agent's own baseline reproduction (brief task req #1)."""
+        mean = float(np.mean(primaries))
+        record = {
+            "n": 0, "node_id": "node_000", "parent": "baseline", "action": "reproduce_baseline",
+            "hypothesis": "reproduce official FM baseline and calibrate seed noise",
+            "change_summary": f"baseline seeds {list(self.config.calib_seeds) if self.config.sigma is None else [self.config.seed]}: "
+                              f"primaries {[round(p, 4) for p in primaries]}, mean {mean:.4f}, sigma {self.sigma:.4f}",
+            "diff": "",
+            "metrics": self.champion.metrics if self.champion else {},
+            "val_best_so_far": self.champion.primary if self.champion else 0.0,
+            "baseline_reproduction": {"seed_primaries": [round(p, 6) for p in primaries],
+                                       "mean": round(mean, 6), "sigma": round(self.sigma, 6),
+                                       "published_valid_primary": 0.6016,
+                                       "pass": abs(mean - 0.6016) <= 0.003},
+            "accepted": True, "duration_s": 0.0, "tokens_in": 0, "tokens_out": 0,
+            "error": None, "recovery": None,
+            "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
+            "intervention": False,
+        }
+        with self.journal_path.open("a") as handle:
+            handle.write(json.dumps(record) + "\n")
 
     # ---------- policy (harness-owned) ----------
 
@@ -247,6 +290,7 @@ class Loop:
             "code_path": str(node.code_path.relative_to(ROOT)) if node.code_path.is_relative_to(ROOT)
                          else str(node.code_path),
             "change_summary": change_summary,
+            "diff": self.node_diff(node),
             "metrics": node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0},
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
             "accepted": node.status == "accepted",
@@ -276,9 +320,10 @@ class Loop:
         return None
 
     def converged(self) -> bool:
-        n = self.config.n_converge
-        return (len(self.accepted_deltas) >= n
-                and all(d < self.config.epsilon for d in self.accepted_deltas[-n:]))
+        # OFFICIAL rule: converged when validation primary has not improved by more
+        # than epsilon over the last N consecutive COMPLETED iterations (accepted,
+        # rejected, or errored all count). Improvement is vs best-so-far.
+        return self.no_improve_streak >= self.config.n_converge
 
     # ---------- main loop ----------
 
@@ -322,6 +367,7 @@ class Loop:
 
     def iterate(self, n: int) -> None:
         start = time.time()
+        self._best_before_iter = self.champion.primary if self.champion else 0.0
         mode, parent, directive = self.next_move()
         node = Node(f"node_{n:03d}", parent.node_id, mode, "(proposal failed)",
                     self.nodes_dir / f"{n:03d}.py")
@@ -340,12 +386,14 @@ class Loop:
         except BudgetExhausted as exc:
             node.status, node.error = "failed", f"budget_exhausted: {exc}"
             self.stop_reason = "budget_exhausted"
+            self.no_improve_streak += 1
             self.nodes[node.node_id] = node
             self.record(n, node, time.time() - start, "skipped", "LLM call refused: dollar budget exhausted")
             return
         except Exception as exc:
             node.status, node.error = "failed", f"proposer error: {exc}"
             self.stagnation += 1
+            self.no_improve_streak += 1
             self.nodes[node.node_id] = node
             self.record(n, node, time.time() - start, "skipped", "proposal unparseable/failed")
             return
@@ -405,5 +453,12 @@ class Loop:
             node.status = "failed"
             node.error = result.error
             self.stagnation += 1
+        # Official convergence bookkeeping: every completed iteration counts.
+        best_now = self.champion.primary if self.champion else 0.0
+        improvement = best_now - getattr(self, "_best_before_iter", best_now)
+        if improvement > self.config.epsilon:
+            self.no_improve_streak = 0
+        else:
+            self.no_improve_streak += 1
         self.nodes[node.node_id] = node
         self.record(n, node, time.time() - start, recovery, change_summary)

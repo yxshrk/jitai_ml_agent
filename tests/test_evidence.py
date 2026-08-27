@@ -94,7 +94,7 @@ def test_render_outputs_and_aggregates(run_dir):
     assert "+0.0134" in results          # 0.6150 - 0.6016
     assert "node_008" in results
     # counts
-    assert "| iterations | 8 |" in results
+    assert "| iterations used | 8 / 50 (official cap) |" in results
     assert "| accepted | 4 |" in results
     assert "| rejected | 2 |" in results
     assert "| errors | 2 |" in results

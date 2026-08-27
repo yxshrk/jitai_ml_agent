@@ -54,5 +54,10 @@ Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same 
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
 different menu tier after 5 stagnant iterations.
 Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
-(floor 0.002); 0-2sigma -> one reseed confirm run; else revert. Convergence counts
-accepted deltas only. Harness owns timeouts, validity checks, best-node argmax, stopping.
+(floor 0.002); 0-2sigma -> one reseed confirm run; else revert.
+Convergence: OFFICIAL rule — converged when validation primary has not improved by
+more than epsilon=0.002 over the last N=3 consecutive COMPLETED iterations (accepted,
+rejected, errored all count), vs best-so-far. Journal line 0 = reproduce_baseline
+(3-seed calibration doubles as the brief's required baseline reproduction). Every
+iteration record carries a unified "diff" vs its parent node (brief requirement).
+Harness owns timeouts, validity checks, best-node argmax, stopping.
