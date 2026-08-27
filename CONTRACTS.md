@@ -12,7 +12,7 @@ JSON emitted by the proposer, executed by the harness:
 }
 ```
 
-## 2. Iteration record (harness -> log, one JSON line per iteration in logs/run_<id>.jsonl)
+## 2. Iteration record (harness -> log, one JSON line per iteration in logs/run_<id>/journal.jsonl)
 ```json
 {
   "n": 7,
