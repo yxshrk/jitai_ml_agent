@@ -5,8 +5,9 @@ JSON emitted by the proposer, executed by the harness:
 ```json
 {
   "hypothesis": "BPR pairwise loss should align training with GAUC (expect +0.005-0.01)",
-  "base": "zoo/fm_torch.py",          // script to start from, or "previous"
-  "diff": "<unified diff or full file>",
+  "parent": "node_007",               // solution-tree node this builds on, or "baseline"
+  "action": "improve",                // draft | debug | improve
+  "code": "<WHOLE runnable script>",  // whole-file rewrite, never a diff (research/agent-design.md #3)
   "timeout_s": 600
 }
 ```
@@ -16,8 +17,9 @@ JSON emitted by the proposer, executed by the harness:
 {
   "n": 7,
   "hypothesis": "...",
-  "diff_summary": "...",
-  "diff_path": "logs/run_<id>/diffs/007.patch",
+  "node_id": "node_007", "parent": "node_006", "action": "improve",
+  "code_path": "logs/run_<id>/nodes/007.py",
+  "change_summary": "one-line what-changed (the journal line)",
   "metrics": {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0},
   "val_best_so_far": 0.0,
   "accepted": true,
@@ -43,3 +45,14 @@ the harness's private dir and is used exactly once, by the final submission step
 ## 5. Convergence & caps (official)
 epsilon=0.002, N=3 consecutive non-improving iterations; hard cap 50 iterations; 6h wall-clock.
 Scored artifact = validation-best checkpoint at convergence.
+
+## 6. Search policy (from research/agent-design.md)
+Solution TREE, not chat history: each node = whole runnable script + metrics + one-line
+journal entry. Context per LLM call = task brief + MENU + journal (one line per node) +
+the parent node's full code. Never a growing transcript.
+Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
+(max depth 2); otherwise improve the current best node (greedy); forced branch to a
+different menu tier after 5 stagnant iterations.
+Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
+(floor 0.002); 0-2sigma -> one reseed confirm run; else revert. Convergence counts
+accepted deltas only. Harness owns timeouts, validity checks, best-node argmax, stopping.
