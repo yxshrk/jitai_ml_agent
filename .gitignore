@@ -1,6 +1,9 @@
-.env
-data/real
-__pycache__/
-*.egg-info
 .venv/
+.uv-cache/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+data/real/
 logs/run_*
+*.egg-info

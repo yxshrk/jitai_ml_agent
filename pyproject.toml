@@ -1,0 +1,18 @@
+[project]
+name = "mle-agent"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "torch",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+# The execution environment supplies these large packages in its Python 3.11
+# environment. Disabling automatic management keeps `uv run` offline while still
+# making the project dependency contract explicit.
+[tool.uv]
+managed = false
+cache-dir = ".uv-cache"
