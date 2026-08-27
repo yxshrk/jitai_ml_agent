@@ -164,7 +164,12 @@ class Brain:
         provider: str | None = None,
         model_overrides: dict[str, str] | None = None,
         max_code_tokens: int = 4000,
+        budget=None,
     ) -> None:
+        from agent.budget import Budget
+
+        self.budget = budget if budget is not None else Budget()
+        self.usd_run = 0.0
         config = load_model_config()
         self.provider = provider or config["default_provider"]
         if self.provider not in ("openai", "anthropic"):
@@ -181,9 +186,19 @@ class Brain:
 
     def _call(self, role: str, system_text: str, user_text: str, max_tokens: int) -> str:
         model = self.models[role]
+        # Hard dollar cap: refuse the call if its worst case could exceed BUDGET_USD.
+        # Conservative input estimate: ~1 token per 3 chars, plus overhead margin.
+        est_input = (len(system_text) + len(user_text)) // 3 + 500
+        worst_output = max(max_tokens, 6000) if self.provider == "openai" else max_tokens
+        self.budget.precheck(model, est_input, worst_output)
         text, tokens_in, tokens_out = self.backend.call(model, system_text, user_text, max_tokens)
         self.meter.add(f"{self.provider}/{model}/{role}", tokens_in, tokens_out)
+        self.usd_run += self.budget.record(self.provider, model, tokens_in, tokens_out, note=role)
         return text
+
+    @property
+    def usd_total(self) -> float:
+        return self.budget.total()
 
     def propose(
         self,

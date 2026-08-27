@@ -105,6 +105,8 @@ class FakeBrain:
     """Deterministic stand-in for Brain. No network, canned outputs."""
 
     provider = "fake"
+    usd_run = 0.0
+    usd_total = 0.0
     models = {"proposer": "fake", "fixer": "fake", "reflector": "fake"}
 
     def __init__(self, menu_text: str = "", scripts: list[dict] | None = None, fixes: list[str] | None = None,

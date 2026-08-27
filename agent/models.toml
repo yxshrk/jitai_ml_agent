@@ -12,3 +12,16 @@ reflector = "gpt-5.6-sol"
 proposer = "claude-sonnet-5"
 fixer = "claude-haiku-4-5-20251001"
 reflector = "claude-sonnet-5"
+
+# Conservative pricing ESTIMATES, USD per 1M tokens (in/out). Costs are always
+# rounded UP; names ending in '*' are prefix patterns; a model not listed here
+# is priced at the most expensive row.
+[pricing]
+"gpt-5.6-sol" = { in = 15.0, out = 60.0 }
+"gpt-5.5*" = { in = 12.0, out = 48.0 }
+"gpt-5.4-mini" = { in = 1.0, out = 4.0 }
+"gpt-5.4-nano" = { in = 0.2, out = 0.8 }
+"gpt-5.4*" = { in = 10.0, out = 40.0 }
+"claude-sonnet*" = { in = 3.0, out = 15.0 }
+"claude-haiku*" = { in = 0.8, out = 4.0 }
+"claude-opus*" = { in = 15.0, out = 75.0 }

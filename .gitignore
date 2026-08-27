@@ -7,3 +7,4 @@ __pycache__/
 data/real/
 logs/run_*
 *.egg-info
+logs/spend.*

@@ -30,6 +30,8 @@ from pathlib import Path
 
 import numpy as np
 
+from agent.budget import BudgetExhausted
+
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE_SCRIPT = ROOT / "zoo" / "fm_torch.py"
 METRIC_KEYS = ("gauc", "ndcg5", "primary")
@@ -60,6 +62,7 @@ class LoopConfig:
     max_iters: int = 50
     max_hours: float = 6.0
     max_tokens: int = 2_000_000
+    max_usd: float = 10.0  # per-run soft ceiling; the $BUDGET_USD hard cap lives in agent/budget.py
     timeout_s: int = 600
     epsilon: float = 0.002
     n_converge: int = 3
@@ -250,6 +253,7 @@ class Loop:
             "tokens_out": self.brain.meter.last_out,
             "error": node.error,
             "recovery": recovery,
+            "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
             "intervention": False,
         }
         with self.journal_path.open("a") as handle:
@@ -265,6 +269,8 @@ class Loop:
             return "max_hours"
         if self.brain.meter.total >= self.config.max_tokens:
             return "max_tokens"
+        if getattr(self.brain, "usd_run", 0.0) >= self.config.max_usd:
+            return "max_usd"
         return None
 
     def converged(self) -> bool:
@@ -294,6 +300,8 @@ class Loop:
                     self.focus_note = None
                     print(f"[loop] reflector failed: {exc}", file=sys.stderr)
             self.iterate(n)
+            if self.stop_reason:
+                break
         else:
             self.stop_reason = self.stop_reason or "max_iters"
         summary = {
@@ -327,6 +335,12 @@ class Loop:
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             code = spec["code"]
             timeout_s = min(int(spec.get("timeout_s", self.config.timeout_s)), self.config.timeout_s)
+        except BudgetExhausted as exc:
+            node.status, node.error = "failed", f"budget_exhausted: {exc}"
+            self.stop_reason = "budget_exhausted"
+            self.nodes[node.node_id] = node
+            self.record(n, node, time.time() - start, "skipped", "LLM call refused: dollar budget exhausted")
+            return
         except Exception as exc:
             node.status, node.error = "failed", f"proposer error: {exc}"
             self.stagnation += 1
@@ -354,6 +368,9 @@ class Loop:
             node.error = result.error
             try:
                 fixed = self.brain.fix(code, result.error)
+            except BudgetExhausted:
+                fixed = code
+                self.stop_reason = "budget_exhausted"
             except Exception as exc:
                 fixed = code
                 print(f"[loop] fixer failed: {exc}", file=sys.stderr)

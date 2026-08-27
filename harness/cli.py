@@ -26,6 +26,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--max-iters", type=int, default=50)
     run.add_argument("--max-hours", type=float, default=6.0)
     run.add_argument("--max-tokens", type=int, default=2_000_000)
+    run.add_argument("--max-usd", type=float, default=10.0,
+                     help="per-run soft dollar ceiling (hard cap = BUDGET_USD in .env)")
     run.add_argument("--timeout-s", type=int, default=600)
     run.add_argument("--sigma", type=float, default=None,
                      help="skip baseline calibration and use this sigma")
@@ -44,6 +46,7 @@ def main(argv: list[str] | None = None) -> int:
         max_iters=args.max_iters,
         max_hours=args.max_hours,
         max_tokens=args.max_tokens,
+        max_usd=args.max_usd,
         timeout_s=args.timeout_s,
         sigma=args.sigma,
     )

@@ -106,7 +106,7 @@ def metrics_from_official(users, labels, scores) -> dict[str, float]:
 
 
 def train_and_report(model: nn.Module, ds: dict, args, aux_targets=None,
-                     aux_weight: float = 0.2) -> dict[str, float]:
+                     aux_weight: float = 0.2, bpr_weight: float = 0.5) -> dict[str, float]:
     """Hybrid-loss training loop with early stopping on validation GAUC.
 
     aux_targets: optional dict name -> np.ndarray of train-split binary targets;
@@ -150,14 +150,14 @@ def train_and_report(model: nn.Module, ds: dict, args, aux_targets=None,
             idx = point_order[b * bs:(b + 1) * bs]
             xb = Xtr[idx]
             out = fwd(xb)
-            loss = 0.5 * bce(out["main"], ytr[idx])
-            if n_pairs:  # matching slice of the epoch's pair pool
+            loss = (1.0 - bpr_weight) * bce(out["main"], ytr[idx])
+            if n_pairs and bpr_weight > 0:  # matching slice of the epoch's pair pool
                 lo = (b * n_pairs) // n_batches
                 hi = ((b + 1) * n_pairs) // n_batches
                 if hi > lo:
                     zp = fwd(Xtr[p_pos[lo:hi]])["main"]
                     zn = fwd(Xtr[p_neg[lo:hi]])["main"]
-                    loss = loss + 0.5 * nn.functional.softplus(zn - zp).mean()
+                    loss = loss + bpr_weight * nn.functional.softplus(zn - zp).mean()
             for name, t in aux.items():
                 loss = loss + aux_weight * bce(out[name], t[idx])
             opt.zero_grad(set_to_none=True)
