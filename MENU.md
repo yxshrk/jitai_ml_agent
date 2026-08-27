@@ -23,6 +23,22 @@ C. **Compound hypotheses are allowed and encouraged** when single levers plateau
 D. Do NOT re-test dead branches: item-side aggregates, video content features,
    k=32, LightGBM blends, pure BPR or pure logloss (all measured worse, see below).
 
+## CURRENT DIRECTIVE (after runs 01-02 both converged at ~0.604)
+Single-dose regularization (dropout 0.15, AdamW wd 1e-4) measured FLAT. Do not
+re-test. Drafts should START from the known-best stack (DCN-lite: 1-2 cross layers
++ MLP 128 on the 5 offset-encoded npz fields, hybrid 0.5 BPR + 0.5 logloss, early
+stop on valid GAUC — the pattern of accepted node_002) and spend iterations ONLY on
+the unexplored objective family, one theme each:
+1. CWM-style censored watch-time loss: treat play_time_ms as a censored observation
+   (completed play = truncated at duration_ms); one-sided regression auxiliary or
+   main loss; published GAUC 0.713 on this dataset (KDD'24).
+2. Ordinal watch-ratio auxiliary: bucket play_time/min(duration,18s) into ordinal
+   classes; cumulative-link or multi-head ordinal loss as auxiliary at weight 0.2-0.5.
+3. Per-user listwise softmax over the user's impressions (temperature-scaled),
+   possibly mixed with logloss.
+4. If 1-3 all flat: aggressive regularization package (dropout 0.3 + wd 1e-3 +
+   lr decay 0.5/epoch + 20 epochs) as one compound theme.
+
 Ranked by expected gain per unit implementation risk:
 
 ## Tier 1 — do first
