@@ -171,8 +171,10 @@ class Loop:
         # With an externally supplied sigma (tests / reruns) one baseline run suffices.
         seeds = self.config.calib_seeds if self.config.sigma is None else (self.config.seed,)
         for i, seed in enumerate(seeds):
+            # Calibration runs trusted baseline code: never let a tight experiment
+            # timeout (e.g. in tests) starve it.
             result = self.run_script(node.code_path, self.run_dir / f"calib_seed{seed}", seed,
-                                     self.config.timeout_s)
+                                     max(self.config.timeout_s, 120))
             if not result.ok:
                 raise RuntimeError(f"baseline calibration failed (seed {seed}): {result.error}")
             primaries.append(result.metrics["primary"])
