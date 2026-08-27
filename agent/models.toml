@@ -1,0 +1,14 @@
+# Role -> model mapping per provider. The loop picks the provider
+# (--provider flag, default "openai"); roles resolve through this file only.
+
+default_provider = "openai"
+
+[openai]
+proposer = "gpt-5.6-sol"
+fixer = "gpt-5.4-mini"
+reflector = "gpt-5.6-sol"
+
+[anthropic]
+proposer = "claude-sonnet-5"
+fixer = "claude-haiku-4-5-20251001"
+reflector = "claude-sonnet-5"
