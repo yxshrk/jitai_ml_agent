@@ -26,3 +26,15 @@ Honest reading:
   A quick valid-only probe (fm_bpr, lr 5e-4, patience 4) reached 0.6021 —
   still noise-level; not adopted.
 - No test-split numbers are reported or were computed for any zoo model.
+
+## 2026-08-28 sweep (full log: zoo/EXPERIMENTS.md)
+
+| script       | config                              | seeds    | primary (mean +- std) | delta vs 0.6016 |
+|--------------|-------------------------------------|----------|-----------------------|-----------------|
+| best.py      | dcn_feats, hidden=128, aux 0.1      | 42,43,44 | **0.6039 +- 0.0010**  | **+0.0023 ACCEPTED** |
+| dcn_feats.py | hidden=128, no aux                  | 42,43,44 | 0.6038 +- 0.0011      | +0.0022 accepted (tie) |
+| —            | 5-seed rank ensemble of best.py     | 42-46    | 0.6047 (single number)| variance reducer |
+
+Dead branches (seed 42): item aggregates 0.6038, content features 0.6039,
+k=32 0.6039, bpr weight != 0.5 all <= 0.6045, LightGBM lambdarank 0.5974
+(blends all hurt). New best artifact: `zoo/best.py`.
