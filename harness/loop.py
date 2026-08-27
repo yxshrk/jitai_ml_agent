@@ -74,6 +74,7 @@ class LoopConfig:
     baseline_script: Path = BASELINE_SCRIPT
     seed: int = 42
     confirm_seed: int = 1042
+    draft_tiers: tuple[str, ...] = ("Tier 1", "Tier 2", "Tier 3")  # directives for the initial drafts
 
 
 class LeakageError(RuntimeError):
@@ -249,8 +250,8 @@ class Loop:
         last = self.nodes[max(self.nodes, key=lambda k: int(k.split("_")[1]))]
         if last.status == "failed" and last.debug_depth < 2:
             return "debug", last, None
-        if len(drafts) < 3:
-            tier = DRAFT_TIERS[len(drafts)]
+        if len(drafts) < len(self.config.draft_tiers):
+            tier = self.config.draft_tiers[len(drafts)]
             return "draft", self.champion, f"draft from {tier} of the menu"
         if self.stagnation >= self.config.stagnation_limit:
             tried = {n.tier for n in self.nodes.values() if n.tier}

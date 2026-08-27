@@ -33,6 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="skip baseline calibration and use this sigma")
     run.add_argument("--baseline-script", type=Path, default=None,
                      help="baseline node script (default: zoo/fm_torch.py)")
+    run.add_argument("--draft-tiers", type=str, default=None,
+                     help="comma-separated directives for initial drafts, e.g. 'Tier 4,Tier 4,CURRENT DIRECTIVE'")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -46,6 +48,7 @@ def main(argv: list[str] | None = None) -> int:
         data_dir=args.data_dir.resolve(),
         run_dir=args.run_dir,
         **({"baseline_script": args.baseline_script.resolve()} if args.baseline_script else {}),
+        **({"draft_tiers": tuple(t.strip() for t in args.draft_tiers.split(","))} if args.draft_tiers else {}),
         max_iters=args.max_iters,
         max_hours=args.max_hours,
         max_tokens=args.max_tokens,
