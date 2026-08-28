@@ -40,8 +40,8 @@ def _args(data, out, **updates):
     values = dict(data_dir=str(data), out_dir=str(out), seed=42, epochs=1, batch_size=12,
                   patience_halves=4, max_runtime=30, subsample=None,
                   negatives_per_positive=1, negative_sampling="uniform",
-                  aux_tasks="click,effective_view", aux_weights="0.2,0.2",
-                  optimizer="adam", lr=1e-3, embedding_lr=0.05)
+                  aux_tasks="none", aux_weights="none",
+                  optimizer="adamw", lr=1e-3, embedding_lr=0.05)
     values.update(updates)
     return Namespace(**values)
 

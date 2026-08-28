@@ -3,10 +3,10 @@
 Contract CLI:
   uv run python zoo/dims_campaign.py --data-dir data/real_ws --out-dir <o> [--seed 42]
 
-The default is the corrected five-field DCN-lite control with one cross layer,
-MLP128, 0.5 BPR + 0.5 logloss, click and effective-view auxiliary losses at
-weight 0.2 each, seven-day recency weighting, and half-epoch model selection on
-the official PRIMARY metric. Only train.npz and val.npz are used for features
+The default is the confirmed strong-regularized five-field L0 DCN-lite control:
+one cross layer, MLP128, 0.5 BPR + 0.5 logloss, no auxiliary loss, seven-day
+recency weighting, MLP/embedding dropout 0.2/0.1, AdamW weight decay 1e-5, and
+per-epoch 0.5 learning-rate decay. Only train.npz and val.npz are used for features
 and labels; the matching CSV is read solely for raw video ids and auxiliary
 columns that are not present in the NPZ export.
 """
@@ -54,13 +54,13 @@ def parser(description: str = __doc__) -> argparse.ArgumentParser:
     ap.add_argument("--negative-sampling",
                     choices=("uniform", "popularity", "hard", "hard-popularity"),
                     default="uniform")
-    ap.add_argument("--aux-tasks", default="click,effective_view",
+    ap.add_argument("--aux-tasks", default="none",
                     help="comma-separated tasks, or 'none'")
-    ap.add_argument("--aux-weights", default="0.2,0.2",
+    ap.add_argument("--aux-weights", default="none",
                     help="one comma-separated nonnegative weight per auxiliary task")
     ap.add_argument("--optimizer",
-                    choices=("adam", "adagrad", "sparse-adam", "sgd", "split-adagrad-adam"),
-                    default="adam")
+                    choices=("adamw", "adagrad", "sparse-adam", "sgd", "split-adagrad-adam"),
+                    default="adamw")
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--embedding-lr", type=float, default=0.05,
                     help="embedding LR for split-adagrad-adam")
@@ -210,13 +210,14 @@ class DimsDCN(nn.Module):
         super().__init__()
         self.embedding = nn.Embedding(total_dim, k, sparse=sparse_embedding)
         nn.init.normal_(self.embedding.weight, std=0.01)
+        self.embedding_dropout = nn.Dropout(0.1)
         width = fields * k
         self.cross = nn.Linear(width, width)
-        self.mlp = nn.Sequential(nn.Linear(width, 128), nn.ReLU(), nn.Dropout(0.1))
+        self.mlp = nn.Sequential(nn.Linear(width, 128), nn.ReLU(), nn.Dropout(0.2))
         self.heads = nn.ModuleDict({name: nn.Linear(128, 1) for name in ("main", *tasks)})
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
-        x0 = self.embedding(x).flatten(1)
+        x0 = self.embedding_dropout(self.embedding(x)).flatten(1)
         hidden = self.mlp(x0 * self.cross(x0) + x0)
         return {name: head(hidden).squeeze(1) for name, head in self.heads.items()}
 
@@ -224,6 +225,7 @@ class DimsDCN(nn.Module):
 @dataclass
 class Optimizers:
     values: tuple[torch.optim.Optimizer, ...]
+    schedulers: tuple[torch.optim.lr_scheduler.LRScheduler, ...]
 
     def zero_grad(self) -> None:
         for value in self.values:
@@ -233,26 +235,33 @@ class Optimizers:
         for value in self.values:
             value.step()
 
+    def step_schedulers(self) -> None:
+        for value in self.schedulers:
+            value.step()
+
 
 def make_optimizers(model: DimsDCN, args) -> Optimizers:
     embedding = list(model.embedding.parameters())
     dense = [parameter for name, parameter in model.named_parameters()
              if not name.startswith("embedding.")]
-    if args.optimizer == "adam":
-        values = (torch.optim.Adam(model.parameters(), lr=args.lr),)
+    if args.optimizer == "adamw":
+        values = (torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5),)
     elif args.optimizer == "adagrad":
-        values = (torch.optim.Adagrad(model.parameters(), lr=args.lr),)
+        values = (torch.optim.Adagrad(model.parameters(), lr=args.lr, weight_decay=1e-5),)
     elif args.optimizer == "sgd":
-        values = (torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9),)
+        values = (torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,
+                                  weight_decay=1e-5),)
     elif args.optimizer == "sparse-adam":
         values = (torch.optim.SparseAdam(embedding, lr=args.lr),
                   torch.optim.Adam(dense, lr=args.lr))
     elif args.optimizer == "split-adagrad-adam":
-        values = (torch.optim.Adagrad(embedding, lr=args.embedding_lr),
+        values = (torch.optim.Adagrad(embedding, lr=args.embedding_lr, weight_decay=1e-5),
                   torch.optim.Adam(dense, lr=args.lr))
     else:  # pragma: no cover - argparse owns the choices
         raise ValueError(args.optimizer)
-    return Optimizers(values)
+    schedulers = tuple(torch.optim.lr_scheduler.StepLR(value, step_size=1, gamma=0.5)
+                       for value in values)
+    return Optimizers(values, schedulers)
 
 
 def metrics(users: np.ndarray, labels: np.ndarray, scores: np.ndarray) -> dict[str, float]:
@@ -378,6 +387,7 @@ def run(args) -> dict:
                     if bad >= args.patience_halves:
                         stop = True
                         break
+            optimizers.step_schedulers()
             if stop:
                 break
     except RunTimeout:
@@ -399,7 +409,13 @@ def run(args) -> dict:
                          "aux_tasks": list(tasks), "aux_weights": list(task_weights),
                          "optimizer": args.optimizer, "lr": args.lr,
                          "embedding_lr": args.embedding_lr, "recency_half_life_days": 7.0,
-                         "cross_layers": 1, "hidden": 128, "bpr_weight": 0.5}}
+                          "cross_layers": 1, "hidden": 128, "bpr_weight": 0.5,
+                         "mlp_dropout": 0.2, "embedding_dropout": 0.1,
+                         "weight_decay": (0.0 if args.optimizer == "sparse-adam" else 1e-5),
+                         "dense_weight_decay": (0.0 if args.optimizer in
+                                                  ("sparse-adam", "split-adagrad-adam")
+                                                  else 1e-5),
+                         "lr_step_gamma": 0.5}}
     _write(args.out_dir, valid, scores, result)
     print("final:", json.dumps({k: v for k, v in result.items() if k != "history"},
                                 sort_keys=True), flush=True)

@@ -7,12 +7,12 @@
 | EXPERIMENTS.md | 27 | 2 | 28 Aug 01:38 |
 | EXPERIMENTS_ABLATION.md | 16 | 0 | 28 Aug 13:38 |
 | EXPERIMENTS_AUDIT.md | 16 | 0 | 28 Aug 10:47 |
-| EXPERIMENTS_DIMS.md | 0 | 0 | 28 Aug 10:54 |
+| EXPERIMENTS_DIMS.md | 25 | 0 | 28 Aug 14:43 |
 | EXPERIMENTS_FINAL.md | 19 | 3 | 28 Aug 10:43 |
 | EXPERIMENTS_HIST.md | 26 | 2 | 28 Aug 09:48 |
 | EXPERIMENTS_SWEEP.md | 54 | 9 | 28 Aug 13:24 |
 
-**~158 table rows logged, 16 confirmed-win markers.**
+**~183 table rows logged, 16 confirmed-win markers.**
 
 ## Autonomous runs
 
