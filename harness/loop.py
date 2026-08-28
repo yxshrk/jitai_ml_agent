@@ -229,6 +229,7 @@ class Loop:
             "change_summary": f"baseline seeds {list(self.config.calib_seeds) if self.config.sigma is None else [self.config.seed]}: "
                               f"primaries {[round(p, 4) for p in primaries]}, mean {mean:.4f}, sigma {self.sigma:.4f}",
             "diff": "",
+            "method_selection": None,
             "metrics": self.champion.metrics if self.champion else {},
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
             "baseline_reproduction": {"seed_primaries": [round(p, 6) for p in primaries],

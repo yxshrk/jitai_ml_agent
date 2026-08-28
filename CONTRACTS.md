@@ -20,6 +20,13 @@ JSON emitted by the proposer, executed by the harness:
   "node_id": "node_007", "parent": "node_006", "action": "improve",
   "code_path": "logs/run_<id>/nodes/007.py",
   "change_summary": "one-line what-changed (the journal line)",
+  "method_selection": {                 // null only for baseline/debug iterations
+    "diagnosis": "overfit",
+    "chosen_method_id": "regularization-schedule",
+    "citation": "MENU CURRENT DIRECTIVE",
+    "why": "early validation peak calls for the highest-gain untried anti-overfit card",
+    "rejected": [{"method_id": "listwise-softmax", "reason": "measured dead at 0.5991"}]
+  },
   "metrics": {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0},
   "val_best_so_far": 0.0,
   "accepted": true,
@@ -56,6 +63,15 @@ the parent node's full code. Never a growing transcript.
 Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
 different menu tier after 5 stagnant iterations.
+Before every draft/improve proposal, a separately metered selector diagnoses the parent
+learning curve and journal, chooses exactly one card from `agent/METHODS.md`, cites it,
+and records one rejected alternative. The selected card text and rationale are passed to
+the proposer under `## Selected method (implement THIS)`. Debug iterations skip selection
+and preserve the failed node's method. Selector and proposer both receive
+`streak_state = {no_improve_streak, n_converge, iters_left}` so an N-1 streak favors the
+highest-expected-gain untried method over a dosage tweak.
+The reflector still runs every 5 iterations and additionally whenever stagnation reaches
+3 or more; it receives all METHODS.md card ids so its focus note can re-rank them.
 Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
 (floor 0.002); 0-2sigma -> one reseed confirm run; else revert.
 Convergence: OFFICIAL rule — converged when validation primary has not improved by

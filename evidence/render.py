@@ -198,6 +198,33 @@ def render_runlog(records: list[dict], out_path: Path) -> None:
             f"| {'-' if primary is None else f'{primary:.4f}'} "
             f"| {status} | {err} |"
         )
+
+    selections = [(r, r.get("method_selection")) for r in records if r.get("method_selection")]
+    if selections:
+        lines += [
+            "",
+            "## Diagnose → select evidence",
+            "",
+            "Each draft/improve decision records the selected method and a considered alternative.",
+        ]
+        for record, selection in selections:
+            rejected = selection.get("rejected") or []
+            alternative = rejected[0] if rejected else {}
+            lines += [
+                "",
+                f"### Iteration {record['n']}: {esc(selection.get('chosen_method_id'))}",
+                "",
+                f"- Diagnosis: {esc(selection.get('diagnosis'))}",
+                (
+                    f"- Selected card: {esc(selection.get('chosen_method_id'))} — "
+                    f"{esc(selection.get('citation'))}"
+                ),
+                f"- Why: {esc(selection.get('why'))}",
+                (
+                    f"- Rejected alternative: {esc(alternative.get('method_id'))} — "
+                    f"{esc(alternative.get('reason'))}"
+                ) if alternative else "- Rejected alternative: none recorded",
+            ]
     out_path.write_text("\n".join(lines) + "\n")
 
 

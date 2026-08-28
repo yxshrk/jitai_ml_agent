@@ -19,7 +19,7 @@ from submission import SubmissionError  # noqa: E402
 
 def _rec(n, node, parent, action, hyp, primary, best, accepted, *,
          error=None, recovery=None, intervention=False,
-         tin=1000, tout=500, dur=100.0, roles=None):
+         tin=1000, tout=500, dur=100.0, roles=None, method_selection=None):
     return {
         "n": n,
         "hypothesis": hyp,
@@ -33,6 +33,7 @@ def _rec(n, node, parent, action, hyp, primary, best, accepted, *,
         "tokens_in": tin, "tokens_out": tout,
         "error": error, "recovery": recovery,
         "intervention": intervention,
+        "method_selection": method_selection,
         **({"tokens_by_role": roles} if roles else {}),
     }
 
@@ -51,7 +52,16 @@ def run_dir(tmp_path):
     roles_a = {"proposer": {"in": 500, "out": 375}, "parser": {"in": 500, "out": 125}}
     recs = [
         _rec(1, "node_001", "baseline", "draft", "BPR pairwise loss aligns with GAUC",
-             0.6050, 0.6050, True, roles=roles_a),
+             0.6050, 0.6050, True, roles=roles_a, method_selection={
+                 "diagnosis": "metric-mismatch",
+                 "chosen_method_id": "bpr-hybrid",
+                 "citation": "Rendle et al., BPR",
+                 "why": "Within-user pairs align directly with GAUC.",
+                 "rejected": [{
+                     "method_id": "item-aggregates",
+                     "reason": "Measured dead at 0.6038 primary.",
+                 }],
+             }),
         _rec(2, "node_002", "node_001", "improve", "finer duration buckets",
              0.6045, 0.6050, False, roles=roles_a),
         _rec(3, "node_003", "node_001", "improve", "early stopping on val GAUC",
@@ -114,6 +124,12 @@ def test_render_outputs_and_aggregates(run_dir):
     assert "RuntimeError: shape mismatch -> patched" in runlog
     assert "CUDA OOM -> reverted" in runlog
     assert "HUMAN INTERVENTION" in runlog
+    assert "## Diagnose → select evidence" in runlog
+    assert "### Iteration 1: bpr-hybrid" in runlog
+    assert "Diagnosis: metric-mismatch" in runlog
+    assert "Rendle et al., BPR" in runlog
+    assert "Rejected alternative: item-aggregates" in runlog
+    assert "Measured dead at 0.6038 primary" in runlog
 
 
 def test_render_missing_journal(tmp_path):
