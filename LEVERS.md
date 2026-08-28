@@ -47,6 +47,12 @@ webinar question · N/A = ruled out with reasoning, not testable.
 - recency weighting of train days — C1
 - Optuna polish of winner — C4
 
+## Under-swept dimensions (caught 28 Aug review — campaign C6 "dims")
+- BPR pair sampling strategy (negs/pos count, popularity-weighted, hard negatives) — C6
+- auxiliary-task set over the 11 unscored signals (singles, combos, weights) — C6
+- optimizer family for sparse embeddings (Adagrad, split emb/MLP optimizers) — C6
+- field ablation curve L0-L5 + kitchen sink + regularization rescue — C5 (ablation)
+
 ## Ensembles
 - seed ensemble — measured: variance reducer to ~best-single-seed (E7)
 - diverse-architecture rank ensemble — C2
