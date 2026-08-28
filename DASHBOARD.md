@@ -5,19 +5,23 @@
 | campaign file | cells | confirmed wins | last update |
 |---|---|---|---|
 | EXPERIMENTS.md | 27 | 2 | 28 Aug 01:38 |
+| EXPERIMENTS_ABLATION.md | 16 | 0 | 28 Aug 13:38 |
 | EXPERIMENTS_AUDIT.md | 16 | 0 | 28 Aug 10:47 |
 | EXPERIMENTS_DIMS.md | 0 | 0 | 28 Aug 10:54 |
 | EXPERIMENTS_FINAL.md | 19 | 3 | 28 Aug 10:43 |
 | EXPERIMENTS_HIST.md | 26 | 2 | 28 Aug 09:48 |
-| EXPERIMENTS_SWEEP.md | 35 | 3 | 28 Aug 10:57 |
+| EXPERIMENTS_SWEEP.md | 54 | 9 | 28 Aug 13:24 |
 
-**~123 table rows logged, 10 confirmed-win markers.**
+**~158 table rows logged, 16 confirmed-win markers.**
 
 ## Autonomous runs
 
 | run | stop | iters | best primary | wall min | tokens |
 |---|---|---|---|---|---|
 | run_20260828-011439-bffeac | max_iters | 2 | 0.6633 | 1.1 | 11257 |
+| run_ab_compact | converged | 3 | 0.6034 | 59.2 | 12904 |
+| run_ab_full | converged | 3 | 0.6018 | 2.8 | 0 |
+| run_ab_full2 | converged | 3 | 0.6018 | 18.3 | 39607 |
 | run_real_01 | converged | 5 | 0.6042 | 23.5 | 27649 |
 | run_real_02 | converged | 5 | 0.604 | 14.2 | 30731 |
 | run_real_03 | converged | 3 | 0.6033 | 11.6 | 20000 |

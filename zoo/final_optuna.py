@@ -7,7 +7,7 @@
 """Optuna TPE search over the confirmed specialist lever.
 
 This script intentionally uses PEP 723 script-local dependencies so ``uv add``
-does not modify the project files.
+does not modify the project files. The best trial is confirmed at seeds 42--44.
 """
 
 from __future__ import annotations
@@ -16,12 +16,7 @@ import copy
 import json
 from pathlib import Path
 
-try:
-    import optuna
-except ModuleNotFoundError:  # offline fallback after uv records the requested dependency
-    optuna = None
-
-import math
+import optuna
 import numpy as np
 
 from final_core import parser, run
@@ -41,6 +36,11 @@ def main() -> None:
         candidate.k = trial.suggest_categorical("k", [8, 12, 16, 24])
         candidate.bpr_weight = trial.suggest_float("bpr_weight", 0.3, 0.8)
         candidate.batch_size = trial.suggest_categorical("batch_size", [4096, 8192, 16384])
+        use_recency = trial.suggest_categorical("recency_weighting", [False, True])
+        candidate.recency_half_life = (
+            trial.suggest_categorical("recency_half_life", [3.0, 7.0, 14.0])
+            if use_recency else None
+        )
         candidate.epochs = min(args.epochs, 4)
         candidate.patience = min(args.patience, 2)
         candidate.out_dir = str(Path(args.out_dir) / f"trial_{trial.number:02d}")
@@ -49,81 +49,39 @@ def main() -> None:
                               "params": dict(trial.params), "runtime_s": result["runtime_s"]})
         return float(result["primary"])
 
-    if optuna is not None:
-        sampler = optuna.samplers.TPESampler(seed=args.seed)
-        study = optuna.create_study(direction="maximize", sampler=sampler)
-        study.optimize(objective, n_trials=args.trials)
-        best_params, best_value = study.best_params, study.best_value
-        engine = "optuna.samplers.TPESampler"
-    else:
-        # Network-disabled environments cannot resolve the script dependency. This
-        # deterministic fallback preserves TPE's core pattern: random startup,
-        # split observations into good/bad densities, then draw candidates near
-        # the good set and maximize a Parzen l(x)/g(x) density ratio.
-        rng = np.random.default_rng(args.seed)
-        observations: list[tuple[float, dict]] = []
-        space = {
-            "lr": ("log", 3e-4, 2e-3), "weight_decay": ("log", 1e-7, 1e-3),
-            "dropout": ("float", 0.0, 0.4), "k": ("cat", [8, 12, 16, 24]),
-            "bpr_weight": ("float", 0.3, 0.8),
-            "batch_size": ("cat", [4096, 8192, 16384]),
-        }
-
-        def density(x, values, width):
-            if not values:
-                return 1.0
-            z = (x - np.asarray(values)) / max(width, 1e-9)
-            return float(np.exp(-0.5 * z * z).mean() / max(width, 1e-9)) + 1e-12
-
-        class Trial:
-            def __init__(self, number, proposed): self.number, self.params = number, proposed
-            def suggest_float(self, name, low, high, log=False): return self.params[name]
-            def suggest_categorical(self, name, values): return self.params[name]
-
-        for number in range(args.trials):
-            if number < 8:
-                proposed = {}
-                for name, spec in space.items():
-                    if spec[0] == "cat": proposed[name] = rng.choice(spec[1]).item()
-                    elif spec[0] == "log": proposed[name] = float(math.exp(rng.uniform(math.log(spec[1]), math.log(spec[2]))))
-                    else: proposed[name] = float(rng.uniform(spec[1], spec[2]))
-            else:
-                ordered = sorted(observations, reverse=True)
-                cut = max(2, math.ceil(0.25 * len(ordered)))
-                good, bad = [x[1] for x in ordered[:cut]], [x[1] for x in ordered[cut:]]
-                proposed = {}
-                for name, spec in space.items():
-                    if spec[0] == "cat":
-                        choices = spec[1]
-                        ratios = [(sum(p[name] == c for p in good) + 1) /
-                                  (sum(p[name] == c for p in bad) + 1) for c in choices]
-                        proposed[name] = choices[int(np.argmax(ratios))]
-                    else:
-                        lo, hi = spec[1], spec[2]
-                        transform = math.log if spec[0] == "log" else float
-                        inverse = math.exp if spec[0] == "log" else float
-                        gv = [transform(p[name]) for p in good]; bv = [transform(p[name]) for p in bad]
-                        tlo, thi = transform(lo), transform(hi); width = (thi - tlo) / math.sqrt(len(observations))
-                        candidates = np.clip(rng.normal(rng.choice(gv), width, 32), tlo, thi)
-                        ratio = [density(x, gv, width) / density(x, bv, width) for x in candidates]
-                        proposed[name] = float(inverse(float(candidates[int(np.argmax(ratio))])))
-            value = objective(Trial(number, proposed))
-            observations.append((value, proposed))
-        best_value, best_params = max(observations, key=lambda item: item[0])
-        engine = "offline Parzen l(x)/g(x) fallback (Optuna unavailable after uv add)"
+    sampler = optuna.samplers.TPESampler(seed=args.seed)
+    study = optuna.create_study(direction="maximize", sampler=sampler)
+    study.optimize(objective, n_trials=args.trials)
+    best_params, best_value = study.best_params, study.best_value
+    engine = "optuna.samplers.TPESampler"
     best = copy.copy(args)
     for key, value in best_params.items():
-        setattr(best, key, value)
-    best.out_dir = args.out_dir
+        if key != "recency_weighting":
+            setattr(best, key, value)
+    if not best_params.get("recency_weighting", False):
+        best.recency_half_life = None
     best.patience = max(args.patience, 4)
-    final = run(best)
+    confirmations = []
+    for seed in (42, 43, 44):
+        confirmed = copy.copy(best)
+        confirmed.seed = seed
+        confirmed.out_dir = str(Path(args.out_dir) / f"confirm_seed_{seed}")
+        confirmations.append(run(confirmed))
+    primary = np.asarray([item["primary"] for item in confirmations])
+    summary = {
+        "optuna_best_params": best_params,
+        "optuna_best_value": best_value,
+        "search_engine": engine,
+        "optuna_trials": trial_records,
+        "confirmations": confirmations,
+        "confirmation_primary_mean": float(primary.mean()),
+        "confirmation_primary_population_std": float(primary.std()),
+        "delta_vs_0.6016": float(primary.mean() - 0.6016),
+        "confirmed_win": bool(primary.mean() - 0.6016 >= 0.002),
+    }
     metrics_path = Path(args.out_dir) / "metrics.json"
-    final["optuna_best_params"] = best_params
-    final["optuna_best_value"] = best_value
-    final["search_engine"] = engine
-    final["optuna_trials"] = trial_records
     with metrics_path.open("w", encoding="utf-8") as handle:
-        json.dump(final, handle, sort_keys=True)
+        json.dump(summary, handle, sort_keys=True)
         handle.write("\n")
     with (Path(args.out_dir) / "study.json").open("w", encoding="utf-8") as handle:
         json.dump({"best_params": best_params, "best_value": best_value,

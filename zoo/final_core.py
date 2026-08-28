@@ -46,6 +46,8 @@ def parser(description: str, default_variant: str) -> argparse.ArgumentParser:
     ap.add_argument("--k", type=int, default=16)
     ap.add_argument("--bpr-weight", type=float, default=0.5)
     ap.add_argument("--half-life", type=int, choices=(2, 5), default=5)
+    ap.add_argument("--recency-half-life", type=float, choices=(3.0, 7.0, 14.0),
+                    help="train-day half-life; omitted disables recency loss weighting")
     ap.add_argument("--variant", default=default_variant,
                     choices=("control", "shrinkage", "cross_ids", "freshness",
                              "specialists", "ffm", "finalmlp"))
@@ -333,6 +335,15 @@ def train_once(args: argparse.Namespace, ds: dict | None = None,
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     bce = nn.BCEWithLogitsLoss(reduction="none")
     sampler = PairSampler(tr["user"], tr["y"], user_uniform=specialist == "uniform")
+    if args.recency_half_life is None:
+        recency_weights = torch.ones(len(ytr), dtype=torch.float32)
+    else:
+        # This is the train-only weighting from hist_best.py. All campaign dates
+        # are in April 2022, so YYYYMMDD subtraction is exactly a day difference.
+        age = 20220421 - tr["date"].astype(np.int64)
+        values = np.exp2(-age / args.recency_half_life).astype(np.float32)
+        values /= values.mean()
+        recency_weights = torch.as_tensor(values, dtype=torch.float32)
 
     def forward(indices, valid=False):
         x = xva[indices] if valid else xtr[indices]
@@ -370,17 +381,21 @@ def train_once(args: argparse.Namespace, ds: dict | None = None,
                 idx = order[batch * args.batch_size:(batch + 1) * args.batch_size]
                 logits = forward(idx)
                 point = bce(logits, ytr[idx])
+                weights = recency_weights[idx]
                 if specialist == "uniform":
                     # Observable proxy for top-position value: short user lists get more weight.
-                    weights = torch.as_tensor(1.0 / np.sqrt(np.maximum(counts[tr["user"][idx]], 1)),
-                                              dtype=torch.float32)
-                    point_loss = (point * weights / weights.mean()).mean()
-                else:
-                    point_loss = point.mean()
+                    depth_weights = torch.as_tensor(
+                        1.0 / np.sqrt(np.maximum(counts[tr["user"][idx]], 1)),
+                        dtype=torch.float32)
+                    weights = weights * depth_weights
+                point_loss = (point * weights).sum() / weights.sum()
                 lo, hi = batch * len(pos) // steps, (batch + 1) * len(pos) // steps
                 pair_loss = torch.zeros((), dtype=torch.float32)
                 if hi > lo:
-                    pair_loss = nn.functional.softplus(forward(neg[lo:hi]) - forward(pos[lo:hi])).mean()
+                    pair = nn.functional.softplus(forward(neg[lo:hi]) - forward(pos[lo:hi]))
+                    pair_weights = 0.5 * (recency_weights[pos[lo:hi]] +
+                                          recency_weights[neg[lo:hi]])
+                    pair_loss = (pair * pair_weights).sum() / pair_weights.sum()
                 bw = 0.7 if specialist == "positive" else args.bpr_weight
                 loss = (1.0 - bw) * point_loss + bw * pair_loss
                 optimizer.zero_grad(set_to_none=True)
@@ -419,6 +434,7 @@ def train_once(args: argparse.Namespace, ds: dict | None = None,
     result = {**metrics(va["user"], va["y"], scores), "history": history,
               "runtime_s": round(time.time() - started, 1), "best_step": best_step,
               "seed": args.seed, "variant": args.variant, "timed_out": timed_out}
+    result["recency_half_life"] = args.recency_half_life
     if write:
         _write(args.out_dir, va, scores, result)
     print("final:", json.dumps({k: v for k, v in result.items() if k != "history"}, sort_keys=True), flush=True)

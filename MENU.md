@@ -23,6 +23,15 @@ C. **Compound hypotheses are allowed and encouraged** when single levers plateau
 D. Do NOT re-test dead branches: item-side aggregates, video content features,
    k=32, LightGBM blends, pure BPR or pure logloss (all measured worse, see below).
 
+## CURRENT BEST (28 Aug pm, measured)
+**L0 strong-regularization stack: official 5 fields, DCN-lite, heavy regularization
+(zoo/ablate_fields.py --regularized): valid primary 0.6047 ± 0.0003 (3-seed, +0.0031
+CONFIRMED — tightest std of any winner).** The field-ablation curve shows MORE fields
+lose: kitchen-sink L5 = 0.6030. The binding constraint was regularization strength,
+not missing information. Schedules: rapid step LR decay is the only schedule family
+that beats the plateau (sweep campaign). Context finding: compact agent context beats
+full-history 3x-token context (A/B measured). FinalMLP failed 3-seed confirm — closed.
+
 ## CURRENT DIRECTIVE (after runs 01-02 both converged at ~0.604)
 Single-dose regularization (dropout 0.15, AdamW wd 1e-4) measured FLAT. Do not
 re-test. Drafts should START from the known-best stack (DCN-lite: 1-2 cross layers

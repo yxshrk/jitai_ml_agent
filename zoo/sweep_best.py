@@ -2,8 +2,9 @@
 
 DCN-lite, k=16, hidden=128, two cross layers, hybrid 0.5 BPR/logloss with aux
 weight 0.1, MLP dropout 0.2, embedding dropout 0.1, AdamW weight decay 1e-5,
-step LR decay 0.5/epoch, and epoch EMA (decay 0.9, start epoch 2). Validation
-primary over seeds 42/43/44: 0.605040 ± 0.000314 (official evaluator).
+step LR decay 0.5/epoch, with raw-or-EMA checkpoint selection (EMA decay 0.9,
+start epoch 2). Validation primary over seeds 42/43/44: 0.605040 ± 0.000314
+(official evaluator). EMA is selected only for seed 42; raw wins seeds 43/44.
 """
 
 from __future__ import annotations
