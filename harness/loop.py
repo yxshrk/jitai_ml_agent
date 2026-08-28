@@ -493,6 +493,9 @@ class Loop:
             return
         except Exception as exc:
             node.status, node.error = "failed", f"proposer error: {exc}"
+            # leave a placeholder so a later debug/diff of this node cannot crash on a missing file
+            if not node.code_path.exists():
+                node.code_path.write_text(f"# proposal failed before any code was produced\n# error: {exc}\n")
             self.stagnation += 1
             self.no_improve_streak += 1
             self.nodes[node.node_id] = node

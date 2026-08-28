@@ -26,7 +26,7 @@ run exhaustively. Every sampled cell appears below.
 | g01 | 0.2 | 1e-5 | constant | 42 | 0.670486 | 0.537464 | 0.603975 | +0.002375 | 1 | 32.6s | no win (unconfirmed seed-42 cell) |
 | g02 | 0.2 | 1e-3 | constant | 42 | 0.670652 | 0.537517 | 0.604084 | +0.002484 | 1 | 47.6s | no win (unconfirmed seed-42 cell) |
 | g03 | 0.35 | 1e-5 | constant | 42 | 0.671313 | 0.537222 | 0.604268 | +0.002668 | 2 | 62.2s | no win (unconfirmed seed-42 cell) |
-| g04 | 0.35 | 1e-3 | constant | 42 | 0.671106 | 0.537049 | 0.604078 | +0.002478 | 2 | 1785.6s | failed protocol: resource starvation exceeded 6m cap; score excluded |
+| g04 | 0.35 | 1e-3 | constant | 42 | 0.671106 | 0.537049 | 0.604078 | +0.002478 | 2 | 1785.6s | no win (failed protocol: >6m; score excluded) |
 | g05 | 0.5 | 1e-5 | constant | 42 | 0.670779 | 0.537652 | 0.604215 | +0.002615 | 1 | 30.1s | no win (unconfirmed seed-42 cell) |
 | g06 | 0.5 | 1e-3 | constant | 42 | 0.670914 | 0.537711 | 0.604313 | +0.002713 | 1 | 29.9s | no win (unconfirmed seed-42 cell) |
 | g07 | 0.35 | 1e-4 | constant | 42 | 0.671355 | 0.537306 | 0.604331 | +0.002731 | 2 | 55.6s | no win (unconfirmed seed-42 cell) |
@@ -39,7 +39,7 @@ run exhaustively. Every sampled cell appears below.
 | g14 | 0.2 | 1e-3 | step | 42 | 0.672494 | 0.537974 | 0.605234 | +0.003634 | 2 | 49.7s | no win (promising seed-42 cell; confirmation pending) |
 | g15 | 0.5 | 1e-5 | step | 42 | 0.671895 | 0.537799 | 0.604847 | +0.003247 | 2 | 42.3s | no win (unconfirmed seed-42 cell) |
 | g16 | 0.5 | 1e-3 | step | 42 | 0.671990 | 0.537840 | 0.604915 | +0.003315 | 2 | 40.0s | no win (unconfirmed seed-42 cell) |
-| g17 | 0.35 | 1e-4 | step | 42 | 0.672393 | 0.538066 | 0.605229 | +0.003629 | 2 | 1055.7s | failed protocol: resource suspension exceeded 6m cap; score excluded |
+| g17 | 0.35 | 1e-4 | step | 42 | 0.672393 | 0.538066 | 0.605229 | +0.003629 | 2 | 1055.7s | no win (failed protocol: >6m; score excluded) |
 
 Grid conclusion: constant and 25-epoch cosine schedules are flat; cosine has not
 decayed enough before early stopping. Step decay is consistently better, with g13
@@ -56,7 +56,7 @@ model selection. No grid cell is called a win without seeds 43/44.
 | r02 | MLP dropout=0.2/wd=1e-5; embedding dropout=0/wd=1e-2; step | 42 | 0.672557 | 0.538032 | 0.605294 | +0.003694 | 2 | 52.0s | no win (promising seed-42 cell; confirmation pending) |
 | r03 | MLP dropout=0.2; embedding dropout=0.1; wd=1e-5; step | 42 | 0.672359 | 0.538276 | 0.605318 | +0.003718 | 3 | 68.4s | no win (seed-42 leader; confirmation pending) |
 | r04 | MLP dropout=0.2; embedding dropout=0.2; wd=1e-5; step | 42 | 0.672110 | 0.538157 | 0.605133 | +0.003533 | 4 | 100.3s | no win (unconfirmed seed-42 cell) |
-| r05 | k=8; MLP dropout=0.2; embedding dropout=0.1; wd=1e-5; step | 42 | 0.672063 | 0.537881 | 0.604972 | +0.003372 | 12 | 153.8s | no win (worse than k=16) |
+| r05 | k=8; MLP dropout=0.2; embedding dropout=0.1; wd=1e-5; step | 42 | 0.672063 | 0.537881 | 0.604972 | +0.003372 | 12 | 153.8s | regression vs k=16 |
 
 Embedding-specific conclusion: embedding L2 from 1e-3 to 1e-2 is effectively
 flat. Embedding dropout 0.1 delays the peak and gives the phase's best score;
@@ -69,7 +69,7 @@ has made the learning rate negligible and finishes below k=16.
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | b01 | 2048 | 2.5e-4 | 42 | 0.672123 | 0.538306 | 0.605215 | +0.003615 | 7 | 270.6s | no win (below batch=8192 reference) |
 | b02 (r03 reference; no retrain) | 8192 | 1e-3 | 42 | 0.672359 | 0.538276 | 0.605318 | +0.003718 | 3 | 68.4s | no win (seed-42 leader; confirmation pending) |
-| b03 | 32768 | 4e-3 | 42 | 0.671828 | 0.537394 | 0.604611 | +0.003011 | 7 | 108.3s | no win (regression vs batch=8192) |
+| b03 | 32768 | 4e-3 | 42 | 0.671828 | 0.537394 | 0.604611 | +0.003011 | 7 | 108.3s | regression vs batch=8192 |
 
 Batch conclusion: the default 8192 batch remains best. The 2048 batch is close
 but costs 4× as many optimizer steps and 270.6s; 32768 with linear LR scaling is
@@ -103,7 +103,50 @@ select later raw checkpoints, so EMA is beneficial but not universally selected.
 | ens05 | e03 + r05 + g06 (2:1:1) | 42 | 0.673003 | 0.538544 | 0.605774 | +0.004174 | no win (regression vs equal-rank ens02) |
 | ens02-support | g06 constant/dropout-0.5 retrain | 43 | 0.669579 | 0.536227 | 0.602903 | +0.001303 | no win (ensemble confirmation support run) |
 | ens02-support | g06 constant/dropout-0.5 retrain | 44 | 0.670173 | 0.537370 | 0.603771 | +0.002171 | no win (ensemble confirmation support run) |
+| ens02-support | r05 k8/embedding-dropout-0.1 retrain | 43 | 0.671445 | 0.537551 | 0.604498 | +0.002898 | no win (ensemble confirmation support run) |
+| ens02-support | r05 k8/embedding-dropout-0.1 retrain | 44 | 0.671922 | 0.537663 | 0.604793 | +0.003193 | no win (ensemble confirmation support run) |
+| ens02-confirm | e03 + r05 + g06 (1:1:1) | 43 | 0.671975 | 0.537894 | 0.604934 | +0.003334 | no win (confirmation incomplete) |
+| ens02-confirm | e03 + r05 + g06 (1:1:1) | 44 | 0.671753 | 0.538126 | 0.604939 | +0.003339 | confirmed win (with seeds 42/43) |
+| **ens02 3-seed** | same recipe, population mean ± std | 42–44 | **0.672299 ± 0.000622** | **0.538224 ± 0.000318** | **0.605262 ± 0.000459** | **+0.003662** | **confirmed win** |
+| ens06 | rank ensemble of e03 seeds 42/43/44 | 42–44 | 0.672659 | 0.538128 | 0.605393 | +0.003793 | confirmed win (single ensemble artifact) |
+
+Architecture-ensemble conclusion: ens02 is the best seed-matched recipe. Adding
+the weaker existing DCN-lite or MTL models hurts, as does overweighting the best
+single. The confirmed architecture-ensemble mean is 0.605262 ± 0.000459, 0.000222
+above the confirmed single-model mean. A three-seed rank ensemble of the best
+single config scores 0.605393 as one variance-reduced artifact.
 
 ## Final summary
 
-Pending completion of all five phases.
+The plateau is broken, modestly but repeatably. The best single configuration is
+`zoo/sweep_best.py`: k=16 DCN-lite, hidden=128, two cross layers, MLP dropout 0.2,
+embedding dropout 0.1, AdamW wd 1e-5, step LR decay 0.5/epoch, and optional epoch
+EMA with decay 0.9 from epoch 2. Official validation primary at seeds 42/43/44 is
+0.605482 / 0.604793 / 0.604843 = **0.605040 ± 0.000314**, delta **+0.003440**
+over 0.6016: **confirmed win**.
+
+The best architecture rank ensemble combines equal within-user ranks from:
+
+1. the frozen k=16 best config above;
+2. the k=8 step-decay config with embedding dropout 0.1; and
+3. the k=16 high-MLP-dropout 0.5, wd 1e-3, constant-LR config.
+
+Its seed-matched primary values are 0.605911 / 0.604934 / 0.604939 =
+**0.605262 ± 0.000459**, delta **+0.003662**: **confirmed win**. The highest
+individual ensemble validation result is **0.605911** at seed 42. The existing
+DCN-lite and MTL artifacts were explicitly tested as fourth members and regressed.
+
+Main findings: rapid step decay is the only schedule that consistently beats the
+constant/cosine plateau; embedding dropout 0.1 delays the useful peak; weight decay
+is nearly flat; k=8, batch 2048/32768, and stronger embedding dropout do not win;
+EMA helps at seed 42 but raw checkpoints win seeds 43/44. All metrics above are
+validation-only outputs from `data/official/evaluate.py`; test data was never read.
+
+Reproduction for one seed (replace `<seed>` and output paths as needed):
+
+```bash
+uv run python zoo/sweep_best.py --data-dir data/real_ws --out-dir /tmp/best --seed <seed>
+uv run python zoo/sweep_train.py --data-dir data/real_ws --out-dir /tmp/k8 --seed <seed> --k 8 --dropout 0.2 --embedding-dropout 0.1 --weight-decay 1e-5 --schedule step
+uv run python zoo/sweep_train.py --data-dir data/real_ws --out-dir /tmp/constant --seed <seed> --dropout 0.5 --weight-decay 1e-3 --schedule constant
+uv run python zoo/ensemble.py --data-dir data/real_ws --out-dir /tmp/ensemble --seed <seed> --inputs /tmp/best/predictions.csv /tmp/k8/predictions.csv /tmp/constant/predictions.csv
+```
