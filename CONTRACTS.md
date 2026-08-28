@@ -6,6 +6,7 @@ JSON emitted by the proposer, executed by the harness:
 {
   "hypothesis": "BPR pairwise loss should align training with GAUC (expect +0.005-0.01)",
   "expected_delta": 0.0075,             // honest predicted validation-primary delta
+  "expected_delta_basis": "The bpr-hybrid card measured primary 0.6048.",
   "parent": "node_007",               // solution-tree node this builds on, or "baseline"
   "action": "improve",                // draft | debug | improve
   "code": "<WHOLE runnable script>",  // whole-file rewrite, never a diff (research/agent-design.md #3)
@@ -22,7 +23,7 @@ JSON emitted by the proposer, executed by the harness:
   "code_path": "logs/run_<id>/nodes/007.py",
   "change_summary": "one-line what-changed (the journal line)",
   "context_mode": "compact",           // compact | full proposer context used for this run
-  "method_selection": {                 // null only for baseline/debug iterations
+  "method_selection": {                 // null for baseline; debug preserves its parent's selection
     "diagnosis": "overfit",
     "chosen_method_id": "regularization-schedule",
     "citation": "MENU CURRENT DIRECTIVE",
@@ -33,7 +34,11 @@ JSON emitted by the proposer, executed by the harness:
   "val_best_so_far": 0.0,
   "accepted": true,
   "expected_delta": 0.0015,            // proposer's prediction vs champion-before
+  "expected_delta_basis": "The regularization card reports 0.604-0.605.",
   "realized_delta": 0.0021,            // node primary - champion-before primary; null on error
+  "verdict_note": null,                 // populated when card-reference comparison suspects code
+  "failure_stage": null,                // null | "smoke" | "full"
+  "fixer_eligible": false,
   "duration_s": 0.0,
   "tokens_in": 0, "tokens_out": 0,
   "error": null,                      // or traceback summary
@@ -81,6 +86,50 @@ the proposer under `## Selected method (implement THIS)`. Debug iterations skip 
 and preserve the failed node's method. Selector and proposer both receive
 `streak_state = {no_improve_streak, n_converge, iters_left}` so an N-1 streak favors the
 highest-expected-gain untried method over a dosage tweak.
+
+Each method card has a parsed `treats` family list and a `reference_primary` line whose
+value is a float or `none`. When a completed, selected-card node scores more than 0.002
+below that card's numeric reference, the harness does not reject it immediately: it sets
+status `suspect_implementation`, records `verdict_note` exactly as `below card reference
+(X vs Y) — implementation suspected` (X and Y formatted to four decimals), and routes
+the next iteration to debug that node while respecting max debug depth 2. The debug child
+preserves the selected method. If that debug result is also more than 0.002 below the
+same reference, it is rejected; it is not routed into another reference-suspicion cycle.
+
+Initial and forced draft selection is portfolio-diverse. The harness unions the `treats`
+families of cards selected for all prior draft nodes in the run and passes the sorted list
+as `excluded_families` to the selector. A card is eligible only when none of its families
+is excluded, unless no non-`measured-dead` eligible card remains. If a draft selector
+violates the constraint while an eligible card exists, the harness retries it once with
+an explicit strict instruction. If the retry also violates it, the harness overrides the
+choice with the eligible non-measured-dead card having the largest explicit numeric upper
+bound in its `expected_gain / cost` line and records `harness_override: true` in the
+method selection. Improve selections receive an empty exclusion list and are not subject
+to the retry/override rule.
+
+Every proposer spec must include a finite numeric `expected_delta` and a non-empty
+`expected_delta_basis`. The basis is one sentence citing the concrete measured evidence
+the estimate extrapolates from: a specific method-card value or a specific journal line.
+The harness records both fields alongside `realized_delta = node primary - champion-
+before primary`; `realized_delta` is null when the iteration errors. Evidence reports show
+expected versus realized delta per iteration and mean absolute calibration error over only
+the iterations whose realized delta is non-null.
+
+For `action == "improve"`, the proposer emits the whole parent file but makes the smallest
+coherent change needed to test its one hypothesis. Unnecessary rewrites are defects; this
+constraint does not change the whole-script JSON output format.
+
+Every draft or improve node has two-stage execution. Before its full run, the harness runs
+the same script with `SMOKE_EPOCHS=1` and a fixed 120-second timeout, requiring a zero exit
+and valid `predictions.csv` plus `metrics.json`. Nonzero exit, timeout, missing outputs, or
+invalid metrics immediately marks `failure_stage="smoke"` and `fixer_eligible=true`; no
+full-run budget is spent. The existing fixer gets one attempt, and patched draft/improve
+code must pass a fresh smoke before its full run. Scripts must parse `SMOKE_EPOCHS` as an
+integer and cap every training phase's epoch count accordingly. A script that ignores the
+variable is allowed: if it completes with valid outputs within 120 seconds, smoke passes.
+Debug nodes keep the existing single-stage execution because they are themselves the
+fix attempt.
+
 The reflector still runs every 5 iterations and additionally whenever stagnation reaches
 3 or more; it receives all METHODS.md card ids so its focus note can re-rank them.
 Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
@@ -91,9 +140,3 @@ rejected, errored all count), vs best-so-far. Journal line 0 = reproduce_baselin
 (3-seed calibration doubles as the brief's required baseline reproduction). Every
 iteration record carries a unified "diff" vs its parent node (brief requirement).
 Harness owns timeouts, validity checks, best-node argmax, stopping.
-Every proposer spec must include a finite numeric `expected_delta`: its honest prediction
-of the candidate's validation-primary change relative to the champion before that
-iteration. The harness records it alongside `realized_delta = node primary - champion-
-before primary`; `realized_delta` is null when the iteration errors. Evidence reports show
-expected versus realized delta per iteration and mean absolute calibration error over only
-the iterations whose realized delta is non-null.

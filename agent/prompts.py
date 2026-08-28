@@ -36,6 +36,9 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
 - Print nothing to stdout/stderr (no progress bars, no logging). Only write the
   two output files.
 - Stay within the runtime timeout (default 600s); prefer small/fast models.
+- Read environment variable `SMOKE_EPOCHS` as an integer when present and cap
+  every training phase's epoch count to that value. `SMOKE_EPOCHS=1` is the
+  harness sanity pass and must still write predictions.csv and metrics.json.
 - Columns available: user_id,video_id,tab,hourmin,date,duration_ms,long_view,
   click,like,play_time_ms. long_view/click/like/play_time_ms are OUTCOMES of the
   impression: usable as auxiliary training TARGETS only, never as input features,
@@ -49,6 +52,7 @@ shows were rejected.
 Respond with a single JSON object and nothing else:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
  "expected_delta": <honest numeric expectation for validation-primary delta, e.g. 0.0015>,
+ "expected_delta_basis": "<one sentence citing a specific measured card value or journal line>",
  "action": "<draft|debug|improve>",
  "parent": "<parent node id you were given>",
  "code": "<the WHOLE script as a JSON string>"}
@@ -63,7 +67,9 @@ PROPOSER_MODE = {
     "improve": (
         "Mode: IMPROVE. Apply exactly one atomic change to the parent script "
         "(the current best node). Prefer the highest-expected-gain untried menu "
-        "item; use the journal to avoid rejected ideas."
+        "item; use the journal to avoid rejected ideas. Emit the whole parent "
+        "file with the smallest coherent change needed to test the hypothesis; "
+        "unnecessary rewrites are defects."
     ),
     "debug": (
         "Mode: DEBUG. The parent script failed. Preserve its approach and "
@@ -118,6 +124,8 @@ def selector_user_prompt(
     journal_lines: list[str],
     parent_history: list | None,
     streak_state: dict,
+    excluded_families: list[str] | None = None,
+    enforce_family_exclusion: bool = False,
 ) -> str:
     history = parent_history or []
     if history:
@@ -128,6 +136,18 @@ def selector_user_prompt(
         )
     else:
         rows = "(no learning curve recorded)"
+    excluded = list(excluded_families or [])
+    diversity = (
+        "## Portfolio diversity\n"
+        f"excluded_families = {excluded}\n"
+        "Choose a card whose `treats` families do not intersect excluded_families, "
+        "unless no eligible non-measured-dead card remains."
+    )
+    if enforce_family_exclusion:
+        diversity += (
+            "\nSTRICT RETRY: the previous choice violated this constraint. You MUST choose "
+            "an eligible unexcluded family now if any remains."
+        )
     return "\n\n".join([
         "## Method-card library\n" + methods_text,
         "## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"),
@@ -139,6 +159,7 @@ def selector_user_prompt(
             "is data-shift."
         ),
         _streak_section(streak_state),
+        diversity,
         "Respond with the selector JSON object only.",
     ])
 

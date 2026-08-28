@@ -7,7 +7,7 @@ own script sequence.
 
 from __future__ import annotations
 
-from agent.brain import TokenMeter
+from agent.brain import METHODS_PATH, TokenMeter, parse_method_card_metadata, parse_method_cards
 
 _TEMPLATE = '''\
 """Canned {name} script (FakeBrain)."""
@@ -78,16 +78,19 @@ def default_sequence(root: str) -> list[dict]:
         {
             "hypothesis": "Smoothed per-video long_view rate should beat the FM baseline on synthetic data",
             "expected_delta": 0.004,
+            "expected_delta_basis": "The item-aggregates card reports measured primary 0.6038.",
             "code": canned_script("video-rate", 'r["video_id"]', 10.0, root=root),
         },
         {
             "hypothesis": "Adding tab to the aggregation key captures context (expect +0.002)",
             "expected_delta": 0.002,
+            "expected_delta_basis": "The item-aggregates card reports measured primary 0.6038.",
             "code": canned_script("video-tab-rate", '(r["video_id"], r["tab"])', 5.0, root=root),
         },
         {
             "hypothesis": "A duration<=18s indicator tilt should help the duration-defined label",
             "expected_delta": 0.003,
+            "expected_delta_basis": "The duration-regime-heads card estimates +0.002-0.006 primary.",
             "code": canned_script(
                 "video-dur-rate", 'r["video_id"]', 10.0,
                 extra='+ (0.01 if int(r["duration_ms"]) <= 18000 else 0.0)', root=root,
@@ -96,11 +99,13 @@ def default_sequence(root: str) -> list[dict]:
         {
             "hypothesis": "Weaker smoothing sharpens per-video estimates (expect small gain)",
             "expected_delta": 0.001,
+            "expected_delta_basis": "The item-aggregates card reports measured primary 0.6038.",
             "code": canned_script("video-rate-s2", 'r["video_id"]', 2.0, root=root),
         },
         {
             "hypothesis": "Hour-of-day key adds temporal context",
             "expected_delta": 0.0015,
+            "expected_delta_basis": "The session-time-features card estimates +0.001-0.005 primary.",
             "code": canned_script("video-hour-rate", '(r["video_id"], int(r["hourmin"]) // 100)', 5.0, root=root),
         },
     ]
@@ -123,6 +128,8 @@ class FakeBrain:
         self._fix_i = 0
         self.selection_streak_states: list[dict] = []
         self.proposal_streak_states: list[dict] = []
+        self.methods_text = METHODS_PATH.read_text()
+        self.method_cards = parse_method_cards(self.methods_text)
 
     def propose(self, journal_lines, mode, parent_id, parent_code, directive=None,
                 focus_note=None, traceback_tail=None, **_kwargs) -> dict:
@@ -132,15 +139,28 @@ class FakeBrain:
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
         spec.setdefault("expected_delta", 0.0)
+        spec.setdefault(
+            "expected_delta_basis",
+            "Journal line node_000 provides the measured baseline for this expected delta.",
+        )
         self.meter.add("fake/fake/proposer", 100, 50)
         return spec
 
-    def select_method(self, journal_lines, parent_history, streak_state) -> dict:
+    def select_method(self, journal_lines, parent_history, streak_state,
+                      excluded_families=None, enforce_family_exclusion=False) -> dict:
         self.selection_streak_states.append(dict(streak_state))
         self.meter.add("fake/fake/selector", 80, 40)
+        excluded = set(excluded_families or [])
+        preferred = "regularization-schedule"
+        eligible = [
+            method_id for method_id, card in self.method_cards.items()
+            if not parse_method_card_metadata(card)["measured_dead"]
+            and not (set(parse_method_card_metadata(card)["treats"]) & excluded)
+        ]
+        chosen = preferred if preferred in eligible else (eligible[0] if eligible else preferred)
         return {
             "diagnosis": "overfit",
-            "chosen_method_id": "regularization-schedule",
+            "chosen_method_id": chosen,
             "citation": "MENU CURRENT DIRECTIVE",
             "why": "The measured learning curves peak early, so use the untried compound package.",
             "rejected": [

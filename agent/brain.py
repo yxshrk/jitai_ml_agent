@@ -118,6 +118,34 @@ def parse_method_cards(methods_text: str) -> dict[str, str]:
     return cards
 
 
+def parse_method_card_metadata(card_text: str) -> dict:
+    """Parse harness-owned routing metadata from one method card."""
+    treats_match = re.search(r"^- treats:\s*(.+)$", card_text, re.MULTILINE)
+    reference_match = re.search(
+        r"^- reference_primary:\s*(none|[-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*$",
+        card_text,
+        re.MULTILINE | re.IGNORECASE,
+    )
+    gain_match = re.search(r"^- expected_gain / cost:\s*(.+)$", card_text, re.MULTILINE)
+    status_match = re.search(r"^- status:\s*(.+)$", card_text, re.MULTILINE)
+    gains = []
+    if gain_match:
+        gains = [
+            float(value)
+            for value in re.findall(r"(?<!\d)(?:\+)?(0\.\d+)(?!\d)", gain_match.group(1))
+            if float(value) <= 0.1
+        ]
+    reference = None
+    if reference_match and reference_match.group(1).lower() != "none":
+        reference = float(reference_match.group(1))
+    return {
+        "treats": [part.strip() for part in treats_match.group(1).split("|")] if treats_match else [],
+        "reference_primary": reference,
+        "expected_gain": max(gains, default=0.0),
+        "measured_dead": bool(status_match and status_match.group(1).startswith("measured-dead")),
+    }
+
+
 def extract_code_block(text: str) -> str | None:
     fence = re.search(r"```(?:python)?\n(.*?)```", text, re.DOTALL)
     return fence.group(1) if fence else None
@@ -270,6 +298,9 @@ class Brain:
                 or not isinstance(expected_delta, (int, float))):
             raise ValueError("proposer reply missing numeric expected_delta")
         spec["expected_delta"] = float(expected_delta)
+        basis = spec.get("expected_delta_basis")
+        if not isinstance(basis, str) or not basis.strip():
+            raise ValueError("proposer reply missing expected_delta_basis")
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
         return spec
@@ -279,9 +310,13 @@ class Brain:
         journal_lines: list[str],
         parent_history: list,
         streak_state: dict,
+        excluded_families: list[str] | None = None,
+        enforce_family_exclusion: bool = False,
     ) -> dict:
         user = prompts.selector_user_prompt(
-            self.methods_text, journal_lines, parent_history, streak_state
+            self.methods_text, journal_lines, parent_history, streak_state,
+            excluded_families=excluded_families,
+            enforce_family_exclusion=enforce_family_exclusion,
         )
         text = self._call(
             "selector",
