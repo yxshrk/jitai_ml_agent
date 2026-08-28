@@ -70,4 +70,7 @@ webinar question · N/A = ruled out with reasoning, not testable.
 - learning-curve observability — DONE (28 Aug)
 - method-selector call + convergence pressure + stagnation reflector — Codex building
 - cross-run memory — partially via MENU measured annotations; full version optional
+- context-mode ablation (compact vs full-history proposer context) — QUEUED behind
+  the method-selector build (same files); A/B on identical directives; compare score,
+  repeat-rate, tokens, wall-clock. Writeup evidence either way.
 - final test-submission script (outside agent world) — TODO before 1 Sep
