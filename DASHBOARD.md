@@ -4,14 +4,14 @@
 
 | campaign file | cells | confirmed wins | last update |
 |---|---|---|---|
-| EXPERIMENTS.md | 0 | 2 | 28 Aug 01:38 |
-| EXPERIMENTS_AUDIT.md | 0 | 0 | 28 Aug 10:47 |
+| EXPERIMENTS.md | 27 | 2 | 28 Aug 01:38 |
+| EXPERIMENTS_AUDIT.md | 16 | 0 | 28 Aug 10:47 |
 | EXPERIMENTS_DIMS.md | 0 | 0 | 28 Aug 10:54 |
-| EXPERIMENTS_FINAL.md | 0 | 3 | 28 Aug 10:43 |
-| EXPERIMENTS_HIST.md | 0 | 2 | 28 Aug 09:48 |
-| EXPERIMENTS_SWEEP.md | 0 | 3 | 28 Aug 10:57 |
+| EXPERIMENTS_FINAL.md | 19 | 3 | 28 Aug 10:43 |
+| EXPERIMENTS_HIST.md | 26 | 2 | 28 Aug 09:48 |
+| EXPERIMENTS_SWEEP.md | 35 | 3 | 28 Aug 10:57 |
 
-**~0 table rows logged, 10 confirmed-win markers.**
+**~123 table rows logged, 10 confirmed-win markers.**
 
 ## Autonomous runs
 

@@ -16,8 +16,8 @@ def main():
     out.append("|---|---|---|---|")
     for f in sorted(glob.glob(os.path.join(ROOT, "zoo", "EXPERIMENTS*.md"))):
         text = open(f).read()
-        rows = [l for l in text.splitlines() if l.startswith("|") and not set(l) <= set("|-: ")]
-        cells = max(0, len(rows) - text.count("|---") )
+        rows = [l for l in text.splitlines() if l.startswith("|") and re.search(r"\d\.\d{3}", l)]
+        cells = len(rows)
         w = len(re.findall(r"confirmed win|ACCEPTED|\*\*confirmed", text))
         total += cells; wins += w
         import datetime

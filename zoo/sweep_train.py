@@ -233,7 +233,7 @@ def train(args: argparse.Namespace) -> dict[str, float | int | str]:
         model.train()
         return result
 
-    best_gauc, best_state, best_epoch, bad = -math.inf, None, 0, 0
+    best_gauc, best_state, best_epoch, best_kind, bad = -math.inf, None, 0, "raw", 0
     ema_state: dict[str, torch.Tensor] | None = None
     point_count, batch_size = len(train_y), args.batch_size
     class RunTimeout(Exception):
@@ -289,7 +289,8 @@ def train(args: argparse.Namespace) -> dict[str, float | int | str]:
                   f"gauc={metrics['gauc']:.6f} primary={metrics['primary']:.6f} select={selected} "
                   f"seconds={time.time() - epoch_started:.1f}", flush=True)
             if selection_gauc > best_gauc + 1e-5:
-                best_gauc, best_state, best_epoch, bad = selection_gauc, selection_state, epoch, 0
+                best_gauc, best_state, best_epoch, best_kind, bad = (
+                    selection_gauc, selection_state, epoch, selected, 0)
             else:
                 bad += 1
             if scheduler is not None:
@@ -309,6 +310,7 @@ def train(args: argparse.Namespace) -> dict[str, float | int | str]:
     final = official_metrics(valid["user"], valid["y"], scores)
     result: dict[str, float | int | str] = {
         **final, "runtime_s": round(time.time() - started, 1), "best_epoch": best_epoch,
+        "checkpoint": best_kind,
         "seed": args.seed, "delta": final["primary"] - BASELINE_PRIMARY,
         "schedule": args.schedule, "timed_out": timed_out,
     }

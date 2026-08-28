@@ -52,21 +52,52 @@ model selection. No grid cell is called a win without seeds 43/44.
 
 | run | config | seed | GAUC | nDCG@5 | primary | delta | epoch | runtime | verdict |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| r01 | MLP dropout=0.2/wd=1e-5; embedding dropout=0/wd=1e-3; step | 42 | 0.672518 | 0.538016 | 0.605267 | +0.003667 | 2 | 40.1s | no win (promising seed-42 cell; confirmation pending) |
+| r02 | MLP dropout=0.2/wd=1e-5; embedding dropout=0/wd=1e-2; step | 42 | 0.672557 | 0.538032 | 0.605294 | +0.003694 | 2 | 52.0s | no win (promising seed-42 cell; confirmation pending) |
+| r03 | MLP dropout=0.2; embedding dropout=0.1; wd=1e-5; step | 42 | 0.672359 | 0.538276 | 0.605318 | +0.003718 | 3 | 68.4s | no win (seed-42 leader; confirmation pending) |
+| r04 | MLP dropout=0.2; embedding dropout=0.2; wd=1e-5; step | 42 | 0.672110 | 0.538157 | 0.605133 | +0.003533 | 4 | 100.3s | no win (unconfirmed seed-42 cell) |
+| r05 | k=8; MLP dropout=0.2; embedding dropout=0.1; wd=1e-5; step | 42 | 0.672063 | 0.537881 | 0.604972 | +0.003372 | 12 | 153.8s | no win (worse than k=16) |
+
+Embedding-specific conclusion: embedding L2 from 1e-3 to 1e-2 is effectively
+flat. Embedding dropout 0.1 delays the peak and gives the phase's best score;
+0.2 is too strong. The smaller k=8 model survives longer only because step decay
+has made the learning rate negligible and finishes below k=16.
 
 ## Phase 3 — batch size and linearly scaled learning rate
 
 | run | batch size | learning rate | seed | GAUC | nDCG@5 | primary | delta | epoch | runtime | verdict |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| b01 | 2048 | 2.5e-4 | 42 | 0.672123 | 0.538306 | 0.605215 | +0.003615 | 7 | 270.6s | no win (below batch=8192 reference) |
+| b02 (r03 reference; no retrain) | 8192 | 1e-3 | 42 | 0.672359 | 0.538276 | 0.605318 | +0.003718 | 3 | 68.4s | no win (seed-42 leader; confirmation pending) |
+| b03 | 32768 | 4e-3 | 42 | 0.671828 | 0.537394 | 0.604611 | +0.003011 | 7 | 108.3s | no win (regression vs batch=8192) |
+
+Batch conclusion: the default 8192 batch remains best. The 2048 batch is close
+but costs 4× as many optimizer steps and 270.6s; 32768 with linear LR scaling is
+a clear regression.
 
 ## Phase 4 — EMA
 
 | run | config | seed | GAUC | nDCG@5 | primary | delta | epoch | runtime | verdict |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| e01 | epoch EMA start=2, decay=0.5 on r03 | 42 | 0.672359 | 0.538276 | 0.605318 | +0.003718 | 3 raw | 84.2s | no win (EMA never beats best raw checkpoint) |
+| e02 | epoch EMA start=2, decay=0.8 on r03 | 42 | 0.672451 | 0.538150 | 0.605301 | +0.003701 | 8 EMA | 118.2s | no win (GAUC up, primary below raw) |
+| e03 | epoch EMA start=2, decay=0.9 on r03 | 42 | 0.672551 | 0.538413 | 0.605482 | +0.003882 | 9 EMA | 128.1s | no win (seed-42 leader; confirmation pending) |
+| e04 | epoch EMA start=3, decay=0.9 on r03 | 42 | 0.672386 | 0.538261 | 0.605324 | +0.003724 | 5 EMA | 81.5s | no win (below start=2) |
+| e03-confirm | epoch EMA start=2, decay=0.9 | 43 | 0.671889 | 0.537698 | 0.604793 | +0.003193 | 10 raw | 127.2s | no win (confirmation incomplete) |
+| e03-confirm | epoch EMA start=2, decay=0.9 | 44 | 0.671814 | 0.537872 | 0.604843 | +0.003243 | 9 raw | 122.5s | confirmed win (with seeds 42/43) |
+| **e03 3-seed** | same config, population mean ± std | 42–44 | **0.672085 ± 0.000331** | **0.537994 ± 0.000305** | **0.605040 ± 0.000314** | **+0.003440** | — | — | **confirmed win** |
+
+EMA conclusion: decay 0.9 starting at epoch 2 is best and lifts the raw r03
+checkpoint by 0.000165 primary at seed 42. Across seeds 42–44 the complete config
+scores **0.605040 ± 0.000314**, delta +0.003440: a confirmed win. Seeds 43 and 44
+select later raw checkpoints, so EMA is beneficial but not universally selected.
 
 ## Phase 5 — diverse rank ensembles
 
 | run | members / rank weights | seed(s) | GAUC | nDCG@5 | primary | delta | verdict |
 |---|---|---|---:|---:|---:|---:|---|
+| ens01 | e03 k16 EMA + r05 k8 (1:1) | 42 | 0.672567 | 0.538476 | 0.605521 | +0.003921 | no win (seed-42 ensemble; confirmation pending) |
+| ens02 | e03 k16 EMA + r05 k8 + g06 constant/dropout-0.5 (1:1:1) | 42 | 0.673170 | 0.538653 | 0.605911 | +0.004311 | no win (seed-42 ensemble leader; confirmation pending) |
 
 ## Final summary
 
