@@ -32,6 +32,9 @@ run exhaustively. Every sampled cell appears below.
 | g07 | 0.35 | 1e-4 | constant | 42 | 0.671355 | 0.537306 | 0.604331 | +0.002731 | 2 | 55.6s | no win (unconfirmed seed-42 cell) |
 | g08 | 0.2 | 1e-5 | cosine | 42 | 0.670486 | 0.537464 | 0.603975 | +0.002375 | 1 | 43.5s | no win (unconfirmed seed-42 cell) |
 | g09 | 0.2 | 1e-3 | cosine | 42 | 0.670652 | 0.537517 | 0.604084 | +0.002484 | 1 | 46.8s | no win (unconfirmed seed-42 cell) |
+| g10 | 0.5 | 1e-5 | cosine | 42 | 0.670779 | 0.537652 | 0.604215 | +0.002615 | 1 | 41.7s | no win (unconfirmed seed-42 cell) |
+| g11 | 0.5 | 1e-3 | cosine | 42 | 0.670914 | 0.537711 | 0.604313 | +0.002713 | 1 | 43.2s | no win (unconfirmed seed-42 cell) |
+| g12 | 0.35 | 1e-4 | cosine | 42 | 0.671174 | 0.537184 | 0.604179 | +0.002579 | 2 | 44.0s | no win (unconfirmed seed-42 cell) |
 
 ## Phase 2 — embedding-specific regularization and k=8
 

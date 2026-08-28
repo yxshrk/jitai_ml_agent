@@ -45,6 +45,7 @@ def main():
     bce = torch.nn.BCEWithLogitsLoss()
     n = len(yt); bs = 8192
     best, best_scores, patience = -1.0, None, 0
+    history = []
     for epoch in range(a.epochs):
         model.train()
         perm = torch.randperm(n)
@@ -59,6 +60,8 @@ def main():
                                      for i in range(0, len(Xv), 65536)])
         m = evaluate(va["user"], va["y"].astype(int), scores)
         primary = m["primary"]
+        history.append({"epoch": epoch + 1, "train_loss": round(float(loss.item()), 5),
+                        "val_gauc": round(m.get("GAUC", 0.0), 6), "val_primary": round(primary, 6)})
         if primary > best + 1e-6:
             best, best_scores, patience = primary, scores, 0
         else:
@@ -70,7 +73,7 @@ def main():
     with open(os.path.join(a.out_dir, "metrics.json"), "w") as fh:
         json.dump({"gauc": m["GAUC"] if "GAUC" in m else m["gauc"],
                    "ndcg5": m.get("nDCG@5", m.get("ndcg5")),
-                   "primary": m["primary"]}, fh)
+                   "primary": m["primary"], "history": history}, fh)
     with open(os.path.join(a.out_dir, "predictions.csv"), "w") as fh:
         fh.write("row_id,user_id,video_id,score\n")
         for i, s in enumerate(best_scores):
