@@ -59,6 +59,12 @@ webinar question · N/A = ruled out with reasoning, not testable.
 - evaluate.py zip-truncation quirk — N/A: rejected as contract violation (audit)
 - pseudo-labeling val — N/A: circular on val; no legal test-time use identified
 - KuaiRand-1k/27k — bonus benchmarks, separate decision (not a Pure lever)
+- LLM-as-ranker (GenRec, Netflix, arXiv:2608.10257) — N/A with reasoning: needs
+  verbalizable semantics (titles/text); KuaiRand-Pure is anonymized IDs, and
+  LLM-per-impression inference conflicts with scored wall-clock. Cite in Devpost
+  as a surveyed-and-rejected direction; its context-engineering emphasis and
+  multi-objective reward weighting validate our agent-context design and the
+  C4 specialist-gating experiment.
 
 ## Harness/agent levers (points, not score)
 - learning-curve observability — DONE (28 Aug)
