@@ -54,6 +54,7 @@ class Node:
     status: str = "pending"  # accepted | rejected | failed
     error: str | None = None
     debug_depth: int = 0
+    method_selection: dict | None = None
 
 
 @dataclass
@@ -300,6 +301,7 @@ class Loop:
             "diff": self.node_diff(node),
             "metrics": {k: v for k, v in (node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0}).items() if k != "history"},
             "history": (node.metrics or {}).get("history", []),
+            "method_selection": node.method_selection,
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
             "accepted": node.status == "accepted",
             "duration_s": round(duration, 2),
@@ -349,12 +351,10 @@ class Loop:
                 break
             n += 1
             if n > 1 and (n - 1) % self.config.reflect_every == 0:
-                try:
-                    self.focus_note = self.brain.reflect(self.journal_lines)
-                except Exception as exc:  # reflection is optional; never kills the loop
-                    self.focus_note = None
-                    print(f"[loop] reflector failed: {exc}", file=sys.stderr)
+                self._reflect()
             self.iterate(n)
+            if self.stagnation >= 3 and not self.stop_reason:
+                self._reflect()
             if self.stop_reason:
                 break
         else:
@@ -373,21 +373,41 @@ class Loop:
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         return summary
 
+    def _reflect(self) -> None:
+        """Refresh strategy on the every-5 schedule or after three stagnant runs."""
+        try:
+            self.focus_note = self.brain.reflect(self.journal_lines)
+        except Exception as exc:  # reflection is optional; never kills the loop
+            self.focus_note = None
+            print(f"[loop] reflector failed: {exc}", file=sys.stderr)
+
     def iterate(self, n: int) -> None:
         start = time.time()
         self._best_before_iter = self.champion.primary if self.champion else 0.0
         mode, parent, directive = self.next_move()
         node = Node(f"node_{n:03d}", parent.node_id, mode, "(proposal failed)",
                     self.nodes_dir / f"{n:03d}.py")
+        streak_state = {
+            "no_improve_streak": self.no_improve_streak,
+            "n_converge": self.config.n_converge,
+            "iters_left": self.config.max_iters - n,
+        }
         if mode == "debug":
             node.debug_depth = parent.debug_depth + 1
         recovery: str | None = None
         try:
+            parent_history = (parent.metrics or {}).get("history", [])
+            if mode in ("draft", "improve"):
+                node.method_selection = self.brain.select_method(
+                    self.journal_lines, parent_history, streak_state
+                )
             spec = self.brain.propose(
                 self.journal_lines, mode, parent.node_id, parent.code_path.read_text(),
                 directive=directive, focus_note=self.focus_note,
                 traceback_tail=parent.error if mode == "debug" else None,
-                parent_history=(parent.metrics or {}).get("history", []),
+                parent_history=parent_history,
+                method_selection=node.method_selection,
+                streak_state=streak_state,
             )
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             code = spec["code"]
@@ -415,6 +435,7 @@ class Loop:
             node.status, node.error = "failed", leak
             node.code_path.write_text(code)
             self.stagnation += 1
+            self.no_improve_streak += 1
             self.nodes[node.node_id] = node
             self.record(n, node, time.time() - start, "skipped", "rejected by leakage guard")
             return

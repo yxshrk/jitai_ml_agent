@@ -107,7 +107,7 @@ class FakeBrain:
     provider = "fake"
     usd_run = 0.0
     usd_total = 0.0
-    models = {"proposer": "fake", "fixer": "fake", "reflector": "fake"}
+    models = {"selector": "fake", "proposer": "fake", "fixer": "fake", "reflector": "fake"}
 
     def __init__(self, menu_text: str = "", scripts: list[dict] | None = None, fixes: list[str] | None = None,
                  root: str = "") -> None:
@@ -116,15 +116,34 @@ class FakeBrain:
         self.meter = TokenMeter()
         self._i = 0
         self._fix_i = 0
+        self.selection_streak_states: list[dict] = []
+        self.proposal_streak_states: list[dict] = []
 
     def propose(self, journal_lines, mode, parent_id, parent_code, directive=None,
                 focus_note=None, traceback_tail=None, **_kwargs) -> dict:
+        self.proposal_streak_states.append(dict(_kwargs.get("streak_state") or {}))
         spec = dict(self.scripts[min(self._i, len(self.scripts) - 1)])
         self._i += 1
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
         self.meter.add("fake/fake/proposer", 100, 50)
         return spec
+
+    def select_method(self, journal_lines, parent_history, streak_state) -> dict:
+        self.selection_streak_states.append(dict(streak_state))
+        self.meter.add("fake/fake/selector", 80, 40)
+        return {
+            "diagnosis": "overfit",
+            "chosen_method_id": "regularization-schedule",
+            "citation": "MENU CURRENT DIRECTIVE",
+            "why": "The measured learning curves peak early, so use the untried compound package.",
+            "rejected": [
+                {
+                    "method_id": "listwise-softmax",
+                    "reason": "Measured dead at 0.5991 primary.",
+                }
+            ],
+        }
 
     def fix(self, code: str, traceback_tail: str) -> str:
         self.meter.add("fake/fake/fixer", 50, 25)

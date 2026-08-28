@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from agent.fake_brain import FakeBrain, canned_script
+from agent import prompts
 from harness.loop import ROOT, LeakageError, Loop, LoopConfig, Node, RunResult
 
 DATA_DIR = ROOT / "data" / "synthetic"
@@ -14,7 +15,7 @@ DATA_DIR = ROOT / "data" / "synthetic"
 RECORD_KEYS = {
     "n", "hypothesis", "node_id", "parent", "action", "code_path", "change_summary",
     "diff", "history", "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in",
-    "tokens_out", "error", "recovery", "intervention", "usd_total",
+    "tokens_out", "error", "recovery", "intervention", "usd_total", "method_selection",
 }
 
 CRASHING_SCRIPT = "import sys\nraise RuntimeError('boom')\n"
@@ -52,6 +53,7 @@ def test_dry_run_journal_conforms_to_contract(tmp_path):
         assert isinstance(record["accepted"], bool)
         assert set(record["metrics"]) == {"gauc", "ndcg5", "primary"}
         assert isinstance(record["intervention"], bool) and not record["intervention"]
+        assert record["method_selection"]["chosen_method_id"] == "regularization-schedule"
     # best node artifacts exist
     assert (loop.run_dir / "nodes" / "001.py").exists()
     assert summary["best_metrics"]["primary"] > 0
@@ -190,3 +192,29 @@ def test_debug_policy_after_persistent_failure(tmp_path):
     assert records[0]["recovery"] == "reverted"
     assert records[1]["action"] == "debug"
     assert records[1]["parent"] == "node_001"
+    assert records[0]["method_selection"] is not None
+    assert records[1]["method_selection"] is None
+    assert len(brain.selection_streak_states) == 1
+
+
+def test_streak_state_reaches_selector_and_proposer_prompts():
+    streak = {"no_improve_streak": 2, "n_converge": 3, "iters_left": 1}
+    selector = prompts.selector_user_prompt(
+        "### card: Card\n- status: untried", ["node_001 rejected"], [], streak
+    )
+    proposer = prompts.proposer_user_prompt(
+        ["node_001 rejected"], "improve", "node_000", "# parent",
+        method_selection={
+            "diagnosis": "overfit",
+            "chosen_method_id": "card",
+            "why": "highest expected gain",
+        },
+        selected_method_card="### card: Card\n- status: untried",
+        streak_state=streak,
+    )
+    for prompt in (selector, proposer):
+        assert "'no_improve_streak': 2" in prompt
+        assert "'n_converge': 3" in prompt
+        assert "'iters_left': 1" in prompt
+        assert prompts.CONVERGENCE_PRESSURE in prompt
+    assert "## Selected method (implement THIS)" in proposer
