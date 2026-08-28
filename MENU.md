@@ -71,6 +71,12 @@ Ranked by expected gain per unit implementation risk:
 
    MEASURED (valid, seed 42): k=32 = 0.6039 vs k=16 = 0.6047 — 32 is worse; keep 16.
 
+## Tier 2.5 — data-level (MEASURED ALIVE)
+6b. **Recency weighting of training samples** (exp decay, 7-day half-life from
+    20220421): MEASURED (valid, 3-seed) 0.6043 +- 0.0012, delta +0.0027 CONFIRMED —
+    zoo/hist_best.py. Orthogonal to model/loss levers; include in any new stack.
+    Corrects train->val distribution shift (val positive rate declines over its week).
+
 ## Tier 3 — features
 7. **Train-window item/author aggregate rates**: video's and author's long_view rate
    computed ONLY over train dates, smoothed (Bayesian prior), as a scalar feature.
