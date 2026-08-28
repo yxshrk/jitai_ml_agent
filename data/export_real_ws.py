@@ -4,8 +4,9 @@ agent workspace; the test split is deliberately never exported here."""
 import csv, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-RAW = os.path.join(os.path.dirname(__file__), "..", "..", "KuaiRand-Pure", "data")
-OUT = os.path.join(os.path.dirname(__file__), "real_ws")
+RAW = os.environ.get("KR_RAW", os.path.join(os.path.dirname(__file__), "..", "..", "KuaiRand-Pure", "data"))
+OUT = os.environ.get("KR_OUT", os.path.join(os.path.dirname(__file__), "real_ws"))
+SUFFIX = os.environ.get("KR_SUFFIX", "pure")
 SPLITS = {"train": (20220408, 20220421), "val": (20220422, 20220428)}  # NO test
 COLS = ["user_id", "video_id", "author_id", "tab", "hourmin", "date",
         "duration_ms", "long_view", "click", "like", "play_time_ms"]
@@ -13,7 +14,7 @@ COLS = ["user_id", "video_id", "author_id", "tab", "hourmin", "date",
 def main():
     os.makedirs(OUT, exist_ok=True)
     vid2author = {}
-    with open(os.path.join(RAW, "video_features_basic_pure.csv")) as fh:
+    with open(os.path.join(RAW, f"video_features_basic_{SUFFIX}.csv")) as fh:
         for r in csv.DictReader(fh):
             vid2author[r["video_id"]] = r["author_id"]
     writers, files = {}, {}
@@ -21,7 +22,7 @@ def main():
         files[name] = open(os.path.join(OUT, f"{name}.csv"), "w", newline="")
         writers[name] = csv.writer(files[name]); writers[name].writerow(COLS)
     counts = {k: 0 for k in SPLITS}
-    for f in ("log_standard_4_08_to_4_21_pure.csv", "log_standard_4_22_to_5_08_pure.csv"):
+    for f in (f"log_standard_4_08_to_4_21_{SUFFIX}.csv", f"log_standard_4_22_to_5_08_{SUFFIX}.csv"):
         with open(os.path.join(RAW, f)) as fh:
             for r in csv.DictReader(fh):
                 d = int(r["date"])
@@ -33,7 +34,8 @@ def main():
                         counts[name] += 1
     for fh in files.values(): fh.close()
     print(counts)
-    assert counts["train"] == 1141112 and counts["val"] == 124909, counts
+    if SUFFIX == "pure":
+        assert counts["train"] == 1141112 and counts["val"] == 124909, counts
 
 if __name__ == "__main__" and "--npz" not in sys.argv:
     main()

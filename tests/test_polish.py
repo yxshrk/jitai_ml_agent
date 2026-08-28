@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from zoo import polish_stack
+from zoo import polish_best, polish_stack
 
 
 def test_baseline_cli_defaults() -> None:
@@ -38,3 +38,12 @@ def test_real_data_contract_if_present() -> None:
     ds = polish_stack.load_validation_only(str(data), subsample=32)
     assert ds["train"]["X"].shape == (32, 5)
     assert tuple(ds["field_names"]) == polish_stack.FROZEN_FIELDS
+
+
+def test_best_recipe_and_rank_average() -> None:
+    args = polish_best.parser().parse_args(["--out-dir", "/tmp/polish-best-test"])
+    assert args.k == 16 and args.batch_size == 8192
+    assert np.isclose(args.lr, 0.0007003874872132884)
+    averaged = polish_best.rank_average([
+        np.array([3.0, 1.0, 2.0]), np.array([30.0, 10.0, 20.0])])
+    assert np.allclose(averaged, [1.0, 0.0, 0.5])
