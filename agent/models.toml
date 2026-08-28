@@ -4,14 +4,19 @@
 default_provider = "openai"
 
 [openai]
+selector = "gpt-5.6-sol"
 proposer = "gpt-5.6-sol"
 fixer = "gpt-5.4-mini"
 reflector = "gpt-5.6-sol"
 
 [anthropic]
+selector = "claude-sonnet-5"
 proposer = "claude-sonnet-5"
 fixer = "claude-haiku-4-5-20251001"
 reflector = "claude-sonnet-5"
+
+[max_output_tokens]
+selector = 1200
 
 # Conservative pricing ESTIMATES, USD per 1M tokens (in/out). Costs are always
 # rounded UP; names ending in '*' are prefix patterns; a model not listed here

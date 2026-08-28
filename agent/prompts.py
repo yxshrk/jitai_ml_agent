@@ -1,4 +1,4 @@
-"""Prompt texts for the proposer / fixer / reflector roles.
+"""Prompt texts for the selector / proposer / fixer / reflector roles.
 
 The static prefix (task brief + MENU) is byte-identical across calls so it can be
 served from the prompt cache (agent-design.md decision 5).
@@ -81,11 +81,65 @@ predictions.csv and metrics.json to --out-dir. Allowed: numpy, torch, stdlib.
 
 REFLECTOR_SYSTEM = """\
 You are the strategy reflector for an autonomous ML agent. Given the improvement
-menu and the run journal (one line per attempted node), write a short focus note
-(max 120 words) for the proposer: which menu tiers/items look most promising now,
-which are exhausted or rejected, and what single direction to try next.
+menu, method-card ids, and the run journal (one line per attempted node), write a
+short focus note (max 120 words) for the proposer: re-rank the cards, say which
+are exhausted or rejected, and name the single best direction to try next.
 Plain text only.
 """
+
+SELECTOR_SYSTEM = """\
+You diagnose an ML run and select exactly one implementation method from a
+measured method-card library. Respect measured-dead cards: never choose one.
+Use learning-curve shape, journal outcomes, remaining iterations, and honest
+expected gain. Return one JSON object only:
+{"diagnosis":"overfit|underfit|flat-signal|metric-mismatch|data-shift",
+ "chosen_method_id":"<exact card id>", "citation":"<card citation>",
+ "why":"<why this card fits now>",
+ "rejected":[{"method_id":"<alternative id>","reason":"<why rejected>"}]}
+"""
+
+CONVERGENCE_PRESSURE = (
+    "If streak is N-1 of N, this may be the final iteration — prefer the "
+    "highest-expected-gain untried card, not a small dose adjustment."
+)
+
+
+def _streak_section(streak_state: dict) -> str:
+    return (
+        "## Convergence pressure\n"
+        f"streak_state = {streak_state}\n"
+        f"{CONVERGENCE_PRESSURE}"
+    )
+
+
+def selector_user_prompt(
+    methods_text: str,
+    journal_lines: list[str],
+    parent_history: list | None,
+    streak_state: dict,
+) -> str:
+    history = parent_history or []
+    if history:
+        rows = "\n".join(
+            f"epoch {h.get('epoch')}: train_loss {h.get('train_loss')}, "
+            f"val_gauc {h.get('val_gauc')}, val_primary {h.get('val_primary')}"
+            for h in history[-25:]
+        )
+    else:
+        rows = "(no learning curve recorded)"
+    return "\n\n".join([
+        "## Method-card library\n" + methods_text,
+        "## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"),
+        "## Parent learning curve\n" + rows,
+        (
+            "Diagnose from evidence: a validation peak followed by decline is overfit; "
+            "a curve still rising at stop is underfit; a flat curve is flat-signal; "
+            "objective/evaluator disagreement is metric-mismatch; temporal degradation "
+            "is data-shift."
+        ),
+        _streak_section(streak_state),
+        "Respond with the selector JSON object only.",
+    ])
 
 
 def proposer_user_prompt(
@@ -96,12 +150,25 @@ def proposer_user_prompt(
     directive: str | None = None,
     focus_note: str | None = None,
     traceback_tail: str | None = None,
+    parent_history: list | None = None,
+    method_selection: dict | None = None,
+    selected_method_card: str | None = None,
+    streak_state: dict | None = None,
 ) -> str:
     parts = []
     if focus_note:
         parts.append(f"## Reflector focus note\n{focus_note}")
     parts.append("## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"))
     parts.append(PROPOSER_MODE[mode])
+    if method_selection and selected_method_card:
+        parts.append(
+            "## Selected method (implement THIS)\n"
+            f"{selected_method_card}\n"
+            f"selector diagnosis: {method_selection.get('diagnosis', '')}\n"
+            f"selector why: {method_selection.get('why', '')}"
+        )
+    if streak_state is not None:
+        parts.append(_streak_section(streak_state))
     if directive:
         parts.append(f"Directive: {directive}")
     parts.append(f'## Parent node "{parent_id}" (full code)\n```python\n{parent_code}\n```')
@@ -131,8 +198,9 @@ def fixer_user_prompt(code: str, traceback_tail: str) -> str:
     )
 
 
-def reflector_user_prompt(menu: str, journal_lines: list[str]) -> str:
+def reflector_user_prompt(menu: str, journal_lines: list[str], method_ids: list[str]) -> str:
     return (
         f"## Improvement menu\n{menu}\n\n"
+        "## Method-card ids\n" + ", ".join(method_ids) + "\n\n"
         "## Journal\n" + "\n".join(journal_lines) + "\n\nWrite the focus note."
     )
