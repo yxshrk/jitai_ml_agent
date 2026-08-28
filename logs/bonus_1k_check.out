@@ -1,0 +1,9 @@
+epoch 0.5 | loss 0.5199 | valid gauc 0.657621 ndcg5 0.564691 primary 0.611156
+epoch 1.0 | loss 0.4268 | valid gauc 0.654482 ndcg5 0.572353 primary 0.613417
+epoch 1.5 | loss 0.3212 | valid gauc 0.647874 ndcg5 0.537785 primary 0.592830
+epoch 2.0 | loss 0.3100 | valid gauc 0.643840 ndcg5 0.518554 primary 0.581197
+epoch 2.5 | loss 0.2689 | valid gauc 0.638081 ndcg5 0.509065 primary 0.573573
+epoch 3.0 | loss 0.2657 | valid gauc 0.637315 ndcg5 0.502760 primary 0.570037
+epoch 3.5 | loss 0.2460 | valid gauc 0.634487 ndcg5 0.497627 primary 0.566057
+runtime alarm reached at 330s; preserving best half epoch
+final: {"best_epoch": 1.0, "delta_vs_baseline": 0.01181725469145467, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.654481754949292, "n_fields": 5, "ndcg5": 0.5723527544336173, "primary": 0.6134172546914547, "regularized": true, "runtime_s": 336.3, "seed": 42, "timed_out": true}

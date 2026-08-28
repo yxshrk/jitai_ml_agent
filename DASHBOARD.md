@@ -11,9 +11,11 @@
 | EXPERIMENTS_FINAL.md | 19 | 3 | 28 Aug 10:43 |
 | EXPERIMENTS_HIST.md | 26 | 2 | 28 Aug 09:48 |
 | EXPERIMENTS_LONGSHOTS.md | 53 | 8 | 28 Aug 15:51 |
+| EXPERIMENTS_POLISH.md | 50 | 0 | 28 Aug 17:41 |
+| EXPERIMENTS_RECHECK.md | 7 | 0 | 28 Aug 18:37 |
 | EXPERIMENTS_SWEEP.md | 54 | 9 | 28 Aug 13:24 |
 
-**~240 table rows logged, 24 confirmed-win markers.**
+**~297 table rows logged, 24 confirmed-win markers.**
 
 ## Autonomous runs
 
@@ -23,11 +25,20 @@
 | run_ab_compact | converged | 3 | 0.6034 | 59.2 | 12904 |
 | run_ab_full | converged | 3 | 0.6018 | 2.8 | 0 |
 | run_ab_full2 | converged | 3 | 0.6018 | 18.3 | 39607 |
+| run_night_a2 | converged | 4 | 0.605 | 16.8 | 46136 |
+| run_night_b3 | converged | 4 | 0.605 | 21.5 | 49455 |
+| run_night_c3 | converged | 4 | 0.605 | 19.9 | 50039 |
+| run_night_d3 | converged | 4 | 0.605 | 17.0 | 48638 |
 | run_real_01 | converged | 5 | 0.6042 | 23.5 | 27649 |
 | run_real_02 | converged | 5 | 0.604 | 14.2 | 30731 |
 | run_real_03 | converged | 3 | 0.6033 | 11.6 | 20000 |
 | run_real_04 | converged | 3 | 0.6018 | 15.6 | 19257 |
 | run_real_05 | converged | 3 | 0.6033 | 12.8 | 20125 |
+| run_rehearsal | converged | 3 | 0.6018 | 5.2 | 31226 |
+| run_rehearsal2 | converged | 3 | 0.6018 | 16.2 | 39730 |
+| run_rehearsal3 | converged | 3 | 0.6018 | 9.4 | 54708 |
+| run_rehearsal4 | converged | 3 | 0.6018 | 7.5 | 20413 |
+| run_rehearsal5 | converged | 4 | 0.605 | 9.4 | 37655 |
 
 ## Lever status (from LEVERS.md)
 
