@@ -193,7 +193,7 @@ class Brain:
         menu_text: str,
         provider: str | None = None,
         model_overrides: dict[str, str] | None = None,
-        max_code_tokens: int = 4000,
+        max_code_tokens: int = 16000,  # reasoning models spend thinking tokens from this budget; whole-file replies need headroom
         budget=None,
     ) -> None:
         from agent.budget import Budget
