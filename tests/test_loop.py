@@ -8,6 +8,7 @@ import pytest
 
 from agent.fake_brain import FakeBrain, canned_script
 from agent import prompts
+from harness.cli import build_parser
 from harness.loop import ROOT, LeakageError, Loop, LoopConfig, Node, RunResult
 
 DATA_DIR = ROOT / "data" / "synthetic"
@@ -16,6 +17,7 @@ RECORD_KEYS = {
     "n", "hypothesis", "node_id", "parent", "action", "code_path", "change_summary",
     "diff", "history", "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in",
     "tokens_out", "error", "recovery", "intervention", "usd_total", "method_selection",
+    "context_mode", "expected_delta", "realized_delta",
 }
 
 CRASHING_SCRIPT = "import sys\nraise RuntimeError('boom')\n"
@@ -34,6 +36,13 @@ def make_loop(tmp_path: Path, brain, **overrides) -> Loop:
 
 def fake_brain(scripts=None, fixes=None) -> FakeBrain:
     return FakeBrain("", scripts=scripts, fixes=fixes, root=str(ROOT))
+
+
+def test_cli_accepts_full_context_mode():
+    args = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--context-mode", "full", "--dry-run",
+    ])
+    assert args.context_mode == "full"
 
 
 def test_dry_run_journal_conforms_to_contract(tmp_path):
@@ -218,6 +227,58 @@ def test_streak_state_reaches_selector_and_proposer_prompts():
         assert "'iters_left': 1" in prompt
         assert prompts.CONVERGENCE_PRESSURE in prompt
     assert "## Selected method (implement THIS)" in proposer
+
+
+def test_full_context_prompt_contains_prior_node_history(tmp_path):
+    loop = make_loop(tmp_path, fake_brain(), context_mode="full")
+    _seed_champion(loop)
+    prior = Node("node_001", "node_000", "improve", "distinctive hypothesis", loop.nodes_dir / "001.py")
+    prior.status = "rejected"
+    prior.change_summary = "distinctive change summary"
+    prior.metrics = {
+        "gauc": 0.71, "ndcg5": 0.69, "primary": 0.70,
+        "history": [{"epoch": 17, "val_primary": "DISTINCTIVE_HISTORY_LINE"}],
+    }
+    loop.nodes[prior.node_id] = prior
+    prompt = prompts.proposer_user_prompt(
+        loop.journal_lines, "improve", "node_000", "# parent",
+        context_mode="full", full_context=loop.full_proposer_context(),
+    )
+    assert "distinctive hypothesis" in prompt
+    assert "distinctive change summary" in prompt
+    assert "DISTINCTIVE_HISTORY_LINE" in prompt
+    assert "outcome: rejected" in prompt
+
+
+def test_expected_and_realized_delta_recorded(tmp_path):
+    brain = fake_brain(scripts=[{
+        "hypothesis": "calibrated proposal",
+        "expected_delta": 0.0125,
+        "code": canned_script("calibrated", 'r["video_id"]', root=str(ROOT)),
+    }])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["expected_delta"] == pytest.approx(0.0125)
+    assert record["realized_delta"] == pytest.approx(
+        record["metrics"]["primary"]
+        - json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[0])["metrics"]["primary"]
+    )
+    assert record["context_mode"] == "compact"
+
+
+def test_realized_delta_is_null_on_error(tmp_path):
+    brain = fake_brain(scripts=[{
+        "hypothesis": "predicted but crashed",
+        "expected_delta": 0.02,
+        "code": CRASHING_SCRIPT,
+    }])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["expected_delta"] == pytest.approx(0.02)
+    assert record["realized_delta"] is None
+    assert record["error"]
 
 
 def test_improve_iteration_records_method_selection(tmp_path):

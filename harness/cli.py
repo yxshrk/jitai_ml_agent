@@ -35,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="baseline node script (default: zoo/fm_torch.py)")
     run.add_argument("--draft-tiers", type=str, default=None,
                      help="comma-separated directives for initial drafts, e.g. 'Tier 4,Tier 4,CURRENT DIRECTIVE'")
+    run.add_argument("--context-mode", choices=["compact", "full"], default="compact",
+                     help="proposer history: journal one-liners or bounded full node evidence")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -55,6 +57,7 @@ def main(argv: list[str] | None = None) -> int:
         max_usd=args.max_usd,
         timeout_s=args.timeout_s,
         sigma=args.sigma,
+        context_mode=args.context_mode,
     )
     if args.dry_run:
         from agent.fake_brain import FakeBrain

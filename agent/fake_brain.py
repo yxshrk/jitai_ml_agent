@@ -77,14 +77,17 @@ def default_sequence(root: str) -> list[dict]:
     return [
         {
             "hypothesis": "Smoothed per-video long_view rate should beat the FM baseline on synthetic data",
+            "expected_delta": 0.004,
             "code": canned_script("video-rate", 'r["video_id"]', 10.0, root=root),
         },
         {
             "hypothesis": "Adding tab to the aggregation key captures context (expect +0.002)",
+            "expected_delta": 0.002,
             "code": canned_script("video-tab-rate", '(r["video_id"], r["tab"])', 5.0, root=root),
         },
         {
             "hypothesis": "A duration<=18s indicator tilt should help the duration-defined label",
+            "expected_delta": 0.003,
             "code": canned_script(
                 "video-dur-rate", 'r["video_id"]', 10.0,
                 extra='+ (0.01 if int(r["duration_ms"]) <= 18000 else 0.0)', root=root,
@@ -92,10 +95,12 @@ def default_sequence(root: str) -> list[dict]:
         },
         {
             "hypothesis": "Weaker smoothing sharpens per-video estimates (expect small gain)",
+            "expected_delta": 0.001,
             "code": canned_script("video-rate-s2", 'r["video_id"]', 2.0, root=root),
         },
         {
             "hypothesis": "Hour-of-day key adds temporal context",
+            "expected_delta": 0.0015,
             "code": canned_script("video-hour-rate", '(r["video_id"], int(r["hourmin"]) // 100)', 5.0, root=root),
         },
     ]
@@ -126,6 +131,7 @@ class FakeBrain:
         self._i += 1
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
+        spec.setdefault("expected_delta", 0.0)
         self.meter.add("fake/fake/proposer", 100, 50)
         return spec
 

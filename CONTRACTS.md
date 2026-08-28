@@ -5,6 +5,7 @@ JSON emitted by the proposer, executed by the harness:
 ```json
 {
   "hypothesis": "BPR pairwise loss should align training with GAUC (expect +0.005-0.01)",
+  "expected_delta": 0.0075,             // honest predicted validation-primary delta
   "parent": "node_007",               // solution-tree node this builds on, or "baseline"
   "action": "improve",                // draft | debug | improve
   "code": "<WHOLE runnable script>",  // whole-file rewrite, never a diff (research/agent-design.md #3)
@@ -20,6 +21,7 @@ JSON emitted by the proposer, executed by the harness:
   "node_id": "node_007", "parent": "node_006", "action": "improve",
   "code_path": "logs/run_<id>/nodes/007.py",
   "change_summary": "one-line what-changed (the journal line)",
+  "context_mode": "compact",           // compact | full proposer context used for this run
   "method_selection": {                 // null only for baseline/debug iterations
     "diagnosis": "overfit",
     "chosen_method_id": "regularization-schedule",
@@ -30,6 +32,8 @@ JSON emitted by the proposer, executed by the harness:
   "metrics": {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0},
   "val_best_so_far": 0.0,
   "accepted": true,
+  "expected_delta": 0.0015,            // proposer's prediction vs champion-before
+  "realized_delta": 0.0021,            // node primary - champion-before primary; null on error
   "duration_s": 0.0,
   "tokens_in": 0, "tokens_out": 0,
   "error": null,                      // or traceback summary
@@ -58,8 +62,15 @@ Scored artifact = validation-best checkpoint at convergence.
 
 ## 6. Search policy (from research/agent-design.md)
 Solution TREE, not chat history: each node = whole runnable script + metrics + one-line
-journal entry. Context per LLM call = task brief + MENU + journal (one line per node) +
-the parent node's full code. Never a growing transcript.
+journal entry. `--context-mode compact` (the default) gives each proposer call the task
+brief + MENU + journal (one line per node) + the parent node's full code. Never a growing
+transcript. `--context-mode full` replaces the proposer journal section with structured
+evidence for every retained prior node: hypothesis, action, GAUC/nDCG@5/primary, outcome
+(accepted/rejected or the last 5 error lines), change summary, and the last 10 learning-
+curve entries. Full context is bounded at approximately 20k tokens (80k characters) by
+dropping the oldest optional nodes first; node_000 and the current champion are always
+retained. Selector and reflector inputs remain the compact journal. Every journal record
+stores the run's `context_mode`, enabling compact/full A/B comparisons.
 Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
 different menu tier after 5 stagnant iterations.
@@ -80,3 +91,9 @@ rejected, errored all count), vs best-so-far. Journal line 0 = reproduce_baselin
 (3-seed calibration doubles as the brief's required baseline reproduction). Every
 iteration record carries a unified "diff" vs its parent node (brief requirement).
 Harness owns timeouts, validity checks, best-node argmax, stopping.
+Every proposer spec must include a finite numeric `expected_delta`: its honest prediction
+of the candidate's validation-primary change relative to the champion before that
+iteration. The harness records it alongside `realized_delta = node primary - champion-
+before primary`; `realized_delta` is null when the iteration errors. Evidence reports show
+expected versus realized delta per iteration and mean absolute calibration error over only
+the iterations whose realized delta is non-null.

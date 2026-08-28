@@ -164,6 +164,38 @@ def render_results(records: list[dict], agg: dict, out_path: Path, baseline: flo
         lines += ["", "## Token split by role", "", "| role | tokens in | tokens out |", "|---|---|---|"]
         for role, tok in sorted(agg["per_role"].items()):
             lines.append(f"| {role} | {tok['in']:,} | {tok['out']:,} |")
+    iterations = [r for r in records if r.get("action") != "reproduce_baseline"]
+    calibrated = [
+        r for r in iterations
+        if isinstance(r.get("expected_delta"), (int, float))
+        and isinstance(r.get("realized_delta"), (int, float))
+    ]
+    lines += [
+        "",
+        "## Prediction calibration",
+        "",
+        "| iteration | node | expected delta | realized delta | absolute error |",
+        "|---|---|---:|---:|---:|",
+    ]
+    for record in iterations:
+        expected = record.get("expected_delta")
+        realized = record.get("realized_delta")
+        absolute_error = (
+            abs(expected - realized)
+            if isinstance(expected, (int, float)) and isinstance(realized, (int, float))
+            else None
+        )
+        lines.append(
+            f"| {record['n']} | {record.get('node_id', '?')} "
+            f"| {'-' if expected is None else f'{expected:+.6f}'} "
+            f"| {'-' if realized is None else f'{realized:+.6f}'} "
+            f"| {'-' if absolute_error is None else f'{absolute_error:.6f}'} |"
+        )
+    if calibrated:
+        mean_error = sum(abs(r["expected_delta"] - r["realized_delta"]) for r in calibrated) / len(calibrated)
+        lines += ["", f"Mean absolute calibration error: **{mean_error:.6f}**"]
+    else:
+        lines += ["", "Mean absolute calibration error: **n/a**"]
     out_path.write_text("\n".join(lines) + "\n")
 
 
@@ -173,12 +205,15 @@ def render_runlog(records: list[dict], out_path: Path) -> None:
     lines = [
         "# Run log (per iteration)",
         "",
-        "| n | action | hypothesis | change | primary | accepted | error / recovery |",
-        "|---|---|---|---|---|---|---|",
+        "| n | action | hypothesis | change | primary | expected delta | realized delta | accepted | error / recovery |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
 
     def esc(s: str) -> str:
         return (s or "").replace("|", "\\|").replace("\n", " ").strip()
+
+    def delta_text(value) -> str:
+        return "-" if value is None else f"{value:+.6f}"
 
     for r in records:
         primary = r["metrics"]["primary"] if r.get("metrics") else None
@@ -196,6 +231,8 @@ def render_runlog(records: list[dict], out_path: Path) -> None:
             f"| {r['n']} | {r.get('action', '?')} | {esc(r.get('hypothesis'))} "
             f"| {esc(r.get('change_summary'))} "
             f"| {'-' if primary is None else f'{primary:.4f}'} "
+            f"| {delta_text(r.get('expected_delta'))} "
+            f"| {delta_text(r.get('realized_delta'))} "
             f"| {status} | {err} |"
         )
 

@@ -39,6 +39,7 @@ METRIC_KEYS = ("gauc", "ndcg5", "primary")
 FORBIDDEN_PATTERNS = ("test.csv", "data/test")
 DRAFT_TIERS = ("Tier 1", "Tier 2", "Tier 3")
 ALL_TIERS = ("Tier 1", "Tier 2", "Tier 3", "Tier 4")
+FULL_CONTEXT_CHAR_BUDGET = 80_000  # approximately 20k tokens at four characters/token
 
 
 @dataclass
@@ -55,6 +56,8 @@ class Node:
     error: str | None = None
     debug_depth: int = 0
     method_selection: dict | None = None
+    change_summary: str = ""
+    expected_delta: float | None = None
 
 
 @dataclass
@@ -76,6 +79,11 @@ class LoopConfig:
     seed: int = 42
     confirm_seed: int = 1042
     draft_tiers: tuple[str, ...] = ("Tier 1", "Tier 2", "Tier 3")  # directives for the initial drafts
+    context_mode: str = "compact"
+
+    def __post_init__(self) -> None:
+        if self.context_mode not in ("compact", "full"):
+            raise ValueError("context_mode must be 'compact' or 'full'")
 
 
 class LeakageError(RuntimeError):
@@ -195,6 +203,7 @@ class Loop:
         else:
             self.sigma = float(np.std(primaries))
         node.status = "accepted"
+        node.change_summary = "baseline FM reproduction and seed-noise calibration"
         self.nodes[node.node_id] = node
         self.champion = node
         self.journal_lines.append(
@@ -229,6 +238,7 @@ class Loop:
             "change_summary": f"baseline seeds {list(self.config.calib_seeds) if self.config.sigma is None else [self.config.seed]}: "
                               f"primaries {[round(p, 4) for p in primaries]}, mean {mean:.4f}, sigma {self.sigma:.4f}",
             "diff": "",
+            "context_mode": self.config.context_mode,
             "method_selection": None,
             "metrics": self.champion.metrics if self.champion else {},
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
@@ -237,6 +247,7 @@ class Loop:
                                        "published_valid_primary": 0.6016,
                                        "pass": abs(mean - 0.6016) <= 0.003},
             "accepted": True, "duration_s": 0.0, "tokens_in": 0, "tokens_out": 0,
+            "expected_delta": None, "realized_delta": None,
             "error": None, "recovery": None,
             "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
             "intervention": False,
@@ -288,8 +299,57 @@ class Loop:
 
     # ---------- bookkeeping ----------
 
+    @staticmethod
+    def _full_context_block(node: Node) -> str:
+        metrics = node.metrics or {}
+        metric_text = ", ".join(
+            f"{key}={metrics.get(key)!r}" for key in METRIC_KEYS
+        )
+        if node.error:
+            error_tail = "\n".join(node.error.splitlines()[-5:])
+            outcome = f"error:\n{error_tail}"
+        else:
+            outcome = node.status
+        history = metrics.get("history") or []
+        history_lines = [json.dumps(point, sort_keys=True) for point in history[-10:]]
+        history_text = "\n".join(history_lines) or "(no learning curve recorded)"
+        return (
+            f"### {node.node_id}\n"
+            f"hypothesis: {node.hypothesis}\n"
+            f"action: {node.action}\n"
+            f"metrics: {metric_text}\n"
+            f"outcome: {outcome}\n"
+            f"change_summary: {node.change_summary or node.hypothesis}\n"
+            f"learning_curve_last_10:\n{history_text}"
+        )
+
+    def full_proposer_context(self) -> str:
+        """Structured prior-node context, dropping oldest optional nodes first."""
+        if not self.nodes:
+            return "(empty)"
+        ordered = sorted(self.nodes.values(), key=lambda node: int(node.node_id.split("_")[1]))
+        mandatory_ids = {"node_000"}
+        if self.champion is not None:
+            mandatory_ids.add(self.champion.node_id)
+        blocks = {node.node_id: self._full_context_block(node) for node in ordered}
+        kept = {node.node_id for node in ordered if node.node_id in mandatory_ids}
+        used = sum(len(blocks[node_id]) + 2 for node_id in kept)
+        for node in reversed(ordered):
+            if node.node_id in kept:
+                continue
+            block_size = len(blocks[node.node_id]) + 2
+            if used + block_size <= FULL_CONTEXT_CHAR_BUDGET:
+                kept.add(node.node_id)
+                used += block_size
+        return "\n\n".join(blocks[node.node_id] for node in ordered if node.node_id in kept)
+
     def record(self, n: int, node: Node, duration: float, recovery: str | None,
                change_summary: str) -> None:
+        node.change_summary = change_summary
+        realized_delta = (
+            node.primary - getattr(self, "_best_before_iter", node.primary)
+            if node.primary is not None else None
+        )
         record = {
             "n": n,
             "hypothesis": node.hypothesis,
@@ -299,12 +359,15 @@ class Loop:
             "code_path": str(node.code_path.relative_to(ROOT)) if node.code_path.is_relative_to(ROOT)
                          else str(node.code_path),
             "change_summary": change_summary,
+            "context_mode": self.config.context_mode,
             "diff": self.node_diff(node),
             "metrics": {k: v for k, v in (node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0}).items() if k != "history"},
             "history": (node.metrics or {}).get("history", []),
             "method_selection": node.method_selection,
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
             "accepted": node.status == "accepted",
+            "expected_delta": node.expected_delta,
+            "realized_delta": realized_delta,
             "duration_s": round(duration, 2),
             "tokens_in": self.brain.meter.last_in,
             "tokens_out": self.brain.meter.last_out,
@@ -409,8 +472,16 @@ class Loop:
                 parent_history=parent_history,
                 method_selection=node.method_selection,
                 streak_state=streak_state,
+                context_mode=self.config.context_mode,
+                full_context=self.full_proposer_context() if self.config.context_mode == "full" else None,
             )
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
+            expected_delta = spec.get("expected_delta")
+            if (isinstance(expected_delta, bool)
+                    or not isinstance(expected_delta, (int, float))
+                    or not np.isfinite(expected_delta)):
+                raise ValueError("proposer expected_delta must be a finite number")
+            node.expected_delta = float(expected_delta)
             code = spec["code"]
             timeout_s = min(int(spec.get("timeout_s", self.config.timeout_s)), self.config.timeout_s)
         except BudgetExhausted as exc:

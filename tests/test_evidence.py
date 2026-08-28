@@ -137,6 +137,26 @@ def test_render_missing_journal(tmp_path):
         render.render(tmp_path)
 
 
+def test_render_calibration_table_and_mean_absolute_error(tmp_path):
+    records = [
+        _rec(1, "node_001", "node_000", "improve", "first", 0.61, 0.61, True),
+        _rec(2, "node_002", "node_001", "improve", "second", 0.60, 0.61, False),
+        _rec(3, "node_003", "node_001", "improve", "crash", 0.0, 0.61, False,
+             error="boom"),
+    ]
+    records[0].update(expected_delta=0.010, realized_delta=0.008)
+    records[1].update(expected_delta=-0.002, realized_delta=-0.006)
+    records[2].update(expected_delta=0.020, realized_delta=None)
+    # Absolute errors are 0.002 and 0.004; null realized delta is excluded. MAE = 0.003.
+    out = tmp_path / "results.md"
+    render.render_results(records, render.aggregate(records), out, 0.6016)
+    text = out.read_text()
+    assert "| 1 | node_001 | +0.010000 | +0.008000 | 0.002000 |" in text
+    assert "| 2 | node_002 | -0.002000 | -0.006000 | 0.004000 |" in text
+    assert "| 3 | node_003 | +0.020000 | - | - |" in text
+    assert "Mean absolute calibration error: **0.003000**" in text
+
+
 # ---------------------------------------------------------------- submission.py
 
 @pytest.fixture()

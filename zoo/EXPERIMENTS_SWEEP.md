@@ -98,6 +98,11 @@ select later raw checkpoints, so EMA is beneficial but not universally selected.
 |---|---|---|---:|---:|---:|---:|---|
 | ens01 | e03 k16 EMA + r05 k8 (1:1) | 42 | 0.672567 | 0.538476 | 0.605521 | +0.003921 | no win (seed-42 ensemble; confirmation pending) |
 | ens02 | e03 k16 EMA + r05 k8 + g06 constant/dropout-0.5 (1:1:1) | 42 | 0.673170 | 0.538653 | 0.605911 | +0.004311 | no win (seed-42 ensemble leader; confirmation pending) |
+| ens03 | ens02 + existing DCN-lite (1:1:1:1) | 42 | 0.672792 | 0.538493 | 0.605643 | +0.004043 | no win (regression vs ens02) |
+| ens04 | ens02 + existing MTL (1:1:1:1) | 42 | 0.672626 | 0.538468 | 0.605547 | +0.003947 | no win (regression vs ens02) |
+| ens05 | e03 + r05 + g06 (2:1:1) | 42 | 0.673003 | 0.538544 | 0.605774 | +0.004174 | no win (regression vs equal-rank ens02) |
+| ens02-support | g06 constant/dropout-0.5 retrain | 43 | 0.669579 | 0.536227 | 0.602903 | +0.001303 | no win (ensemble confirmation support run) |
+| ens02-support | g06 constant/dropout-0.5 retrain | 44 | 0.670173 | 0.537370 | 0.603771 | +0.002171 | no win (ensemble confirmation support run) |
 
 ## Final summary
 

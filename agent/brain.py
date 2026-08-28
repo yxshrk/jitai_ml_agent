@@ -245,6 +245,8 @@ class Brain:
         parent_history: list | None = None,
         method_selection: dict | None = None,
         streak_state: dict | None = None,
+        context_mode: str = "compact",
+        full_context: str | None = None,
     ) -> dict:
         selected_card = None
         if method_selection:
@@ -258,9 +260,16 @@ class Brain:
             method_selection=method_selection,
             selected_method_card=selected_card,
             streak_state=streak_state,
+            context_mode=context_mode,
+            full_context=full_context,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
         spec = extract_json_spec(text)
+        expected_delta = spec.get("expected_delta")
+        if (isinstance(expected_delta, bool)
+                or not isinstance(expected_delta, (int, float))):
+            raise ValueError("proposer reply missing numeric expected_delta")
+        spec["expected_delta"] = float(expected_delta)
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
         return spec

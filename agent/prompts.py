@@ -48,6 +48,7 @@ shows were rejected.
 
 Respond with a single JSON object and nothing else:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
+ "expected_delta": <honest numeric expectation for validation-primary delta, e.g. 0.0015>,
  "action": "<draft|debug|improve>",
  "parent": "<parent node id you were given>",
  "code": "<the WHOLE script as a JSON string>"}
@@ -154,11 +155,17 @@ def proposer_user_prompt(
     method_selection: dict | None = None,
     selected_method_card: str | None = None,
     streak_state: dict | None = None,
+    context_mode: str = "compact",
+    full_context: str | None = None,
 ) -> str:
     parts = []
     if focus_note:
         parts.append(f"## Reflector focus note\n{focus_note}")
-    parts.append("## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"))
+    if context_mode == "full":
+        parts.append("## Prior nodes (full evidence; oldest optional nodes may be truncated)\n"
+                     + (full_context or "(empty)"))
+    else:
+        parts.append("## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"))
     parts.append(PROPOSER_MODE[mode])
     if method_selection and selected_method_card:
         parts.append(
