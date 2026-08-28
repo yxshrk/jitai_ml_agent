@@ -127,3 +127,37 @@ positive, no auxiliary loss, and AdamW at 1e-3 with the strong step schedule.
 The unavailable follow/comment/forward targets are the only non-executable
 cells, explicitly logged above. They require a new labeled export, not a model
 or runner change. No test split was read or scored.
+
+## Bonus — abandoned E6 Optuna cell
+
+After closing all required DIMS work, the existing `zoo/final_optuna.py` E6
+runner was executed for its intended 25 seeded TPE trials. `EXPERIMENTS_FINAL.md`
+was not edited. The script's isolated PEP 723 environment omitted its Torch
+dependency and failed before creating a study; the successful unchanged-runner
+invocation overlaid Optuna on the working project environment:
+
+```bash
+uv run --with optuna python zoo/final_optuna.py --data-dir real \
+  --out-dir /tmp/dims_bonus_e6 --seed 42 --trials 25
+```
+
+The best search trial scored 0.605278 at seed 42 with learning rate
+0.000376406, weight decay 0.000071282, dropout 0.304314, embedding width 12,
+BPR weight 0.513771, batch size 8192, and no recency weighting. The runner then
+performed its full seed confirmation:
+
+| seed | GAUC | nDCG@5 | primary | gate `(b,size,depth)` | runtime |
+|---:|---:|---:|---:|---|---:|
+| 42 | 0.672276 | 0.538295 | 0.605285 | (1,-1,1) | 86.1s |
+| 43 | 0.671611 | 0.537529 | 0.604570 | (1,0,0) | 102.8s |
+| 44 | 0.672527 | 0.538166 | 0.605347 | (1,0,0) | 101.6s |
+| **mean +/- population std** | **0.672138 +/- 0.000386** | **0.537997 +/- 0.000335** | **0.605067 +/- 0.000352** | - | - |
+
+The confirmed mean is **+0.003467 over 0.6016**, so E6 passes the specified
+absolute-baseline acceptance rule. It is also 0.000312 above the DIMS strong
+control mean, a small directional improvement rather than a decisive controlled
+win. As in E4, the 27-point specialist gate is fit on validation and the Optuna
+objective repeatedly selects on that same validation set, so 0.605067 is an
+optimistically selected validation result and requires a fresh holdout before
+deployment. All 25 search trials and three confirmations stayed under six
+minutes; the longest combined specialist run was 102.8s.
