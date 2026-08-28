@@ -79,6 +79,7 @@ class LoopConfig:
     seed: int = 42
     confirm_seed: int = 1042
     draft_tiers: tuple[str, ...] = ("Tier 1", "Tier 2", "Tier 3")  # directives for the initial drafts
+    seed_scripts: tuple[Path, ...] = ()  # team-provided reference scripts run as initial draft nodes (disclosed)
     context_mode: str = "compact"
 
     def __post_init__(self) -> None:
@@ -401,10 +402,56 @@ class Loop:
 
     # ---------- main loop ----------
 
+    def seed_reference_nodes(self, start_n: int) -> int:
+        """Run team-provided reference scripts as disclosed initial draft nodes.
+
+        Mirrors AIDE-style seeding: the agent's search starts from the documented
+        best-known configuration instead of re-deriving it. Fully recorded in the
+        journal as 'team-provided reference implementation'."""
+        n = start_n
+        for script in self.config.seed_scripts:
+            n += 1
+            start = time.time()
+            self._best_before_iter = self.champion.primary if self.champion else 0.0
+            node = Node(f"node_{n:03d}", "node_000", "draft",
+                        f"team-provided reference implementation: {script.name} (from MENU frozen stack)",
+                        self.nodes_dir / f"{n:03d}.py")
+            node.code_path.write_text(script.read_text())
+            result = self.run_script(node.code_path, self.run_dir / node.node_id,
+                                     self.config.seed, max(self.config.timeout_s, 600))
+            recovery = None
+            if result.ok:
+                node.metrics, node.primary = result.metrics, result.metrics["primary"]
+                accepted, note = self.acceptance(node, result.metrics)
+                if accepted:
+                    delta = node.primary - self.champion.primary
+                    node.status = "accepted"
+                    self.champion = node
+                    self.accepted_deltas.append(delta)
+                else:
+                    node.status = "rejected"
+            else:
+                node.status, node.error = "failed", result.error
+                recovery = "skipped"
+            best_now = self.champion.primary if self.champion else 0.0
+            improvement = best_now - self._best_before_iter
+            if improvement > self.config.epsilon:
+                self.no_improve_streak = 0
+            else:
+                self.no_improve_streak += 1
+            self.nodes[node.node_id] = node
+            self.record(n, node, time.time() - start, recovery, node.hypothesis)
+            status = node.status.upper()
+            self.journal_lines.append(
+                f'{node.node_id} [seed] draft "{script.name}" '
+                + (f"primary={node.primary:.4f} {status}" if node.primary else status))
+        return n
+
     def run(self) -> dict:
         self.prepare_workspace()
         self.calibrate()
         n = 0
+        n = self.seed_reference_nodes(n)
         while n < self.config.max_iters:
             reason = self.budget_exceeded()
             if reason:

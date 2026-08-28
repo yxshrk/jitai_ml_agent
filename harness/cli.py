@@ -33,6 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="skip baseline calibration and use this sigma")
     run.add_argument("--baseline-script", type=Path, default=None,
                      help="baseline node script (default: zoo/fm_torch.py)")
+    run.add_argument("--seed-scripts", type=str, default=None,
+                     help="comma-separated script paths run as disclosed initial reference nodes")
     run.add_argument("--draft-tiers", type=str, default=None,
                      help="comma-separated directives for initial drafts, e.g. 'Tier 4,Tier 4,CURRENT DIRECTIVE'")
     run.add_argument("--context-mode", choices=["compact", "full"], default="compact",
@@ -51,6 +53,7 @@ def main(argv: list[str] | None = None) -> int:
         run_dir=args.run_dir,
         **({"baseline_script": args.baseline_script.resolve()} if args.baseline_script else {}),
         **({"draft_tiers": tuple(t.strip() for t in args.draft_tiers.split(","))} if args.draft_tiers else {}),
+        **({"seed_scripts": tuple(Path(p.strip()).resolve() for p in args.seed_scripts.split(","))} if args.seed_scripts else {}),
         max_iters=args.max_iters,
         max_hours=args.max_hours,
         max_tokens=args.max_tokens,
