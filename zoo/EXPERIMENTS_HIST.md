@@ -73,6 +73,43 @@ The 7-day no-affinity configuration is the selected candidate. Other seed-42
 rows above +0.002 are exploratory observations, not claimed wins; only the best
 candidate is advanced to mandatory seeds 43/44 confirmation.
 
+Confirmation in progress: 7-day/no-affinity seed 43 = GAUC 0.6692280,
+nDCG@5 0.5365085, primary 0.6028683, delta +0.0012683 (runtime 42.7s).
+
+#### E3 confirmation — selected 7-day/no-affinity config
+
+| seed | GAUC | nDCG@5 | primary | delta vs 0.6016 |
+|---:|---:|---:|---:|---:|
+| 42 | 0.6732567 | 0.5382032 | 0.6057299 | +0.0041299 |
+| 43 | 0.6692280 | 0.5365085 | 0.6028683 | +0.0012683 |
+| 44 | 0.6712679 | 0.5374350 | 0.6043514 | +0.0027514 |
+| **mean ± population std** | **0.6712509 ± 0.0016447** | **0.5373822 ± 0.0006929** | **0.6043165 ± 0.0011685** | **+0.0027165** |
+
+Verdict: **confirmed win**. The three-seed mean delta exceeds 0.002. Note that
+seed 43 alone is weak, consistent with the earlier best-stack campaign; the claim
+is based on the required three-seed aggregate, not the seed-42 peak.
+
+### E4 — item co-visitation embedding initialization
+
+Construction: binary user×video incidence from train impressions only. The item-
+item co-visitation matrix is the implicit Gram matrix `A.T @ A`; its top 16 item
+eigenvectors are obtained from truncated SVD of `A`, scaled to the DCN embedding
+initialization standard deviation, and placed into the video embedding rows.
+
+| config | seed | GAUC | nDCG@5 | primary | delta vs 0.6016 | verdict |
+|---|---:|---:|---:|---:|---:|---|
+| base + co-visitation SVD init (k=16) | 42 | 0.6712774 | 0.5373195 | 0.6042985 | +0.0026985 | **no-win** vs control (-0.0004518) and E3 |
+
+Runtime 37.1s including factorization. This seed-42 result is above the absolute
+baseline but does not improve the controlled base stack, so no win is claimed and
+no confirmation seeds are run.
+
+### E5 — DIN-lite (conditional gate)
+
+Not run, as required: E1 did not show a real win (its seed-42 delta was only
++0.0019001 and it regressed versus the controlled base stack). Verdict: **no-win /
+skipped by gate**, with no fabricated metrics.
+
 Runtime note: this run reported 1770.8s because the process experienced an
 external execution stall between epochs 1 and 2; normal compute epochs remained
 under 22s. The queued sweep was interrupted, and the interrupted half-life-7 run
