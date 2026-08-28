@@ -35,6 +35,18 @@ run exhaustively. Every sampled cell appears below.
 | g10 | 0.5 | 1e-5 | cosine | 42 | 0.670779 | 0.537652 | 0.604215 | +0.002615 | 1 | 41.7s | no win (unconfirmed seed-42 cell) |
 | g11 | 0.5 | 1e-3 | cosine | 42 | 0.670914 | 0.537711 | 0.604313 | +0.002713 | 1 | 43.2s | no win (unconfirmed seed-42 cell) |
 | g12 | 0.35 | 1e-4 | cosine | 42 | 0.671174 | 0.537184 | 0.604179 | +0.002579 | 2 | 44.0s | no win (unconfirmed seed-42 cell) |
+| g13 | 0.2 | 1e-5 | step | 42 | 0.672548 | 0.537992 | 0.605270 | +0.003670 | 2 | 46.4s | no win (promising seed-42 cell; confirmation pending) |
+| g14 | 0.2 | 1e-3 | step | 42 | 0.672494 | 0.537974 | 0.605234 | +0.003634 | 2 | 49.7s | no win (promising seed-42 cell; confirmation pending) |
+| g15 | 0.5 | 1e-5 | step | 42 | 0.671895 | 0.537799 | 0.604847 | +0.003247 | 2 | 42.3s | no win (unconfirmed seed-42 cell) |
+| g16 | 0.5 | 1e-3 | step | 42 | 0.671990 | 0.537840 | 0.604915 | +0.003315 | 2 | 40.0s | no win (unconfirmed seed-42 cell) |
+| g17 | 0.35 | 1e-4 | step | 42 | 0.672393 | 0.538066 | 0.605229 | +0.003629 | 2 | 1055.7s | failed protocol: resource suspension exceeded 6m cap; score excluded |
+
+Grid conclusion: constant and 25-epoch cosine schedules are flat; cosine has not
+decayed enough before early stopping. Step decay is consistently better, with g13
+(dropout 0.2, wd 1e-5) the valid seed-42 leader at 0.605270. Weight decay has little
+effect within each matched pair. Runs g04 and g17 were resource-suspended beyond
+the runtime cap and are retained in the log for completeness but excluded from
+model selection. No grid cell is called a win without seeds 43/44.
 
 ## Phase 2 — embedding-specific regularization and k=8
 
