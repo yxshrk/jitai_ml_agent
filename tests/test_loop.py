@@ -218,3 +218,25 @@ def test_streak_state_reaches_selector_and_proposer_prompts():
         assert "'iters_left': 1" in prompt
         assert prompts.CONVERGENCE_PRESSURE in prompt
     assert "## Selected method (implement THIS)" in proposer
+
+
+def test_improve_iteration_records_method_selection(tmp_path):
+    brain = fake_brain()
+    loop = make_loop(tmp_path, brain, max_iters=1, draft_tiers=())
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["action"] == "improve"
+    assert record["method_selection"]["diagnosis"] == "overfit"
+    expected = {"no_improve_streak": 0, "n_converge": 3, "iters_left": 0}
+    assert brain.selection_streak_states == [expected]
+    assert brain.proposal_streak_states == [expected]
+
+
+def test_reflector_fires_at_three_stagnant_iterations(tmp_path):
+    brain = fake_brain(scripts=[{"hypothesis": "leaky", "code": LEAKY_SCRIPT}])
+    loop = make_loop(
+        tmp_path, brain, max_iters=3, n_converge=10, reflect_every=99,
+    )
+    loop.run()
+    reflector = brain.meter.per_role["fake/fake/reflector"]
+    assert reflector["calls"] == 1
