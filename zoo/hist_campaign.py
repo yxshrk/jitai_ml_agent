@@ -175,11 +175,15 @@ def _group_loo_rates(train_users: np.ndarray, train_keys: np.ndarray,
     prior_tr = np.divide(upos[users] - y, denom, out=np.full(len(y), global_mean), where=denom > 0)
     prior_va = np.divide(upos[vu], ucnt[vu], out=np.full(len(vu), global_mean), where=ucnt[vu] > 0)
 
-    all_keys = np.concatenate((train_keys, valid_keys)).astype(np.int64)
-    _, key_codes = np.unique(all_keys, return_inverse=True)
-    kt = key_codes[:len(train_keys)].astype(np.int64)
-    kv = key_codes[len(train_keys):].astype(np.int64)
-    n_keys = int(key_codes.max(initial=0)) + 1
+    # Fit the key vocabulary strictly on train. Every unseen validation key shares
+    # a sentinel that can never match a fitted train pair.
+    fitted_keys, kt = np.unique(train_keys.astype(np.int64), return_inverse=True)
+    at_key = np.searchsorted(fitted_keys, valid_keys.astype(np.int64))
+    key_seen = at_key < len(fitted_keys)
+    key_seen[key_seen] &= fitted_keys[at_key[key_seen]] == valid_keys[key_seen]
+    kv = np.full(len(valid_keys), len(fitted_keys), dtype=np.int64)
+    kv[key_seen] = at_key[key_seen]
+    n_keys = len(fitted_keys) + 1
     pair = users * n_keys + kt
     unique_pair, inverse, counts = np.unique(pair, return_inverse=True, return_counts=True)
     positives = np.bincount(inverse, weights=y).astype(np.float64)

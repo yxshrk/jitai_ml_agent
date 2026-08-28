@@ -69,6 +69,11 @@ All three requested half-lives are tested without and with E1 features.
 | yes | 7d | 42 | 0.6699085 | 0.5371535 | 0.6035310 | +0.0019310 | **no-win**; below epsilon |
 | yes | 14d | 42 | 0.6704306 | 0.5374086 | 0.6039196 | +0.0023196 | seed-42 promising only; worse than no-affinity variants |
 
+Runtime note: the 3-day/no-affinity run reported 1770.8s because the process
+experienced an external execution stall between epochs 1 and 2; normal compute
+epochs remained under 22s. The queued sweep was interrupted, and the interrupted
+half-life-7 attempt is not recorded as a result; its clean rerun took 30.0s.
+
 The 7-day no-affinity configuration is the selected candidate. Other seed-42
 rows above +0.002 are exploratory observations, not claimed wins; only the best
 candidate is advanced to mandatory seeds 43/44 confirmation.
@@ -110,7 +115,32 @@ Not run, as required: E1 did not show a real win (its seed-42 delta was only
 +0.0019001 and it regressed versus the controlled base stack). Verdict: **no-win /
 skipped by gate**, with no fabricated metrics.
 
-Runtime note: this run reported 1770.8s because the process experienced an
-external execution stall between epochs 1 and 2; normal compute epochs remained
-under 22s. The queued sweep was interrupted, and the interrupted half-life-7 run
-is not recorded as a result.
+## Summary table
+
+| order | experiment | best explored config | seeds scored | best/confirmed primary | delta vs 0.6016 | final verdict |
+|---:|---|---|---|---:|---:|---|
+| S0 | best-stack sanity | frozen DCN-lite reproduction | 42 | 0.6047503 | +0.0031503 | control reproduced |
+| 1 | user affinities | author + tab + duration-decile rates | 42 | 0.6035001 | +0.0019001 | no-win |
+| 2 | user-global × item/context | count×duration + rate×author | 42 | 0.5937113 | -0.0078887 | no-win |
+| 3 | recency weighting | 7-day half-life, no affinity | 42,43,44 | **0.6043165 ± 0.0011685** | **+0.0027165** | **confirmed win** |
+| 4 | co-visitation initialization | implicit item Gram SVD, k=16 | 42 | 0.6042985 | +0.0026985 | no-win vs control |
+| 5 | DIN-lite | gated on E1 | none | — | — | skipped by required gate |
+
+## Conclusions
+
+The single best confirmed campaign configuration is the original DCN-lite stack
+with exponential training-sample recency weights at a 7-day half-life and without
+affinity features. It is implemented in `zoo/hist_best.py`. Its official three-
+seed validation primary is **0.6043165 ± 0.0011685**, a **+0.0027165** mean delta
+over baseline and slightly above the prior ~0.6041 level.
+
+User-target affinity buckets and user-global crosses overfit too quickly to help.
+Co-visitation initialization is essentially flat against the controlled seed-42
+base. The evidence suggests the useful data-level lever is modest distribution-
+shift correction toward later train days, not additional sparse target-encoded
+identities. DIN-lite was correctly omitted because its prerequisite failed.
+
+End-to-end verification: `zoo/hist_best.py` seed 42 reproduced GAUC 0.6732567,
+nDCG@5 0.5382032, primary 0.6057299 and wrote 124,909 contract-format prediction
+rows. Independently reading that CSV back through `data/official/evaluate.py`
+returned primary 0.6057299 (0.6057298827 before display rounding).
