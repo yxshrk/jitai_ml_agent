@@ -35,7 +35,10 @@ JSON emitted by the proposer, executed by the harness:
 - Reads fixed splits from data/ (never touches the test window; harness enforces).
 - CLI: `uv run python <script> --data-dir <d> --out-dir <o> [--seed 42]`
 - Writes: `<o>/predictions.csv` (row_id,user_id,video_id,score for the VALIDATION split)
-  and `<o>/metrics.json` ({"gauc":..., "ndcg5":..., "primary":...} via the official evaluate.py).
+  and `<o>/metrics.json` ({"gauc":..., "ndcg5":..., "primary":..., "history": [{"epoch":1,
+  "train_loss":..., "val_gauc":..., "val_primary":...}, ...]} via the official evaluate.py).
+  "history" is the per-epoch learning curve — REQUIRED so the agent and reviewers can
+  diagnose overfit (val peaks early) vs underfit (still rising) vs dead idea (flat).
 - Deterministic given --seed.
 
 ## 4. Leakage rule (structural, not prompt-based)

@@ -13,7 +13,7 @@ DATA_DIR = ROOT / "data" / "synthetic"
 
 RECORD_KEYS = {
     "n", "hypothesis", "node_id", "parent", "action", "code_path", "change_summary",
-    "diff", "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in",
+    "diff", "history", "metrics", "val_best_so_far", "accepted", "duration_s", "tokens_in",
     "tokens_out", "error", "recovery", "intervention", "usd_total",
 }
 

@@ -105,6 +105,18 @@ def proposer_user_prompt(
     if directive:
         parts.append(f"Directive: {directive}")
     parts.append(f'## Parent node "{parent_id}" (full code)\n```python\n{parent_code}\n```')
+    if parent_history:
+        rows = "\n".join(
+            f"epoch {h.get('epoch')}: train_loss {h.get('train_loss')}, val_gauc {h.get('val_gauc')}, val_primary {h.get('val_primary')}"
+            for h in parent_history[-25:]
+        )
+        parts.append(
+            "## Parent learning curve (per epoch)\n" + rows +
+            "\nDIAGNOSE before proposing: val peaks early then falls = overfit (attack with "
+            "regularization/schedules); val still rising at stop = underfit (train longer); "
+            "flat = the idea itself adds no signal (change direction, not dosage). State your "
+            "diagnosis in the hypothesis."
+        )
     if traceback_tail:
         parts.append(f"## Traceback tail\n```\n{traceback_tail}\n```")
     parts.append("Respond with the JSON object only.")

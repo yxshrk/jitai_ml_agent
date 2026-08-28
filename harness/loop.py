@@ -298,7 +298,8 @@ class Loop:
                          else str(node.code_path),
             "change_summary": change_summary,
             "diff": self.node_diff(node),
-            "metrics": node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0},
+            "metrics": {k: v for k, v in (node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0}).items() if k != "history"},
+            "history": (node.metrics or {}).get("history", []),
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
             "accepted": node.status == "accepted",
             "duration_s": round(duration, 2),
@@ -386,6 +387,7 @@ class Loop:
                 self.journal_lines, mode, parent.node_id, parent.code_path.read_text(),
                 directive=directive, focus_note=self.focus_note,
                 traceback_tail=parent.error if mode == "debug" else None,
+                parent_history=(parent.metrics or {}).get("history", []),
             )
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             code = spec["code"]

@@ -118,7 +118,7 @@ class FakeBrain:
         self._fix_i = 0
 
     def propose(self, journal_lines, mode, parent_id, parent_code, directive=None,
-                focus_note=None, traceback_tail=None) -> dict:
+                focus_note=None, traceback_tail=None, **_kwargs) -> dict:
         spec = dict(self.scripts[min(self._i, len(self.scripts) - 1)])
         self._i += 1
         spec.setdefault("action", mode)

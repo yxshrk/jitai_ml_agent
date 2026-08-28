@@ -209,9 +209,11 @@ class Brain:
         directive: str | None = None,
         focus_note: str | None = None,
         traceback_tail: str | None = None,
+        parent_history: list | None = None,
     ) -> dict:
         user = prompts.proposer_user_prompt(
-            journal_lines, mode, parent_id, parent_code, directive, focus_note, traceback_tail
+            journal_lines, mode, parent_id, parent_code, directive, focus_note, traceback_tail,
+            parent_history=parent_history,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
         spec = extract_json_spec(text)

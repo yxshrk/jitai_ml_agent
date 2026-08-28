@@ -14,6 +14,7 @@ import datetime as dt
 import json
 import math
 import random
+import signal
 import sys
 import time
 from collections.abc import Mapping
@@ -56,6 +57,8 @@ def parser() -> argparse.ArgumentParser:
     ap.add_argument("--ema-decay", type=float, default=0.9)
     ap.add_argument("--ema-start", type=int, default=2)
     ap.add_argument("--subsample", type=int, default=None, help="train row cap for smoke tests")
+    ap.add_argument("--max-runtime", type=int, default=330,
+                    help="hard training alarm in seconds; preserves the best completed epoch")
     return ap
 
 
@@ -233,57 +236,73 @@ def train(args: argparse.Namespace) -> dict[str, float | int | str]:
     best_gauc, best_state, best_epoch, bad = -math.inf, None, 0, 0
     ema_state: dict[str, torch.Tensor] | None = None
     point_count, batch_size = len(train_y), args.batch_size
-    for epoch in range(1, args.epochs + 1):
-        epoch_started = time.time()
-        positives, negatives = sampler.sample(rng)
-        point_order = rng.permutation(point_count)
-        batch_count = math.ceil(point_count / batch_size)
-        losses = []
-        for batch in range(batch_count):
-            indices = point_order[batch * batch_size:(batch + 1) * batch_size]
-            output = model(train_x[indices])
-            loss = (1.0 - args.bpr_weight) * bce(output["main"], train_y[indices])
-            lo = batch * len(positives) // batch_count
-            hi = (batch + 1) * len(positives) // batch_count
-            if args.bpr_weight > 0 and hi > lo:
-                pos_scores = model(train_x[positives[lo:hi]])["main"]
-                neg_scores = model(train_x[negatives[lo:hi]])["main"]
-                loss = loss + args.bpr_weight * nn.functional.softplus(neg_scores - pos_scores).mean()
-            if args.aux_weight > 0:
-                loss = loss + args.aux_weight * (bce(output["click"], click[indices]) +
-                                                  bce(output["effective_view"], effective[indices]))
-            optimizer.zero_grad(set_to_none=True)
-            loss.backward()
-            optimizer.step()
-            losses.append(float(loss.detach()))
-        if args.average == "ema" and epoch >= args.ema_start:
-            if ema_state is None:
-                ema_state = _state(model)
+    class RunTimeout(Exception):
+        pass
+
+    def timeout_handler(_signum, _frame):
+        raise RunTimeout
+
+    previous_handler = signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(args.max_runtime)
+    timed_out = False
+    try:
+        for epoch in range(1, args.epochs + 1):
+            epoch_started = time.time()
+            positives, negatives = sampler.sample(rng)
+            point_order = rng.permutation(point_count)
+            batch_count = math.ceil(point_count / batch_size)
+            losses = []
+            for batch in range(batch_count):
+                indices = point_order[batch * batch_size:(batch + 1) * batch_size]
+                output = model(train_x[indices])
+                loss = (1.0 - args.bpr_weight) * bce(output["main"], train_y[indices])
+                lo = batch * len(positives) // batch_count
+                hi = (batch + 1) * len(positives) // batch_count
+                if args.bpr_weight > 0 and hi > lo:
+                    pos_scores = model(train_x[positives[lo:hi]])["main"]
+                    neg_scores = model(train_x[negatives[lo:hi]])["main"]
+                    loss = loss + args.bpr_weight * nn.functional.softplus(neg_scores - pos_scores).mean()
+                if args.aux_weight > 0:
+                    loss = loss + args.aux_weight * (bce(output["click"], click[indices]) +
+                                                      bce(output["effective_view"], effective[indices]))
+                optimizer.zero_grad(set_to_none=True)
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.detach()))
+            if args.average == "ema" and epoch >= args.ema_start:
+                if ema_state is None:
+                    ema_state = _state(model)
+                else:
+                    _ema_update(ema_state, model, args.ema_decay)
+            scores = predict()
+            metrics = official_metrics(valid["user"], valid["y"], scores)
+            selection_state, selection_gauc, selected = _state(model), metrics["gauc"], "raw"
+            if ema_state is not None:
+                raw_state = _state(model)
+                model.load_state_dict(ema_state)
+                ema_metrics = official_metrics(valid["user"], valid["y"], predict())
+                model.load_state_dict(raw_state)
+                if ema_metrics["gauc"] > selection_gauc:
+                    selection_state, selection_gauc, selected = {k: v.clone() for k, v in ema_state.items()}, ema_metrics["gauc"], "ema"
+            lr = optimizer.param_groups[0]["lr"]
+            print(f"epoch {epoch:2d} loss={np.mean(losses):.4f} lr={lr:.6g} "
+                  f"gauc={metrics['gauc']:.6f} primary={metrics['primary']:.6f} select={selected} "
+                  f"seconds={time.time() - epoch_started:.1f}", flush=True)
+            if selection_gauc > best_gauc + 1e-5:
+                best_gauc, best_state, best_epoch, bad = selection_gauc, selection_state, epoch, 0
             else:
-                _ema_update(ema_state, model, args.ema_decay)
-        scores = predict()
-        metrics = official_metrics(valid["user"], valid["y"], scores)
-        selection_state, selection_gauc, selected = _state(model), metrics["gauc"], "raw"
-        if ema_state is not None:
-            raw_state = _state(model)
-            model.load_state_dict(ema_state)
-            ema_metrics = official_metrics(valid["user"], valid["y"], predict())
-            model.load_state_dict(raw_state)
-            if ema_metrics["gauc"] > selection_gauc:
-                selection_state, selection_gauc, selected = {k: v.clone() for k, v in ema_state.items()}, ema_metrics["gauc"], "ema"
-        lr = optimizer.param_groups[0]["lr"]
-        print(f"epoch {epoch:2d} loss={np.mean(losses):.4f} lr={lr:.6g} "
-              f"gauc={metrics['gauc']:.6f} primary={metrics['primary']:.6f} select={selected} "
-              f"seconds={time.time() - epoch_started:.1f}", flush=True)
-        if selection_gauc > best_gauc + 1e-5:
-            best_gauc, best_state, best_epoch, bad = selection_gauc, selection_state, epoch, 0
-        else:
-            bad += 1
-        if scheduler is not None:
-            scheduler.step()
-        if bad >= args.patience:
-            print(f"early stop at epoch {epoch}", flush=True)
-            break
+                bad += 1
+            if scheduler is not None:
+                scheduler.step()
+            if bad >= args.patience:
+                print(f"early stop at epoch {epoch}", flush=True)
+                break
+    except RunTimeout:
+        timed_out = True
+        print(f"hard runtime cap reached after {args.max_runtime}s; preserving best completed epoch", flush=True)
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, previous_handler)
     assert best_state is not None
     model.load_state_dict(best_state)
     scores = predict()
@@ -291,7 +310,7 @@ def train(args: argparse.Namespace) -> dict[str, float | int | str]:
     result: dict[str, float | int | str] = {
         **final, "runtime_s": round(time.time() - started, 1), "best_epoch": best_epoch,
         "seed": args.seed, "delta": final["primary"] - BASELINE_PRIMARY,
-        "schedule": args.schedule,
+        "schedule": args.schedule, "timed_out": timed_out,
     }
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
