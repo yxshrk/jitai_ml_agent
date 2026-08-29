@@ -12,3 +12,11 @@ See CONTRACTS.md first. Layout:
 Status: baseline reproduced (valid 0.6015); best model valid primary 0.6041 (dcn_lite).
 See MENU.md (search space), zoo/RESULTS.md + zoo/EXPERIMENTS.md (measured results),
 CONTRACTS.md (frozen interfaces). Budget: $25 hard cap via agent/budget.py ledger.
+
+## Keys & reproduction
+- Verifying results (models, scoring, ensembles, journals): **no keys needed** — everything
+  is plain Python on the committed data pipeline.
+- Launching NEW agent runs: copy `.env.example` to `.env` with your own OpenAI key.
+  Spend is capped by `BUDGET_USD` (in-code ledger); a full converged run costs ~$0.6-1.5.
+- Agent runs are LLM-driven and converge to similar but not identical trajectories;
+  the committed journals in `logs/run_official_*` are the recorded evidence.
