@@ -23,6 +23,7 @@ JSON emitted by the proposer, executed by the harness:
   "code_path": "logs/run_<id>/nodes/007.py",
   "change_summary": "one-line what-changed (the journal line)",
   "context_mode": "compact",           // compact | full proposer context used for this run
+  "knowledge_mode": "full",            // full | clean literature-only knowledge used for this run
   "method_selection": {                 // null for baseline; debug preserves its parent's selection
     "diagnosis": "overfit",
     "chosen_method_id": "regularization-schedule",
@@ -77,6 +78,10 @@ dropping the oldest optional nodes first; node_000 and the current champion are 
 retained. Selector and periodic reflector inputs remain the compact journal. Every
 journal record
 stores the run's `context_mode`, enabling compact/full A/B comparisons.
+Every journal record and `summary.json` also stores `knowledge_mode` (`full` or
+`clean`). Clean mode uses `agent/METHODS_CLEAN.md`, replaces MENU with a neutral
+dataset/metrics/splits task description, ignores cross-run memory, rejects assisted
+seed/custom-draft inputs, and disables only card-reference suspicion routing.
 Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
 different menu tier after 5 stagnant iterations.

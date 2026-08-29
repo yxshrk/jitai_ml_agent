@@ -16,6 +16,11 @@ from pathlib import Path
 
 from harness.loop import ROOT, Loop, LoopConfig
 
+CLEAN_TASK_CONTEXT = """\
+Dataset: KuaiRand short-video recommendation ({dataset} track).
+Metrics: within-user GAUC, per-user nDCG@5, and their mean primary score.
+Splits: train on the fixed training split and evaluate only on the fixed validation split."""
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="harness.cli")
@@ -41,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="proposer history: journal one-liners or bounded full node evidence")
     run.add_argument("--dataset", choices=["pure", "1k"], default="pure",
                      help="dataset-specific method status ledger (default: pure)")
+    run.add_argument("--knowledge", choices=["full", "clean"], default="full",
+                     help="literature plus team results, or literature-only clean mode")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -49,7 +56,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    menu_text = (ROOT / "MENU.md").read_text()
+    if args.knowledge == "clean" and (args.seed_scripts or args.draft_tiers):
+        print(
+            "error: --knowledge clean cannot be combined with --seed-scripts or --draft-tiers; "
+            "clean runs must be unassisted",
+            file=sys.stderr,
+        )
+        return 2
+    menu_text = (
+        CLEAN_TASK_CONTEXT.format(dataset=args.dataset)
+        if args.knowledge == "clean"
+        else (ROOT / "MENU.md").read_text()
+    )
     config = LoopConfig(
         data_dir=args.data_dir.resolve(),
         run_dir=args.run_dir,
@@ -64,6 +82,7 @@ def main(argv: list[str] | None = None) -> int:
         sigma=args.sigma,
         context_mode=args.context_mode,
         dataset=args.dataset,
+        knowledge_mode=args.knowledge,
     )
     if args.dry_run:
         from agent.fake_brain import FakeBrain
@@ -72,7 +91,12 @@ def main(argv: list[str] | None = None) -> int:
     else:
         from agent.brain import Brain
 
-        brain = Brain(menu_text, provider=args.provider)
+        brain = Brain(menu_text, provider=args.provider, knowledge_mode=args.knowledge)
+    if args.knowledge == "clean":
+        from agent.brain import CLEAN_METHODS_PATH, parse_method_cards
+
+        brain.methods_text = CLEAN_METHODS_PATH.read_text()
+        brain.method_cards = parse_method_cards(brain.methods_text)
     summary = Loop(config, brain).run()
     json.dump(summary, sys.stdout, indent=2)
     print()

@@ -8,8 +8,8 @@ import pytest
 
 from agent.fake_brain import FakeBrain, canned_script
 from agent import prompts
-from agent.brain import method_cards_for_dataset, parse_method_card_metadata
-from harness.cli import build_parser
+from agent.brain import CLEAN_METHODS_PATH, Brain, method_cards_for_dataset, parse_method_card_metadata
+from harness.cli import CLEAN_TASK_CONTEXT, build_parser, main
 from harness.loop import ROOT, LeakageError, Loop, LoopConfig, Node, RunResult
 
 DATA_DIR = ROOT / "data" / "synthetic"
@@ -20,6 +20,7 @@ RECORD_KEYS = {
     "tokens_out", "error", "recovery", "intervention", "usd_total", "method_selection",
     "context_mode", "expected_delta", "expected_delta_basis", "realized_delta",
     "verdict_note", "failure_stage", "fixer_eligible",
+    "knowledge_mode",
 }
 
 CRASHING_SCRIPT = "import sys\nraise RuntimeError('boom')\n"
@@ -74,6 +75,47 @@ def test_cli_dataset_defaults_to_pure_and_accepts_1k():
     assert one_k.dataset == "1k"
 
 
+def test_cli_knowledge_defaults_to_full_and_accepts_clean():
+    default = build_parser().parse_args(["run", "--data-dir", str(DATA_DIR), "--dry-run"])
+    clean = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--knowledge", "clean", "--dry-run",
+    ])
+    assert default.knowledge == "full"
+    assert clean.knowledge == "clean"
+
+
+def test_clean_prompt_contains_no_team_measured_060_values(monkeypatch):
+    monkeypatch.setattr("agent.brain._OpenAIBackend", lambda: object())
+    brain = Brain(
+        CLEAN_TASK_CONTEXT.format(dataset="pure"), provider="openai", knowledge_mode="clean"
+    )
+    prompt = brain.static_prefix + "\n" + brain.methods_text
+    values = set(__import__("re").findall(r"0\.60\d+", prompt))
+    assert values <= {"0.6016"}
+    assert "MENU CURRENT DIRECTIVE" not in prompt
+    assert "reference_primary" not in brain.methods_text
+    assert all("- status_pure: untried" in card for card in brain.method_cards.values())
+    assert all("- status_1k: untried" in card for card in brain.method_cards.values())
+
+
+def test_clean_mode_rejects_seed_scripts(capsys):
+    code = main([
+        "run", "--data-dir", str(DATA_DIR), "--knowledge", "clean",
+        "--seed-scripts", "zoo/fm_torch.py", "--dry-run",
+    ])
+    assert code != 0
+    assert "clean runs must be unassisted" in capsys.readouterr().err
+
+
+def test_clean_mode_rejects_seed_scripts_with_draft_tiers(capsys):
+    code = main([
+        "run", "--data-dir", str(DATA_DIR), "--knowledge", "clean",
+        "--seed-scripts", "zoo/fm_torch.py", "--draft-tiers", "Tier 1", "--dry-run",
+    ])
+    assert code != 0
+    assert "--seed-scripts or --draft-tiers" in capsys.readouterr().err
+
+
 def test_dry_run_journal_conforms_to_contract(tmp_path):
     loop = make_loop(tmp_path, fake_brain(), max_iters=3)
     summary = loop.run()
@@ -92,6 +134,7 @@ def test_dry_run_journal_conforms_to_contract(tmp_path):
         assert set(record["metrics"]) == {"gauc", "ndcg5", "primary"}
         assert isinstance(record["intervention"], bool) and not record["intervention"]
         assert record["method_selection"]["chosen_method_id"] in loop.brain.method_cards
+        assert record["knowledge_mode"] == "full"
     # best node artifacts exist
     assert (loop.run_dir / "nodes" / "001.py").exists()
     assert summary["best_metrics"]["primary"] > 0
@@ -394,6 +437,20 @@ def test_below_reference_routes_to_debug_then_rejects_if_still_low(tmp_path, mon
     assert loop.nodes["node_002"].status == "rejected"
 
 
+def test_clean_mode_disables_reference_comparison_routing(tmp_path, monkeypatch):
+    brain = BprBrain("", scripts=[{"hypothesis": "clean attempt", "code": "# candidate"}],
+                     root=str(ROOT))
+    loop = make_loop(tmp_path, brain, max_iters=1, knowledge_mode="clean")
+    _seed_champion(loop, primary=0.6000)
+    low = RunResult(True, metrics={"gauc": .6020, "ndcg5": .6020, "primary": .6020})
+    monkeypatch.setattr(loop, "run_experiment", lambda *args, **kwargs: (low, "full"))
+
+    loop.iterate(1)
+
+    assert loop.nodes["node_001"].status != "suspect_implementation"
+    assert loop.nodes["node_001"].verdict_note is None
+
+
 def test_draft_diversity_retries_then_overrides_stubborn_selector(tmp_path, monkeypatch):
     brain = StubbornBrain("", scripts=[{"hypothesis": "diverse draft", "code": "# code"}],
                           root=str(ROOT))
@@ -426,7 +483,19 @@ def test_expected_delta_basis_and_minimal_mutation_are_prompt_contracts():
     assert "smallest coherent change" in prompt
     assert "unnecessary rewrites are defects" in prompt
     assert "expected_delta_basis" in prompts.TASK_BRIEF
-    assert "specific measured card value or journal line" in prompts.TASK_BRIEF
+    assert "specific card expectation or journal line" in prompts.TASK_BRIEF
+
+
+@pytest.mark.parametrize("knowledge_mode", ["full", "clean"])
+def test_journal_and_summary_record_knowledge_mode(tmp_path, knowledge_mode):
+    loop = make_loop(
+        tmp_path, fake_brain(), max_iters=1, knowledge_mode=knowledge_mode,
+    )
+    summary = loop.run()
+    records = [json.loads(line) for line in loop.journal_path.read_text().splitlines()]
+    assert summary["knowledge_mode"] == knowledge_mode
+    assert json.loads((loop.run_dir / "summary.json").read_text())["knowledge_mode"] == knowledge_mode
+    assert all(record["knowledge_mode"] == knowledge_mode for record in records)
 
 
 def test_every_method_card_declares_parseable_reference_primary():

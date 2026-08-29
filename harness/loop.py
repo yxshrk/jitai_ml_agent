@@ -88,6 +88,7 @@ class LoopConfig:
     seed_scripts: tuple[Path, ...] = ()  # team-provided reference scripts run as initial draft nodes (disclosed)
     context_mode: str = "compact"
     dataset: str = "pure"
+    knowledge_mode: str = "full"
     cross_run_path: Path = CROSS_RUN_PATH
 
     def __post_init__(self) -> None:
@@ -95,6 +96,8 @@ class LoopConfig:
             raise ValueError("context_mode must be 'compact' or 'full'")
         if self.dataset not in ("pure", "1k"):
             raise ValueError("dataset must be 'pure' or '1k'")
+        if self.knowledge_mode not in ("full", "clean"):
+            raise ValueError("knowledge_mode must be 'full' or 'clean'")
 
 
 class LeakageError(RuntimeError):
@@ -277,6 +280,7 @@ class Loop:
                               f"primaries {[round(p, 4) for p in primaries]}, mean {mean:.4f}, sigma {self.sigma:.4f}",
             "diff": "",
             "context_mode": self.config.context_mode,
+            "knowledge_mode": self.config.knowledge_mode,
             "method_selection": None,
             "metrics": self.champion.metrics if self.champion else {},
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
@@ -398,6 +402,8 @@ class Loop:
         return overridden
 
     def reference_primary(self, node: Node) -> float | None:
+        if self.config.knowledge_mode == "clean":
+            return None
         selection = node.method_selection or {}
         return self.method_metadata(selection.get("chosen_method_id"))["reference_primary"]
 
@@ -464,6 +470,7 @@ class Loop:
                          else str(node.code_path),
             "change_summary": change_summary,
             "context_mode": self.config.context_mode,
+            "knowledge_mode": self.config.knowledge_mode,
             "diff": self.node_diff(node),
             "metrics": {k: v for k, v in (node.metrics or {"gauc": 0.0, "ndcg5": 0.0, "primary": 0.0}).items() if k != "history"},
             "history": (node.metrics or {}).get("history", []),
@@ -510,6 +517,8 @@ class Loop:
     # ---------- cross-run memory ----------
 
     def read_cross_run(self, max_lines: int = 40) -> str:
+        if self.config.knowledge_mode == "clean":
+            return ""
         path = self.config.cross_run_path
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch(exist_ok=True)
@@ -520,6 +529,8 @@ class Loop:
         return " ".join(hypothesis.split()[:8])
 
     def append_cross_run(self, summary: dict, self_critique: str | None = None) -> None:
+        if self.config.knowledge_mode == "clean":
+            return
         lines = [
             f"## Run {self.run_dir}",
             f"dataset: {self.config.dataset}",
@@ -654,6 +665,7 @@ class Loop:
         summary = {
             "run_dir": str(self.run_dir),
             "dataset": self.config.dataset,
+            "knowledge_mode": self.config.knowledge_mode,
             "stop_reason": self.stop_reason,
             "iterations": n,
             "best_node": self.champion.node_id,

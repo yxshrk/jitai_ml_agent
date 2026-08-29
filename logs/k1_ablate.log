@@ -86,3 +86,7 @@ epoch 1.0 | loss 0.3252 | valid gauc 0.646292 ndcg5 0.406944 primary 0.526618
 epoch 1.5 | loss 0.1315 | valid gauc 0.632771 ndcg5 0.447340 primary 0.540055
 epoch 2.0 | loss 0.0886 | valid gauc 0.623969 ndcg5 0.445317 primary 0.534643
 epoch 2.5 | loss 0.0629 | valid gauc 0.616380 ndcg5 0.446205 primary 0.531293
+epoch 3.0 | loss 0.0557 | valid gauc 0.611958 ndcg5 0.445645 primary 0.528802
+epoch 3.5 | loss 0.0483 | valid gauc 0.608131 ndcg5 0.444075 primary 0.526103
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": -0.032504827541750214, "field_level": 5, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab", "user_active_degree", "follow_user_num_range", "fans_user_num_range", "register_days_range", "is_video_author", "video_type", "upload_type", "music_id_top200", "first_tag", "aspect_ratio_bucket", "visible_status", "item_long_view_rate", "author_long_view_rate", "upload_age_bucket"], "gauc": 0.6682770578079094, "n_fields": 24, "ndcg5": 0.4699132871085903, "primary": 0.5690951724582498, "regularized": true, "runtime_s": 317.2, "seed": 42, "timed_out": false}

@@ -52,7 +52,7 @@ shows were rejected.
 Respond with a single JSON object and nothing else:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
  "expected_delta": <honest numeric expectation for validation-primary delta, e.g. 0.0015>,
- "expected_delta_basis": "<one sentence citing a specific measured card value or journal line>",
+ "expected_delta_basis": "<one sentence citing a specific card expectation or journal line>",
  "action": "<draft|debug|improve>",
  "parent": "<parent node id you were given>",
  "code": "<the WHOLE script as a JSON string>"}
@@ -102,7 +102,7 @@ text is archival only and will not be applied automatically. Plain text only.
 
 SELECTOR_SYSTEM = """\
 You diagnose an ML run and select exactly one implementation method from a
-measured method-card library. Respect measured-dead cards: never choose one.
+method-card library. Respect cards whose active status marks them unavailable.
 Use learning-curve shape, journal outcomes, remaining iterations, and honest
 expected gain. Return one JSON object only:
 {"diagnosis":"overfit|underfit|flat-signal|metric-mismatch|data-shift",

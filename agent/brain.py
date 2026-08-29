@@ -26,6 +26,7 @@ from agent import prompts
 ROOT = Path(__file__).resolve().parents[1]
 MODELS_PATH = Path(__file__).resolve().parent / "models.toml"
 METHODS_PATH = Path(__file__).resolve().parent / "METHODS.md"
+CLEAN_METHODS_PATH = Path(__file__).resolve().parent / "METHODS_CLEAN.md"
 
 
 def load_model_config(path: Path = MODELS_PATH) -> dict:
@@ -245,6 +246,7 @@ class Brain:
         model_overrides: dict[str, str] | None = None,
         max_code_tokens: int = 16000,  # reasoning models spend thinking tokens from this budget; whole-file replies need headroom
         budget=None,
+        knowledge_mode: str = "full",
     ) -> None:
         from agent.budget import Budget
 
@@ -259,13 +261,18 @@ class Brain:
         if model_overrides:
             self.models.update(model_overrides)
         self.backend = _OpenAIBackend() if self.provider == "openai" else _AnthropicBackend()
+        if knowledge_mode not in ("full", "clean"):
+            raise ValueError("knowledge_mode must be 'full' or 'clean'")
+        self.knowledge_mode = knowledge_mode
         self.menu_text = menu_text
-        self.methods_text = METHODS_PATH.read_text()
+        methods_path = CLEAN_METHODS_PATH if knowledge_mode == "clean" else METHODS_PATH
+        self.methods_text = methods_path.read_text()
         self.method_cards = parse_method_cards(self.methods_text)
         self.max_code_tokens = max_code_tokens
         self.meter = TokenMeter()
         # Byte-identical static prefix -> prompt cache hits on both providers.
-        self.static_prefix = prompts.TASK_BRIEF + "\n\n## Improvement menu\n" + menu_text
+        context_heading = "Task context" if knowledge_mode == "clean" else "Improvement menu"
+        self.static_prefix = prompts.TASK_BRIEF + f"\n\n## {context_heading}\n" + menu_text
 
     def _call(self, role: str, system_text: str, user_text: str, max_tokens: int) -> str:
         model = self.models[role]
