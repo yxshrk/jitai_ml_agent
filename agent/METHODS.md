@@ -183,7 +183,7 @@ default, seed 42).
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
-- reference_primary: 0.6058
+- reference_primary: none (ensemble level tracks its parent; no fixed reference)
 - preconditions: A champion config must already exist and all promising single-model moves must be exhausted. This is a CLOSING move, not an opening move.
 - citation: Deep ensembles literature (Lakshminarayanan et al. 2017)
 - expected_gain / cost: Measured Pure primary 0.6058; five full member fits cost roughly five times one champion run / high training, low implementation.
