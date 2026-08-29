@@ -76,6 +76,7 @@ class LoopConfig:
     max_usd: float = 10.0  # per-run soft ceiling; the $BUDGET_USD hard cap lives in agent/budget.py
     timeout_s: int = 600
     epsilon: float = 0.002
+    accept_floor: float | None = None  # parent-acceptance floor; default = epsilon; convergence ALWAYS uses official epsilon
     n_converge: int = 3
     stagnation_limit: int = 5
     reflect_every: int = 5
@@ -326,7 +327,7 @@ class Loop:
     def acceptance(self, node: Node, metrics: dict) -> tuple[bool, str | None]:
         """Returns (accepted, note). May run one confirm reseed."""
         delta = metrics["primary"] - self.champion.primary
-        threshold = max(2 * self.sigma, self.config.epsilon)
+        threshold = max(2 * self.sigma, self.config.accept_floor if self.config.accept_floor is not None else self.config.epsilon)
         if delta >= threshold:
             return True, None
         if delta > 0:

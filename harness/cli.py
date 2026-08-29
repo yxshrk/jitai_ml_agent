@@ -46,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="proposer history: journal one-liners or bounded full node evidence")
     run.add_argument("--dataset", choices=["pure", "1k"], default="pure",
                      help="dataset-specific method status ledger (default: pure)")
+    run.add_argument("--accept-floor", type=float, default=None,
+                     help="parent-acceptance floor (convergence stays official epsilon)")
     run.add_argument("--knowledge", choices=["full", "clean"], default="full",
                      help="literature plus team results, or literature-only clean mode")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
@@ -72,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
         data_dir=args.data_dir.resolve(),
         run_dir=args.run_dir,
         **({"baseline_script": args.baseline_script.resolve()} if args.baseline_script else {}),
+        **({"accept_floor": args.accept_floor} if args.accept_floor is not None else {}),
         **({"draft_tiers": tuple(t.strip() for t in args.draft_tiers.split(","))} if args.draft_tiers else {}),
         **({"seed_scripts": tuple(Path(p.strip()).resolve() for p in args.seed_scripts.split(","))} if args.seed_scripts else {}),
         max_iters=args.max_iters,
