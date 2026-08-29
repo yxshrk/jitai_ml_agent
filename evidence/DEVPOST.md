@@ -1,66 +1,48 @@
-# {Project name} — an autonomous ML research agent for KuaiRand long-view prediction
+# MLE Agent — autonomous research for KuaiRand long-view prediction
 
-*TikTok TechJam 2026, Track 2. Draft skeleton — fill every `{...}` from the final run's `report/`.*
+*TikTok TechJam 2026, Track 2*
 
-## The problem
+## What we built
 
-Predict `long_view` (did the user watch ≥ min(duration, 18s)?) on KuaiRand-Pure, scored by
-within-user GAUC + nDCG@5 (primary = mean). The official FM baseline sits at **0.6016
-validation primary**; published SOTA-adjacent work (CWM, KDD'24) reaches GAUC ~0.71.
-The real challenge is the meta-task: build an agent that *autonomously* runs the
-research loop — hypothesize, implement, train, evaluate, decide — under a 50-iteration /
-6-hour budget, with every decision auditable.
+We built an autonomous ML research pipeline that turns each iteration into an auditable solution-tree node: a hypothesis, runnable script, diff, learning curve, official metrics, and any recovery event. The loop is **diagnose → select from cited method cards → implement → sigma-gated acceptance → official convergence**. A selector diagnoses the parent curve, chooses one eligible card from `agent/METHODS.md`, cites it, and records a rejected alternative. The proposer implements the smallest coherent whole-file change; the harness owns execution, rollback, and stopping.
 
-## Our agent architecture
+Seeds are mechanical: seed 42 explores, promising changes are confirmed at seeds 42/43/44, and the final pass trains a fixed five-seed ensemble. Compact cross-run memory prevents repeated failures; a reflector runs during stagnation and stores a final self-critique without automatically applying it. Recorded autonomous runs had **zero human interventions**.
 
-- **Solution tree, not a chat transcript.** Every iteration is a node: one whole runnable
-  script + metrics + a one-line journal entry. Each LLM call sees only the task brief,
-  the improvement MENU, the one-line-per-node journal, and the parent node's full code —
-  context stays flat at ~{X}K tokens no matter how long the run gets, and the static
-  prefix is byte-identical for prompt caching.
-- **Whole-file nodes.** The proposer always regenerates the complete script — no diff
-  application, no patch-failure mode; every node is independently runnable and the
-  harness computes diffs for the log itself.
-- **Harness-owned search policy** (the LLM never decides control flow): 3 initial drafts
-  from distinct strategy families; on failure, debug the same node to max depth 2;
-  otherwise greedily improve the current best node; forced branch to a different MENU
-  tier after 5 stagnant iterations. Timeouts, validity checks, best-node argmax, and
-  stopping (epsilon=0.002 over 3 iterations, cap 50 / 6h) all live in the harness.
-- **Noise-aware sigma acceptance rule.** We calibrate seed noise from 3 baseline seeds,
-  then accept a change only if delta ≥ 2*sigma (floor 0.002 = the official epsilon); deltas in
-  the 0–2*sigma band get one reseed confirmation run; everything else is reverted. No
-  seed-noise mirages in the final score, and convergence counts accepted deltas only.
-- **Role routing.** A frontier model writes drafts/improvements (and the judged
-  hypothesis text); a cheap model handles the mechanical roles — metric parsing,
-  bug classification, journal summarization, first-attempt debug fixes (escalating on
-  failure). Token split: {frontier tokens} / {cheap tokens}.
-- **Structural leakage guard.** The agent workspace mounts train/ and val/ only; the
-  test window exists solely in the harness's private dir and is touched exactly once,
-  by the final submission step.
+## How it addresses the problem statement
 
-## What the agent discovered
+The system maps directly to Track 2's three tasks. First, every run reproduces the official FM baseline; the designated run reproduced 0.601838 against the published 0.6016. Second, it iterates across architecture, objectives, features, regularization, data weighting, optimization, and ensembling using cited methods on train and validation only. Third, it designates one converged winner for the single final test submission and improves validation primary over baseline.
 
-{Narrative of the run: which hypotheses it tried, in what order, which were accepted
-and why — e.g. "iteration {n}: {hypothesis} → {+delta}". Pull from RUNLOG.md and
-trajectory.png. Call out at least one non-obvious accepted change and one
-instructive rejection/recovery.}
+KuaiRand-Pure runs end to end to the official convergence rule; interventions are counted; and smoke tests, timeouts, output validation, one fixer attempt, and route-around logic handle failures. Each journal contains the required hypothesis, parent diff, GAUC, nDCG@5, primary, and recovery record. Reports include iterations, wall-clock time, tokens, and GPU-hours.
 
-**Final result: validation primary {best_primary} ({+delta} over the 0.6016 baseline);
-test primary {test_primary}.** Trajectory chart and full per-iteration log attached.
+## Results
 
-## Resources
+The progression is concrete: official Pure baseline **0.6016** → compact single model **0.6047 ± 0.0003** over three seeds → five-seed per-user rank-average ensemble **0.60577**, a **+0.0042** validation-primary gain over baseline. The bonus KuaiRand-1K track is around 0.62, with the final submission value reserved as **{1K_FINAL}**; the frozen three-seed transfer measured 0.6134/0.6090/0.6156, mean 0.6127.
 
-- Iterations: {n_iterations} ({n_accepted} accepted / {n_rejected} rejected / {n_errors} errored)
-- Human interventions: {n_interventions}
-- Tokens: {tokens_in} in / {tokens_out} out (per-role split in results.md)
-- Wall-clock: {wall_clock} — GPU: {gpu_desc}
+The auditable ledger contains about **170 measured cells**; the broader requested experiment total is **{MEASURED_EXPERIMENTS}** until reconciled. Three levers survived: **DCN-lite**, **seven-day recency weighting**, and **strong joint regularization plus rapid learning-rate decay**. Sequence modeling was refuted; in the history campaign, its affinity prerequisite scored 0.6035001, only +0.0019001 over baseline, so DIN-lite was correctly gated off. Watch-time objectives also stayed below epsilon: ordinal watch ratio reached 0.6033 and the CWM-style censored auxiliary 0.6022.
 
-## Limitations
+The field curve showed “less is more.” At seed 42, the official five-field L0 model led at 0.604335; kitchen-sink L5 fell to 0.601740. With strong regularization, confirmed L0 reached **0.604660 ± 0.000309**, while strong L5 reached only 0.602991 at seed 42 and did not qualify for confirmation. User affinities, sparse user crosses, and co-visitation initialization likewise failed to beat the controlled stack. The useful signal was modest temporal distribution-shift correction, not more identities or capacity.
 
-- Greedy tree search is tuned for the 6h regime; over longer horizons it would need
-  broader exploration (multi-node beams, ensembling passes).
-- Sigma is calibrated once at run start from baseline seeds; heavier models may have
-  different noise profiles, so borderline acceptances carry some risk.
-- The MENU encodes human priors from the literature; the agent searches within it and
-  can only leave it via the forced-branch valve.
-- {Anything the run itself exposed.}
+## Methodology rigor
+
+We use a fixed **seed-42 explore → seeds 42/43/44 confirm** protocol. A win must clear the **0.002 epsilon floor**. Three baseline seeds calibrate sigma; changes at or above two sigma are accepted, grey-zone changes receive one reseed, and regressions are reverted. Convergence is three completed iterations without improvement above 0.002, with a 50-iteration or six-hour backstop.
+
+Leakage prevention is structural: hidden test data is physically absent from the train/validation workspace and available only to the private final-submission step. Final models are retrained on **train only**, following organizer guidance. Transfer was triangulated with full validation, a discounted short late-validation slice, and an evaluation-only random-exposure window. There the ensemble scored 0.381004285 and seed 42 scored 0.381385181; only relative ordering is meaningful because the exposure policy differs from hidden test.
+
+## Autonomy & feasibility
+
+The intervention count is machine-verifiable: every journal record has an `intervention` boolean, each run report aggregates it, and `logs/RUNS.md` records **0 interventions for all runs**. Recorded converged runs took approximately **10–25 minutes** (11.6–23.5 minutes in the run ledger) on CPU. Typical later runs used roughly **30–50k tokens per run**; the designated four-iteration journal records 9,758 input and 12,063 output tokens, or 21,821 total. Cross-run aggregate: **{TOKEN_TOTAL}**. GPU-hours were **0 (CPU-only)**.
+
+`gpt-5.6-sol` serves as selector, proposer, and reflector; `gpt-5.4-mini` is the fixer. The harness owns seeding, timeouts, acceptance, best-node selection, and convergence.
+
+## Dev tools, APIs, libraries, and datasets used
+
+- **Development/runtime:** Python 3.11, `uv`, Git, and the project harness.
+- **ML and analysis:** PyTorch, NumPy, Optuna, and Matplotlib.
+- **API:** OpenAI Responses API with direct HTTP integration and per-role token metering.
+- **Data and evaluation:** KuaiRand-Pure required benchmark, KuaiRand-1K bonus benchmark, and the organizer starter kit's official evaluator and submission schema. No external training data or pretrained weights were used.
+
+## Limitations & what's next
+
+The plateau around 0.6045–0.6055 appears structural at this scale: added fields, capacity, sequences, watch-time auxiliaries, and blends mostly overfit or land inside noise. Next we would test larger KuaiRand variants, recalibrate sigma for different model families, and broaden search beyond greedy improve-best.
+
+The division of labor is plain: the agent is an executor, not a director. A human designed the method-card space, search levers, safety constraints, and acceptance policy. The agent diagnosed runs, selected among those cited choices, wrote and repaired code, executed experiments, rejected unsupported gains, converged, and critiqued itself. Its autonomy is real within that deliberately human-authored research boundary.
