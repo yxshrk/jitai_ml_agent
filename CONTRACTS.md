@@ -85,6 +85,13 @@ seed/custom-draft inputs, and disables only card-reference suspicion routing.
 Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
 different menu tier after 5 stagnant iterations.
+With opt-in `--plan-budget`, immediately after calibration the harness makes one extra
+`reflector` call with the official convergence and acceptance rules, `max_iters`, and the
+calibration result. Its requested initial draft count is clamped to 2..6 and replaces the
+fixed three-slot opening. Its ordered card-family preferences are advisory to the selector,
+which must explain any deviation in `why`. The raw plan and clamped count are recorded as
+the iteration-0.5 `action: "plan"` journal record and persisted under `exploration_plan` in
+`summary.json`. Without the flag, the call, record, summary field, and selector note are absent.
 Before every draft/improve proposal, a separately metered selector diagnoses the parent
 learning curve and journal, chooses exactly one card from `agent/METHODS.md`, cites it,
 and records one rejected alternative. The selected card text and rationale are passed to

@@ -345,6 +345,7 @@ class Brain:
         enforce_family_exclusion: bool = False,
         dataset: str = "pure",
         prior_runs: str | None = None,
+        preference_note: str | None = None,
     ) -> dict:
         user = prompts.selector_user_prompt(
             method_cards_for_dataset(self.methods_text, dataset),
@@ -353,6 +354,7 @@ class Brain:
             enforce_family_exclusion=enforce_family_exclusion,
             dataset=dataset,
             prior_runs=prior_runs,
+            preference_note=preference_note,
         )
         text = self._call(
             "selector",
@@ -371,6 +373,34 @@ class Brain:
         if not isinstance(selection["rejected"], list):
             raise ValueError("selector rejected field must be a list")
         return selection
+
+    def plan_exploration(
+        self, calibration_result: dict, max_iters: int, method_families: list[str]
+    ) -> dict:
+        text = self._call(
+            "reflector",
+            prompts.EXPLORATION_PLAN_SYSTEM,
+            prompts.exploration_plan_user_prompt(
+                calibration_result, max_iters, method_families
+            ),
+            int(self.role_max_tokens.get("reflector", 1200)),
+        )
+        plan = extract_json_object(text)
+        required = {"initial_draft_slots", "family_priorities", "rationale"}
+        missing = required - plan.keys()
+        if missing:
+            raise ValueError(f"exploration plan missing fields: {sorted(missing)}")
+        slots = plan["initial_draft_slots"]
+        if isinstance(slots, bool) or not isinstance(slots, int):
+            raise ValueError("exploration plan initial_draft_slots must be an integer")
+        if not isinstance(plan["family_priorities"], list) or not all(
+            isinstance(family, str) and family.strip()
+            for family in plan["family_priorities"]
+        ):
+            raise ValueError("exploration plan family_priorities must be a list of strings")
+        if not isinstance(plan["rationale"], str) or not plan["rationale"].strip():
+            raise ValueError("exploration plan rationale must be a non-empty string")
+        return plan
 
     def fix(self, code: str, traceback_tail: str) -> str:
         text = self._call(

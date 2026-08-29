@@ -166,6 +166,8 @@ literature-reported expectations only.
 - status_pure: untried
 - status_1k: untried
 
+- member diversity: At run time, reason about whether seed diversity is enough or whether to write a custom node instead of calling `zoo/ensemble_node.py`. A custom node may train members with deliberately varied configurations around the champion (for example, different dropout, learning rate, or half-life choices) and rank-average their outputs. Configuration diversity can cancel correlated errors that seed diversity alone cannot, but one bad or outlier member can drag down the whole committee, so keep variations modest. This is an agent decision, not a prescribed range.
+
 ### item-aggregates: Train-window item/author target aggregates
 - mechanism: Add Bayesian-smoothed video and author long_view rates computed only on training dates. Candidate-varying rates can affect within-user order, unlike user-only rates.
 - treats: flat-signal | data-shift

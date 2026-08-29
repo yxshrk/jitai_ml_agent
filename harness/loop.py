@@ -91,6 +91,7 @@ class LoopConfig:
     dataset: str = "pure"
     knowledge_mode: str = "full"
     cross_run_path: Path = CROSS_RUN_PATH
+    plan_budget: bool = False
 
     def __post_init__(self) -> None:
         if self.context_mode not in ("compact", "full"):
@@ -134,6 +135,9 @@ class Loop:
         self.start_time = time.time()
         self.stop_reason: str | None = None
         self.prior_runs = ""
+        self.exploration_plan: dict | None = None
+        self.initial_draft_slots = len(config.draft_tiers)
+        self.calibration_result: dict | None = None
 
     # ---------- workspace & leakage guard ----------
 
@@ -274,6 +278,13 @@ class Loop:
     def record_calibration(self, primaries: list[float]) -> None:
         """Iteration-0 journal entry: the agent's own baseline reproduction (brief task req #1)."""
         mean = float(np.mean(primaries))
+        self.calibration_result = {
+            "seed_primaries": [round(p, 6) for p in primaries],
+            "mean": round(mean, 6),
+            "sigma": round(self.sigma, 6),
+            "published_valid_primary": 0.6016,
+            "pass": abs(mean - 0.6016) <= 0.003,
+        }
         record = {
             "n": 0, "node_id": "node_000", "parent": "baseline", "action": "reproduce_baseline",
             "hypothesis": "reproduce official FM baseline and calibrate seed noise",
@@ -285,10 +296,7 @@ class Loop:
             "method_selection": None,
             "metrics": self.champion.metrics if self.champion else {},
             "val_best_so_far": self.champion.primary if self.champion else 0.0,
-            "baseline_reproduction": {"seed_primaries": [round(p, 6) for p in primaries],
-                                       "mean": round(mean, 6), "sigma": round(self.sigma, 6),
-                                       "published_valid_primary": 0.6016,
-                                       "pass": abs(mean - 0.6016) <= 0.003},
+            "baseline_reproduction": self.calibration_result,
             "accepted": True, "duration_s": 0.0, "tokens_in": 0, "tokens_out": 0,
             "expected_delta": None, "expected_delta_basis": None, "realized_delta": None,
             "verdict_note": None,
@@ -300,6 +308,32 @@ class Loop:
         with self.journal_path.open("a") as handle:
             handle.write(json.dumps(record) + "\n")
 
+    def plan_exploration_budget(self) -> None:
+        """Make and record the single opt-in post-calibration planning call."""
+        method_families = sorted({
+            family
+            for method_id in getattr(self.brain, "method_cards", {})
+            for family in self.method_metadata(method_id)["treats"]
+        })
+        raw_plan = self.brain.plan_exploration(
+            dict(self.calibration_result or {}), self.config.max_iters, method_families
+        )
+        self.initial_draft_slots = min(6, max(2, raw_plan["initial_draft_slots"]))
+        self.exploration_plan = {
+            **raw_plan,
+            "n": 0.5,
+            "action": "plan",
+            "planned_draft_count": self.initial_draft_slots,
+            "raw_plan": raw_plan,
+            "context_mode": self.config.context_mode,
+            "knowledge_mode": self.config.knowledge_mode,
+            "tokens_in": self.brain.meter.last_in,
+            "tokens_out": self.brain.meter.last_out,
+            "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
+        }
+        with self.journal_path.open("a") as handle:
+            handle.write(json.dumps(self.exploration_plan) + "\n")
+
     # ---------- policy (harness-owned) ----------
 
     def next_move(self) -> tuple[str, Node, str | None]:
@@ -308,9 +342,14 @@ class Loop:
         last = self.nodes[max(self.nodes, key=lambda k: int(k.split("_")[1]))]
         if last.status in ("failed", "suspect_implementation") and last.debug_depth < 2:
             return "debug", last, None
-        if len(drafts) < len(self.config.draft_tiers):
-            tier = self.config.draft_tiers[len(drafts)]
-            return "draft", self.champion, f"draft from {tier} of the menu"
+        if len(drafts) < self.initial_draft_slots:
+            slot = len(drafts)
+            if slot < len(self.config.draft_tiers):
+                tier = self.config.draft_tiers[slot]
+                return "draft", self.champion, f"draft from {tier} of the menu"
+            return "draft", self.champion, (
+                f"planned initial draft slot {slot + 1} of {self.initial_draft_slots}"
+            )
         if self.stagnation >= self.config.stagnation_limit:
             tried = {n.tier for n in self.nodes.values() if n.tier}
             untried = [t for t in ALL_TIERS if t not in tried and t not in self.forced_tiers_used]
@@ -373,21 +412,26 @@ class Loop:
     def select_method(self, parent_history: list, streak_state: dict,
                       mode: str) -> dict:
         excluded = self.excluded_draft_families() if mode == "draft" else []
+        selector_kwargs = {
+            "excluded_families": excluded,
+            "dataset": self.config.dataset,
+            "prior_runs": self.prior_runs,
+        }
+        if self.exploration_plan is not None:
+            selector_kwargs["preference_note"] = (
+                "Prioritize these card families in order: "
+                + ", ".join(self.exploration_plan["family_priorities"])
+                + ". Planner rationale: " + self.exploration_plan["rationale"]
+            )
         selection = self.brain.select_method(
-            self.journal_lines, parent_history, streak_state,
-            excluded_families=excluded,
-            dataset=self.config.dataset,
-            prior_runs=self.prior_runs,
+            self.journal_lines, parent_history, streak_state, **selector_kwargs
         )
         eligible = self.eligible_unexcluded_methods(excluded)
         if mode != "draft" or not eligible or selection.get("chosen_method_id") in eligible:
             return selection
         selection = self.brain.select_method(
             self.journal_lines, parent_history, streak_state,
-            excluded_families=excluded,
-            enforce_family_exclusion=True,
-            dataset=self.config.dataset,
-            prior_runs=self.prior_runs,
+            enforce_family_exclusion=True, **selector_kwargs
         )
         if selection.get("chosen_method_id") in eligible:
             return selection
@@ -642,6 +686,8 @@ class Loop:
         self.prior_runs = self.read_cross_run()
         self.prepare_workspace()
         self.calibrate()
+        if self.config.plan_budget:
+            self.plan_exploration_budget()
         n = 0
         n = self.seed_reference_nodes(n)
         while n < self.config.max_iters:
@@ -677,6 +723,8 @@ class Loop:
             "wall_s": round(time.time() - self.start_time, 1),
             "self_critique": self_critique,
         }
+        if self.exploration_plan is not None:
+            summary["exploration_plan"] = self.exploration_plan
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         self.append_cross_run(summary, self_critique)
         return summary

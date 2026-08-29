@@ -6,6 +6,8 @@ served from the prompt cache (agent-design.md decision 5).
 
 from __future__ import annotations
 
+import json
+
 TASK_BRIEF = """\
 You are an autonomous ML research agent improving a short-video recommender.
 
@@ -100,6 +102,15 @@ the completed run journal and outcome. Be concrete, candid, and concise. This
 text is archival only and will not be applied automatically. Plain text only.
 """
 
+EXPLORATION_PLAN_SYSTEM = """\
+You plan the exploration budget for an autonomous ML research harness. Use the
+calibration evidence and fixed harness rules to allocate initial exploration
+without changing acceptance or stopping policy. Return one JSON object only:
+{"initial_draft_slots": <integer>,
+ "family_priorities": ["<method-card family>", "<next family>", "..."],
+ "rationale": "<concise evidence-based rationale>"}
+"""
+
 SELECTOR_SYSTEM = """\
 You diagnose an ML run and select exactly one implementation method from a
 method-card library. Respect cards whose active status marks them unavailable.
@@ -136,6 +147,7 @@ def selector_user_prompt(
     enforce_family_exclusion: bool = False,
     dataset: str = "pure",
     prior_runs: str | None = None,
+    preference_note: str | None = None,
 ) -> str:
     history = parent_history or []
     if history:
@@ -158,7 +170,7 @@ def selector_user_prompt(
             "\nSTRICT RETRY: the previous choice violated this constraint. You MUST choose "
             "an eligible unexcluded family now if any remains."
         )
-    return "\n\n".join([
+    parts = [
         f"## Active dataset\n{dataset}",
         (
             "## Prior runs (do not repeat failed openings)\n"
@@ -176,8 +188,16 @@ def selector_user_prompt(
         ),
         _streak_section(streak_state),
         diversity,
-        "Respond with the selector JSON object only.",
-    ])
+    ]
+    if preference_note:
+        parts.append(
+            "## Exploration-plan preference (advisory)\n"
+            + preference_note
+            + "\nYou may deviate when the run evidence supports another card, but if you do, "
+              "state the reason explicitly in the selector `why` field."
+        )
+    parts.append("Respond with the selector JSON object only.")
+    return "\n\n".join(parts)
 
 
 def proposer_user_prompt(
@@ -252,6 +272,29 @@ def reflector_user_prompt(menu: str, journal_lines: list[str], method_ids: list[
         f"## Improvement menu\n{menu}\n\n"
         "## Method-card ids\n" + ", ".join(method_ids) + "\n\n"
         "## Journal\n" + "\n".join(journal_lines) + "\n\nWrite the focus note."
+    )
+
+
+def exploration_plan_user_prompt(
+    calibration_result: dict, max_iters: int, method_families: list[str]
+) -> str:
+    return (
+        "## Official convergence rules\n"
+        "epsilon = 0.002; stop after N = 3 consecutive completed iterations whose "
+        "best-so-far improvement is not greater than epsilon.\n\n"
+        f"## Iteration cap\nmax_iters = {max_iters}\n\n"
+        "## Acceptance protocol\n"
+        "Calibrate sigma from 3 baseline seeds. Accept a candidate when delta >= "
+        "max(2*sigma, 0.002). For a positive delta below that threshold, run one "
+        "reseed confirmation and accept only when mean delta >= max(sigma, 0.001); "
+        "otherwise reject and revert.\n\n"
+        "## Calibration result\n"
+        + json.dumps(calibration_result, sort_keys=True)
+        + "\n\n## Available method-card families\n"
+        + ", ".join(method_families)
+        + "\n\nPlan the initial exploration budget: choose the number of initial draft slots "
+          "and rank the method-card families to prioritize. The harness will clamp "
+          "initial_draft_slots to 2..6. Return the plan JSON only."
     )
 
 

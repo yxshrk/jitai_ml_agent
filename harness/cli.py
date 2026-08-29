@@ -42,6 +42,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="comma-separated script paths run as disclosed initial reference nodes")
     run.add_argument("--draft-tiers", type=str, default=None,
                      help="comma-separated directives for initial drafts, e.g. 'Tier 4,Tier 4,CURRENT DIRECTIVE'")
+    run.add_argument("--plan-budget", action="store_true",
+                     help="ask the reflector to plan 2..6 initial draft slots after calibration")
     run.add_argument("--context-mode", choices=["compact", "full"], default="compact",
                      help="proposer history: journal one-liners or bounded full node evidence")
     run.add_argument("--dataset", choices=["pure", "1k"], default="pure",
@@ -86,6 +88,7 @@ def main(argv: list[str] | None = None) -> int:
         context_mode=args.context_mode,
         dataset=args.dataset,
         knowledge_mode=args.knowledge,
+        plan_budget=args.plan_budget,
     )
     if args.dry_run:
         from agent.fake_brain import FakeBrain

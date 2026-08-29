@@ -8,7 +8,14 @@ import pytest
 
 from agent.fake_brain import FakeBrain, canned_script
 from agent import prompts
-from agent.brain import CLEAN_METHODS_PATH, Brain, method_cards_for_dataset, parse_method_card_metadata
+from agent.brain import (
+    CLEAN_METHODS_PATH,
+    METHODS_PATH,
+    Brain,
+    method_cards_for_dataset,
+    parse_method_card_metadata,
+    parse_method_cards,
+)
 from harness.cli import CLEAN_TASK_CONTEXT, build_parser, main
 from harness.loop import ROOT, LeakageError, Loop, LoopConfig, Node, RunResult
 
@@ -62,6 +69,17 @@ def test_cli_accepts_full_context_mode():
         "run", "--data-dir", str(DATA_DIR), "--context-mode", "full", "--dry-run",
     ])
     assert args.context_mode == "full"
+
+
+def test_cli_plan_budget_defaults_off_and_is_opt_in():
+    default = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--dry-run",
+    ])
+    enabled = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--plan-budget", "--dry-run",
+    ])
+    assert default.plan_budget is False
+    assert enabled.plan_budget is True
 
 
 def test_cli_dataset_defaults_to_pure_and_accepts_1k():
@@ -138,6 +156,119 @@ def test_dry_run_journal_conforms_to_contract(tmp_path):
     # best node artifacts exist
     assert (loop.run_dir / "nodes" / "001.py").exists()
     assert summary["best_metrics"]["primary"] > 0
+
+
+class PlanningBrain(FakeBrain):
+    def __init__(self, initial_draft_slots: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.plan = {
+            "initial_draft_slots": initial_draft_slots,
+            "family_priorities": ["metric-mismatch", "flat-signal"],
+            "rationale": "Calibration noise is low enough to test distinct families first.",
+        }
+        self.plan_requests = []
+        self.preference_notes = []
+
+    def plan_exploration(self, calibration_result, max_iters, method_families):
+        self.plan_requests.append({
+            "calibration_result": calibration_result,
+            "max_iters": max_iters,
+            "method_families": method_families,
+        })
+        self.meter.add("fake/fake/reflector", 70, 30)
+        return dict(self.plan)
+
+    def select_method(self, *args, preference_note=None, **kwargs):
+        self.preference_notes.append(preference_note)
+        return super().select_method(*args, **kwargs)
+
+
+def test_plan_budget_records_iteration_half_and_summary(tmp_path):
+    brain = PlanningBrain(4, "", root=str(ROOT))
+    loop = make_loop(tmp_path, brain, max_iters=1, plan_budget=True)
+
+    summary = loop.run()
+
+    records = [json.loads(line) for line in loop.journal_path.read_text().splitlines()]
+    plan_record = records[1]
+    assert plan_record == summary["exploration_plan"]
+    assert plan_record["n"] == 0.5
+    assert plan_record["action"] == "plan"
+    assert plan_record["initial_draft_slots"] == 4
+    assert plan_record["planned_draft_count"] == 4
+    assert plan_record["family_priorities"] == ["metric-mismatch", "flat-signal"]
+    assert plan_record["rationale"] == brain.plan["rationale"]
+    assert plan_record["raw_plan"] == brain.plan
+    assert json.loads((loop.run_dir / "summary.json").read_text())["exploration_plan"] == plan_record
+    assert brain.plan_requests == [{
+        "calibration_result": records[0]["baseline_reproduction"],
+        "max_iters": 1,
+        "method_families": sorted({
+            family
+            for card in brain.method_cards.values()
+            for family in parse_method_card_metadata(card)["treats"]
+        }),
+    }]
+    assert "metric-mismatch, flat-signal" in brain.preference_notes[0]
+    assert brain.meter.per_role["fake/fake/reflector"]["calls"] == 2
+
+
+@pytest.mark.parametrize(("requested", "clamped"), [(1, 2), (9, 6)])
+def test_plan_budget_clamps_initial_draft_slots(tmp_path, requested, clamped):
+    brain = PlanningBrain(requested, "", root=str(ROOT))
+    loop = make_loop(tmp_path, brain, plan_budget=True)
+    loop.nodes_dir.mkdir(parents=True)
+    loop.calibration_result = {"mean": 0.6016, "sigma": 0.003}
+    _seed_champion(loop)
+
+    loop.plan_exploration_budget()
+
+    assert loop.initial_draft_slots == clamped
+    assert loop.exploration_plan["initial_draft_slots"] == requested
+    assert loop.exploration_plan["planned_draft_count"] == clamped
+    for n in range(1, clamped):
+        node = Node(
+            f"node_{n:03d}", "node_000", "draft", "planned draft",
+            loop.nodes_dir / f"{n:03d}.py",
+        )
+        node.status = "rejected"
+        loop.nodes[node.node_id] = node
+    assert loop.next_move()[0] == "draft"
+    final = Node(
+        f"node_{clamped:03d}", "node_000", "draft", "final planned draft",
+        loop.nodes_dir / f"{clamped:03d}.py",
+    )
+    final.status = "rejected"
+    loop.nodes[final.node_id] = final
+    assert loop.next_move()[0] == "improve"
+
+
+def test_plan_prompts_include_fixed_rules_and_advisory_deviation_contract():
+    plan_prompt = prompts.exploration_plan_user_prompt(
+        {"mean": 0.6016, "sigma": 0.003}, max_iters=17,
+        method_families=["flat-signal", "metric-mismatch"],
+    )
+    assert "epsilon = 0.002" in plan_prompt
+    assert "N = 3 consecutive" in plan_prompt
+    assert "max_iters = 17" in plan_prompt
+    assert "max(2*sigma, 0.002)" in plan_prompt
+    assert '"mean": 0.6016' in plan_prompt
+    assert "flat-signal, metric-mismatch" in plan_prompt
+    selector_prompt = prompts.selector_user_prompt(
+        "### card: Card", [], [], {}, preference_note="Prefer flat-signal first."
+    )
+    assert "Prefer flat-signal first." in selector_prompt
+    assert "state the reason explicitly" in selector_prompt
+
+
+def test_seed_ensemble_cards_include_runtime_member_diversity_tradeoff():
+    for path in (METHODS_PATH, CLEAN_METHODS_PATH):
+        card = parse_method_cards(path.read_text())["seed-ensemble"]
+        assert "write a custom node instead of calling `zoo/ensemble_node.py`" in card
+        assert "dropout, learning rate, or half-life" in card
+        assert "Configuration diversity can cancel correlated errors" in card
+        assert "one bad or outlier member can drag down the whole committee" in card
+        assert "This is an agent decision, not a prescribed range" in card
 
 
 def _seed_champion(loop: Loop, primary: float = 0.70) -> None:
