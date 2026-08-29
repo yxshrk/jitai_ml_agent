@@ -316,3 +316,153 @@ Scaffold changes:
 
 Next run:
 First preserve k=16 and target the observed late-epoch overfit with stronger embedding/model regularization—e.g. a small 2–4× L2 increase or modest embedding dropout around 0.05–0.10—while keeping the loss and optimizer fixed. Test a narrow sweep and replicate the best setting. If that fails, try k=12 rather than the coarse k=8 reduction. Revisit the censored watch-ratio loss only afterward, with much smaller weights and an explicit ablation showing that its target is aligned with validation primary.
+
+## Run logs/run_planner_02
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: A three-seed per-user rank-averaged ensemble of the unchanged | primary: 0.602730 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+- The policy stopped far too early: only one substantive alternative was evaluated. Two proposal-generation failures out of four nodes indicate scaffold fragility, not search convergence.
+- The ensemble scored 0.6027 versus 0.601838, an observed gain of about 0.00086. Rejecting it because the hypothesis predicted at least +0.002 confuses hypothesis calibration with model selection. Given the reported sigma of 0.0001, this gain may be meaningful and should at least have triggered replication. If ensemble complexity is penalized, that criterion should be explicit.
+- node_002 was attached to failed node_001 rather than the last valid node. Failed proposals should not become parents or disrupt lineage.
+- The baseline sigma looks implausibly precise unless estimated from repeated training and validation resampling. A single validation split plus seed variation does not establish generalization uncertainty.
+- The search was too narrow: no FM rank, regularization, learning-rate, epoch/early-stopping, feature-processing, or loss/objective exploration was recorded.
+
+Scaffold changes
+
+- Validate proposals before creating nodes: require a complete executable config, valid parent, and bounded resource request. On generation failure, retry with a simpler template rather than consuming a search branch.
+- Separate predicted effect size from acceptance. Accept based on measured improvement, uncertainty, compute/model-size constraints, and replication—not whether the proposal’s numerical forecast was accurate.
+- Preserve any improved result as a candidate even if it misses its forecast.
+- Require a minimum number of valid experiments before declaring convergence.
+- Add automatic replication when a result exceeds estimated noise, and report mean, standard deviation, and per-seed scores.
+
+What the next run should try first
+
+Re-run the k=16 FM and three-seed rank ensemble across matched seeds to verify the +0.00086 gain. In parallel, run a small controlled sweep around the baseline—FM rank (for example 8/16/32), regularization, and learning rate—using identical splits and at least three seeds. Select by replicated mean primary score, then test whether ensembling the best two diverse configurations improves beyond simple same-model seed averaging.
+
+## Run logs/run_planner_01
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: A three-seed rank-or-score-averaged FM ensemble will improve validation | primary: 0.592288 | verdict: rejected
+- node_003 | method: regularization-schedule | hypothesis: Because validation primary peaks and then declines while | primary: 0.600779 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run converged prematurely. It established a strong baseline, but only evaluated two substantive alternatives, neither as a clean, diagnostic experiment. There is not enough evidence to conclude the search space was exhausted.
+
+What the harness/policy did suboptimally
+
+- It allowed a failed proposal node to become the parent of node_002. Experiments should branch from the latest valid checkpoint or explicitly inherit from node_000 after proposal failure.
+- The ensemble test was underdiagnosed. A drop from 0.6018 to 0.5923 is far larger than the hypothesized variance reduction and suggests weak component seeds, inconsistent checkpointing, or an averaging/ranking implementation problem. Per-seed scores and pairwise prediction correlations should have been recorded before rejecting ensembling.
+- Node_003 changed too many factors simultaneously: embedding dropout, embedding L2, AdamW weight decay, and rapid LR decay. Its small regression cannot identify which intervention helped or hurt.
+- The regularization hypothesis was not well matched to the observation. If validation peaks before training ends, checkpoint selection or earlier stopping is the cheapest first intervention; aggressive compound regularization is not.
+- The baseline sigma of 0.0001 appears implausibly precise unless it came from repeated independent training runs. If it was only evaluator noise, it should not be used as a measure of training variance.
+- “Converged” after one failed proposal and two rejected experiments is too aggressive. The policy should require a minimum number of valid, orthogonal trials and at least one local hyperparameter sweep before stopping.
+
+What I would change in the scaffold
+
+- Never inherit from failed nodes; automatically rebase recovery experiments onto the nearest valid ancestor.
+- Require every experiment to vary one principal factor unless explicitly labeled as a factorial test.
+- Log per-seed validation scores, selected epochs, prediction correlations, and ensemble composition.
+- Separate evaluator uncertainty from seed-to-seed training variance.
+- Add sanity gates for ensembles: verify identical row order, score orientation, checkpoint policy, and that each member is competitive with baseline.
+- Use confidence-aware stopping based on valid experiment count and search coverage, not merely consecutive rejections.
+- Convert observed learning-curve behavior into targeted actions: first checkpoint/early-stopping tuning, then individual regularizers.
+
+What the next run should try first
+
+First, reproduce node_000 across three seeds while saving the best-validation checkpoint for each seed. Report each seed separately. If the seeds remain near 0.6018, ensemble only those verified checkpoints and compare raw-score averaging with rank averaging. If seed variance is large, retain the best seed/checkpoint rather than assuming ensembling will help.
+
+After that, run a small one-factor sweep around the baseline:
+
+1. Earlier checkpoint selection or reduced patience.
+2. Learning-rate schedule only.
+3. Weight decay only.
+4. Embedding dropout only, using modest values below 0.30.
+
+The highest-priority experiment is checkpoint/early-stopping tuning because it directly addresses the reported validation peak without introducing confounded regularization changes.
+
+## Run logs/run_desig_seeded_01
+dataset: pure
+stop_reason: converged
+best_primary: 0.604998
+- node_001 | method: none | hypothesis: team-provided reference implementation: frozen_stack.py (from MENU frozen stack) | primary: 0.604998 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: Because the champion's validation primary peaks at epoch | primary: 0.605137 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_004 | method: none | hypothesis: Raw-score averaging three independently seeded DCN-lite hybrid-loss models, | primary: 0.603059 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a meaningful improvement by adopting the supplied frozen-stack reference (+0.0032 over FM), but did little productive research afterward. Declaring convergence after two ensemble variants, one failed proposal, and one weaker architecture is premature.
+
+Harness/policy issues
+
+- Search became narrowly fixated on ensembling. Both post-champion executable ideas averaged highly correlated models, without first establishing that seed variance was large enough to justify it.
+- Node_002’s 0.6051 versus the recorded best 0.604998 needs clearer accounting. If it was rejected due to noise, cost, or an acceptance margin, the journal should report the exact unrounded delta, uncertainty, and rejection rule.
+- Uncertainty handling was inconsistent. The baseline reports sigma=0.0001, while later comparisons do not show replicate variance or confidence intervals.
+- Node_003 failed without a recorded failure category or actionable diagnosis. Node_004 then branched from the failed node rather than cleanly returning to the champion.
+- The DCN-lite experiment simultaneously changed architecture, loss, seeds, checkpoint selection, and aggregation. Its regression to 0.6031 is therefore hard to interpret.
+- The stopping policy was too aggressive. There were no targeted ablations of the champion, regularization studies, loss-weight tests, feature-group tests, or checkpoint-averaging tests.
+- The reference implementation appears twice as both node_001 and a seed, making lineage and experiment counting ambiguous.
+
+Scaffold changes
+
+- After any failure or rejection, branch subsequent work from the current champion unless debugging that exact failure.
+- Require proposals to include one main change, a mechanism, expected effect size, and a cheap diagnostic that can falsify the premise.
+- Before launching seed ensembles, measure seed variance with a small replicate study. Do not ensemble when expected gain is below the acceptance/noise threshold.
+- Record full-precision metrics, seed variance, compute cost, and the explicit accept/reject threshold.
+- Separate architecture, objective, checkpointing, and aggregation into interpretable ablations.
+- Add a failure taxonomy and preserve stderr/traceback summaries.
+- Require broader coverage before convergence: at least champion ablations across optimization, regularization, objective, and feature/model structure, or a documented reason each is inapplicable.
+
+What the next run should try first
+
+Start from frozen_stack.py and run a controlled checkpoint/regularization ablation around its epoch-3.5 peak: denser validation checkpoints, early stopping, modest weight-decay/dropout changes, and checkpoint averaging across adjacent epochs within one seed. This directly addresses the observed late-epoch decline and is cheaper and more interpretable than three-seed rank averaging.
+
+If that does not produce a reproducible gain, test one objective-level change aligned with the primary metric—such as a carefully weighted ranking/hybrid loss—while holding the frozen-stack architecture and all other settings fixed. Only revisit multi-seed ensembling after demonstrating material seed variance and a projected gain above the acceptance threshold.
+
+## Run logs/run_desig_seeded_02
+dataset: pure
+stop_reason: converged
+best_primary: 0.604998
+- node_001 | method: none | hypothesis: team-provided reference implementation: frozen_stack.py (from MENU frozen stack) | primary: 0.604998 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: The champion’s mild overfit after epoch 3.5 indicates | primary: 0.605122 | verdict: rejected
+- node_003 | method: regularization-schedule | hypothesis: Diagnosis: validation GAUC peaks around epochs 3.5-4 and | primary: 0.601965 | verdict: rejected
+- node_004 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+What was suboptimal
+
+- The search effectively stopped at the provided seed. Node_001 was imported and then recorded again as a seed, but only two substantive alternatives were evaluated before convergence. That is too little exploration to justify convergence.
+- Node_002 reportedly scored 0.6051 versus the champion’s 0.6050 yet was rejected. This may be due to unrounded values, significance rules, cost, or a holdout criterion, but the journal does not expose the reason. Acceptance decisions must include full-precision deltas and the gating criterion.
+- The baseline sigma of 0.0001 was reported, but uncertainty was not established for the champion or challengers. A nominal improvement near 0.0001 cannot be interpreted reliably without repeated seeds or paired evaluation.
+- Node_002 jumped directly to a five-replica ensemble. That is expensive and confounds whether any benefit comes from seed averaging, checkpoint selection, or rank averaging.
+- Node_003 bundled dropout, embedding L2, AdamW decay, and aggressive LR decay. Its failure provides almost no information about which change hurt. The claimed +0.003 gain was also poorly calibrated relative to the observed narrow plateau.
+- Node_004 failed without an actionable error record or recovery attempt. A failed proposal should not consume the final branch silently.
+- The policy overfocused on overfitting around epochs 3.5–4 without first testing the simplest implication: earlier stopping or checkpoint averaging within the existing run.
+
+Scaffold changes
+
+- Log full-precision metrics, delta from parent, runtime/cost, all acceptance thresholds, and an explicit rejection reason.
+- Require repeated-seed or paired-bootstrap uncertainty for deltas near the noise floor.
+- Do not count importing the supplied seed as a separate experimental success.
+- Prefer one-factor mutations; allow packages only after component ablations support them.
+- Add branch diversity requirements before declaring convergence: optimization, regularization, architecture/features, and inference/checkpointing should each receive at least one controlled test.
+- Capture traceback/configuration for failures and automatically retry once with the smallest safe correction.
+- Separate “best raw metric” from “promoted champion” when cost, robustness, or significance gates prevent acceptance.
+
+What the next run should try first
+
+1. Reproduce frozen_stack.py across 3–5 seeds and report mean, standard deviation, and paired per-user GAUC differences.
+2. On the same runs, compare the best single checkpoint against averaging predictions from nearby plateau checkpoints, such as epochs 3.0–4.5. This isolates checkpoint variance without training five extra ensemble members.
+3. Sweep only early stopping/checkpoint epoch and, if needed, LR decay strength. Avoid changing dropout, L2, optimizer decay, and schedule simultaneously.
+4. If seed averaging is consistently beneficial, test a two-member ensemble before five members and measure gain per unit of inference cost.
+5. Only after that, run single-factor regularization ablations around the champion, starting with modest dropout or weight decay rather than the aggressive package used in node_003.

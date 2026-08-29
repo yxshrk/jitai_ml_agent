@@ -1,9 +1,8 @@
 """Build and validate the final submission CSV (row_id,user_id,video_id,score).
 
 Mirrors the official starter-kit submit.py --check validations
-(../starter-kit/kuairand-starter-kit/submit.py), but takes the evaluation
-split as a plain CSV (columns include user_id,video_id in row order) instead
-of needing the real KuaiRand data dir.
+(../starter-kit/kuairand-starter-kit/submit.py), using either an evaluation CSV
+or a label-free test feature NPZ containing user_id/video_id in row order.
 
 Checks performed by `check`:
   - header is exactly row_id,user_id,video_id,score
@@ -16,6 +15,7 @@ Checks performed by `check`:
 Usage:
   uv run python evidence/submission.py --make  predictions.csv split.csv out.csv
   uv run python evidence/submission.py --check submission.csv  split.csv
+  uv run python evidence/submission.py --check submission.csv  data/test_features/test.npz
 """
 
 from __future__ import annotations
@@ -24,7 +24,10 @@ import argparse
 import csv
 import math
 import sys
+from collections.abc import Sequence
 from pathlib import Path
+
+import numpy as np
 
 HEADER = ["row_id", "user_id", "video_id", "score"]
 
@@ -33,8 +36,41 @@ class SubmissionError(ValueError):
     pass
 
 
-def load_split(split_path: str | Path) -> list[tuple[str, str]]:
+class _NpzRows(Sequence[tuple[str, str]]):
+    """Compact row-order view for large test archives (notably KuaiRand-1K)."""
+
+    def __init__(self, users: np.ndarray, videos: np.ndarray):
+        self.users = users
+        self.videos = videos
+
+    def __len__(self) -> int:
+        return len(self.users)
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return [self[position] for position in range(*index.indices(len(self)))]
+        return str(int(self.users[index])), str(int(self.videos[index]))
+
+
+def load_split(split_path: str | Path) -> Sequence[tuple[str, str]]:
     """Read the split file; return [(user_id, video_id), ...] in row order."""
+    if Path(split_path).suffix == ".npz":
+        with np.load(split_path, allow_pickle=False) as archive:
+            forbidden = {"y", "label", "labels", "long_view"}.intersection(archive.files)
+            if forbidden:
+                raise SubmissionError(
+                    f"test feature archive must be label-free; found {sorted(forbidden)}"
+                )
+            required = {"user_id", "video_id"}
+            if not required.issubset(archive.files):
+                raise SubmissionError(
+                    f"split archive must contain {sorted(required)}, got {archive.files}"
+                )
+            users = np.asarray(archive["user_id"])
+            videos = np.asarray(archive["video_id"])
+        if len(users) != len(videos):
+            raise SubmissionError("split archive user_id/video_id lengths differ")
+        return _NpzRows(users, videos)
     with open(split_path, newline="") as fh:
         r = csv.reader(fh)
         head = next(r, None)
@@ -85,9 +121,11 @@ def build(predictions_path: str | Path, split_path: str | Path, out_path: str | 
     return len(rows)
 
 
-def check(submission_path: str | Path, split_path: str | Path) -> list[float]:
+def check(submission_path: str | Path, split_path: str | Path, *,
+          return_scores: bool = True) -> list[float] | int:
     """Validate a submission CSV against the split. Raises SubmissionError on
-    any malformation; returns the scores on success."""
+    any malformation. Return scores by default, or just the row count when
+    ``return_scores=False`` to keep large 1K checks memory-bounded."""
     rows = load_split(split_path)
     with open(submission_path, newline="") as fh:
         r = csv.reader(fh)
@@ -124,13 +162,14 @@ def check(submission_path: str | Path, split_path: str | Path) -> list[float]:
                 raise SubmissionError(f"line {ln}: score {sc!r} is not a number")
             if math.isnan(v) or math.isinf(v):
                 raise SubmissionError(f"line {ln}: score is NaN/Inf, not allowed")
-            scores.append(v)
+            if return_scores:
+                scores.append(v)
             n += 1
     if n != len(rows):
         raise SubmissionError(
             f"submission has {n} rows, split has {len(rows)} - count mismatch"
         )
-    return scores
+    return scores if return_scores else n
 
 
 def main() -> None:
