@@ -19,6 +19,7 @@ logs/run_official_*/node_*/
 *.egg-info
 logs/spend.*
 data/real_ws/
+data/real_ws_27k/
 data/random_probe/
 data/real_ws_1k/
 data/random_probe/
