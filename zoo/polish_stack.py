@@ -40,6 +40,7 @@ def parser(description: str = __doc__) -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=description)
     ap.add_argument("--data-dir", default="data/real_ws")
     ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--device", choices=("cpu", "cuda", "mps"), default="cpu")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--batch-size", type=int, choices=(4096, 8192, 16384), default=8192)
@@ -171,15 +172,17 @@ class PairSampler:
 
 class DCNLite(nn.Module):
     def __init__(self, total_dim: int, n_fields: int, k: int, dropout: float,
-                 embedding_dropout: float):
+                 embedding_dropout: float, device: torch.device | None = None):
         super().__init__()
-        self.embedding = nn.Embedding(total_dim, k)
+        factory_kwargs = {} if device is None else {"device": device}
+        self.embedding = nn.Embedding(total_dim, k, **factory_kwargs)
         nn.init.normal_(self.embedding.weight, std=0.01)
         self.embedding_dropout = nn.Dropout(embedding_dropout)
         width = n_fields * k
-        self.cross = nn.Linear(width, width)
-        self.mlp = nn.Sequential(nn.Linear(width, 128), nn.ReLU(), nn.Dropout(dropout))
-        self.head = nn.Linear(128, 1)
+        self.cross = nn.Linear(width, width, **factory_kwargs)
+        self.mlp = nn.Sequential(nn.Linear(width, 128, **factory_kwargs), nn.ReLU(),
+                                 nn.Dropout(dropout))
+        self.head = nn.Linear(128, 1, **factory_kwargs)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x0 = self.embedding_dropout(self.embedding(x)).flatten(1)
@@ -205,22 +208,37 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
     set_seed(args.seed)
     rng = np.random.default_rng(args.seed)
     tr, va = ds["train"], ds["valid"]
+    device = torch.device(args.device)
     train_x = torch.as_tensor(np.ascontiguousarray(tr["X"]), dtype=torch.long)
     train_y = torch.as_tensor(tr["y"], dtype=torch.float32)
     train_weights = torch.as_tensor(recency_weights(tr["date"], args.recency_half_life))
     valid_x = torch.as_tensor(np.ascontiguousarray(va["X"]), dtype=torch.long)
+    if device.type == "cuda":
+        train_x = train_x.pin_memory()
+        train_y = train_y.pin_memory()
+        train_weights = train_weights.pin_memory()
+        valid_x = valid_x.pin_memory()
+    model_device = None if device.type == "cpu" else device
     model = DCNLite(ds["field_dims_total"], train_x.shape[1], args.k, args.dropout,
-                    args.embedding_dropout)
+                    args.embedding_dropout, model_device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     sampler = PairSampler(tr["users"], tr["y"])
+
+    def transfer(batch: torch.Tensor) -> torch.Tensor:
+        if device.type == "cpu":
+            return batch
+        return batch.to(device, non_blocking=device.type == "cuda")
 
     def predict() -> np.ndarray:
         model.eval()
         with torch.no_grad():
-            chunks = [model(valid_x[start:start + 200_000])
+            chunks = [model(transfer(valid_x[start:start + 200_000]))
                       for start in range(0, len(valid_x), 200_000)]
         model.train()
-        return torch.cat(chunks).numpy()
+        predictions = torch.cat(chunks)
+        if device.type != "cpu":
+            predictions = predictions.cpu()
+        return predictions.numpy()
 
     point_order = np.arange(len(train_y))
     half_size = math.ceil(len(train_y) / 2)
@@ -250,17 +268,23 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
                 for batch in range(batches):
                     idx_np = half_rows[batch * args.batch_size:(batch + 1) * args.batch_size]
                     idx = torch.as_tensor(idx_np, dtype=torch.long)
-                    logits, weights = model(train_x[idx]), train_weights[idx]
+                    batch_x = transfer(train_x[idx])
+                    batch_y = transfer(train_y[idx])
+                    weights = transfer(train_weights[idx])
+                    logits = model(batch_x)
                     point = nn.functional.binary_cross_entropy_with_logits(
-                        logits, train_y[idx], reduction="none")
+                        logits, batch_y, reduction="none")
                     point_loss = (point * weights).sum() / weights.sum()
                     pair_begin = ((half * batches + batch) * len(pair_pos)) // (2 * batches)
                     pair_end = ((half * batches + batch + 1) * len(pair_pos)) // (2 * batches)
                     if pair_end > pair_begin:
                         positive = torch.as_tensor(pair_pos[pair_begin:pair_end], dtype=torch.long)
                         negative = torch.as_tensor(pair_neg[pair_begin:pair_end], dtype=torch.long)
-                        pair = nn.functional.softplus(model(train_x[negative]) - model(train_x[positive]))
-                        pair_weights = 0.5 * (train_weights[positive] + train_weights[negative])
+                        negative_x = transfer(train_x[negative])
+                        positive_x = transfer(train_x[positive])
+                        pair = nn.functional.softplus(model(negative_x) - model(positive_x))
+                        pair_weights = 0.5 * transfer(
+                            train_weights[positive] + train_weights[negative])
                         pair_loss = (pair * pair_weights).sum() / pair_weights.sum()
                     else:
                         pair_loss = point_loss * 0.0
