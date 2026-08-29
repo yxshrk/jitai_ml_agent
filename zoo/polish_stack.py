@@ -222,10 +222,11 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
     train_weights = torch.as_tensor(recency_weights(tr["date"], args.recency_half_life))
     valid_x = torch.as_tensor(np.ascontiguousarray(va["X"]), dtype=torch.long)
     if device.type == "cuda":
-        train_x = train_x.pin_memory()
-        train_y = train_y.pin_memory()
-        train_weights = train_weights.pin_memory()
-        valid_x = valid_x.pin_memory()
+        if len(train_y) <= 20_000_000:  # pinning doubles host RAM; skip for huge datasets
+            train_x = train_x.pin_memory()
+            train_y = train_y.pin_memory()
+            train_weights = train_weights.pin_memory()
+            valid_x = valid_x.pin_memory()
     model_device = None if device.type == "cpu" else device
     model = DCNLite(ds["field_dims_total"], train_x.shape[1], args.k, args.dropout,
                     args.embedding_dropout, model_device)
