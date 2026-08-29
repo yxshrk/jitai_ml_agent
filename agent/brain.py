@@ -118,8 +118,10 @@ def parse_method_cards(methods_text: str) -> dict[str, str]:
     return cards
 
 
-def parse_method_card_metadata(card_text: str) -> dict:
+def parse_method_card_metadata(card_text: str, dataset: str = "pure") -> dict:
     """Parse harness-owned routing metadata from one method card."""
+    if dataset not in ("pure", "1k"):
+        raise ValueError("dataset must be 'pure' or '1k'")
     treats_match = re.search(r"^- treats:\s*(.+)$", card_text, re.MULTILINE)
     reference_match = re.search(
         r"^- reference_primary:\s*(none|[-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*$",
@@ -127,7 +129,11 @@ def parse_method_card_metadata(card_text: str) -> dict:
         re.MULTILINE | re.IGNORECASE,
     )
     gain_match = re.search(r"^- expected_gain / cost:\s*(.+)$", card_text, re.MULTILINE)
-    status_match = re.search(r"^- status:\s*(.+)$", card_text, re.MULTILINE)
+    status_match = re.search(
+        rf"^- status_{re.escape(dataset)}:\s*(.+)$", card_text, re.MULTILINE
+    )
+    if status_match is None:
+        status_match = re.search(r"^- status:\s*(.+)$", card_text, re.MULTILINE)
     gains = []
     if gain_match:
         gains = [
@@ -143,7 +149,23 @@ def parse_method_card_metadata(card_text: str) -> dict:
         "reference_primary": reference,
         "expected_gain": max(gains, default=0.0),
         "measured_dead": bool(status_match and status_match.group(1).startswith("measured-dead")),
+        "status": status_match.group(1) if status_match else None,
     }
+
+
+def method_cards_for_dataset(methods_text: str, dataset: str) -> str:
+    """Expose only the active dataset status to the selector."""
+    if dataset not in ("pure", "1k"):
+        raise ValueError("dataset must be 'pure' or '1k'")
+    active = f"status_{dataset}"
+    lines = []
+    for line in methods_text.splitlines():
+        match = re.match(r"^- (status_(?:pure|1k)):\s*(.*)$", line)
+        if not match:
+            lines.append(line)
+        elif match.group(1) == active:
+            lines.append(f"- status: {match.group(2)}")
+    return "\n".join(lines)
 
 
 def extract_code_block(text: str) -> str | None:
@@ -312,11 +334,14 @@ class Brain:
         streak_state: dict,
         excluded_families: list[str] | None = None,
         enforce_family_exclusion: bool = False,
+        dataset: str = "pure",
     ) -> dict:
         user = prompts.selector_user_prompt(
-            self.methods_text, journal_lines, parent_history, streak_state,
+            method_cards_for_dataset(self.methods_text, dataset),
+            journal_lines, parent_history, streak_state,
             excluded_families=excluded_families,
             enforce_family_exclusion=enforce_family_exclusion,
+            dataset=dataset,
         )
         text = self._call(
             "selector",

@@ -126,6 +126,7 @@ def selector_user_prompt(
     streak_state: dict,
     excluded_families: list[str] | None = None,
     enforce_family_exclusion: bool = False,
+    dataset: str = "pure",
 ) -> str:
     history = parent_history or []
     if history:
@@ -149,6 +150,7 @@ def selector_user_prompt(
             "an eligible unexcluded family now if any remains."
         )
     return "\n\n".join([
+        f"## Active dataset\n{dataset}",
         "## Method-card library\n" + methods_text,
         "## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"),
         "## Parent learning curve\n" + rows,

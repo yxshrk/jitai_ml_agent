@@ -86,10 +86,13 @@ class LoopConfig:
     draft_tiers: tuple[str, ...] = ("Tier 1", "Tier 2", "Tier 3")  # directives for the initial drafts
     seed_scripts: tuple[Path, ...] = ()  # team-provided reference scripts run as initial draft nodes (disclosed)
     context_mode: str = "compact"
+    dataset: str = "pure"
 
     def __post_init__(self) -> None:
         if self.context_mode not in ("compact", "full"):
             raise ValueError("context_mode must be 'compact' or 'full'")
+        if self.dataset not in ("pure", "1k"):
+            raise ValueError("dataset must be 'pure' or '1k'")
 
 
 class LeakageError(RuntimeError):
@@ -335,7 +338,7 @@ class Loop:
 
     def method_metadata(self, method_id: str | None) -> dict:
         card = getattr(self.brain, "method_cards", {}).get(method_id)
-        return parse_method_card_metadata(card) if card else {
+        return parse_method_card_metadata(card, self.config.dataset) if card else {
             "treats": [], "reference_primary": None, "expected_gain": 0.0,
             "measured_dead": False,
         }
@@ -365,6 +368,7 @@ class Loop:
         selection = self.brain.select_method(
             self.journal_lines, parent_history, streak_state,
             excluded_families=excluded,
+            dataset=self.config.dataset,
         )
         eligible = self.eligible_unexcluded_methods(excluded)
         if mode != "draft" or not eligible or selection.get("chosen_method_id") in eligible:
@@ -373,6 +377,7 @@ class Loop:
             self.journal_lines, parent_history, streak_state,
             excluded_families=excluded,
             enforce_family_exclusion=True,
+            dataset=self.config.dataset,
         )
         if selection.get("chosen_method_id") in eligible:
             return selection

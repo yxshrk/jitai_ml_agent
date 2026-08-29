@@ -39,6 +39,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="comma-separated directives for initial drafts, e.g. 'Tier 4,Tier 4,CURRENT DIRECTIVE'")
     run.add_argument("--context-mode", choices=["compact", "full"], default="compact",
                      help="proposer history: journal one-liners or bounded full node evidence")
+    run.add_argument("--dataset", choices=["pure", "1k"], default="pure",
+                     help="dataset-specific method status ledger (default: pure)")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -61,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         timeout_s=args.timeout_s,
         sigma=args.sigma,
         context_mode=args.context_mode,
+        dataset=args.dataset,
     )
     if args.dry_run:
         from agent.fake_brain import FakeBrain

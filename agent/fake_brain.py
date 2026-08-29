@@ -147,15 +147,16 @@ class FakeBrain:
         return spec
 
     def select_method(self, journal_lines, parent_history, streak_state,
-                      excluded_families=None, enforce_family_exclusion=False) -> dict:
+                      excluded_families=None, enforce_family_exclusion=False,
+                      dataset="pure") -> dict:
         self.selection_streak_states.append(dict(streak_state))
         self.meter.add("fake/fake/selector", 80, 40)
         excluded = set(excluded_families or [])
         preferred = "regularization-schedule"
         eligible = [
             method_id for method_id, card in self.method_cards.items()
-            if not parse_method_card_metadata(card)["measured_dead"]
-            and not (set(parse_method_card_metadata(card)["treats"]) & excluded)
+            if not parse_method_card_metadata(card, dataset)["measured_dead"]
+            and not (set(parse_method_card_metadata(card, dataset)["treats"]) & excluded)
         ]
         chosen = preferred if preferred in eligible else (eligible[0] if eligible else preferred)
         return {

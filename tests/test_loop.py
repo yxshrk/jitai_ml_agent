@@ -8,7 +8,7 @@ import pytest
 
 from agent.fake_brain import FakeBrain, canned_script
 from agent import prompts
-from agent.brain import parse_method_card_metadata
+from agent.brain import method_cards_for_dataset, parse_method_card_metadata
 from harness.cli import build_parser
 from harness.loop import ROOT, LeakageError, Loop, LoopConfig, Node, RunResult
 
@@ -59,6 +59,17 @@ def test_cli_accepts_full_context_mode():
         "run", "--data-dir", str(DATA_DIR), "--context-mode", "full", "--dry-run",
     ])
     assert args.context_mode == "full"
+
+
+def test_cli_dataset_defaults_to_pure_and_accepts_1k():
+    default = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--dry-run",
+    ])
+    one_k = build_parser().parse_args([
+        "run", "--data-dir", str(DATA_DIR), "--dataset", "1k", "--dry-run",
+    ])
+    assert default.dataset == "pure"
+    assert one_k.dataset == "1k"
 
 
 def test_dry_run_journal_conforms_to_contract(tmp_path):
@@ -326,7 +337,8 @@ class StubbornBrain(FakeBrain):
         self.selector_requests = []
 
     def select_method(self, journal_lines, parent_history, streak_state,
-                      excluded_families=None, enforce_family_exclusion=False):
+                      excluded_families=None, enforce_family_exclusion=False,
+                      dataset="pure"):
         self.selector_requests.append({
             "excluded_families": list(excluded_families or []),
             "strict": enforce_family_exclusion,
@@ -343,7 +355,8 @@ class StubbornBrain(FakeBrain):
 
 class BprBrain(FakeBrain):
     def select_method(self, journal_lines, parent_history, streak_state,
-                      excluded_families=None, enforce_family_exclusion=False):
+                      excluded_families=None, enforce_family_exclusion=False,
+                      dataset="pure"):
         self.meter.add("fake/fake/selector", 80, 40)
         return {
             "diagnosis": "metric-mismatch",
@@ -423,6 +436,42 @@ def test_every_method_card_declares_parseable_reference_primary():
         assert metadata["reference_primary"] is None or isinstance(
             metadata["reference_primary"], float
         )
+
+
+def test_method_card_statuses_are_dataset_specific():
+    brain = fake_brain()
+    for card in brain.method_cards.values():
+        assert "- status_pure:" in card
+        assert "- status_1k:" in card
+
+    item_aggregates = brain.method_cards["item-aggregates"]
+    assert parse_method_card_metadata(item_aggregates, "pure")["measured_dead"] is True
+    assert parse_method_card_metadata(item_aggregates, "1k")["measured_dead"] is False
+    assert parse_method_card_metadata(item_aggregates, "1k")["status"] == "untried"
+
+    recency = brain.method_cards["recency-weighting"]
+    assert parse_method_card_metadata(recency, "pure")["measured_dead"] is False
+    assert parse_method_card_metadata(recency, "1k")["measured_dead"] is True
+    assert "half-life 3" in parse_method_card_metadata(recency, "1k")["status"]
+
+
+def test_selector_library_contains_only_active_dataset_status():
+    methods = fake_brain().methods_text
+    pure = method_cards_for_dataset(methods, "pure")
+    one_k = method_cards_for_dataset(methods, "1k")
+    assert "status_pure" not in pure and "status_1k" not in pure
+    assert "status_pure" not in one_k and "status_1k" not in one_k
+    assert "- status: measured-dead (0.6038 primary" in pure
+    assert "- status: untried" in one_k
+    assert "half-life 3 scored 0.6120" in one_k
+
+
+def test_pure_dead_card_remains_eligible_on_1k(tmp_path):
+    pure_loop = make_loop(tmp_path / "pure", fake_brain(), dataset="pure")
+    one_k_loop = make_loop(tmp_path / "1k", fake_brain(), dataset="1k")
+    assert "item-aggregates" not in pure_loop.eligible_unexcluded_methods([])
+    assert "item-aggregates" in one_k_loop.eligible_unexcluded_methods([])
+    assert "recency-weighting" not in one_k_loop.eligible_unexcluded_methods([])
 
 
 def test_smoke_failure_is_fixer_eligible_and_skips_full_run(tmp_path):
