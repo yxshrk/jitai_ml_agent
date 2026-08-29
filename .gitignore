@@ -6,6 +6,12 @@ __pycache__/
 .env
 data/real/
 logs/run_*
+# … but official/deliverable runs ARE tracked:
+!logs/run_official_*/
+!logs/run_official_*/journal.jsonl
+!logs/run_official_*/summary.json
+!logs/run_official_*/report/**
+!logs/bonus_1k_*/metrics.json
 *.egg-info
 logs/spend.*
 data/real_ws/
