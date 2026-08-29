@@ -8,6 +8,10 @@ data/real/
 logs/run_*
 # … but official/deliverable runs ARE tracked:
 !logs/run_official_*/
+logs/run_official_*/workspace/
+logs/run_official_*/nodes/
+logs/run_official_*/calib_*/
+logs/run_official_*/node_*/
 !logs/run_official_*/journal.jsonl
 !logs/run_official_*/summary.json
 !logs/run_official_*/report/**
