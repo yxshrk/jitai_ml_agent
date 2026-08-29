@@ -199,3 +199,120 @@ What the next run should try first
 4. After optimization is stable, retry exactly one robust context feature—preferably session position or log-scaled inter-impression gap—with a smoke-tested preprocessing path. Do not introduce all time/session crosses simultaneously.
 
 The strongest immediate lesson is not that regularization failed; it is that an aggressive, confounded package failed. The run ended before identifying a useful causal direction.
+
+## Run logs/run_desig_full_03
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Applying epoch-level exponential moving averaging to the baseline | primary: 0.601358 | verdict: rejected
+- node_003 | method: embedding-dim-down | hypothesis: Because validation primary peaks at epoch 8 and | primary: 0.600950 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run converged prematurely around an already strong baseline. Neither tested modification directly targeted the most plausible failure mode, and one proposal-generation failure wasted a substantial fraction of the search budget.
+
+What the harness/policy did suboptimally
+
+- It explored only two valid alternatives before declaring convergence. That is insufficient evidence that the local design space is exhausted.
+- node_001 failed without producing an executable experiment, yet node_002 was nominally descended from that failed node. Failed nodes should not become parents; proposal failures should be retried or repaired without consuming an experimental branch.
+- The policy overcommitted to a single interpretation of the learning curve: “capacity-driven overfit.” A post-peak validation decline can also reflect insufficient regularization, learning-rate behavior, checkpoint selection, or ordinary validation noise.
+- EMA was poorly matched to the diagnosis. Averaging parameters across later overfit epochs can hurt unless EMA start time and decay are carefully chosen. The observed rejection was therefore not very informative.
+- Reducing k directly from 16 to 8 was a coarse capacity change. It confounds reduced overfitting with reduced representational power; intermediate dimensions or explicit regularization would have been more diagnostic.
+- Claimed gains of 0.0015–0.002 were not justified by prior evidence. The baseline sigma of 0.0001 also needs scrutiny: if it was not estimated from multiple independent seeds, acceptance and convergence decisions were overconfident.
+- The journal lacks seed-level results, best epoch, stopping epoch, runtime, and train/validation curves for each candidate. Without these, it is difficult to distinguish a real regression from noise or altered optimization dynamics.
+
+What I would change in the scaffold
+
+- Require every proposal to compile and pass a smoke test before it consumes a node.
+- Permit ancestry only from successful, metric-bearing nodes.
+- Retry malformed proposals automatically with the concrete error and configuration schema.
+- Separate screening from confirmation: run broad single-seed screens, then rerun promising candidates and the baseline over identical seeds.
+- Base acceptance on paired seed differences or confidence intervals, not a possibly synthetic single-run sigma.
+- Require hypotheses to specify one controlled change, expected mechanism, and diagnostic outcome.
+- Avoid convergence until several distinct intervention classes have been tested, such as regularization, optimization, capacity, and feature/model structure.
+- Record full curves and checkpoint behavior so the policy can tell whether a change improved the peak, delayed overfitting, or merely changed stopping dynamics.
+
+What the next run should try first
+
+First run a small embedding-regularization sweep while keeping k=16 and all other settings fixed. Increase L2/weight decay specifically on FM embeddings, for example baseline, 2×, 4×, and 8× the current value. This directly tests the overfitting hypothesis without discarding capacity. Compare candidates using the same seeds and best-checkpoint rule.
+
+If that fails, the next priorities should be:
+
+1. Test intermediate dimensions such as k=12 and possibly k=20, rather than only k=8.
+2. Sweep learning rate and/or introduce decay around the observed validation peak.
+3. Test embedding dropout if supported.
+4. Reassess early-stopping patience and checkpoint restoration, while ensuring selection is not leaking test information.
+5. Only revisit EMA with a defined warm start near the pre-overfit region and tuned decay.
+
+The most important immediate improvement is not a more exotic model; it is a reliable, seed-paired local search around regularization and optimization, with proposal failures repaired rather than counted as exploration.
+
+## Run logs/run_desig_full_04
+dataset: pure
+stop_reason: converged
+best_primary: 0.602756
+- node_001 | method: seed-ensemble | hypothesis: Because validation peaks at epoch 8 and then | primary: 0.602756 | verdict: accepted
+- node_002 | method: swa-ema | hypothesis: Replacing the five-seed ensemble with a single FM | primary: 0.602685 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Overall assessment
+
+The run found a small gain, but the search was too narrow and stopped prematurely. The best result, 0.602756, improved on the reported baseline by only about 0.001—not the hypothesized 0.004—and required a five-model ensemble.
+
+What was suboptimal
+
+- The policy treated a tiny metric difference as decisive. Node_002 at 0.6027 is only about 0.00006 below the winner and is likely statistically indistinguishable, while being substantially cheaper as a single model.
+- Acceptance ignored the compute/performance Pareto frontier. Node_002 may be the preferable practical result despite its nominal rejection.
+- The search remained confined to seed and checkpoint averaging. It did not explore regularization, early stopping, learning-rate schedules, latent dimension, optimizer settings, feature handling, or alternative objectives.
+- The overfitting diagnosis was plausible, but only variance-reduction methods were tested. No direct intervention such as stronger weight decay, reduced capacity, or tuned early stopping was attempted.
+- The five-seed result was apparently evaluated once on the same validation setup used for selection. Without independent replication, the roughly 0.001 gain may reflect validation-selection noise.
+- Node_003 failed at proposal generation, and the run then declared convergence after only two valid follow-up experiments. That is not convincing evidence of convergence.
+- The hypothesis calibration was poor: the predicted gain was about four times the observed gain, but the journal did not update its expectations accordingly.
+
+Scaffold changes
+
+- Track uncertainty across repeated training runs and report confidence intervals or paired seed comparisons.
+- Treat configurations within the noise floor as ties, then prefer lower training/inference cost.
+- Use multi-objective selection: primary metric, variance, training cost, inference cost, and model count.
+- Require a minimum number of successful, meaningfully distinct experiments before allowing convergence.
+- Maintain multiple search branches rather than repeatedly mutating the current winner.
+- Add proposal-validation and automatic retry/fallback logic so one malformed proposal does not terminate exploration.
+- Record exact, unrounded metrics and ensemble construction details.
+- Separate confirmation from exploration: re-evaluate a selected improvement on fresh seeds or a held-out split before calling it accepted.
+
+What the next run should try first
+
+First, directly compare node_001 and node_002 with paired fresh seeds and include compute cost. Also compare per-user rank averaging against raw-score averaging using the same predictions. If their performance remains statistically tied, select the single EMA model.
+
+After that, test a small targeted regularization/early-stopping sweep around the baseline—weight decay, latent dimension, and stopping epoch—before spending more search budget on larger ensembles.
+
+## Run logs/run_desig_full_05
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Adding a 0.3-weight CWM-style censored watch-ratio auxiliary loss | primary: 0.601550 | verdict: rejected
+- node_003 | method: embedding-dim-down | hypothesis: Because validation primary peaks at epoch 8 and | primary: 0.600950 | verdict: rejected
+self_critique:
+Run critique
+
+The harness converged prematurely. It evaluated only two substantive alternatives after the baseline, neither of which was a well-calibrated local improvement. That is insufficient evidence that the search space is exhausted.
+
+Policy issues:
+- node_001 failed at proposal generation, yet node_002 was attached to that failed node rather than cleanly branching from the best accepted node. Failed proposals should be retried or discarded, not retained as ancestry.
+- The hypotheses demanded gains of +0.0020 to +0.0025 despite a reported baseline sigma of 0.0001. Those targets are unnecessarily large and encourage coarse changes rather than credible incremental tuning.
+- The CWM auxiliary loss introduced a new objective with an arbitrary 0.3 weight and uncertain alignment with the primary metric. It needed either stronger evidence or a small weight sweep.
+- Reducing embedding dimension from 16 directly to 8 was a blunt response to overfitting. The result suggests useful capacity was removed; regularization strength, dropout, or training duration would have been more targeted.
+- The journal is inconsistent about model identity: “baseline FM” versus “regularized DCN-lite hybrid BCE/BPR.” Model and inherited configuration should be recorded unambiguously.
+- There is no evidence of repeated seeds or confirmation runs. Differences of 0.0003–0.0009 should be interpreted using empirical run-to-run variance, not only a single reported sigma.
+
+Scaffold changes:
+- Enforce valid proposal generation and always branch experiments from the best accepted runnable node.
+- Require each proposal to specify the exact inherited configuration, changed parameters, mechanism, and smallest useful ablation.
+- Prefer local, one-factor changes before adding auxiliary objectives.
+- Add automatic baseline replication and promotion only after multi-seed confirmation.
+- Do not declare convergence after two rejected experiments; require a minimum exploration budget across optimization, regularization, architecture, and loss categories.
+- Use diagnostic evidence quantitatively: train/validation curves, best epoch, gap at stopping, and per-component loss behavior.
+
+Next run:
+First preserve k=16 and target the observed late-epoch overfit with stronger embedding/model regularization—e.g. a small 2–4× L2 increase or modest embedding dropout around 0.05–0.10—while keeping the loss and optimizer fixed. Test a narrow sweep and replicate the best setting. If that fails, try k=12 rather than the coarse k=8 reduction. Revisit the censored watch-ratio loss only afterward, with much smaller weights and an explicit ablation showing that its target is aligned with validation primary.
