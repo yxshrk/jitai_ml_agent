@@ -127,6 +127,7 @@ def selector_user_prompt(
     excluded_families: list[str] | None = None,
     enforce_family_exclusion: bool = False,
     dataset: str = "pure",
+    prior_runs: str | None = None,
 ) -> str:
     history = parent_history or []
     if history:
@@ -151,6 +152,11 @@ def selector_user_prompt(
         )
     return "\n\n".join([
         f"## Active dataset\n{dataset}",
+        (
+            "## Prior runs (do not repeat failed openings)\n"
+            + (prior_runs or "(none recorded)")
+            + "\nPrefer cards and directions not already tried on this same dataset."
+        ),
         "## Method-card library\n" + methods_text,
         "## Journal (one line per prior node)\n" + ("\n".join(journal_lines) or "(empty)"),
         "## Parent learning curve\n" + rows,
@@ -180,8 +186,13 @@ def proposer_user_prompt(
     streak_state: dict | None = None,
     context_mode: str = "compact",
     full_context: str | None = None,
+    prior_runs: str | None = None,
 ) -> str:
     parts = []
+    parts.append(
+        "## Prior runs (do not repeat failed openings)\n"
+        + (prior_runs or "(none recorded)")
+    )
     if focus_note:
         parts.append(f"## Reflector focus note\n{focus_note}")
     if context_mode == "full":

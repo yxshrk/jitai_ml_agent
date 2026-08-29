@@ -45,7 +45,9 @@ LEAKY_SCRIPT = (
 
 
 def make_loop(tmp_path: Path, brain, **overrides) -> Loop:
-    config = LoopConfig(data_dir=DATA_DIR, run_dir=tmp_path / "run", sigma=overrides.pop("sigma", 0.003),
+    config = LoopConfig(data_dir=DATA_DIR, run_dir=tmp_path / "run",
+                        cross_run_path=tmp_path / "CROSS_RUN.md",
+                        sigma=overrides.pop("sigma", 0.003),
                         **overrides)
     return Loop(config, brain)
 
@@ -338,7 +340,7 @@ class StubbornBrain(FakeBrain):
 
     def select_method(self, journal_lines, parent_history, streak_state,
                       excluded_families=None, enforce_family_exclusion=False,
-                      dataset="pure"):
+                      dataset="pure", prior_runs=None):
         self.selector_requests.append({
             "excluded_families": list(excluded_families or []),
             "strict": enforce_family_exclusion,
@@ -356,7 +358,7 @@ class StubbornBrain(FakeBrain):
 class BprBrain(FakeBrain):
     def select_method(self, journal_lines, parent_history, streak_state,
                       excluded_families=None, enforce_family_exclusion=False,
-                      dataset="pure"):
+                      dataset="pure", prior_runs=None):
         self.meter.add("fake/fake/selector", 80, 40)
         return {
             "diagnosis": "metric-mismatch",
@@ -472,6 +474,44 @@ def test_pure_dead_card_remains_eligible_on_1k(tmp_path):
     assert "item-aggregates" not in pure_loop.eligible_unexcluded_methods([])
     assert "item-aggregates" in one_k_loop.eligible_unexcluded_methods([])
     assert "recency-weighting" not in one_k_loop.eligible_unexcluded_methods([])
+
+
+def test_cross_run_memory_reads_tail_and_writes_compact_run(tmp_path):
+    memory = tmp_path / "CROSS_RUN.md"
+    memory.write_text("\n".join(f"prior-{i}" for i in range(50)) + "\n")
+    brain = fake_brain(scripts=[{
+        "hypothesis": "one two three four five six seven eight nine ten",
+        "code": canned_script("cross-run", 'r["video_id"]', root=str(ROOT)),
+    }])
+    loop = make_loop(tmp_path, brain, max_iters=1, dataset="1k")
+
+    summary = loop.run()
+
+    expected_tail = "\n".join(f"prior-{i}" for i in range(10, 50))
+    assert brain.selection_prior_runs == [expected_tail]
+    assert brain.proposal_prior_runs == [expected_tail]
+    written = memory.read_text()
+    assert f"## Run {loop.run_dir}" in written
+    assert "dataset: 1k" in written
+    assert f"stop_reason: {summary['stop_reason']}" in written
+    assert f"best_primary: {summary['best_metrics']['primary']:.6f}" in written
+    assert "method: regularization-schedule" in written
+    assert "hypothesis: one two three four five six seven eight" in written
+    assert "primary:" in written and "verdict:" in written
+
+
+def test_prior_runs_prompt_section_guides_same_dataset_selection():
+    prior = "## Run old\ndataset: pure\n- node_001 | method: finalmlp | verdict: rejected"
+    selector = prompts.selector_user_prompt(
+        "### card: Card\n- status: untried", [], [], {}, dataset="pure", prior_runs=prior
+    )
+    proposer = prompts.proposer_user_prompt(
+        [], "improve", "node_000", "# parent", prior_runs=prior
+    )
+    for prompt in (selector, proposer):
+        assert "## Prior runs (do not repeat failed openings)" in prompt
+        assert prior in prompt
+    assert "Prefer cards and directions not already tried on this same dataset" in selector
 
 
 def test_smoke_failure_is_fixer_eligible_and_skips_full_run(tmp_path):

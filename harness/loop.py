@@ -41,6 +41,7 @@ FORBIDDEN_PATTERNS = ("test.csv", "data/test")
 DRAFT_TIERS = ("Tier 1", "Tier 2", "Tier 3")
 ALL_TIERS = ("Tier 1", "Tier 2", "Tier 3", "Tier 4")
 FULL_CONTEXT_CHAR_BUDGET = 80_000  # approximately 20k tokens at four characters/token
+CROSS_RUN_PATH = ROOT / "logs" / "CROSS_RUN.md"
 
 
 @dataclass
@@ -87,6 +88,7 @@ class LoopConfig:
     seed_scripts: tuple[Path, ...] = ()  # team-provided reference scripts run as initial draft nodes (disclosed)
     context_mode: str = "compact"
     dataset: str = "pure"
+    cross_run_path: Path = CROSS_RUN_PATH
 
     def __post_init__(self) -> None:
         if self.context_mode not in ("compact", "full"):
@@ -127,6 +129,7 @@ class Loop:
         self.forced_tiers_used: list[str] = []
         self.start_time = time.time()
         self.stop_reason: str | None = None
+        self.prior_runs = ""
 
     # ---------- workspace & leakage guard ----------
 
@@ -369,6 +372,7 @@ class Loop:
             self.journal_lines, parent_history, streak_state,
             excluded_families=excluded,
             dataset=self.config.dataset,
+            prior_runs=self.prior_runs,
         )
         eligible = self.eligible_unexcluded_methods(excluded)
         if mode != "draft" or not eligible or selection.get("chosen_method_id") in eligible:
@@ -378,6 +382,7 @@ class Loop:
             excluded_families=excluded,
             enforce_family_exclusion=True,
             dataset=self.config.dataset,
+            prior_runs=self.prior_runs,
         )
         if selection.get("chosen_method_id") in eligible:
             return selection
@@ -502,6 +507,43 @@ class Loop:
         # rejected, or errored all count). Improvement is vs best-so-far.
         return self.no_improve_streak >= self.config.n_converge
 
+    # ---------- cross-run memory ----------
+
+    def read_cross_run(self, max_lines: int = 40) -> str:
+        path = self.config.cross_run_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch(exist_ok=True)
+        return "\n".join(path.read_text().splitlines()[-max_lines:])
+
+    @staticmethod
+    def _eight_word_summary(hypothesis: str) -> str:
+        return " ".join(hypothesis.split()[:8])
+
+    def append_cross_run(self, summary: dict, self_critique: str | None = None) -> None:
+        lines = [
+            f"## Run {self.run_dir}",
+            f"dataset: {self.config.dataset}",
+            f"stop_reason: {summary['stop_reason']}",
+            f"best_primary: {summary['best_metrics']['primary']:.6f}",
+        ]
+        ordered = sorted(self.nodes.values(), key=lambda node: int(node.node_id.split("_")[1]))
+        for node in ordered:
+            if node.node_id == "node_000":
+                continue
+            method_id = (node.method_selection or {}).get("chosen_method_id", "none")
+            primary = f"{node.primary:.6f}" if node.primary is not None else "n/a"
+            lines.append(
+                f"- {node.node_id} | method: {method_id} | hypothesis: "
+                f"{self._eight_word_summary(node.hypothesis)} | primary: {primary} | "
+                f"verdict: {node.status}"
+            )
+        if self_critique:
+            lines.extend(["self_critique:", self_critique.strip()])
+        with self.config.cross_run_path.open("a") as handle:
+            if self.config.cross_run_path.stat().st_size:
+                handle.write("\n")
+            handle.write("\n".join(lines) + "\n")
+
     # ---------- main loop ----------
 
     def seed_reference_nodes(self, start_n: int) -> int:
@@ -571,6 +613,7 @@ class Loop:
         return n
 
     def run(self) -> dict:
+        self.prior_runs = self.read_cross_run()
         self.prepare_workspace()
         self.calibrate()
         n = 0
@@ -595,6 +638,7 @@ class Loop:
             self.stop_reason = self.stop_reason or "max_iters"
         summary = {
             "run_dir": str(self.run_dir),
+            "dataset": self.config.dataset,
             "stop_reason": self.stop_reason,
             "iterations": n,
             "best_node": self.champion.node_id,
@@ -605,6 +649,7 @@ class Loop:
             "wall_s": round(time.time() - self.start_time, 1),
         }
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+        self.append_cross_run(summary)
         return summary
 
     def _reflect(self) -> None:
@@ -643,6 +688,7 @@ class Loop:
                 streak_state=streak_state,
                 context_mode=self.config.context_mode,
                 full_context=self.full_proposer_context() if self.config.context_mode == "full" else None,
+                prior_runs=self.prior_runs,
             )
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             expected_delta = spec.get("expected_delta")

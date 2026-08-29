@@ -297,6 +297,7 @@ class Brain:
         streak_state: dict | None = None,
         context_mode: str = "compact",
         full_context: str | None = None,
+        prior_runs: str | None = None,
     ) -> dict:
         selected_card = None
         if method_selection:
@@ -312,6 +313,7 @@ class Brain:
             streak_state=streak_state,
             context_mode=context_mode,
             full_context=full_context,
+            prior_runs=prior_runs,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
         spec = extract_json_spec(text)
@@ -335,6 +337,7 @@ class Brain:
         excluded_families: list[str] | None = None,
         enforce_family_exclusion: bool = False,
         dataset: str = "pure",
+        prior_runs: str | None = None,
     ) -> dict:
         user = prompts.selector_user_prompt(
             method_cards_for_dataset(self.methods_text, dataset),
@@ -342,6 +345,7 @@ class Brain:
             excluded_families=excluded_families,
             enforce_family_exclusion=enforce_family_exclusion,
             dataset=dataset,
+            prior_runs=prior_runs,
         )
         text = self._call(
             "selector",

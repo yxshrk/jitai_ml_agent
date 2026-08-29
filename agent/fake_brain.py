@@ -128,12 +128,15 @@ class FakeBrain:
         self._fix_i = 0
         self.selection_streak_states: list[dict] = []
         self.proposal_streak_states: list[dict] = []
+        self.selection_prior_runs: list[str] = []
+        self.proposal_prior_runs: list[str] = []
         self.methods_text = METHODS_PATH.read_text()
         self.method_cards = parse_method_cards(self.methods_text)
 
     def propose(self, journal_lines, mode, parent_id, parent_code, directive=None,
                 focus_note=None, traceback_tail=None, **_kwargs) -> dict:
         self.proposal_streak_states.append(dict(_kwargs.get("streak_state") or {}))
+        self.proposal_prior_runs.append(_kwargs.get("prior_runs") or "")
         spec = dict(self.scripts[min(self._i, len(self.scripts) - 1)])
         self._i += 1
         spec.setdefault("action", mode)
@@ -148,8 +151,9 @@ class FakeBrain:
 
     def select_method(self, journal_lines, parent_history, streak_state,
                       excluded_families=None, enforce_family_exclusion=False,
-                      dataset="pure") -> dict:
+                      dataset="pure", prior_runs=None) -> dict:
         self.selection_streak_states.append(dict(streak_state))
+        self.selection_prior_runs.append(prior_runs or "")
         self.meter.add("fake/fake/selector", 80, 40)
         excluded = set(excluded_families or [])
         preferred = "regularization-schedule"

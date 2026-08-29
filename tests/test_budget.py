@@ -44,7 +44,8 @@ class ExhaustedBrain(FakeBrain):
 
 
 def test_loop_stops_gracefully_on_budget_exhausted(tmp_path):
-    config = LoopConfig(data_dir=DATA_DIR, run_dir=tmp_path / "run", sigma=0.003, max_iters=5)
+    config = LoopConfig(data_dir=DATA_DIR, run_dir=tmp_path / "run", sigma=0.003, max_iters=5,
+                        cross_run_path=tmp_path / "CROSS_RUN.md")
     loop = Loop(config, ExhaustedBrain("", root=str(ROOT)))
     summary = loop.run()
     assert summary["stop_reason"] == "budget_exhausted"
@@ -59,7 +60,8 @@ def test_max_usd_soft_ceiling(tmp_path):
     brain = FakeBrain("", root=str(ROOT))
     brain.usd_run = 99.0
     config = LoopConfig(data_dir=DATA_DIR, run_dir=tmp_path / "run", sigma=0.003,
-                        max_iters=5, max_usd=10.0)
+                        max_iters=5, max_usd=10.0,
+                        cross_run_path=tmp_path / "CROSS_RUN.md")
     loop = Loop(config, brain)
     summary = loop.run()
     assert summary["stop_reason"] == "max_usd"
