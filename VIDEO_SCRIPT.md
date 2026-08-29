@@ -31,8 +31,8 @@ watch-time losses for this task, with seeds."
 ## Shot 4 — results + close (1:30–2:00)
 Screen: results.md table, then SUBMISSION_RECIPE.md.
 Say: "Final result: the official baseline scores 0.6016 on validation; our
-five-seed ensemble reaches 0.6058 — plus a tuned bonus-benchmark result on
-KuaiRand-1K around {1K_FINAL}. Test data was touched exactly once, for the final
+agent-designated five-seed ensemble reaches 0.60513 — and on KuaiRand-1K the
+agent scaled its own ensemble to ten seeds, finishing at 0.63874. Test data was touched exactly once, for the final
 submission — the leakage guard makes anything else structurally impossible.
 The agent is the product; the score is its evidence. Thanks."
 

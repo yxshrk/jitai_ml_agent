@@ -1,4 +1,17 @@
-# Final submission recipe (drafted 02:20 Sat, confirm Sunday)
+# Final submission recipe (FINAL, Sun morning)
+
+## DESIGNATED CHAMPIONS (agent-designated, compliant with "checkpoint at convergence")
+- **Pure: 0.60513** — run_desig_seeded_03 (confirmed by _04) node_001: 5-seed
+  rank-average ensemble of the frozen stack, seeds 42-46. Test CSV:
+  evidence/test_submission_pure.csv (170,588 rows, validated, train-only members).
+- **1K: 0.63874** — run_desig_1k_01 node_004: the AGENT scaled the ensemble from
+  5 to 10 seeds (42-51) on its own after its seed node failed and it rebuilt the
+  5-member version itself (0.63448). Test CSV: evidence/test_submission_1k.csv
+  (10 members, 4,132,081 rows).
+- **27K (bonus, out-of-protocol scaling demo): 0.67263** — 5-seed ensemble on
+  RTX 4090 (seeds 42-46, ruby); singles 0.6609-0.6633.
+- NOTE: farm-greedy 0.60577/0.60602 are val-selected -> EVIDENCE ONLY. The honest
+  consecutive-seed ensemble reproduces at 0.60513 in two independent agent runs.
 
 ## Pure (primary)
 Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
