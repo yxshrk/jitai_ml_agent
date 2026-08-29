@@ -330,7 +330,7 @@ def test_reflector_fires_at_three_stagnant_iterations(tmp_path):
     )
     loop.run()
     reflector = brain.meter.per_role["fake/fake/reflector"]
-    assert reflector["calls"] == 1
+    assert reflector["calls"] == 2  # one stagnation focus note plus terminal self-critique
 
 
 class StubbornBrain(FakeBrain):
@@ -498,6 +498,30 @@ def test_cross_run_memory_reads_tail_and_writes_compact_run(tmp_path):
     assert "method: regularization-schedule" in written
     assert "hypothesis: one two three four five six seven eight" in written
     assert "primary:" in written and "verdict:" in written
+    assert summary["self_critique"] == (
+        "The harness overcommitted to one opening. Tighten scaffold branching and "
+        "try an untested dataset-specific method first next run."
+    )
+    assert "self_critique:\n" + summary["self_critique"] in written
+
+
+def test_terminal_self_critique_is_recorded_in_summary_and_cross_run(tmp_path):
+    loop = make_loop(tmp_path, fake_brain(), max_iters=1)
+
+    returned = loop.run()
+    saved = json.loads((loop.run_dir / "summary.json").read_text())
+    memory = (tmp_path / "CROSS_RUN.md").read_text()
+
+    assert returned["self_critique"] == saved["self_critique"]
+    assert "The harness overcommitted to one opening" in saved["self_critique"]
+    assert f"self_critique:\n{saved['self_critique']}" in memory
+    assert loop.brain.meter.per_role["fake/fake/reflector"]["calls"] == 1
+    prompt = prompts.self_critique_user_prompt("journal evidence")
+    assert "## Full journal summary\njournal evidence" in prompt
+    assert (
+        "critique this run: what did the harness/policy do suboptimally, what would "
+        "you change about your own scaffold, what should the next run try first?"
+    ) in prompt
 
 
 def test_prior_runs_prompt_section_guides_same_dataset_selection():

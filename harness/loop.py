@@ -544,6 +544,20 @@ class Loop:
                 handle.write("\n")
             handle.write("\n".join(lines) + "\n")
 
+    def terminal_self_critique(self) -> str:
+        journal_summary = "\n".join([
+            f"run_dir: {self.run_dir}",
+            f"dataset: {self.config.dataset}",
+            f"stop_reason: {self.stop_reason}",
+            f"best_primary: {self.champion.primary:.6f}",
+            *self.journal_lines,
+        ])
+        try:
+            return self.brain.self_critique(journal_summary)
+        except Exception as exc:  # archival reflection must never discard a completed run
+            print(f"[loop] end-of-run self-critique failed: {exc}", file=sys.stderr)
+            return f"self-critique unavailable: {exc}"
+
     # ---------- main loop ----------
 
     def seed_reference_nodes(self, start_n: int) -> int:
@@ -636,6 +650,7 @@ class Loop:
                 break
         else:
             self.stop_reason = self.stop_reason or "max_iters"
+        self_critique = self.terminal_self_critique()
         summary = {
             "run_dir": str(self.run_dir),
             "dataset": self.config.dataset,
@@ -647,9 +662,10 @@ class Loop:
             "tokens": self.brain.meter.per_role,
             "tokens_total": self.brain.meter.total,
             "wall_s": round(time.time() - self.start_time, 1),
+            "self_critique": self_critique,
         }
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-        self.append_cross_run(summary)
+        self.append_cross_run(summary, self_critique)
         return summary
 
     def _reflect(self) -> None:

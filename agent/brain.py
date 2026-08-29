@@ -379,3 +379,11 @@ class Brain:
             prompts.reflector_user_prompt(self.menu_text, journal_lines, list(self.method_cards)),
             1200,
         ).strip()
+
+    def self_critique(self, journal_summary: str) -> str:
+        return self._call(
+            "reflector",
+            prompts.SELF_CRITIQUE_SYSTEM,
+            prompts.self_critique_user_prompt(journal_summary),
+            1200,
+        ).strip()

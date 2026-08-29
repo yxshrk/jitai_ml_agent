@@ -74,7 +74,8 @@ evidence for every retained prior node: hypothesis, action, GAUC/nDCG@5/primary,
 (accepted/rejected or the last 5 error lines), change summary, and the last 10 learning-
 curve entries. Full context is bounded at approximately 20k tokens (80k characters) by
 dropping the oldest optional nodes first; node_000 and the current champion are always
-retained. Selector and reflector inputs remain the compact journal. Every journal record
+retained. Selector and periodic reflector inputs remain the compact journal. Every
+journal record
 stores the run's `context_mode`, enabling compact/full A/B comparisons.
 Policy (harness-owned, not LLM-chosen): 3 initial drafts; on failure debug same node
 (max depth 2); otherwise improve the current best node (greedy); forced branch to a
@@ -86,6 +87,22 @@ the proposer under `## Selected method (implement THIS)`. Debug iterations skip 
 and preserve the failed node's method. Selector and proposer both receive
 `streak_state = {no_improve_streak, n_converge, iters_left}` so an N-1 streak favors the
 highest-expected-gain untried method over a dosage tweak.
+
+Runs declare `--dataset {pure,1k}` (default `pure`). Every method card has
+`status_pure` and `status_1k`; the selector sees only the active dataset's status,
+and harness eligibility parses that same line. Thus a Pure `measured-dead` card
+remains eligible on 1K when its 1K status is `untried`. The frozen-stack validation
+references are 0.6047 on Pure and 0.6134 on 1K (literal default, seed 42). The 1K
+recency half-life 3/14 regressions are measured-dead for that dataset; Pure-only
+popularity findings do not close their corresponding 1K direction.
+
+At run start, the harness reads the final approximately 40 lines of
+`logs/CROSS_RUN.md` and supplies them to selector and proposer under
+`## Prior runs (do not repeat failed openings)`. Selection prefers cards and
+directions not already attempted on the same dataset. At run end, the harness
+appends a compact block containing run directory, dataset, stop reason, best
+primary, and one row per iteration with method id, eight-word hypothesis summary,
+primary, and verdict.
 
 Each method card has a parsed `treats` family list and a `reference_primary` line whose
 value is a float or `none`. When a completed, selected-card node scores more than 0.002
@@ -132,6 +149,10 @@ fix attempt.
 
 The reflector still runs every 5 iterations and additionally whenever stagnation reaches
 3 or more; it receives all METHODS.md card ids so its focus note can re-rank them.
+After the run stops, one additional call using the `reflector` role receives the full
+compact journal summary and critiques harness/policy choices, its own scaffold, and the
+best opening for the next run. This `self_critique` is stored in `summary.json` and
+appended to `logs/CROSS_RUN.md`; it is archival only and is never auto-applied.
 Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
 (floor 0.002); 0-2sigma -> one reseed confirm run; else revert.
 Convergence: OFFICIAL rule — converged when validation primary has not improved by

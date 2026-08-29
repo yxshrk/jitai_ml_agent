@@ -94,6 +94,12 @@ are exhausted or rejected, and name the single best direction to try next.
 Plain text only.
 """
 
+SELF_CRITIQUE_SYSTEM = """\
+You are the end-of-run reflector for an autonomous ML research harness. Review
+the completed run journal and outcome. Be concrete, candid, and concise. This
+text is archival only and will not be applied automatically. Plain text only.
+"""
+
 SELECTOR_SYSTEM = """\
 You diagnose an ML run and select exactly one implementation method from a
 measured method-card library. Respect measured-dead cards: never choose one.
@@ -244,4 +250,12 @@ def reflector_user_prompt(menu: str, journal_lines: list[str], method_ids: list[
         f"## Improvement menu\n{menu}\n\n"
         "## Method-card ids\n" + ", ".join(method_ids) + "\n\n"
         "## Journal\n" + "\n".join(journal_lines) + "\n\nWrite the focus note."
+    )
+
+
+def self_critique_user_prompt(journal_summary: str) -> str:
+    return (
+        f"## Full journal summary\n{journal_summary}\n\n"
+        "critique this run: what did the harness/policy do suboptimally, what would "
+        "you change about your own scaffold, what should the next run try first?"
     )

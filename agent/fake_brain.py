@@ -187,3 +187,10 @@ class FakeBrain:
     def reflect(self, journal_lines) -> str:
         self.meter.add("fake/fake/reflector", 40, 20)
         return "Focus on item-side aggregate features (tier 3)."
+
+    def self_critique(self, journal_summary: str) -> str:
+        self.meter.add("fake/fake/reflector", 60, 30)
+        return (
+            "The harness overcommitted to one opening. Tighten scaffold branching and "
+            "try an untested dataset-specific method first next run."
+        )
