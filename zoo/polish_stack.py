@@ -113,7 +113,15 @@ def load_validation_only(data_dir: str, subsample: int | None = None) -> dict[st
         dates = split["date"]
         if dates.size and (int(dates.min()) < low or int(dates.max()) > high):
             raise ValueError(f"forbidden date in {name}: {dates.min()}..{dates.max()}")
-        videos, authors = _read_ids(base / f"{stem}.csv", len(split["y"]))
+        csv_path = base / f"{stem}.csv"
+        if csv_path.exists():
+            videos, authors = _read_ids(csv_path, len(split["y"]))
+        else:
+            # CSV omitted (large datasets ship npz-only): ids are cosmetic for
+            # internal validation scoring; official submissions rebuild them.
+            n_rows = len(split["y"])
+            videos = np.zeros(n_rows, dtype=np.int64)
+            authors = np.zeros(n_rows, dtype=np.int64)
         split["users"] = split.pop("user").astype(np.int64)
         split["videos"], split["authors"] = videos, authors
         if subsample is not None:
