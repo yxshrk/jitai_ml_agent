@@ -16,7 +16,14 @@ Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
   test with each, per-user rank-average, submit via evidence/submission.py +
   official submit.py --check. ONE test touch.
 
-## Pure UPDATE (Sat night): extended 159-seed pool greedy = 0.60602 (11 members:
+## COMPLIANCE RULING (Sat night, brief re-read): the scored submission must be
+## "the validation-best checkpoint AT CONVERGENCE" of a run — an AGENT-designated
+## node. Team-built pool ensembles are therefore WRITEUP EVIDENCE ONLY. Pure
+## submission = the designated run's champion (expected: agent's in-run 5-seed
+## ensemble node ~0.6058). Same for 1K (agent run w/ ensemble card); 27K agent
+## run if time permits, else labeled out-of-protocol scaling demo.
+
+## [evidence only] extended 159-seed pool greedy = 0.60602 (11 members:
 s199, seedfarm_74, seedfarm_46, s196, s109, s191, s147, seedfarm_89, s105, s126,
 seedfarm_100 — seedext seeds are 102-200 of the same frozen config). DESIGNATION
 PENDING Sunday-morning random-probe transfer check (11-member made ~10 more

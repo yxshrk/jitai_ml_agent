@@ -1,0 +1,88 @@
+epoch 0.5 | loss 0.5168 | valid gauc 0.657353 ndcg5 0.561251 primary 0.609302
+epoch 1.0 | loss 0.4213 | valid gauc 0.654365 ndcg5 0.562681 primary 0.608523
+epoch 1.5 | loss 0.3213 | valid gauc 0.646532 ndcg5 0.526042 primary 0.586287
+epoch 2.0 | loss 0.3072 | valid gauc 0.646201 ndcg5 0.516916 primary 0.581559
+epoch 2.5 | loss 0.2506 | valid gauc 0.643592 ndcg5 0.498053 primary 0.570823
+epoch 3.0 | loss 0.2484 | valid gauc 0.642634 ndcg5 0.486193 primary 0.564413
+epoch 3.5 | loss 0.2131 | valid gauc 0.641173 ndcg5 0.485600 primary 0.563387
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.007701984538980411, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6573525748633893, "n_fields": 5, "ndcg5": 0.5612513942145717, "primary": 0.6093019845389804, "regularized": false, "runtime_s": 202.7, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5156 | valid gauc 0.658676 ndcg5 0.561214 primary 0.609945
+epoch 1.0 | loss 0.4219 | valid gauc 0.655807 ndcg5 0.576169 primary 0.615988
+epoch 1.5 | loss 0.3234 | valid gauc 0.648407 ndcg5 0.530716 primary 0.589561
+epoch 2.0 | loss 0.3105 | valid gauc 0.646402 ndcg5 0.521752 primary 0.584077
+epoch 2.5 | loss 0.2541 | valid gauc 0.641154 ndcg5 0.507493 primary 0.574323
+epoch 3.0 | loss 0.2511 | valid gauc 0.637342 ndcg5 0.498137 primary 0.567740
+epoch 3.5 | loss 0.2142 | valid gauc 0.636874 ndcg5 0.499927 primary 0.568401
+epoch 4.0 | loss 0.2143 | valid gauc 0.634140 ndcg5 0.491663 primary 0.562901
+early stop after epoch 4.0
+final: {"best_epoch": 1.0, "delta_vs_baseline": 0.014388033077281426, "field_level": 1, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week"], "gauc": 0.6558072135552878, "n_fields": 7, "ndcg5": 0.5761688525992751, "primary": 0.6159880330772814, "regularized": false, "runtime_s": 229.3, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5095 | valid gauc 0.670400 ndcg5 0.581768 primary 0.626084
+epoch 1.0 | loss 0.4199 | valid gauc 0.663916 ndcg5 0.582716 primary 0.623316
+epoch 1.5 | loss 0.3155 | valid gauc 0.655749 ndcg5 0.522706 primary 0.589228
+epoch 2.0 | loss 0.2982 | valid gauc 0.654626 ndcg5 0.511840 primary 0.583233
+epoch 2.5 | loss 0.2428 | valid gauc 0.648707 ndcg5 0.493132 primary 0.570920
+epoch 3.0 | loss 0.2431 | valid gauc 0.647731 ndcg5 0.486361 primary 0.567046
+epoch 3.5 | loss 0.2141 | valid gauc 0.644921 ndcg5 0.489071 primary 0.566996
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.02448376288207832, "field_level": 2, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab"], "gauc": 0.6703996762048531, "n_fields": 10, "ndcg5": 0.5817678495593035, "primary": 0.6260837628820783, "regularized": false, "runtime_s": 213.1, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5074 | valid gauc 0.671013 ndcg5 0.586244 primary 0.628629
+epoch 1.0 | loss 0.4205 | valid gauc 0.664348 ndcg5 0.588248 primary 0.626298
+epoch 1.5 | loss 0.3173 | valid gauc 0.656383 ndcg5 0.523832 primary 0.590108
+epoch 2.0 | loss 0.3001 | valid gauc 0.655471 ndcg5 0.513548 primary 0.584509
+epoch 2.5 | loss 0.2444 | valid gauc 0.651175 ndcg5 0.504482 primary 0.577828
+epoch 3.0 | loss 0.2440 | valid gauc 0.649590 ndcg5 0.494483 primary 0.572036
+epoch 3.5 | loss 0.2139 | valid gauc 0.648333 ndcg5 0.478074 primary 0.563203
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.02702894758190777, "field_level": 3, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab", "user_active_degree", "follow_user_num_range", "fans_user_num_range", "register_days_range", "is_video_author"], "gauc": 0.6710134693205653, "n_fields": 15, "ndcg5": 0.5862444258432502, "primary": 0.6286289475819078, "regularized": false, "runtime_s": 241.8, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5061 | valid gauc 0.669040 ndcg5 0.590773 primary 0.629906
+epoch 1.0 | loss 0.4200 | valid gauc 0.661712 ndcg5 0.587792 primary 0.624752
+epoch 1.5 | loss 0.3211 | valid gauc 0.652479 ndcg5 0.534799 primary 0.593639
+epoch 2.0 | loss 0.3055 | valid gauc 0.651472 ndcg5 0.524486 primary 0.587979
+epoch 2.5 | loss 0.2487 | valid gauc 0.646885 ndcg5 0.518967 primary 0.582926
+epoch 3.0 | loss 0.2470 | valid gauc 0.643204 ndcg5 0.499661 primary 0.571432
+epoch 3.5 | loss 0.2130 | valid gauc 0.644258 ndcg5 0.497740 primary 0.570999
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.028306213474427966, "field_level": 4, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab", "user_active_degree", "follow_user_num_range", "fans_user_num_range", "register_days_range", "is_video_author", "video_type", "upload_type", "music_id_top200", "first_tag", "aspect_ratio_bucket", "visible_status"], "gauc": 0.6690397243806847, "n_fields": 21, "ndcg5": 0.5907727025681712, "primary": 0.629906213474428, "regularized": false, "runtime_s": 264.5, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.4908 | valid gauc 0.669722 ndcg5 0.463130 primary 0.566426
+epoch 1.0 | loss 0.3097 | valid gauc 0.651439 ndcg5 0.410871 primary 0.531155
+epoch 1.5 | loss 0.1091 | valid gauc 0.628562 ndcg5 0.460203 primary 0.544383
+epoch 2.0 | loss 0.0577 | valid gauc 0.615569 ndcg5 0.461896 primary 0.538732
+epoch 2.5 | loss 0.0339 | valid gauc 0.606166 ndcg5 0.461489 primary 0.533828
+epoch 3.0 | loss 0.0297 | valid gauc 0.602779 ndcg5 0.468371 primary 0.535575
+epoch 3.5 | loss 0.0267 | valid gauc 0.600072 ndcg5 0.465132 primary 0.532602
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": -0.035173990685083534, "field_level": 5, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab", "user_active_degree", "follow_user_num_range", "fans_user_num_range", "register_days_range", "is_video_author", "video_type", "upload_type", "music_id_top200", "first_tag", "aspect_ratio_bucket", "visible_status", "item_long_view_rate", "author_long_view_rate", "upload_age_bucket"], "gauc": 0.6697218110008857, "n_fields": 24, "ndcg5": 0.46313020762894735, "primary": 0.5664260093149165, "regularized": false, "runtime_s": 270.9, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5199 | valid gauc 0.657621 ndcg5 0.564691 primary 0.611156
+epoch 1.0 | loss 0.4268 | valid gauc 0.654482 ndcg5 0.572353 primary 0.613417
+epoch 1.5 | loss 0.3212 | valid gauc 0.647874 ndcg5 0.537785 primary 0.592830
+epoch 2.0 | loss 0.3100 | valid gauc 0.643840 ndcg5 0.518554 primary 0.581197
+epoch 2.5 | loss 0.2689 | valid gauc 0.638081 ndcg5 0.509065 primary 0.573573
+epoch 3.0 | loss 0.2657 | valid gauc 0.637315 ndcg5 0.502760 primary 0.570037
+epoch 3.5 | loss 0.2460 | valid gauc 0.634487 ndcg5 0.497627 primary 0.566057
+epoch 4.0 | loss 0.2446 | valid gauc 0.633430 ndcg5 0.495584 primary 0.564507
+early stop after epoch 4.0
+final: {"best_epoch": 1.0, "delta_vs_baseline": 0.01181725469145467, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.654481754949292, "n_fields": 5, "ndcg5": 0.5723527544336173, "primary": 0.6134172546914547, "regularized": true, "runtime_s": 245.3, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5123 | valid gauc 0.670719 ndcg5 0.578869 primary 0.624794
+epoch 1.0 | loss 0.4255 | valid gauc 0.664190 ndcg5 0.580763 primary 0.622476
+epoch 1.5 | loss 0.3211 | valid gauc 0.656363 ndcg5 0.529970 primary 0.593167
+epoch 2.0 | loss 0.3102 | valid gauc 0.653161 ndcg5 0.514860 primary 0.584011
+epoch 2.5 | loss 0.2696 | valid gauc 0.646447 ndcg5 0.498167 primary 0.572307
+epoch 3.0 | loss 0.2661 | valid gauc 0.644675 ndcg5 0.492655 primary 0.568665
+epoch 3.5 | loss 0.2463 | valid gauc 0.641598 ndcg5 0.488810 primary 0.565204
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.023194045745262737, "field_level": 2, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab"], "gauc": 0.6707193748333283, "n_fields": 10, "ndcg5": 0.5788687166571972, "primary": 0.6247940457452628, "regularized": true, "runtime_s": 240.2, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5087 | valid gauc 0.669487 ndcg5 0.582276 primary 0.625881
+epoch 1.0 | loss 0.4252 | valid gauc 0.662485 ndcg5 0.585844 primary 0.624164
+epoch 1.5 | loss 0.3188 | valid gauc 0.651825 ndcg5 0.538874 primary 0.595350
+epoch 2.0 | loss 0.3077 | valid gauc 0.649190 ndcg5 0.524370 primary 0.586780
+epoch 2.5 | loss 0.2670 | valid gauc 0.642613 ndcg5 0.511408 primary 0.577010
+epoch 3.0 | loss 0.2642 | valid gauc 0.640801 ndcg5 0.502172 primary 0.571486
+epoch 3.5 | loss 0.2452 | valid gauc 0.638878 ndcg5 0.499798 primary 0.569338
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.02428128092634596, "field_level": 4, "field_names": ["user", "video", "author", "tab", "dur_bucket10", "hour", "day_of_week", "dur_bucket50", "dur_le_18s", "dur50_x_tab", "user_active_degree", "follow_user_num_range", "fans_user_num_range", "register_days_range", "is_video_author", "video_type", "upload_type", "music_id_top200", "first_tag", "aspect_ratio_bucket", "visible_status"], "gauc": 0.6694865926126637, "n_fields": 21, "ndcg5": 0.5822759692400282, "primary": 0.625881280926346, "regularized": true, "runtime_s": 301.5, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.4955 | valid gauc 0.668277 ndcg5 0.469913 primary 0.569095
+epoch 1.0 | loss 0.3252 | valid gauc 0.646292 ndcg5 0.406944 primary 0.526618
+epoch 1.5 | loss 0.1315 | valid gauc 0.632771 ndcg5 0.447340 primary 0.540055
+epoch 2.0 | loss 0.0886 | valid gauc 0.623969 ndcg5 0.445317 primary 0.534643
+epoch 2.5 | loss 0.0629 | valid gauc 0.616380 ndcg5 0.446205 primary 0.531293

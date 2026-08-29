@@ -1,0 +1,144 @@
+epoch 0.5 | loss 0.5019 | lr 0.00168 | valid primary 0.615187
+epoch 1.0 | loss 0.4040 | lr 0.00168 | valid primary 0.601891
+epoch 1.5 | loss 0.2851 | lr 0.00084 | valid primary 0.581057
+epoch 2.0 | loss 0.2714 | lr 0.00084 | valid primary 0.576025
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 82, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.010487045789341343, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6580042966049636, "ndcg5": 0.572369794973719, "primary": 0.6151870457893414, "runtime_s": 357.3, "timed_out": true}
+epoch 0.5 | loss 0.5044 | lr 0.00168 | valid primary 0.618583
+epoch 1.0 | loss 0.4087 | lr 0.00168 | valid primary 0.607406
+epoch 1.5 | loss 0.2880 | lr 0.00084 | valid primary 0.589319
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 83, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.01388310808074289, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6598423050430846, "ndcg5": 0.5773239111184013, "primary": 0.6185831080807429, "runtime_s": 359.6, "timed_out": true}
+epoch 0.5 | loss 0.5024 | lr 0.00168 | valid primary 0.623420
+epoch 1.0 | loss 0.4080 | lr 0.00168 | valid primary 0.604182
+epoch 1.5 | loss 0.2879 | lr 0.00084 | valid primary 0.579587
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 84, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.018719619341207805, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6591734902739984, "ndcg5": 0.5876657484084173, "primary": 0.6234196193412078, "runtime_s": 361.5, "timed_out": true}
+epoch 0.5 | loss 0.5021 | lr 0.00168 | valid primary 0.618130
+epoch 1.0 | loss 0.4053 | lr 0.00168 | valid primary 0.600865
+epoch 1.5 | loss 0.2841 | lr 0.00084 | valid primary 0.579615
+epoch 2.0 | loss 0.2703 | lr 0.00084 | valid primary 0.575773
+epoch 2.5 | loss 0.2262 | lr 0.00042 | valid primary 0.570395
+epoch 3.0 | loss 0.2240 | lr 0.00042 | valid primary 0.571795
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 85, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.01343011650996484, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6588862853541874, "ndcg5": 0.5773739476657422, "primary": 0.6181301165099649, "runtime_s": 356.2, "timed_out": true}
+epoch 0.5 | loss 0.5045 | lr 0.00168 | valid primary 0.620475
+epoch 1.0 | loss 0.4106 | lr 0.00168 | valid primary 0.612244
+epoch 1.5 | loss 0.2905 | lr 0.00084 | valid primary 0.589385
+epoch 2.0 | loss 0.2751 | lr 0.00084 | valid primary 0.576687
+epoch 2.5 | loss 0.2280 | lr 0.00042 | valid primary 0.567823
+epoch 3.0 | loss 0.2256 | lr 0.00042 | valid primary 0.567564
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 86, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.015775173525881092, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6577584593081958, "ndcg5": 0.5831918877435663, "primary": 0.6204751735258811, "runtime_s": 356.2, "timed_out": true}
+epoch 0.5 | loss 0.5005 | lr 0.00168 | valid primary 0.610569
+epoch 1.0 | loss 0.4021 | lr 0.00168 | valid primary 0.608490
+epoch 1.5 | loss 0.2825 | lr 0.00084 | valid primary 0.586237
+epoch 2.0 | loss 0.2707 | lr 0.00084 | valid primary 0.574880
+epoch 2.5 | loss 0.2279 | lr 0.00042 | valid primary 0.573042
+epoch 3.0 | loss 0.2253 | lr 0.00042 | valid primary 0.572063
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 87, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.005869290702406937, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6586414637015288, "ndcg5": 0.5624971177032851, "primary": 0.610569290702407, "runtime_s": 356.0, "timed_out": true}
+epoch 0.5 | loss 0.5042 | lr 0.00168 | valid primary 0.612644
+epoch 1.0 | loss 0.4112 | lr 0.00168 | valid primary 0.602287
+epoch 1.5 | loss 0.2913 | lr 0.00084 | valid primary 0.579829
+epoch 2.0 | loss 0.2739 | lr 0.00084 | valid primary 0.572477
+epoch 2.5 | loss 0.2274 | lr 0.00042 | valid primary 0.566150
+epoch 3.0 | loss 0.2248 | lr 0.00042 | valid primary 0.564743
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 88, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.007944448888315248, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.658458516788939, "ndcg5": 0.5668303809876916, "primary": 0.6126444488883153, "runtime_s": 356.1, "timed_out": true}
+epoch 0.5 | loss 0.5040 | lr 0.00168 | valid primary 0.617031
+epoch 1.0 | loss 0.4047 | lr 0.00168 | valid primary 0.599857
+epoch 1.5 | loss 0.2848 | lr 0.00084 | valid primary 0.576399
+epoch 2.0 | loss 0.2715 | lr 0.00084 | valid primary 0.574798
+epoch 2.5 | loss 0.2280 | lr 0.00042 | valid primary 0.571542
+epoch 3.0 | loss 0.2257 | lr 0.00042 | valid primary 0.567282
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 89, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.012331319203512936, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6585317774263038, "ndcg5": 0.5755308609807221, "primary": 0.617031319203513, "runtime_s": 356.0, "timed_out": true}
+epoch 0.5 | loss 0.5033 | lr 0.00168 | valid primary 0.626198
+epoch 1.0 | loss 0.4110 | lr 0.00168 | valid primary 0.611465
+epoch 1.5 | loss 0.2915 | lr 0.00084 | valid primary 0.589628
+epoch 2.0 | loss 0.2758 | lr 0.00084 | valid primary 0.578234
+epoch 2.5 | loss 0.2289 | lr 0.00042 | valid primary 0.574595
+epoch 3.0 | loss 0.2254 | lr 0.00042 | valid primary 0.572987
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 90, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.021497840002605795, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6594070521648662, "ndcg5": 0.5929886278403455, "primary": 0.6261978400026058, "runtime_s": 356.1, "timed_out": true}
+epoch 0.5 | loss 0.5045 | lr 0.00168 | valid primary 0.614234
+epoch 1.0 | loss 0.4065 | lr 0.00168 | valid primary 0.597943
+epoch 1.5 | loss 0.2856 | lr 0.00084 | valid primary 0.583169
+epoch 2.0 | loss 0.2710 | lr 0.00084 | valid primary 0.576627
+epoch 2.5 | loss 0.2276 | lr 0.00042 | valid primary 0.574404
+epoch 3.0 | loss 0.2250 | lr 0.00042 | valid primary 0.570529
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 91, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.009533814884701064, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6574225745898841, "ndcg5": 0.5710450551795182, "primary": 0.6142338148847011, "runtime_s": 356.1, "timed_out": true}
+epoch 0.5 | loss 0.5051 | lr 0.00168 | valid primary 0.615730
+epoch 1.0 | loss 0.4113 | lr 0.00168 | valid primary 0.609309
+epoch 1.5 | loss 0.2917 | lr 0.00084 | valid primary 0.583603
+epoch 2.0 | loss 0.2754 | lr 0.00084 | valid primary 0.577928
+epoch 2.5 | loss 0.2287 | lr 0.00042 | valid primary 0.572603
+epoch 3.0 | loss 0.2253 | lr 0.00042 | valid primary 0.569059
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 92, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.01103021475019439, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6585342241916718, "ndcg5": 0.5729262053087169, "primary": 0.6157302147501944, "runtime_s": 356.1, "timed_out": true}
+epoch 0.5 | loss 0.5023 | lr 0.00168 | valid primary 0.617686
+epoch 1.0 | loss 0.4106 | lr 0.00168 | valid primary 0.613058
+epoch 1.5 | loss 0.2909 | lr 0.00084 | valid primary 0.587403
+epoch 2.0 | loss 0.2748 | lr 0.00084 | valid primary 0.578644
+epoch 2.5 | loss 0.2279 | lr 0.00042 | valid primary 0.575213
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 93, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.012985843018048948, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6582350230482088, "ndcg5": 0.5771366629878892, "primary": 0.617685843018049, "runtime_s": 356.5, "timed_out": true}
+epoch 0.5 | loss 0.5040 | lr 0.00168 | valid primary 0.611716
+epoch 1.0 | loss 0.4005 | lr 0.00168 | valid primary 0.592564
+epoch 1.5 | loss 0.2783 | lr 0.00084 | valid primary 0.579718
+epoch 2.0 | loss 0.2663 | lr 0.00084 | valid primary 0.571223
+epoch 2.5 | loss 0.2233 | lr 0.00042 | valid primary 0.568911
+epoch 3.0 | loss 0.2210 | lr 0.00042 | valid primary 0.562349
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 94, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.007015961975648022, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6579450374202862, "ndcg5": 0.56548688653101, "primary": 0.611715961975648, "runtime_s": 356.1, "timed_out": true}
+epoch 0.5 | loss 0.5030 | lr 0.00168 | valid primary 0.617161
+epoch 1.0 | loss 0.4041 | lr 0.00168 | valid primary 0.606753
+epoch 1.5 | loss 0.2837 | lr 0.00084 | valid primary 0.583718
+epoch 2.0 | loss 0.2707 | lr 0.00084 | valid primary 0.576895
+epoch 2.5 | loss 0.2273 | lr 0.00042 | valid primary 0.568278
+epoch 3.0 | loss 0.2251 | lr 0.00042 | valid primary 0.566922
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 95, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.012461234617257233, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6586264601887379, "ndcg5": 0.5756960090457764, "primary": 0.6171612346172572, "runtime_s": 355.9, "timed_out": true}
+epoch 0.5 | loss 0.5028 | lr 0.00168 | valid primary 0.614281
+epoch 1.0 | loss 0.4094 | lr 0.00168 | valid primary 0.604925
+epoch 1.5 | loss 0.2895 | lr 0.00084 | valid primary 0.584447
+epoch 2.0 | loss 0.2744 | lr 0.00084 | valid primary 0.580357
+epoch 2.5 | loss 0.2272 | lr 0.00042 | valid primary 0.573912
+epoch 3.0 | loss 0.2247 | lr 0.00042 | valid primary 0.571577
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 96, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.009580817847032463, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6591425643390421, "ndcg5": 0.5694190713550228, "primary": 0.6142808178470325, "runtime_s": 355.8, "timed_out": true}
+epoch 0.5 | loss 0.5025 | lr 0.00168 | valid primary 0.618196
+epoch 1.0 | loss 0.4047 | lr 0.00168 | valid primary 0.606519
+epoch 1.5 | loss 0.2859 | lr 0.00084 | valid primary 0.580862
+epoch 2.0 | loss 0.2724 | lr 0.00084 | valid primary 0.579714
+epoch 2.5 | loss 0.2293 | lr 0.00042 | valid primary 0.570172
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 97, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.013495852116173435, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6592562917411549, "ndcg5": 0.577135412491192, "primary": 0.6181958521161734, "runtime_s": 357.1, "timed_out": true}
+epoch 0.5 | loss 0.5037 | lr 0.00168 | valid primary 0.622888
+epoch 1.0 | loss 0.4107 | lr 0.00168 | valid primary 0.602645
+epoch 1.5 | loss 0.2933 | lr 0.00084 | valid primary 0.582308
+epoch 2.0 | loss 0.2773 | lr 0.00084 | valid primary 0.584614
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 98, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.018187665850040946, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6584507720893148, "ndcg5": 0.5873245596107671, "primary": 0.622887665850041, "runtime_s": 358.3, "timed_out": true}
+epoch 0.5 | loss 0.5020 | lr 0.00168 | valid primary 0.618821
+epoch 1.0 | loss 0.4061 | lr 0.00168 | valid primary 0.602099
+epoch 1.5 | loss 0.2860 | lr 0.00084 | valid primary 0.585887
+epoch 2.0 | loss 0.2720 | lr 0.00084 | valid primary 0.576396
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 99, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.01412112479841754, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6589068763632621, "ndcg5": 0.578735373233573, "primary": 0.6188211247984176, "runtime_s": 358.1, "timed_out": true}
+epoch 0.5 | loss 0.5044 | lr 0.00168 | valid primary 0.619015
+epoch 1.0 | loss 0.4130 | lr 0.00168 | valid primary 0.611670
+epoch 1.5 | loss 0.2946 | lr 0.00084 | valid primary 0.587493
+epoch 2.0 | loss 0.2788 | lr 0.00084 | valid primary 0.576711
+runtime alarm reached at 350s; preserving best checkpoint
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 100, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.014314581803240745, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.658801802753337, "ndcg5": 0.5792273608531445, "primary": 0.6190145818032408, "runtime_s": 356.8, "timed_out": true}
+epoch 0.5 | loss 0.5018 | lr 0.00168 | valid primary 0.614422
+epoch 1.0 | loss 0.4099 | lr 0.00168 | valid primary 0.600213
+epoch 1.5 | loss 0.2910 | lr 0.00084 | valid primary 0.581300
+epoch 2.0 | loss 0.2750 | lr 0.00084 | valid primary 0.580449
+epoch 2.5 | loss 0.2273 | lr 0.00042 | valid primary 0.577711
+epoch 3.0 | loss 0.2239 | lr 0.00042 | valid primary 0.571585
+epoch 3.5 | loss 0.2037 | lr 0.00021 | valid primary 0.571502
+final: {"best_epoch": 0.5, "config": {"batch_size": 8192, "bpr_weight": 0.5, "decay_every": 1.0, "decay_start_epoch": 0.0, "dropout": 0.21, "embedding_dropout": 0.1, "epochs": 6, "k": 24, "lr": 0.00168, "max_runtime": 350, "patience_halves": 6, "recency_half_life": 7.0, "seed": 101, "step_decay_factor": 0.5, "subsample": null, "weight_decay": 3.7e-05}, "delta_vs_frozen_baseline": 0.009722292076511208, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6583502560023945, "ndcg5": 0.5704943281506278, "primary": 0.6144222920765112, "runtime_s": 341.0, "timed_out": false}

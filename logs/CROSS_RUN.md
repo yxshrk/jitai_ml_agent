@@ -40,3 +40,39 @@ What the next run should try first
 3. Only after an atomic regularization result should causal session-position/gap features be tested, one feature family at a time and without high-cardinality crosses initially.
 
 The highest-value next action is not another feature package; it is establishing a reliable baseline distribution and optimizing the early checkpoint region.
+
+## Run logs/run_official_1k_02d
+dataset: 1k
+stop_reason: converged
+best_primary: 0.620817
+- node_001 | method: embedding-dim-down | hypothesis: The validation collapse after epoch 0.5 diagnoses severe | primary: n/a | verdict: failed
+- node_002 | method: embedding-dim-down | hypothesis: Reducing the parent model's embedding dimension to k=8 | primary: 0.614862 | verdict: rejected
+- node_003 | method: duration-regime-heads | hypothesis: The parent’s validation peak at epoch 0.5 followed | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+What was suboptimal
+- The run declared convergence after only one baseline and one successfully evaluated alternative. Two of four nodes produced no metric, so this was more an execution-limited run than a converged search.
+- The k=8 hypothesis was overly specific and weakly supported. A post-epoch-0.5 validation decline indicates training-time overfitting, but does not uniquely implicate embedding width. The result, 0.6149 versus 0.6208, strongly rejects this particular reduction.
+- The proposed gains (+0.002 to +0.003) were close to the reported sigma of 0.0015. Single evaluations cannot reliably distinguish gains of that size.
+- node_002 was attached to a failed/no-metric node rather than cleanly represented as a repaired execution of a hypothesis branching from node_000. This obscures lineage and failure accounting.
+- The censoring-boundary residual-head idea added architectural complexity before simpler controls—checkpoint timing, weight decay, dropout, and intermediate dimensions—were tested.
+- “No metric” failures were not diagnosed or retried, yet apparently contributed to stopping.
+
+Scaffold changes
+- Separate scientific rejection from infrastructure failure. A no-metric node should receive an automatic minimal repair/retry and should not count toward convergence.
+- Require a minimum number of valid trials or explored hypothesis classes before stopping.
+- Use repeated seeds or paired reruns when expected improvements are near validation noise; report uncertainty on deltas.
+- Avoid asserting precise expected gains without evidence. Record the diagnosis, intervention, and falsifiable outcome separately.
+- Preserve clean lineage: repaired runs should branch from the last valid parent and be labeled as retries.
+- Add lightweight sweeps around plausible settings rather than jumping from k=24 directly to k=8.
+- Log epoch-level train/validation metrics and checkpoint scores so “overfitting” can be distinguished from optimizer instability or noisy validation.
+
+What the next run should try first
+1. Reproduce the baseline across several seeds and verify that the epoch-0.5 peak is stable.
+2. Keep k=24 and directly regularize training: tune weight decay and embedding dropout, while retaining early checkpoint selection.
+3. Test intermediate embedding sizes, especially k=16, rather than retrying k=8.
+4. Tune evaluation/checkpoint cadence around the early peak; the best improvement may come from selecting a more precise early checkpoint rather than changing architecture.
+5. Only after these controls, retry the 18-second regime feature as a simple indicator or interaction before introducing a separate residual head.
+
+The immediate best first experiment is a small, paired sweep of baseline k=24 with stronger embedding regularization and finer early checkpointing.
