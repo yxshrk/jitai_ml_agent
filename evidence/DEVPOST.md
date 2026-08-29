@@ -16,7 +16,7 @@ KuaiRand-Pure runs end to end to the official convergence rule; interventions ar
 
 ## Results
 
-The progression is concrete: official Pure baseline **0.6016** → compact single model **0.6047 ± 0.0003** over three seeds → five-seed per-user rank-average ensemble **0.60577**, a **+0.0042** validation-primary gain over baseline. The bonus KuaiRand-1K track is around 0.62, with the final submission value reserved as **{1K_FINAL}**; the frozen three-seed transfer measured 0.6134/0.6090/0.6156, mean 0.6127.
+The progression is concrete: official Pure baseline **0.6016** → compact single model **0.6047 ± 0.0003** over three seeds → five-seed per-user rank-average ensemble **0.60577**, a **+0.0042** validation-primary gain over baseline. The bonus KuaiRand-1K track is around 0.62, with the final submission value reserved as **0.6323 (validation; 5-seed ensemble)**; the frozen three-seed transfer measured 0.6134/0.6090/0.6156, mean 0.6127.
 
 The auditable ledger contains about **170 measured cells**; the broader requested experiment total is **{MEASURED_EXPERIMENTS}** until reconciled. Three levers survived: **DCN-lite**, **seven-day recency weighting**, and **strong joint regularization plus rapid learning-rate decay**. Sequence modeling was refuted; in the history campaign, its affinity prerequisite scored 0.6035001, only +0.0019001 over baseline, so DIN-lite was correctly gated off. Watch-time objectives also stayed below epsilon: ordinal watch ratio reached 0.6033 and the CWM-style censored auxiliary 0.6022.
 

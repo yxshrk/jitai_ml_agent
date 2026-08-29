@@ -16,7 +16,11 @@ Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
   test with each, per-user rank-average, submit via evidence/submission.py +
   official submit.py --check. ONE test touch.
 
-## 1K (bonus)
-Frozen stack transfers: seeds 42/43/44 = 0.6134/0.6090/0.6156 (mean 0.6127,
-spread larger than Pure). Half-life 7 confirmed optimal on 1K (3 and 14 both hurt).
-Bonus submission: 3-5 seed rank-average, same procedure, ~6 min/seed CPU.
+## 1K (bonus) — FROZEN Sat evening
+Recipe: 5-seed per-user rank-average of the 1K-tuned config
+(lr 0.00168, dropout 0.21, wd 3.7e-5, k 24, recency half-life 7, 6 epochs;
+zoo/frozen_stack_1k.py), seeds {42,43,44,45,46}.
+Validated: singles 0.6073-0.6216 (wide seed variance is why ensembling pays);
+**ensemble 0.6323 valid primary**. Arc: default transfer 0.6134 -> tuned single
+0.6214 -> ensemble 0.6323. No official 1K baseline exists; we report absolutes.
+Test-time: train 5 seeds on train window only, predict test, rank-average, submit.
