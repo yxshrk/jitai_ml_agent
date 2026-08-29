@@ -1,0 +1,109 @@
+{
+  "run_dir": "logs/run_official_1k_01d",
+  "dataset": "1k",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "best_epoch": 0.5,
+    "config": {
+      "batch_size": 8192,
+      "bpr_weight": 0.5,
+      "decay_every": 1.0,
+      "decay_start_epoch": 0.0,
+      "dropout": 0.21,
+      "embedding_dropout": 0.1,
+      "epochs": 6,
+      "k": 24,
+      "lr": 0.00168,
+      "max_runtime": 350,
+      "patience_halves": 6,
+      "recency_half_life": 7.0,
+      "seed": 42,
+      "step_decay_factor": 0.5,
+      "subsample": null,
+      "weight_decay": 3.7e-05
+    },
+    "delta_vs_frozen_baseline": 0.016116845238512756,
+    "field_names": [
+      "user",
+      "video",
+      "author",
+      "tab",
+      "dur_bucket10"
+    ],
+    "gauc": 0.6590830452448295,
+    "history": [
+      {
+        "epoch": 0.5,
+        "lr": 0.00168,
+        "train_loss": 0.5025334994769791,
+        "val_gauc": 0.6590830452448295,
+        "val_ndcg5": 0.5825506452321959,
+        "val_primary": 0.6208168452385128
+      },
+      {
+        "epoch": 1.0,
+        "lr": 0.00168,
+        "train_loss": 0.4071379772667746,
+        "val_gauc": 0.6527134464626576,
+        "val_ndcg5": 0.5503255200299134,
+        "val_primary": 0.6015194832462856
+      },
+      {
+        "epoch": 1.5,
+        "lr": 0.00084,
+        "train_loss": 0.2873270125836616,
+        "val_gauc": 0.6479873663506766,
+        "val_ndcg5": 0.5235454827056513,
+        "val_primary": 0.585766424528164
+      },
+      {
+        "epoch": 2.0,
+        "lr": 0.00084,
+        "train_loss": 0.27187922230430406,
+        "val_gauc": 0.6459350836905516,
+        "val_ndcg5": 0.5025167487453223,
+        "val_primary": 0.574225916217937
+      },
+      {
+        "epoch": 2.5,
+        "lr": 0.00042,
+        "train_loss": 0.22660987296150725,
+        "val_gauc": 0.6418792570196393,
+        "val_ndcg5": 0.4961207046802477,
+        "val_primary": 0.5689999808499435
+      }
+    ],
+    "ndcg5": 0.5825506452321959,
+    "primary": 0.6208168452385128,
+    "runtime_s": 358.1,
+    "timed_out": true
+  },
+  "sigma": 0.0015,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 8361,
+      "out": 1161,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15783,
+      "out": 16490,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 6931,
+      "out": 6602,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3375,
+      "out": 1455,
+      "calls": 2
+    }
+  },
+  "tokens_total": 60158,
+  "wall_s": 1277.5,
+  "self_critique": "Overall assessment\n\nThe run did not demonstrate convergence; it found a strong baseline and then failed to execute or validate two broad hypotheses. \u201cBudget exhausted/no viable improvement\u201d would be a more accurate stop characterization than \u201cconverged.\u201d\n\nWhat the harness/policy did suboptimally\n\n- It bundled too many changes. Node_001/002 simultaneously changed dropout, embedding L2, AdamW decay, LR decay, checkpointing, and batch size. The 0.6019 result gives no attribution and cannot identify which change caused the large regression.\n- It continued from a failed node. Node_002 inherited an unmeasured node_001 rather than branching from the last successful implementation, increasing debugging and confounding risk.\n- Execution reliability was poor: two of three proposals produced no metric. The policy should have required a short smoke test and runtime estimate before committing a full trial.\n- The hypotheses overreached the evidence. The curve supports early overfitting, but not specifically that sparse static IDs are the cause. Adding multiple crosses could increase sparsity and worsen exactly that problem.\n- Expected gains of 0.0025\u20130.003 were only modest relative to sigma=0.0015. Near-threshold improvements would require repeated seeds, yet the run spent budget on large packages instead.\n- The search did not isolate the most obvious finding: the baseline peaks around epoch 0.5. Finer checkpoint/early-stop tuning was cheaper and better supported than architectural or feature expansion.\n- \u201cValidation-GAUC checkpointing\u201d may also create selection noise unless checkpoint frequency and the final primary metric are standardized across trials.\n\nWhat I would change in the scaffold\n\n- Require atomic experiments: one regularizer, one optimizer change, or one feature family per node.\n- Always branch experimental work from the latest successful node; treat failed nodes as debugging records only.\n- Add mandatory compile/data checks plus a timed mini-run before full evaluation.\n- Record metric curves at fixed training fractions, including train loss, validation primary, and best versus final checkpoint.\n- Re-run the baseline across seeds before treating differences near 1\u20132 sigma as real.\n- Require explicit rollback/fallback plans for expensive feature pipelines.\n- Separate implementation changes such as batching from scientific changes so throughput fixes do not confound model comparisons.\n- Use a stop label that distinguishes true search convergence from repeated execution failure or exhausted budget.\n\nWhat the next run should try first\n\n1. Reproduce the baseline for several seeds and checkpoint more finely around its apparent optimum, such as 0.25, 0.5, and 0.75 epoch. This verifies whether 0.6208 is stable and whether earlier stopping alone improves it.\n2. If overfitting is reproducible, test exactly one low-risk intervention first\u2014preferably modest embedding/ID regularization or reduced embedding capacity\u2014while keeping optimizer, LR schedule, batching, and checkpointing unchanged.\n3. Only after an atomic regularization result should causal session-position/gap features be tested, one feature family at a time and without high-cardinality crosses initially.\n\nThe highest-value next action is not another feature package; it is establishing a reliable baseline distribution and optimizing the early checkpoint region."
+}

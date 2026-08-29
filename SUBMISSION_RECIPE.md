@@ -16,6 +16,12 @@ Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
   test with each, per-user rank-average, submit via evidence/submission.py +
   official submit.py --check. ONE test touch.
 
+## Pure UPDATE (Sat night): extended 159-seed pool greedy = 0.60602 (11 members:
+s199, seedfarm_74, seedfarm_46, s196, s109, s191, s147, seedfarm_89, s105, s126,
+seedfarm_100 — seedext seeds are 102-200 of the same frozen config). DESIGNATION
+PENDING Sunday-morning random-probe transfer check (11-member made ~10 more
+val-guided picks than the 5-member; pick by probe + parsimony, not val digit).
+
 ## 1K (bonus) — FROZEN Sat evening
 Recipe: 5-seed per-user rank-average of the 1K-tuned config
 (lr 0.00168, dropout 0.21, wd 3.7e-5, k 24, recency half-life 7, 6 epochs;
