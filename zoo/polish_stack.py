@@ -52,7 +52,7 @@ def parser(description: str = __doc__) -> argparse.ArgumentParser:
     ap.add_argument("--dropout", type=float, default=0.2)
     ap.add_argument("--embedding-dropout", type=float, default=0.1)
     ap.add_argument("--weight-decay", type=float, default=1e-5)
-    ap.add_argument("--k", type=int, choices=(8, 12, 16, 24, 32, 48), default=16)
+    ap.add_argument("--k", type=int, choices=(8, 12, 16, 24, 32, 48, 64, 96), default=16)
     ap.add_argument("--recency-half-life", type=float, default=7.0)
     ap.add_argument("--bpr-weight", type=float, default=0.5)
     ap.add_argument("--patience-halves", type=int, default=6)
