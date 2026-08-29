@@ -103,8 +103,7 @@ def load_validation_only(data_dir: str, subsample: int | None = None) -> dict[st
         ("valid", "val", VALID_MIN_DATE, VALID_MAX_DATE),
     ):
         with np.load(base / f"{stem}.npz", allow_pickle=False) as archive:
-            split = {key: np.asarray(archive[key]).copy() for key in archive.files
-                     if key != "field_dims"}
+            split = {key: np.asarray(archive[key]) for key in ("X", "y", "user", "date")}
             dims = np.asarray(archive["field_dims"], dtype=np.int64)
         if field_dims is None:
             field_dims = dims
@@ -122,12 +121,15 @@ def load_validation_only(data_dir: str, subsample: int | None = None) -> dict[st
             n_rows = len(split["y"])
             videos = np.zeros(n_rows, dtype=np.int64)
             authors = np.zeros(n_rows, dtype=np.int64)
-        split["users"] = split.pop("user").astype(np.int64)
+        split["users"] = split.pop("user").astype(np.int64, copy=False)
         split["videos"], split["authors"] = videos, authors
         if subsample is not None:
             split = {key: values[:subsample] for key, values in split.items()}
-        split["X"] = split["X"].astype(np.int64)
-        split["y"] = split["y"].astype(np.float32)
+        split["X"] = split["X"].astype(np.int32, copy=False)
+        split["y"] = split["y"].astype(np.float32, copy=False)
+        if name == "valid":
+            del split["date"]
+            del dates
         if split["X"].shape[1] != len(FROZEN_FIELDS):
             raise ValueError(f"expected five frozen fields, got {split['X'].shape[1]}")
         result[name] = split
@@ -217,10 +219,12 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
     rng = np.random.default_rng(args.seed)
     tr, va = ds["train"], ds["valid"]
     device = torch.device(args.device)
-    train_x = torch.as_tensor(np.ascontiguousarray(tr["X"]), dtype=torch.long)
+    train_array = tr["X"] if tr["X"].flags["C_CONTIGUOUS"] else np.ascontiguousarray(tr["X"])
+    train_x = torch.as_tensor(train_array, dtype=torch.int32)
     train_y = torch.as_tensor(tr["y"], dtype=torch.float32)
     train_weights = torch.as_tensor(recency_weights(tr["date"], args.recency_half_life))
-    valid_x = torch.as_tensor(np.ascontiguousarray(va["X"]), dtype=torch.long)
+    valid_array = va["X"] if va["X"].flags["C_CONTIGUOUS"] else np.ascontiguousarray(va["X"])
+    valid_x = torch.as_tensor(valid_array, dtype=torch.int32)
     if device.type == "cuda":
         if len(train_y) <= 20_000_000:  # pinning doubles host RAM; skip for huge datasets
             train_x = train_x.pin_memory()
@@ -241,7 +245,7 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
     def predict() -> np.ndarray:
         model.eval()
         with torch.no_grad():
-            chunks = [model(transfer(valid_x[start:start + 200_000]))
+            chunks = [model(transfer(valid_x[start:start + 200_000]).long())
                       for start in range(0, len(valid_x), 200_000)]
         model.train()
         predictions = torch.cat(chunks)
@@ -277,7 +281,7 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
                 for batch in range(batches):
                     idx_np = half_rows[batch * args.batch_size:(batch + 1) * args.batch_size]
                     idx = torch.as_tensor(idx_np, dtype=torch.long)
-                    batch_x = transfer(train_x[idx])
+                    batch_x = transfer(train_x[idx]).long()
                     batch_y = transfer(train_y[idx])
                     weights = transfer(train_weights[idx])
                     logits = model(batch_x)
@@ -289,8 +293,8 @@ def train_and_report(ds: dict[str, Any], args: argparse.Namespace,
                     if pair_end > pair_begin:
                         positive = torch.as_tensor(pair_pos[pair_begin:pair_end], dtype=torch.long)
                         negative = torch.as_tensor(pair_neg[pair_begin:pair_end], dtype=torch.long)
-                        negative_x = transfer(train_x[negative])
-                        positive_x = transfer(train_x[positive])
+                        negative_x = transfer(train_x[negative]).long()
+                        positive_x = transfer(train_x[positive]).long()
                         pair = nn.functional.softplus(model(negative_x) - model(positive_x))
                         pair_weights = 0.5 * transfer(
                             train_weights[positive] + train_weights[negative])
