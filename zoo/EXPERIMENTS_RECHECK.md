@@ -75,3 +75,10 @@ No isolated cell achieved the required seed-42 delta of +0.001000. Therefore no
 cell qualified for three-seed confirmation, and the conditional best-pair test
 was not triggered. All scored runs used the full validation export and completed
 well below six minutes without timeout or scope reduction.
+
+## 1K flip-check (ruby GPU, Sun ~morning) — neighborhood around frozen tuned config
+Single-dial flips off frozen_stack_1k (lr .00168, d .21, wd 3.7e-5, k24, hl7, seed42):
+k48 0.61340 | k32+lr1e-3 0.61319 | batch16384 0.61256 | dropout.1 0.62026 |
+wd1e-3 0.62104 | hl3.5 0.61721 | hl12 0.61835. (k40d28 cell lost: k=40 not in
+choices.) Verdict: NO flip beats champion single 0.6214 — 1K config confirmed
+at a local optimum; frozen recipe stands.

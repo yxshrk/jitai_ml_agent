@@ -553,3 +553,42 @@ Then, in order:
 6. Retain the two-member ensemble as a Pareto-efficient candidate if its 60% cost reduction is confirmed.
 
 The key correction is to replace broad “regularization packages” with diagnostic, atomic experiments and to avoid treating a 0.0001 score difference as decisive.
+
+## Run logs/run_desig_seeded_04
+dataset: pure
+stop_reason: converged
+best_primary: 0.605126
+- node_001 | method: none | hypothesis: team-provided reference implementation: frozen_ensemble.py (from MENU frozen stack) | primary: 0.605126 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: Because validation peaks early and then declines, indicating | primary: 0.605032 | verdict: rejected
+- node_003 | method: swa-ema | hypothesis: Because validation peaks early and then mildly declines, | primary: 0.602157 | verdict: rejected
+- node_004 | method: regularization-schedule | hypothesis: Diagnosing the early validation peak and subsequent decline | primary: 0.604582 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a modest but real improvement over the baseline (+0.0033) by adopting the provided frozen ensemble, then converged prematurely after only three narrow variants. It mostly validated that the reference stack was already locally strong; it did not conduct a broad or well-instrumented search around it.
+
+What was suboptimal
+
+- The search was too shallow. Declaring convergence after three rejected children is not persuasive, especially when all three were motivated by the same weak “early peak means overfitting” diagnosis.
+- That diagnosis was not established. A validation peak followed by decline can reflect ordinary training dynamics, checkpoint noise, or seed variance. No train/validation gap, per-seed curves, member scores, or uncertainty analysis was reported.
+- Node_002 exposed an objective mismatch. It scored 0.6050, within the hypothesized 0.001 of the champion while cutting training and inference cost by 60%, so the experiment succeeded on its stated claim. Rejecting it solely because primary decreased discards a useful Pareto-optimal result. Either cost must be part of acceptance or cost-saving hypotheses should not be proposed.
+- Node_004 changed dropout, embedding L2, weight decay, and LR decay simultaneously. Its rejection provides little information about which changes helped or hurt. The aggressive 0.5-per-epoch decay was especially likely to confound the regularization test.
+- Node_003 averaged only two adjacent checkpoints. Those checkpoints are highly correlated, and equal weighting was arbitrary; this was a low-upside form of ensembling compared with adding independent seeds or model diversity.
+- The accepted seeded node duplicated node_001 rather than adding evidence. The journal also reports sigma=0.0001 without enough replication detail to justify that precision. Validation-example bootstrap uncertainty and across-seed variance should be recorded separately.
+- All decisions appear tied to one validation score, increasing the risk of adapting to validation noise.
+
+Scaffold changes
+
+- Require each experiment to vary one factor unless explicitly labeled as a factorial test.
+- Record per-member primary, ensemble-size curves, pairwise prediction/rank correlation, checkpoint curves, training cost, and inference cost.
+- Use bootstrap confidence intervals on validation predictions and repeated training seeds where applicable; do not treat tiny score differences as decisive without uncertainty.
+- Separate “maximize primary” from “efficiency/Pareto” tracks. Preserve node_002 as an efficiency champion even if it is not the primary champion.
+- Avoid duplicate nodes for imported seeds/reference implementations.
+- Do not stop after three closely related failures. Require coverage of several distinct axes: ensemble size, seed diversity, model diversity, optimization, and regularization.
+- Precommit evaluation rules where possible to limit validation overfitting.
+
+What the next run should try first
+
+Expand the unchanged champion with additional independent seeds. Train five new members using exactly the frozen recipe, then evaluate precommitted equal-weight rank ensembles at sizes 5 through 10, along with per-member scores and prediction correlations. This is the cleanest high-probability extension: node_002 showed that even two seeds retain nearly all of the current score, suggesting seed averaging is useful, while additional independent members may yield a small primary gain without altering a strong base learner.
+
+If that saturates, the next experiment should add one genuinely diverse member family or feature interaction scheme and include it only if it improves the ensemble through complementary errors. Avoid another bundled regularization schedule until individual dropout, weight decay, and LR effects have been isolated.

@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/tools/predict_test.py", line 267, in <module>
+    main()
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/tools/predict_test.py", line 263, in main
+    run(parser().parse_args())
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/tools/predict_test.py", line 244, in run
+    test = load_test_features(feature_path, train["field_dims"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/tools/predict_test.py", line 104, in load_test_features
+    raise FileNotFoundError(f"missing test feature archive: {path}")
+FileNotFoundError: missing test feature archive: /Users/rohan/Documents/progwork/techjam2026/mle-agent/data/test_features_1k/test.npz
+seed 42 epoch 0.5 complete
+seed 42 epoch 1.0 complete
+seed 42 epoch 1.5 complete
+seed 42 epoch 2.0 complete
+seed 42 epoch 2.5 complete
+seed 42 epoch 3.0 complete
+seed 42 epoch 3.5 complete
+seed 42 epoch 4.0 complete
+seed 42 epoch 4.5 complete
