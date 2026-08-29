@@ -20,3 +20,9 @@ logs/run_official_*/node_*/
 logs/spend.*
 data/real_ws/
 data/random_probe/
+data/real_ws_1k/
+data/random_probe/
+logs/*/predictions.csv
+logs/k1_*/
+logs/bonus_1k_*/predictions.csv
+logs/seedext/
