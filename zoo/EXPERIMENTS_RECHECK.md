@@ -82,3 +82,10 @@ k48 0.61340 | k32+lr1e-3 0.61319 | batch16384 0.61256 | dropout.1 0.62026 |
 wd1e-3 0.62104 | hl3.5 0.61721 | hl12 0.61835. (k40d28 cell lost: k=40 not in
 choices.) Verdict: NO flip beats champion single 0.6214 — 1K config confirmed
 at a local optimum; frozen recipe stands.
+
+## 1K designation run (run_desig_1k_01, Sun morning) — AGENT-DESIGNATED CHAMPION
+Seed node failed; agent rebuilt 5-seed ensemble itself (0.63448), then chose to
+scale to 10 consecutive seeds (42-51) of frozen_stack_1k -> **0.63874** (node_004,
+official oracle). 15-member attempt rejected (0.436, partial members). Converged
+at 7 iters. This beats the team-frozen 5-seed 0.6323 and is the 1K submission
+champion. Test CSV rebuilt with 10 members.

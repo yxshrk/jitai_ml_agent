@@ -592,3 +592,43 @@ What the next run should try first
 Expand the unchanged champion with additional independent seeds. Train five new members using exactly the frozen recipe, then evaluate precommitted equal-weight rank ensembles at sizes 5 through 10, along with per-member scores and prediction correlations. This is the cleanest high-probability extension: node_002 showed that even two seeds retain nearly all of the current score, suggesting seed averaging is useful, while additional independent members may yield a small primary gain without altering a strong base learner.
 
 If that saturates, the next experiment should add one genuinely diverse member family or feature interaction scheme and include it only if it improves the ensemble through complementary errors. Avoid another bundled regularization schedule until individual dropout, weight decay, and LR effects have been isolated.
+
+## Run logs/run_desig_1k_01
+dataset: pure
+stop_reason: converged
+best_primary: 0.638735
+- node_001 | method: none | hypothesis: team-provided reference implementation: frozen_ensemble_1k.py (from MENU frozen stack) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Executing the same five frozen-stack seeds concurrently in | primary: 0.634482 | verdict: accepted
+- node_003 | method: seed-ensemble | hypothesis: Increasing the champion seed ensemble from five to | primary: n/a | verdict: failed
+- node_004 | method: seed-ensemble | hypothesis: Increasing the accepted champion ensemble from five to | primary: 0.638735 | verdict: accepted
+- node_005 | method: regularization-schedule | hypothesis: An aggressive regularization schedule combining MLP dropout 0.30, | primary: 0.587872 | verdict: rejected
+- node_006 | method: seed-ensemble | hypothesis: Increasing the unchanged champion ensemble from 10 to | primary: n/a | verdict: failed
+- node_007 | method: seed-ensemble | hypothesis: Increasing the accepted champion ensemble from 10 to | primary: 0.436076 | verdict: rejected
+self_critique:
+The run found a real improvement, from 0.6208 to 0.6387, but the search policy was inefficient and overly concentrated on brute-force seed ensembling.
+
+What was suboptimal
+
+- Four of seven follow-up nodes were execution failures or severe runtime-related regressions. The harness spent too much budget discovering concurrency limits instead of testing modeling ideas.
+- Ensemble expansion was implemented by retraining the entire stack. Member predictions should have been cached so 5-, 10-, and 15-member ensembles could be evaluated incrementally at negligible cost.
+- Node_007’s collapse to 0.4361 indicates a correctness or completeness problem, not an ordinary modeling rejection. Changing thread/process layout should not materially alter the metric. The scaffold apparently lacked checks for failed members, truncated training, empty predictions, seed duplication, and row-order misalignment.
+- The policy repeatedly proposed “more seeds” with unsupported expected gains. After ten members, diminishing returns should have shifted exploration toward model diversity.
+- Node_005 changed dropout, embedding L2, AdamW decay, and LR scheduling simultaneously. This was highly confounded and too aggressive; the 0.0508 loss gives little information about which change was harmful.
+- Failed drafts were followed by nearly identical debug attempts, consuming nodes without generating new scientific evidence.
+- Repeated selection on one validation split risks overfitting the ensemble size and configuration to that split. Only the baseline reports an uncertainty estimate; gains should be checked across folds or repeated splits.
+
+Scaffold changes
+
+- Cache each seed’s validation/test predictions and metadata, then construct arbitrary ensemble prefixes and blends offline.
+- Launch members independently with fixed threading and resource limits rather than changing training semantics to meet timeout.
+- Add hard integrity checks: expected member count, unique seeds, successful completion, finite predictions, exact row IDs/order, prediction variance, and per-member validation scores.
+- Report prefix curves and marginal gain: 1, 2, 3, 5, 8, 10, 12, 15 members.
+- Treat a large metric collapse after an execution-only change as infrastructure failure, not a valid model result.
+- Make regularization and architecture experiments one-factor-at-a-time, with short screening runs before full ensembles.
+- Preserve a final untouched validation split or use repeated folds for close comparisons.
+
+What the next run should try first
+
+First, reproduce node_004 under identical deterministic settings while saving all ten member predictions and per-member metrics. Then train seeds 11–15 individually, cache them, and evaluate each incremental prefix offline. This will determine whether further same-model ensembling actually helps and diagnose node_007 without another all-or-nothing batch.
+
+If the curve has plateaued, stop adding identical seeds. Use the remaining budget on a small set of complementary frozen-stack variants—changing one parameter at a time, such as latent dimension, MLP width, or mild dropout—and blend their rank predictions with node_004. Diversity across well-performing configurations is more likely to help than moving from 10 to 15 nearly identical initializations.
