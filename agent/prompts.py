@@ -113,7 +113,9 @@ expected gain. Return one JSON object only:
 
 CONVERGENCE_PRESSURE = (
     "If streak is N-1 of N, this may be the final iteration — prefer the "
-    "highest-expected-gain untried card, not a small dose adjustment."
+    "highest-expected-gain untried card, not a small dose adjustment. When the "
+    "current streak is N-1 of N and no untried single-model card remains promising, "
+    "the seed-ensemble card is the canonical closing move."
 )
 
 

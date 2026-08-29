@@ -180,6 +180,18 @@ default, seed 42).
 - status_pure: running-elsewhere (C2 architecture ensemble; seed ensemble measured)
 - status_1k: untried (three frozen-default seeds measured individually; no 1K prediction ensemble measured)
 
+### seed-ensemble: Seed ensemble of the champion configuration
+- mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
+- treats: flat-signal
+- reference_primary: 0.6058
+- preconditions: A champion config must already exist and all promising single-model moves must be exhausted. This is a CLOSING move, not an opening move.
+- citation: Deep ensembles literature (Lakshminarayanan et al. 2017)
+- expected_gain / cost: Measured Pure primary 0.6058; five full member fits cost roughly five times one champion run / high training, low implementation.
+- status_pure: measured-alive
+- status_1k: measured-alive (0.6323)
+
+Proposer invocation pattern: generate a node that execs `zoo/ensemble_node.py` and passes the champion's exact winning CLI configuration as one quoted `--member-args` string, for example `uv run python zoo/ensemble_node.py --data-dir <d> --out-dir <o> --seed 42 --member-script zoo/polish_stack.py --member-args "--lr 0.0007 --dropout 0.2 --k 16" --n-members 5 --member-epochs 8`.
+
 ### item-aggregates: Train-window item/author target aggregates
 - mechanism: Add Bayesian-smoothed video/author long_view rates computed only on training dates. Item-varying rates can affect within-user order, unlike user-only rates.
 - treats: flat-signal | data-shift

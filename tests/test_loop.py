@@ -431,7 +431,7 @@ def test_expected_delta_basis_and_minimal_mutation_are_prompt_contracts():
 
 def test_every_method_card_declares_parseable_reference_primary():
     brain = fake_brain()
-    assert len(brain.method_cards) == 20
+    assert len(brain.method_cards) == 21
     for card in brain.method_cards.values():
         assert "- reference_primary:" in card
         metadata = parse_method_card_metadata(card)
