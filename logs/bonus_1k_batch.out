@@ -1,0 +1,48 @@
+epoch 0.5 | loss 0.5199 | valid gauc 0.657621 ndcg5 0.564691 primary 0.611156
+epoch 1.0 | loss 0.4268 | valid gauc 0.654482 ndcg5 0.572353 primary 0.613417
+epoch 1.5 | loss 0.3212 | valid gauc 0.647874 ndcg5 0.537785 primary 0.592830
+epoch 2.0 | loss 0.3100 | valid gauc 0.643840 ndcg5 0.518554 primary 0.581197
+epoch 2.5 | loss 0.2689 | valid gauc 0.638081 ndcg5 0.509065 primary 0.573573
+epoch 3.0 | loss 0.2657 | valid gauc 0.637315 ndcg5 0.502760 primary 0.570037
+epoch 3.5 | loss 0.2460 | valid gauc 0.634487 ndcg5 0.497627 primary 0.566057
+epoch 4.0 | loss 0.2446 | valid gauc 0.633430 ndcg5 0.495584 primary 0.564507
+early stop after epoch 4.0
+final: {"best_epoch": 1.0, "delta_vs_baseline": 0.01181725469145467, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.654481754949292, "n_fields": 5, "ndcg5": 0.5723527544336173, "primary": 0.6134172546914547, "regularized": true, "runtime_s": 263.3, "seed": 42, "timed_out": false}
+epoch 0.5 | loss 0.5227 | valid gauc 0.656583 ndcg5 0.561471 primary 0.609027
+epoch 1.0 | loss 0.4270 | valid gauc 0.651485 ndcg5 0.558105 primary 0.604795
+epoch 1.5 | loss 0.3189 | valid gauc 0.640487 ndcg5 0.517813 primary 0.579150
+epoch 2.0 | loss 0.3076 | valid gauc 0.634046 ndcg5 0.506440 primary 0.570243
+epoch 2.5 | loss 0.2677 | valid gauc 0.626566 ndcg5 0.500036 primary 0.563301
+epoch 3.0 | loss 0.2652 | valid gauc 0.624660 ndcg5 0.492996 primary 0.558828
+epoch 3.5 | loss 0.2466 | valid gauc 0.622426 ndcg5 0.491375 primary 0.556900
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.007426922948105097, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6565830881550793, "n_fields": 5, "ndcg5": 0.5614707577411309, "primary": 0.6090269229481051, "regularized": true, "runtime_s": 215.0, "seed": 43, "timed_out": false}
+epoch 0.5 | loss 0.5208 | valid gauc 0.658965 ndcg5 0.572182 primary 0.615574
+epoch 1.0 | loss 0.4266 | valid gauc 0.655973 ndcg5 0.562457 primary 0.609215
+epoch 1.5 | loss 0.3219 | valid gauc 0.650803 ndcg5 0.527390 primary 0.589097
+epoch 2.0 | loss 0.3122 | valid gauc 0.647495 ndcg5 0.522088 primary 0.584791
+epoch 2.5 | loss 0.2712 | valid gauc 0.643949 ndcg5 0.509764 primary 0.576856
+epoch 3.0 | loss 0.2675 | valid gauc 0.642269 ndcg5 0.504032 primary 0.573150
+epoch 3.5 | loss 0.2473 | valid gauc 0.639211 ndcg5 0.498977 primary 0.569094
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.013973858376928994, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6589654424586443, "n_fields": 5, "ndcg5": 0.5721822742952138, "primary": 0.615573858376929, "regularized": true, "runtime_s": 250.5, "seed": 44, "timed_out": false}
+epoch 0.5 | loss 0.5219 | valid gauc 0.658223 ndcg5 0.568987 primary 0.613605
+epoch 1.0 | loss 0.4284 | valid gauc 0.654601 ndcg5 0.575611 primary 0.615106
+epoch 1.5 | loss 0.3226 | valid gauc 0.648135 ndcg5 0.545968 primary 0.597051
+epoch 2.0 | loss 0.3112 | valid gauc 0.643828 ndcg5 0.524942 primary 0.584385
+epoch 2.5 | loss 0.2695 | valid gauc 0.637587 ndcg5 0.512749 primary 0.575168
+epoch 3.0 | loss 0.2661 | valid gauc 0.635209 ndcg5 0.508438 primary 0.571824
+epoch 3.5 | loss 0.2454 | valid gauc 0.631306 ndcg5 0.505272 primary 0.568289
+epoch 4.0 | loss 0.2439 | valid gauc 0.629945 ndcg5 0.501640 primary 0.565792
+early stop after epoch 4.0
+final: {"best_epoch": 1.0, "delta_vs_baseline": 0.013506319862742977, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6546013208129394, "n_fields": 5, "ndcg5": 0.5756113189125466, "primary": 0.615106319862743, "regularized": true, "runtime_s": 224.0, "seed": 45, "timed_out": false}
+epoch 0.5 | loss 0.5183 | valid gauc 0.658078 ndcg5 0.566505 primary 0.612291
+epoch 1.0 | loss 0.4263 | valid gauc 0.652416 ndcg5 0.563167 primary 0.607791
+epoch 1.5 | loss 0.3190 | valid gauc 0.643962 ndcg5 0.535143 primary 0.589552
+epoch 2.0 | loss 0.3096 | valid gauc 0.640577 ndcg5 0.519700 primary 0.580138
+epoch 2.5 | loss 0.2706 | valid gauc 0.637317 ndcg5 0.508338 primary 0.572828
+epoch 3.0 | loss 0.2688 | valid gauc 0.635097 ndcg5 0.500800 primary 0.567949
+epoch 3.5 | loss 0.2504 | valid gauc 0.632444 ndcg5 0.497824 primary 0.565134
+early stop after epoch 3.5
+final: {"best_epoch": 0.5, "delta_vs_baseline": 0.010691466708710684, "field_level": 0, "field_names": ["user", "video", "author", "tab", "dur_bucket10"], "gauc": 0.6580783454236966, "n_fields": 5, "ndcg5": 0.5665045879937248, "primary": 0.6122914667087107, "regularized": true, "runtime_s": 188.0, "seed": 46, "timed_out": false}
+BONUS_BATCH_DONE
