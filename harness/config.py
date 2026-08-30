@@ -63,3 +63,13 @@ def rules_text():
             f"the last reset (cumulative); {N_CONVERGE} consecutive generations without such a rise stop the run. Smaller confirmed "
             f"gains still move the champion; this is the organizers' eps = {EPS} rescaled to the seed-mean's noise, and the literal "
             f"single-seed eps rule is tracked and reported alongside; the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")
+
+# ADR-0015: the feature screen. A candidate whose target_component is in SCREEN_COMPONENTS (or a wildcard naming a
+# new_signal) is probed first: a small script computes the proposed feature(s) on valid (label-stripped data dir) and
+# the screen measures within-user discrimination against the champion's predictions. Below SCREEN_MIN_GAIN the slot is
+# dropped without spending an Implementer, a Critic, a run and three seeds. Measured 2026-08-31: every item-statistic /
+# session / exposure-context feature scored <= +0.0005 on the FM champion (kb/data/screens).
+SCREEN_COMPONENTS = ('features', 'encoding', 'history')
+SCREEN_MIN_GAIN = 0.0003          # best of (additive on the champion, lambdarank stack gain) on valid; MIN_EFFECT is 0.0005
+SCREEN_TIMEOUT_S = 180
+SCREEN_FROM_GENERATION = 1

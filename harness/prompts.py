@@ -247,6 +247,20 @@ ROLE_SYSTEM['select'] = (ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_E
                         .replace('FREE_SLOT_FROM_GENERATION', str(C.FREE_SLOT_FROM_GENERATION)))
 ROLE_SYSTEM['diagnose'] = ROLE_SYSTEM['diagnose'].replace('HARD_GROUP_REJECTS', str(C.HARD_GROUP_REJECTS))
 ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
+ROLE_SYSTEM['probe'] = """Role: PROBE (ADR-0015). Before a feature hypothesis gets a node, the harness measures the proposed signal on
+the valid split against the champion's own predictions. Write the PROBE SCRIPT that computes that signal: a short standalone
+Python program taking --data-dir and --out-dir, reading only files under --data-dir (train.csv with its outcome columns,
+valid.csv WITHOUT outcome columns — the harness strips them — and the side tables), and writing <out-dir>/features.csv with the
+header row_id,<name>[,<name>...] and exactly one row per valid.csv row in file order (row_id 0..n-1), numeric finite values,
+at most 8 columns. Compute the feature exactly as the hypothesis / new_signal describes it, as raw as possible (a rate, a count,
+a gap in seconds, a 0/1 flag — not a bucket id unless the hypothesis is about buckets): the screen tests within-user
+discrimination of the number itself and of a small tree model on top of it. Train labels may be used for statistics
+(smoothed rates, out-of-fold is not needed for valid rows); history features only from rows strictly earlier in time. Aim
+for under 60 seconds with numpy/pandas (vectorised; no per-row Python loops over a million rows); pandas 2.3, numpy,
+scikit-learn and the standard library are available. Determinism: no randomness unless seeded with 0. The probe is not
+the implementation and is never scored as one — do not train the FM, do not write predictions.csv. Output exactly one
+```python block containing the whole script and nothing else."""
+
 
 _STABLE = None
 def stable_prefix():
@@ -327,7 +341,17 @@ def _rules_state(ctx):
             f"Closed mechanisms (deepens rejected this run; not to be deepened again): "
             + ('; '.join(f"{m} (node(s) {ns})" for m, ns in closed.items()) if closed else 'none') + '\n'
             f"HARD groups (>= {C.HARD_GROUP_REJECTS} rejected deepens; likely irreducible, move on): "
-            + ('; '.join(f"{g} (node(s) {ns})" for g, ns in hard.items()) if hard else 'none') + '\n')
+            + ('; '.join(f"{g} (node(s) {ns})" for g, ns in hard.items()) if hard else 'none') + '\n'
+            + _screened_state(ctx))
+
+def _screened_state(ctx):
+    """ADR-0015: features the screen measured on valid against the champion this run; below SCREEN_MIN_GAIN they were not built."""
+    sc = ctx.get('screened') or []
+    if not sc:
+        return ''
+    return (f"Screened this run (feature measured on valid against the champion before any node; best_gain = max(additive, stack); "
+            f"below {C.SCREEN_MIN_GAIN} the slot was dropped — do not re-propose a dropped signal in another wording): "
+            + '; '.join(f"{e.get('card')} [{e.get('family')}] {e.get('best_gain'):+.4f} {'kept' if e.get('kept') else 'DROPPED'}" for e in sc) + '\n')
 
 def _breakdown(ch):
     bg = (ch.get('metrics') or {}).get('by_group') or {}
@@ -350,6 +374,18 @@ def user_select(ctx):
             + ("\n\nYour previous answer had NO FREE-SLOT candidate (ADR-0014): put exactly one candidate FIRST with type "
                "\"improve\" and a card from the untried / not-in-champion-stack lists in the state, then the rest."
                if ctx.get('free_slot_violation') else ''))
+
+def user_probe(ctx, selection):
+    return (f"Candidate to probe:\n{json.dumps({k: selection.get(k) for k in ('type', 'card', 'target_component', 'hypothesis', 'new_signal', 'cheapest_test') if selection.get(k) is not None}, indent=1, default=str)}\n\n"
+            f"Champion input set (columns / side-table fields its script already reads): {', '.join(ctx.get('champion_inputs') or []) or 'unknown'}\n"
+            f"Data files under --data-dir: train.csv (user_id, video_id, date, hourmin, time_ms, tab, duration_ms, is_rand, the outcome "
+            f"columns long_view, is_click, is_like, is_follow, is_comment, is_forward, is_hate, play_time_ms, ...), valid.csv (row_id, user_id, "
+            f"video_id, date, hourmin, time_ms, tab, duration_ms, is_rand — NO outcome columns), video_features_basic.csv (video_id, author_id, "
+            f"video_type, upload_dt, upload_type, visible_status, video_duration, server_width, server_height, music_id, music_type, tag), "
+            f"user_features.csv (user_id, user_active_degree, ..., onehot_feat0..17).\n"
+            + (("The full method card:\n```card\n" + (C.KB / 'methods' / f"{selection['card']}.md").read_text() + "\n```\n")
+               if selection.get('card') and (C.KB / 'methods' / f"{selection['card']}.md").exists() else '')
+            + "Write the probe script.")
 
 def user_explore(ctx):
     cards = sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []

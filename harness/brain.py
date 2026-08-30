@@ -65,6 +65,7 @@ class Brain:
     def explore(self, ctx): return None          # wildcard slot; backends may override
     def archive(self, ctx, rec, diff_text, card_ids, example, stack): return None   # wildcard -> card; LLM backends override
     def librarian(self, ctx, example): return []    # web-searched new cards; LLM backends override
+    def probe(self, ctx, selection): return None    # ADR-0015 probe script for the feature screen; None = no screen
     def set_tag(self, tag): pass
     def set_context_block(self, text, roles=None): pass   # the generation-stable run journal block
 
@@ -88,9 +89,10 @@ class FakeBrain(Brain):
 class LLMBrain(Brain):
     """Shared role logic (prompt -> call -> parse -> validate, one format-reminder retry). Backends implement _call."""
     DEFAULT_EFFORT = {'diagnose': 'medium', 'select': 'xhigh', 'implement': 'xhigh', 'critique': 'medium',
-                      'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh', 'archive': 'medium', 'librarian': 'high'}
+                      'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh', 'archive': 'medium', 'librarian': 'high',
+                      'probe': 'medium'}
     MAX_TOKENS = {'diagnose': 3000, 'select': 16000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000,
-                  'explore': 12000, 'archive': 8000, 'librarian': 20000}   # reasoning tokens count against these (xhigh roles need room)
+                  'explore': 12000, 'archive': 8000, 'librarian': 20000, 'probe': 12000}   # reasoning tokens count against these (xhigh roles need room)
     ROLE_TOOLS = {'librarian': [{'type': 'web_search'}]}     # provider-side tools per role (OpenAI Responses API)
 
     def __init__(self, models=None, efforts=None, budget_usd=None, log=print):
@@ -195,6 +197,9 @@ class LLMBrain(Brain):
         def parse(t):
             return {'code': parse_code(t), 'change_summary': str(parse_header(t).get('change_summary', ''))}
         return self._with_retry('implement', P.user_implement(ctx, selection, parent_code, extra_parent_code), parse)
+
+    def probe(self, ctx, selection):
+        return self._with_retry('probe', P.user_probe(ctx, selection), parse_code)
 
     def critique(self, ctx, code, selection, diff_text=''):
         def parse(t):
