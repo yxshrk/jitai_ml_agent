@@ -10,6 +10,27 @@ its own card.
 Frozen-stack validation references: Pure = 0.6047; 1K = 0.6134 (literal frozen
 default, seed 42).
 
+
+## Measured campaign digest (this benchmark, cross-run memory — full seed tables in zoo/EXPERIMENTS*.md)
+
+Interaction facts, each replicated across >= 3 seeds unless noted:
+- dcn-lite ALONE from baseline: ~0.6014 (WORSE). dcn-lite + regularization-schedule +
+  bpr-hybrid + recency-weighting as one package: 0.6047 +/- 0.0003. The package is the
+  unit that works; the atoms measure at or below baseline.
+- bpr-hybrid ALONE: ~0.6003 (worse). Inside the package: contributes ~+0.001.
+- recency-weighting (7d) on the regularized package: +0.001 mean (+0.004 at best seed);
+  on a weak parent its grey-zone confirms fail — needs >= 3 seeds to detect.
+- regularization-schedule alone on baseline FM: +0.0015 (works standalone).
+- seed-ensemble (5 consecutive seeds, per-user rank average) on any champion: +0.0004..+0.001.
+  On the full package champion: 0.6051. Ensemble of baseline: only ~0.6028.
+- duration-regime-heads on baseline: +0.0014 (agent-discovered, replicated).
+- Measured DEAD on this benchmark (do not re-try in measured form): extra feature
+  fields (all variants), sequence/history models, watch-time regression losses,
+  larger embeddings (k>16 on Pure), deeper crosses, SWA/EMA, listwise softmax.
+- The full winning stack (package + half-epoch checkpoint + 5-seed ensemble) = 0.6051;
+  a from-scratch run must bundle the package in ONE node to have iteration budget left
+  for checkpointing + ensemble.
+
 ## Combination & interaction guidance (literature-grounded)
 
 Published methods ship as PACKAGES, not atoms — evaluate them the way their papers do:

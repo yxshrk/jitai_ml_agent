@@ -192,6 +192,7 @@ class _OpenAIBackend:
                 {"role": "user", "content": user_text},
             ],
             "max_output_tokens": max_tokens,
+            "reasoning": {"effort": os.environ.get("AGENT_REASONING_EFFORT", "medium")},
         }
         request = urllib.request.Request(
             self.URL,
