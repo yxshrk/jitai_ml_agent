@@ -398,15 +398,15 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - treats: flat-signal
 - citation: signed-feedback CF + lightweight graph propagation (LightGCN lineage), compressed to sketches; NOT covered by the measured-dead co-visitation SVD INIT (this is a separate scorer blended at rank level, not an initialization).
 - expected_gain / cost: +0.0003..+0.0012 if errors decorrelate; possibly flat / low-med.
-- status_pure: untried
+- status_pure: measured-win (run_novel_r1 n3: 0.60447, +0.0026)
 - status_1k: untried
 
 ### temporal-pair-kernel: Temporally-local pair sampling
 - mechanism: Keep 1 negative per positive, but draw 70% of negatives with probability proportional to exp(-|day_pos - day_neg|/2) (fallback uniform when no opposite label within 3 days); 30% uniform. Pair weight = sqrt(w_pos * w_neg). Redraw each epoch. Changes WHICH comparisons constrain the model, not their scalar weights — orthogonal to recency row-weighting.
 - treats: data-shift
 - citation: temporal-drift rationale; distinct from measured recency-weighting (row weights).
-- expected_gain / cost: +0.0002..+0.0008 speculative / low.
-- status_pure: untried
+- expected_gain / cost: +0.0008-0.0014 measured (run_novel_l1 n4: 0.60387->0.60524) / low.
+- status_pure: measured-win (run_novel_l1)
 - status_1k: untried
 
 
@@ -460,7 +460,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - treats: metric-mismatch | data-shift
 - citation: idea salvaged from a public entry whose own scores are leakage-invalid (nigelyeap; the SAMPLER is train-only and clean); external review-ranked.
 - expected_gain / cost: 0..+0.0005 / low.
-- status_pure: untried
+- status_pure: measured-win (run_qb_b n1 package: 0.60466)
 - status_1k: untried
 
 ### small-batch-diversity: Batch-size ensemble-diversity experiment
@@ -580,36 +580,6 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-dead (0.5974 primary alone; 0.6034 best blend)
 - status_1k: untried
 
-
-### temporal-pair-kernel: Time-local BPR pair sampling
-- mechanism: When sampling BPR negative impressions for a positive, draw the negative from the same user with probability weighted by exp(-|day_pos-day_neg|/tau) (tau≈2-3 days, local_probability≈0.7, uniform fallback), redrawn each epoch; weight pairs by sqrt(recency_pos*recency_neg). Pairs the model must rank are contemporaneous, matching the date-split eval.
-- treats: data-shift | ranking-mismatch
-- reference_primary: 0.60524 (run_novel_l1 node_004, from 0.60387 base, +0.0014 — best single mechanism measured)
-- preconditions: BPR or hybrid loss present; per-user day indices available.
-- citation: run_novel_l1 journal n4; temporal covariate-shift weighting notes
-- expected_gain / cost: +0.0008-0.0014 primary / low (sampling-time only).
-- status_pure: measured-win (run_novel_l1)
-- status_1k: untried
-
-### gauge-fixed-bce: Per-user gauge-fixed pointwise loss
-- mechanism: Center logits per user within each batch (subtract the user's mean logit) before BCE, removing the user-level score gauge that per-user ranking metrics ignore; gradients concentrate on within-user ordering.
-- treats: ranking-mismatch | overfit
-- reference_primary: 0.60447 (run_novel_r1 node_003, +0.0026 over baseline)
-- preconditions: Batches must contain multiple impressions per user (group or re-batch by user).
-- citation: run_novel_r1 journal n3; GAUC is invariant to per-user monotone shifts
-- expected_gain / cost: +0.0010-0.0026 primary / low.
-- status_pure: measured-win (run_novel_r1)
-- status_1k: untried
-
-### decayed-positive-sampling: Recency-decayed positive resampling
-- mechanism: Resample training positives each epoch with recency-decayed probability (later days over-represented), combined with the stage-matrix schedule; approximates training on the eval-adjacent distribution without dropping data.
-- treats: data-shift
-- reference_primary: 0.60466 (run_qb_b node_001 stage-matrix package)
-- preconditions: Date indices; keep an unweighted warmup epoch.
-- citation: run_qb_b journal n1
-- expected_gain / cost: +0.0010-0.0028 primary / low.
-- status_pure: measured-win (run_qb_b)
-- status_1k: untried
 
 ### heterogeneous-ensemble-design: Validation-selected cross-mechanism ensemble
 - mechanism: Train members under DIFFERENT mechanisms (e.g. temporal-pair-kernel, gauge-fixed-bce, decayed-positive, frozen regularized stack) rather than jittered copies of one recipe; validation-select the member subset and aggregation (rank vs probability average, optional per-member weights) before scoring. Diversity across mechanisms is the untested axis — jittered same-recipe closes are measured at +0.0013.
