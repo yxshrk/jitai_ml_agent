@@ -41,7 +41,7 @@ present, or ask). Sync helper copies with rsync (NOT git), excluding
 
 ## State (Sun 30 Aug pm)
 Pure DESIGNATED: 0.60558 run_bigclock_07 (coral) — FULLY UNSEEDED, beats seeded
-0.60513; recipe in SUBMISSION_RECIPE.md; test CSV rebuild pending. 1K: 0.63874 agent-designated
+0.60513; recipe in SUBMISSION_RECIPE.md; test CSV built + validated (predict_test_bc07). 1K: 0.63874 agent-designated
 (run_desig_1k_01, 10-member). 27K bonus demo: 0.67263. Test CSVs built (labels never
 read). Remaining: finish fleet, final designation + clean rerun, resource table,
 Devpost + video (user).

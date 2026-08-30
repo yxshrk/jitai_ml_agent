@@ -8,8 +8,8 @@
   Config (agent-found, random-search dials): dropout 0.18, wd 9e-5, lr 0.001,
   StepLR gamma 0.57 / step 2, recency half-life 7d, DCN-lite + 0.5 BPR hybrid.
   6 iterations, 17 min wall, 115,315 tokens, zero interventions. Beats the seeded
-  champion (0.60513) with no seed-script caveat. Test CSV: REBUILD PENDING from
-  this recipe (train-only members).
+  champion (0.60513) with no seed-script caveat. Test CSV: BUILT + VALIDATED (tools/predict_test_bc07.py;
+  members reproduced at 0.6040-0.6044, ensemble 0.60561 ~= run value; 170,588 rows).
   [superseded: seeded run_desig_seeded_03 0.60513 -> now disclosed evidence]
 - **1K: 0.63874** — run_desig_1k_01 node_004: the AGENT scaled the ensemble from
   5 to 10 seeds (42-51) on its own after its seed node failed and it rebuilt the
