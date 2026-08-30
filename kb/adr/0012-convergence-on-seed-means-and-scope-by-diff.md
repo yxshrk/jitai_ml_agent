@@ -68,3 +68,23 @@ generations, while the literal rule is reported to have converged at generation 
 reports cached and uncached input separately, and the run-journal block goes only to the roles that plan. Attribution in the
 journal and in the cards is trustworthy again: a wildcard's card describes what its diff actually did. Unit tests
 cover `Convergence`, `pick_champion`, `confirm_stats`, the seed-cache migration and `summarize`.
+
+## Amendment (2026-08-31, after live_07): who may be designated for submission
+
+live_07's designation picked node_019 — fresh-seed mean 0.6049 against the champion's 0.6044, a gap of more than one
+standard error — although the run had rejected it as champion (+0.0005 at z 1.94, just under the borderline band that
+would have triggered two more seeds). The rule above worked as written and produced a submission the run itself had
+rejected: a story the judges would rightly ask about.
+
+Decision: designation has two modes, chosen before a run (`--designation`, `config.DESIGNATION_DEFAULT = 'strict'`):
+- **strict** (default): only accepted nodes may be designated — the champion lineage, re-ranked by fresh-seed mean
+  among themselves; the best unaccepted candidate is reported as `best_unaccepted` and journaled, never submitted.
+  Reasons: re-testing the best-looking of several rejected nodes at a lower bar after seeing their means re-enters the
+  winner's curse this ADR exists to stop (≈ 5–7 % false designation for a top-3 at z ≥ 2); the stake is one seed SD
+  on validation; "the run never submits a node it rejected" needs no follow-up question.
+- **adaptive**: an unaccepted node that leads on fresh-seed mean receives `MAX_CONFIRM_SEEDS` fresh seeds and is
+  eligible only if its gain over the champion's fresh-seed mean is ≥ `MIN_EFFECT` at z ≥ `Z_BORDER` — the search's
+  own borderline test, run once, with the outcome journaled either way. Defensible when the leader is a strict
+  superset of the champion (live_07's node_019: the champion's ordering with the session model substituted for two
+  cohorts) and the user accepts the small selection bias for a small expected gain.
+The one-SE tie-break toward an accepted node applies in both modes. `tests/test_designation.py` covers both.

@@ -13,6 +13,8 @@ def main():
     r.add_argument('--cheap-roles', action='store_true', help='diagnose/critique/fix/consolidate on gpt-5.6-terra')
     r.add_argument('--iteration-unit', choices=['node', 'generation'], default='node', help='what the 50-iteration cap counts (ADR-0006)')
     r.add_argument('--no-final-reseed', action='store_true', help='skip the multi-seed re-ranking of the top-3 at the end')
+    r.add_argument('--designation', choices=['strict', 'adaptive'], default=None,
+                   help='strict = only accepted nodes can be submitted (default, ADR-0012 amendment); adaptive = an unaccepted leader gets two more seeds and must beat the champion at z >= Z_BORDER')
     r.add_argument('--k', type=int, default=5, help='branches in generation 1 (incl. the Explorer slot)')
     r.add_argument('--k-later', type=int, default=3, help='branches from generation 2 on; grows back toward --k for planned merges/retests')
     r.add_argument('--no-wildcard', action='store_true', help='all k slots from the Selector (no Explorer slot)')
@@ -57,7 +59,7 @@ def main():
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
                     parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
                     iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill, convergence=a.convergence, k_later=a.k_later,
-                    screen=not a.no_screen, campaigns=not a.no_campaigns)
+                    screen=not a.no_screen, campaigns=not a.no_campaigns, designation=a.designation)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         from .submit import make_submission

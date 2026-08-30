@@ -49,6 +49,10 @@ FREE_SLOT_FROM_GENERATION = 2     # from this generation on, one Selector slot g
 CAMPAIGNS_FROM_GENERATION = 2
 CAMPAIGN_FLAT_GENERATIONS = 2
 CAMPAIGN_LAST_FAMILIES = ('ensembling',)
+# ADR-0012 amendment (after live_07): who may be designated for submission. 'strict' = accepted nodes only (the champion
+# lineage), re-ranked by fresh-seed mean among themselves; 'adaptive' = an unaccepted node that leads on fresh-seed mean
+# may be designated iff, with MAX_CONFIRM_SEEDS fresh seeds, its gain over the champion is >= MIN_EFFECT at z >= Z_BORDER.
+DESIGNATION_DEFAULT = 'strict'
 
 def libs_text():
     """The library rule as one sentence, generated from AVAILABLE_LIBS so prompts cannot drift from the contract."""

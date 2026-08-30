@@ -71,7 +71,7 @@ class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
                  iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed', k_later=None,
-                 screen=True, campaigns=True):
+                 screen=True, campaigns=True, designation=None):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         # adaptive breadth: k branches in generation 1 (breadth pays when nothing is measured), k_later afterwards,
         # growing back toward k only for the Consolidator's concrete merge/retest slots (live_04: 4 of 5 accepted in
@@ -88,6 +88,8 @@ class Loop:
         # ADR-0015: feature candidates are probed and measured on valid before a node is spent; needs a brain with a probe role
         self.screen = bool(screen) and type(brain).probe is not Brain.probe
         self.campaigns = campaigns   # ADR-0016: one card family per generation from CAMPAIGNS_FROM_GENERATION on
+        self.designation = designation or C.DESIGNATION_DEFAULT   # ADR-0012 amendment: strict | adaptive
+        assert self.designation in ('strict', 'adaptive')
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
         self.run_dir = C.RUNS / run_id; self.j = Journal(self.run_dir); self._log = log
         self.state_path = self.run_dir / 'state.json'
@@ -894,11 +896,15 @@ class Loop:
         return summary
 
     def designate_final(self, top_k=3):
-        """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the FRESH-seed mean
+        """Final selection for submission (AIRA-style robust choice, ADR-0012 and its amendment after live_07).
+        Candidates: the top_k nodes by validation primary plus the confirmed champion, re-ranked by the FRESH-seed mean
         (cached; seeds are run only for a node with fewer than two) so a lucky single seed cannot be the submission.
-        Tie-break (ADR-0012): when a node's mean is within one standard error of the best, an ACCEPTED node (the
-        champion lineage) is preferred over an unconfirmed experiment — live_04's designation had picked a rejected
-        near-no-op variant of the champion on a 0.0000045 gap."""
+        'strict' (default): only ACCEPTED nodes may be designated — the run never submits a node it rejected; the best
+        unaccepted candidate is reported as best_unaccepted for the record. 'adaptive': an unaccepted leader is given
+        MAX_CONFIRM_SEEDS fresh seeds and is designated only if its gain over the champion's fresh-seed mean is
+        >= MIN_EFFECT at z >= Z_BORDER (the search's own borderline test), else it is excluded; every exclusion is journaled.
+        Tie-break (both modes): within one standard error of the best mean, an accepted node is preferred (live_04's
+        designation had picked a rejected near-no-op variant of the champion on a 0.0000045 gap)."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
         if self.state.get('champion') is not None and all(v['n'] != self.state['champion'] for v in top):
@@ -911,16 +917,56 @@ class Loop:
             ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals, 'accepted': bool(v.get('accepted')),
                             'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None})
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
-        if ranking:
-            sigma, _ = self._sigma(); best = ranking[0]['mean']
-            se = sigma * (1.0 / max(1, len(ranking[0]['fresh_seeds']))) ** 0.5
-            tied = [r for r in ranking if best - r['mean'] <= se]
+        events = []
+        unacc = [r for r in ranking if not r['accepted']]
+        self.state['best_unaccepted'] = ({'n': unacc[0]['n'], 'mean': round(unacc[0]['mean'], 5), 'valid_primary': unacc[0]['valid_primary']}
+                                         if unacc else None)
+        if self.designation == 'strict':
+            for r in unacc:
+                r['excluded'] = 'not accepted (strict designation: the run never submits a node it rejected)'
+            eligible = [r for r in ranking if r['accepted']]
+            if unacc and (not eligible or unacc[0]['mean'] > eligible[0]['mean']):
+                events.append(f"designation (strict): node_{unacc[0]['n']:03d} leads on fresh-seed mean ({unacc[0]['mean']:.5f}) but was not "
+                              f"accepted; excluded — accepted lineage only")
+        else:
+            eligible, ch = [], self.state.get('champion')
+            for r in ranking:
+                if r['accepted']:
+                    eligible.append(r); continue
+                if ch is None or r['n'] == ch:
+                    continue
+                if self.final_reseed:
+                    self._ensure_seeds(r['n'], [self.seed + i for i in range(1, C.MAX_CONFIRM_SEEDS + 1)])
+                    r['fresh_seeds'] = self.fresh_seeds(r['n']); r['mean'] = statistics.mean(r['fresh_seeds'])
+                    r['std'] = statistics.stdev(r['fresh_seeds']) if len(r['fresh_seeds']) > 1 else None
+                v_ch = self.fresh_seeds(ch)
+                if not v_ch:
+                    r['excluded'] = 'champion has no fresh seeds to compare against'; continue
+                sigma, _ = self._sigma()
+                _, _, diff, se, z, _ = confirm_stats(r['fresh_seeds'], v_ch, sigma)
+                r['adaptive'] = {'seeds': len(r['fresh_seeds']), 'delta_mean': round(diff, 5), 'se': round(se, 6), 'z': round(z, 2)}
+                if diff >= C.MIN_EFFECT and z >= C.Z_BORDER:
+                    eligible.append(r)
+                    events.append(f"designation (adaptive): node_{r['n']:03d} not accepted as champion but with {len(r['fresh_seeds'])} fresh seeds "
+                                  f"beats the champion by {diff:+.5f} at z {z:.2f} (>= {C.Z_BORDER}); eligible")
+                else:
+                    r['excluded'] = f"adaptive test failed: {diff:+.5f} at z {z:.2f} with {len(r['fresh_seeds'])} seeds"
+                    events.append(f"designation (adaptive): node_{r['n']:03d} excluded — {r['excluded']}")
+        eligible.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
+        if eligible:
+            sigma, _ = self._sigma(); best = eligible[0]['mean']
+            se = sigma * (1.0 / max(1, len(eligible[0]['fresh_seeds']))) ** 0.5
+            tied = [r for r in eligible if best - r['mean'] <= se]
             preferred = [r for r in tied if r['accepted']]
-            if preferred and not ranking[0]['accepted']:
-                ranking.remove(preferred[0]); ranking.insert(0, preferred[0])
-                ranking[0]['tie_break'] = f"within one SE ({se:.5f}) of the best mean; accepted lineage preferred"
-        self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
-        return ranking
+            if preferred and not eligible[0]['accepted']:
+                eligible.remove(preferred[0]); eligible.insert(0, preferred[0])
+                eligible[0]['tie_break'] = f"within one SE ({se:.5f}) of the best mean; accepted lineage preferred"
+        self.state['designated'] = eligible[0]['n'] if eligible else self.state['champion']
+        self.state['designation_events'] = events
+        for e in events:
+            self.log('  ' + e); self.j.append({'n': None, 'generation': self.state['generation'], 'action': 'event', 'note': e})
+        ordered = eligible + [r for r in ranking if r not in eligible]
+        return ordered
 
     def _official_submission(self):
         """The node the organizers' literal rule would have submitted: the champion at the generation it converged."""
@@ -948,6 +994,8 @@ class Loop:
                    'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
                    'official_rule': self.state.get('official_rule'), 'official_rule_submission': self._official_submission(),
                    'convergence_switch': self.convergence, 'campaigns': self.campaigns, 'families': self.state.get('families'),
+                   'designation_rule': self.designation, 'designation_events': self.state.get('designation_events', []),
+                   'best_unaccepted': self.state.get('best_unaccepted'),
                    'tokens': {'in_total': usage.get('tokens_in'), 'in_cached': usage.get('cache_read'),
                               'in_uncached': (usage.get('tokens_in') or 0) - (usage.get('cache_read') or 0), 'out': usage.get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k_first, 'k_later': self.k_later, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
