@@ -620,3 +620,43 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: +0.0005-0.0015 est / low.
 - status_pure: untried
 - status_1k: untried
+
+### directional-temporal-pair-weighting: Forward-time pair emphasis
+- mechanism: In temporally-local BPR, weight pairs where the negative is LATER than the positive more heavily than earlier-negative pairs — the deployed model always ranks into the future, so future-negative comparisons match the test-time direction of drift.
+- treats: data-shift | ranking-mismatch
+- reference_primary: none
+- preconditions: temporal-pair-kernel (or any day-aware pair sampler) present.
+- citation: external playbook §4.14; complements measured temporal-pair-kernel (+0.0014).
+- expected_gain / cost: +0.0003-0.0010 est / low.
+- status_pure: untried
+- status_1k: untried
+
+### gap-conditioned-recency: Exposure-gap-conditioned weighting
+- mechanism: Replace the single global recency half-life with weights conditioned on hours since the user's previous impression: recent-gap rows get milder decay, long-gap "returning user" rows stronger recency emphasis. Two or three gap buckets, one weight multiplier each, validation-selected.
+- treats: data-shift
+- reference_primary: none
+- preconditions: hour-level timestamps (available); recency weighting present.
+- citation: gpt-5.6-sol consult §3 (gap-aware recency); session-gap evidence from run_omega_1k.
+- expected_gain / cost: +0.0003-0.0012 est / low.
+- status_pure: untried
+- status_1k: untried
+
+### affine-gauge-bce: Per-user affine gauge removal
+- mechanism: Extend gauge-fixed-bce: remove both the per-user mean AND scale of logits within each user's batch group before BCE (z-score the logits per user, learn a global temperature). Removes all per-user affine nuisance the rank metrics ignore.
+- treats: ranking-mismatch
+- reference_primary: gauge-fixed-bce (mean-only) measured 0.60447 (run_novel_r1)
+- preconditions: multiple impressions per user per batch; guard tiny groups (>=3 rows).
+- citation: external playbook §4.3; extends measured gauge-fixed-bce.
+- expected_gain / cost: +0.0003-0.0010 over mean-only / low.
+- status_pure: untried
+- status_1k: untried
+
+### wr-pair-coverage: Without-replacement balanced pair coverage
+- mechanism: Sample BPR negatives without replacement per epoch (cycling through each user's negative pool) instead of iid draws, guaranteeing every negative constrains the model each epoch; balances gradient exposure on small slates.
+- treats: variance | ranking-mismatch
+- reference_primary: none
+- preconditions: per-user negative pools precomputed; keeps pair count unchanged.
+- citation: external playbook §4.4.
+- expected_gain / cost: +0.0002-0.0008 est / low.
+- status_pure: untried
+- status_1k: untried
