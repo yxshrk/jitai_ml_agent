@@ -13,8 +13,8 @@ expected_delta_basis: the only measurement was a single-seed primary loss of 0.0
 cost: ~56 lines; runtime ~1.6x versus the field-aware parent (44 s measured); numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, data-weighting-recency]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0005)]
+evidence: [live_04:node_005]
 ---
 ## Claim
 Add categorical fields for the number of strictly prior user-video exposures and the logarithmic time since the
@@ -46,4 +46,5 @@ same score.
   to these two history fields rather than a simultaneous loss change.
 
 ## Measured
-(none yet)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0005)
+- live_04:node_005 on [official FM + field-aware FM embeddings]: primary 0.6025, single-seed Δ -0.0005 — rejected; 56 changed lines

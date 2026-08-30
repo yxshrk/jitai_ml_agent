@@ -13,8 +13,8 @@ expected_delta_basis: the complete five-seed-per-branch 0.6/0.4 recipe measured 
 cost: ~120 lines; ten training phases; measured runtime 143 s (~5x the field-aware parent); numpy only
 composes_with: [model-dcn-cross-head, model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user]
 conflicts_with: [ensembling-heterogeneous-rank-average, ensembling-seed-average]
-status: untried
-evidence: []
+status: proven — accepted on [official FM + field-aware FM embeddings]
+evidence: [live_04:node_015]
 ---
 ## Claim
 Train five field-aware FM-BPR models and five standard FM-BPR models, average normalized within-user ranks inside
@@ -45,4 +45,5 @@ score-scale differences before the stronger field-aware branch receives 60% of t
 - Final history must describe the emitted ensemble, not one member, and its final metrics must match predictions.csv.
 
 ## Measured
-(none yet)
+_Verdict:_ ACCEPTED 1x (live_04:node_015 on [official FM + field-aware FM embeddings] Δ +0.0017)
+- live_04:node_015 on [official FM + field-aware FM embeddings]: primary 0.6045, single-seed Δ +0.0014, seed-mean Δ +0.0017 (t 7.65) — ACCEPTED; 122 changed lines

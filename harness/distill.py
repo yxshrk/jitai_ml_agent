@@ -80,10 +80,17 @@ def _measured_line(ref, r, stack, run_id):
     status = 'proven' if r.get('accepted') else f"dead_under {{run: {run_id}, stack: {stack}, delta: {dm if dm is not None else d1:+.4f}}}"
     return line, status
 
+def _has_ref(text, ref):
+    """A card carries a measurement for run:node iff the reference is in its evidence list (the Archivist may cite
+    the node in `source:`, which is not a measurement)."""
+    fm, _ = _front(text)
+    ev = re.search(r'^evidence:\s*\[(.*?)\]\s*$', fm or '', flags=re.M)
+    return bool(ev) and ref in [x.strip() for x in ev.group(1).split(',')]
+
 def _add_measurement(card, ref, line, status, log=print):
     """Append one evidence line + reference to a card and recompute its status; idempotent per ref."""
     text = card.read_text()
-    if ref in text:
+    if _has_ref(text, ref):
         return False
     fm, body = _front(text)
     if fm is None:
@@ -144,7 +151,7 @@ def archive(run_id, brain, methods_dir=None, log=print):
         if not _archivable(r, methods_dir):
             continue
         ref = f"{run_id}:node_{r['n']:03d}"
-        if any(ref in t for t in existing.values()):
+        if any(_has_ref(t, ref) for t in existing.values()):
             continue
         diff_text = (run_dir / r['diff_path']).read_text() if r.get('diff_path') and (run_dir / r['diff_path']).exists() else ''
         stack = _stack(nodes, r['parent']) if r.get('parent') is not None else 'official FM'
