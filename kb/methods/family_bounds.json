@@ -80,10 +80,20 @@
     "features-exposure-session": "session-context",
     "history-same-author-run-features": "session-context",
     "history-repeat-exposure-fatigue": "session-context",
-    "model-first-order-exposure-transition-fm": "session-context"
+    "model-first-order-exposure-transition-fm": "session-context",
+    "ensembling-cohort-gated-session-rank-fusion": "ensembling",
+    "features-previous-tab-transition-state": "session-context",
+    "history-rocchio-contrastive-content-affinity": "history-cf",
+    "history-session-attribute-overlap": "session-context",
+    "loss-session-monotonic-auxiliary-pairs": "session-context",
+    "loss-warp-within-user-rank-weighting": "pair-sampling",
+    "training-schedule-cyclic-bpr-pair-coverage": "pair-sampling"
   },
   "reference_stack": [
     "loss-bpr-pairwise-within-user",
     "ensembling-seed-average"
+  ],
+  "_unmapped_by_design": [
+    "loss-approxndcg-soft-ranks, model-attentional-factorization-machine, model-neural-factorization-machine and the BPR / capacity / regularisation cards: objectives and capacity over the same inputs have no oracle — judged by record only"
   ]
 }
