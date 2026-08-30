@@ -52,6 +52,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="parent-acceptance floor (convergence stays official epsilon)")
     run.add_argument("--knowledge", choices=["full", "clean"], default="full",
                      help="literature plus team results, or literature-only clean mode")
+    run.add_argument("--confirm-runs", type=int, default=1,
+                     help="grey-zone confirmation reruns (extra seeds) before accept/reject")
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
@@ -77,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
         run_dir=args.run_dir,
         **({"baseline_script": args.baseline_script.resolve()} if args.baseline_script else {}),
         **({"accept_floor": args.accept_floor} if args.accept_floor is not None else {}),
+        **({"confirm_runs": args.confirm_runs} if args.confirm_runs else {}),
         **({"draft_tiers": tuple(t.strip() for t in args.draft_tiers.split(","))} if args.draft_tiers else {}),
         **({"seed_scripts": tuple(Path(p.strip()).resolve() for p in args.seed_scripts.split(","))} if args.seed_scripts else {}),
         max_iters=args.max_iters,

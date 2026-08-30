@@ -79,6 +79,7 @@ class LoopConfig:
     accept_floor: float | None = None  # parent-acceptance floor; default = epsilon; convergence ALWAYS uses official epsilon
     n_converge: int = 3
     stagnation_limit: int = 5
+    confirm_runs: int = 1
     reflect_every: int = 5
     sigma: float | None = None  # skip calibration when provided (tests)
     calib_seeds: tuple[int, ...] = (42, 43, 44)
@@ -370,15 +371,19 @@ class Loop:
         if delta >= threshold:
             return True, None
         if delta > 0:
-            confirm = self.run_script(node.code_path, self.run_dir / f"{node.node_id}_confirm",
-                                      self.config.confirm_seed, self.config.timeout_s)
-            if confirm.ok:
-                mean_delta = ((metrics["primary"] + confirm.metrics["primary"]) / 2
-                              - self.champion.primary)
-                if mean_delta >= max(self.sigma, 0.001):
-                    return True, f"grey-zone confirm passed (mean delta {mean_delta:+.4f})"
-                return False, f"grey-zone confirm failed (mean delta {mean_delta:+.4f})"
-            return False, f"grey-zone confirm run failed: {confirm.error}"
+            primaries = [metrics["primary"]]
+            for k in range(self.config.confirm_runs):
+                confirm = self.run_script(node.code_path,
+                                          self.run_dir / f"{node.node_id}_confirm{k if k else ''}",
+                                          self.config.confirm_seed + k, self.config.timeout_s)
+                if not confirm.ok:
+                    return False, f"grey-zone confirm run failed: {confirm.error}"
+                primaries.append(confirm.metrics["primary"])
+            mean_delta = sum(primaries) / len(primaries) - self.champion.primary
+            floor = max(self.sigma / (len(primaries) ** 0.5), 0.0007)
+            if mean_delta >= floor:
+                return True, f"grey-zone confirm passed (mean delta {mean_delta:+.4f}, n={len(primaries)})"
+            return False, f"grey-zone confirm failed (mean delta {mean_delta:+.4f}, n={len(primaries)})"
         return False, None
 
     # ---------- measured method routing ----------
