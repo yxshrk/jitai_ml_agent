@@ -14,7 +14,7 @@ cost: ~68 changed lines; three additional BPR training phases; measured runtime 
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-fine-duration-and-tab-cross]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)]
-evidence: [live_06:node_010]
+evidence: [live_06:node_010, ceiling:oracle]
 ---
 ## Claim
 Train three BPR specialists only on same-user pairs whose positive and negative rows both exceed 180 seconds, then
@@ -44,3 +44,4 @@ all ordering among non-long rows remain unchanged.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)
 - live_06:node_010 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6044, single-seed Δ +0.0004, seed-mean Δ +0.0003 (z 0.6) — rejected; 68 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

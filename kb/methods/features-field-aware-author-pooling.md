@@ -14,7 +14,7 @@ cost: 26 changed lines; one extra field and author-sized id range in five field-
 composes_with: [model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)]
-evidence: [live_04:node_027]
+evidence: [live_04:node_027, ceiling:oracle]
 ---
 ## Claim
 Append a separately encoded copy of `author_id` only to the field-aware ensemble branch, giving that branch
@@ -46,3 +46,4 @@ independent author parameterization that can pool behavior across an author's vi
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)
 - live_04:node_027 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6046, single-seed Δ +0.0001, seed-mean Δ -0.0000 (t -0.09) — rejected; 26 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

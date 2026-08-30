@@ -13,7 +13,7 @@ cost: ~8 lines (per-row weight from date; weighted gradient); runtime 1x; numpy 
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM x2 (best Δ +0.0005); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0003)]
-evidence: [live_01:node_002, live_01:node_004, live_02:node_002, live_02:node_004]
+evidence: [live_01:node_002, live_01:node_004, live_02:node_002, live_02:node_004, ceiling:oracle]
 ---
 ## Claim
 Weight each training row by exp(−age / tau) (half-life 3 / 7 / 14 days from 2022-04-21) so the model fits the recent
@@ -40,3 +40,4 @@ _Verdict:_ never accepted in 4 measurements on 2 stack(s); official FM x2 (best 
 - live_01:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6039, single-seed Δ +0.0003 — rejected; 127 changed lines
 - live_02:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005, seed-mean Δ +0.0004 (t 1.5) — rejected; 13 changed lines
 - live_02:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ +0.0000, seed-mean Δ -0.0000 (t -0.01) — rejected; 15 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'recency-volume' — facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency (facts §11, kb/data/screens/CEILING.md)

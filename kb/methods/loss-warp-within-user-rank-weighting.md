@@ -10,15 +10,15 @@ applies_when:
   - BPR is competitive, but its nDCG@5 improvement is smaller than its GAUC improvement (journal nodes 003 and 009)
   - ordinary hard-negative BPR, LambdaRank, RankSVM, and ApproxNDCG have failed, but none estimated a positive's
     rank from the number of negative probes and weighted its update by that estimated rank
-expected_delta: [0.000, 0.0010]
-expected_delta_basis: WARP explicitly emphasizes positives estimated to rank poorly and is a standard top-of-list
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: bounded (ADR-0018) at +0.0000 by the oracle for 'pair-sampling' — facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001; was: WARP explicitly emphasizes positives estimated to rank poorly and is a standard top-of-list
   alternative to BPR, but it adds no information and several related loss refinements already failed
 cost: ~35 changed lines on the BPR sampler; 2–4x pair-scoring runtime with ten probes; numpy only
 composes_with: [ensembling-seed-average, model-neural-factorization-machine, features-exposure-session]
 conflicts_with: [loss-bpr-pairwise-within-user, loss-bpr-hard-negatives, loss-ranksvm-margin-pairs,
   loss-lambdarank-pairs]
 status: untried
-evidence: []
+evidence: [ceiling:oracle]
 ---
 ## Claim
 Use WARP's repeated violation search and harmonic rank weighting on same-user positive-negative impression rows,
@@ -46,4 +46,4 @@ Unlike the rejected max-of-m hard-negative probe, both the stopping time and est
 
 ## Measured
 _Verdict:_ no measurement yet
-
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'pair-sampling' — facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001 (facts §11, kb/data/screens/CEILING.md)

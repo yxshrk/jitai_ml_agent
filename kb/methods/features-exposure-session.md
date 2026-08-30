@@ -14,7 +14,7 @@ cost: ~50 lines (sort by user and time over train + the scored split's feature r
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-lightgbm-lambdarank, model-din-history-attention, history-same-author-run-features, history-repeat-exposure-fatigue]
 conflicts_with: []
 status: proven — accepted on [official FM + loss-bpr-pairwise-within-user]
-evidence: [live_07:node_002, live_07:node_010, live_07:node_013]
+evidence: [live_07:node_002, live_07:node_010, live_07:node_013, ceiling:oracle]
 ---
 ## Claim
 Where an impression sits in the user's session — first after a break, or the 15th in a fast scroll — predicts
@@ -52,3 +52,4 @@ _Verdict:_ ACCEPTED 1x (live_07:node_010 on [official FM + loss-bpr-pairwise-wit
 - live_07:node_002 on [official FM]: primary 0.6014, single-seed Δ -0.0001 — rejected; 65 changed lines
 - live_07:node_010 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6034, single-seed Δ +0.0003, seed-mean Δ +0.0009 (z 3.14) — ACCEPTED; 65 changed lines
 - live_07:node_013 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6046, single-seed Δ +0.0005, seed-mean Δ +0.0003 (z 0.97) — rejected; 67 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

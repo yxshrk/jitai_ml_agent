@@ -14,7 +14,7 @@ cost: ~120 lines; ten training phases; measured runtime 143 s (~5x the field-awa
 composes_with: [model-dcn-cross-head, model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user]
 conflicts_with: [ensembling-heterogeneous-rank-average, ensembling-seed-average]
 status: proven — accepted on [official FM + field-aware FM embeddings]
-evidence: [live_04:node_015, live_05:node_012, live_05:node_014, live_06:node_015]
+evidence: [live_04:node_015, live_05:node_012, live_05:node_014, live_06:node_015, ceiling:oracle]
 ---
 ## Claim
 Train five field-aware FM-BPR models and five standard FM-BPR models, average normalized within-user ranks inside
@@ -50,3 +50,4 @@ _Verdict:_ ACCEPTED 1x (live_04:node_015 on [official FM + field-aware FM embedd
 - live_05:node_012 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6040, single-seed Δ +0.0003, seed-mean Δ +0.0005 (z 1.76) — rejected; 100 changed lines
 - live_05:node_014 on [official FM + loss-bpr-pairwise-within-user]: FAILED at implement — no runnable script produced (recovery: None)
 - live_06:node_015 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6034, single-seed Δ -0.0006 — rejected; 43 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

@@ -14,7 +14,7 @@ cost: 27 changed lines; one additional `(dim, k)` table and Adam states; measure
 composes_with: [loss-bpr-pairwise-within-user, features-fine-duration-and-tab-cross, regularization-embedding-dropout-l2, ensembling-seed-average]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0007)]
-evidence: [live_06:node_006]
+evidence: [live_06:node_006, ceiling:oracle]
 ---
 ## Claim
 Add a rank-k CP term `sum(T[user] * T[tab] * T[duration_bucket])` to an FM score, allowing personalized duration
@@ -43,3 +43,4 @@ a user×tab×duration interaction absent from a second-order FM, so it can alter
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0007)
 - live_06:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6029, single-seed Δ +0.0001, seed-mean Δ -0.0007 (z -1.54) — rejected; 27 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'user-context-taste' — facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003 (facts §11, kb/data/screens/CEILING.md)

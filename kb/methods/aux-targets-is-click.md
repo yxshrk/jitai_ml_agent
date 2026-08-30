@@ -13,7 +13,7 @@ cost: ~30 lines (second bias vector + shared-V gradient); runtime ~1.2x; numpy o
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]
-evidence: [live_02:node_011]
+evidence: [live_02:node_011, ceiling:oracle]
 ---
 ## Claim
 Train a second logistic head for is_click on the same embeddings (ESMM-style shared bottom), weight 0.2–0.5, and
@@ -37,3 +37,4 @@ sees a smoother version of the label, which regularises sparse user vectors.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)
 - live_02:node_011 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6028, single-seed Δ -0.0003 — rejected; 35 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

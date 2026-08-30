@@ -14,7 +14,7 @@ cost: ~30 changed lines; expanded training batches measured at ~4.5x baseline ru
 composes_with: [loss-bpr-pairwise-within-user, model-dcn-cross-head, model-field-aware-fm-embeddings, data-weighting-recency]
 conflicts_with: [aux-targets-ordinal-watch-depth, loss-watchtime-censored]
 status: dead_under [official FM x1 (best Δ -0.0007)]
-evidence: [live_05:node_001]
+evidence: [live_05:node_001, ceiling:oracle]
 ---
 ## Claim
 Condition one shared FM on an absolute watch-threshold field and augment native long-view examples with attainable
@@ -48,3 +48,4 @@ allows user, item, tab, and duration interactions to vary by the queried watch d
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM x1 (best Δ -0.0007)
 - live_05:node_001 on [official FM]: primary 0.6015, single-seed Δ +0.0000, seed-mean Δ -0.0007 (z -2.83) — rejected; 30 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

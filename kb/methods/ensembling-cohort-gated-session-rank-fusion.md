@@ -14,7 +14,7 @@ cost: 42 changed lines on the session parent; ten FM-BPR training phases; measur
 composes_with: [features-exposure-session, loss-bpr-pairwise-within-user, ensembling-seed-average]
 conflicts_with: [ensembling-top5-gated-hybrid-rank-fusion, ensembling-long-duration-slot-specialists]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)]
-evidence: [live_07:node_019]
+evidence: [live_07:node_019, ceiling:oracle]
 ---
 ## Claim
 Train parallel five-seed base and session-feature BPR ensembles, then substitute the session ensemble's within-user
@@ -47,3 +47,4 @@ mismatch; a final rank transform restores a deterministic, tie-free ordering.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)
 - live_07:node_019 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6046, single-seed Δ +0.0005, seed-mean Δ +0.0005 (z 1.94) — rejected; 42 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

@@ -15,7 +15,7 @@ cost: ~40 changed lines; two video-sized embedding tables and one extra dot prod
 composes_with: [loss-bpr-pairwise-within-user, history-same-author-run-features, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)]
-evidence: [live_07:node_012]
+evidence: [live_07:node_012, ceiling:oracle]
 ---
 ## Claim
 Add an FPMC-style latent transition score between the user's immediately previous exposed video and the current
@@ -43,3 +43,4 @@ across different video pairs while the existing FM retains long-term user prefer
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)
 - live_07:node_012 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6036, single-seed Δ -0.0005 — rejected; 89 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

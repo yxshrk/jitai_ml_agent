@@ -14,7 +14,7 @@ cost: ~59 lines; measured total runtime 318 s versus 143 s for the parent ensemb
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, ensembling-multiseed-heterogeneous-rank-blend, features-duration-unknown-flag]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x2 (best Δ +0.0000)]
-evidence: [live_04:node_019, live_04:node_026]
+evidence: [live_04:node_019, live_04:node_026, ceiling:oracle]
 ---
 ## Claim
 Estimate each user-tab group's probability of reaching a candidate-specific watch threshold from train-only play
@@ -49,3 +49,4 @@ can vary across one user's rows and legally change their ordering.
 _Verdict:_ never accepted in 2 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x2 (best Δ +0.0000)
 - live_04:node_019 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6044, single-seed Δ -0.0001 — rejected; 59 changed lines
 - live_04:node_026 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6045, single-seed Δ +0.0000, seed-mean Δ +0.0000 (t 0.02) — rejected; 36 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'user-context-taste' — facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003 (facts §11, kb/data/screens/CEILING.md)

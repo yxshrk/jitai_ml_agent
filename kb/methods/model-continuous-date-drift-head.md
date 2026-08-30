@@ -15,7 +15,7 @@ composes_with: [loss-bpr-pairwise-within-user, data-weighting-recency, model-fie
   regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)]
-evidence: [live_05:node_013]
+evidence: [live_05:node_013, ceiling:oracle]
 ---
 ## Claim
 Add a normalized continuous-date term
@@ -44,3 +44,4 @@ a user's compared rows occur on different dates.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)
 - live_05:node_013 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6038, single-seed Δ +0.0001, seed-mean Δ -0.0000 (z -0.02) — rejected; 61 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'recency-volume' — facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency (facts §11, kb/data/screens/CEILING.md)

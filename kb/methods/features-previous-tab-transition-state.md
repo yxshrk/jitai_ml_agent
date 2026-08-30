@@ -17,7 +17,7 @@ composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features
   history-same-author-run-features]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)]
-evidence: [live_07:node_021]
+evidence: [live_07:node_021, ceiling:oracle]
 ---
 ## Claim
 Append the previous-tab→current-tab transition and capped same-tab streak as categorical fields, allowing otherwise
@@ -49,3 +49,4 @@ share the same pre-group state and therefore cannot become one another's history
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)
 - live_07:node_021 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6041, single-seed Δ +0.0000, seed-mean Δ -0.0003 (z -1.3) — rejected; 69 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

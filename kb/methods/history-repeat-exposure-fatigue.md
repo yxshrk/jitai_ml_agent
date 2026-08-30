@@ -14,7 +14,7 @@ cost: ~56 lines; runtime ~1.6x versus the field-aware parent (44 s measured); nu
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, data-weighting-recency]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0005)]
-evidence: [live_04:node_005]
+evidence: [live_04:node_005, ceiling:oracle]
 ---
 ## Claim
 Add categorical fields for the number of strictly prior user-video exposures and the logarithmic time since the
@@ -52,3 +52,4 @@ vs 0.389), and composes with `history-same-author-run-features`; retest on a sta
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0005)
 - live_04:node_005 on [official FM + field-aware FM embeddings]: primary 0.6025, single-seed Δ -0.0005 — rejected; 56 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

@@ -55,7 +55,6 @@
   "cards": {
     "encoding-ordered-item-context-target-statistics": "item-side",
     "features-fine-duration-and-tab-cross": "item-side",
-    "features-upper-tail-tab-duration-cross": "item-side",
     "features-duration-unknown-flag": "item-side",
     "features-duration-zero-lexicographic-demotion": "item-side",
     "features-field-aware-author-pooling": "item-side",
@@ -74,9 +73,6 @@
     "data-weighting-recency": "recency-volume",
     "data-weighting-inverse-day-volume": "recency-volume",
     "model-continuous-date-drift-head": "recency-volume",
-    "loss-same-tab-long-duration-bpr": "pair-sampling",
-    "loss-tab4-long-duration-bpr": "pair-sampling",
-    "loss-long-duration-matched-bpr": "pair-sampling",
     "loss-context-matched-two-stream-bpr": "pair-sampling",
     "loss-duration-cohort-weighted-bpr": "pair-sampling",
     "loss-bpr-hard-negatives": "pair-sampling",

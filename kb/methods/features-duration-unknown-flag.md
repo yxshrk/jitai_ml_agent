@@ -13,7 +13,7 @@ cost: 2 lines in raw(); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002); official FM + field-aware FM embeddings x1 (best Δ -0.0002)]
-evidence: [live_01:node_003, live_02:node_003, live_02:node_007, live_04:node_018]
+evidence: [live_01:node_003, live_02:node_003, live_02:node_007, live_04:node_018, ceiling:oracle]
 ---
 ## Claim
 Give unknown-duration rows their own categorical value so the model can learn they are never long views, instead of
@@ -39,3 +39,4 @@ _Verdict:_ never accepted in 4 measurements on 3 stack(s); official FM x2 (best 
 - live_02:node_003 on [official FM]: primary 0.6012, single-seed Δ -0.0003 — rejected; 4 changed lines
 - live_02:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ +0.0000, seed-mean Δ +0.0002 (t 1.11) — rejected; 4 changed lines
 - live_04:node_018 on [official FM + field-aware FM embeddings]: primary 0.6028, single-seed Δ -0.0002 — rejected; 5 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

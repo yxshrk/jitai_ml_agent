@@ -14,7 +14,7 @@ cost: ~30 changed lines; fusion-only runtime negligible, though parent ensemble 
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings]
 conflicts_with: [ensembling-reciprocal-rank-fusion, ensembling-heterogeneous-rank-average]
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)]
-evidence: [live_04:node_025]
+evidence: [live_04:node_025, ceiling:oracle]
 ---
 ## Claim
 Use reciprocal-rank fusion only for rows where two branches disagree and at least one places the row in its top
@@ -46,3 +46,4 @@ Rows outside that set retain the linear blend intended to preserve broad pair or
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)
 - live_04:node_025 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6043, single-seed Δ -0.0002 — rejected; 30 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

@@ -15,7 +15,7 @@ composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features
   model-dcn-cross-head]
 conflicts_with: [model-din-history-attention, history-ordered-user-tag-affinity]
 status: proven — accepted on [official FM]
-evidence: [live_07:node_001, live_07:node_023]
+evidence: [live_07:node_001, live_07:node_023, ceiling:oracle]
 ---
 ## Claim
 Append categorical matches between the candidate and the user's latest strictly earlier positive video's first
@@ -48,3 +48,4 @@ when the exact author has never appeared in the user's history.
 _Verdict:_ ACCEPTED 1x (live_07:node_001 on [official FM] Δ +0.0009)
 - live_07:node_001 on [official FM]: primary 0.6020, single-seed Δ +0.0005, seed-mean Δ +0.0009 (z 3.12) — ACCEPTED; 86 changed lines
 - live_07:node_023 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6039, single-seed Δ -0.0002 — rejected; 88 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

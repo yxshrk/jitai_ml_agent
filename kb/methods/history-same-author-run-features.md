@@ -13,7 +13,7 @@ cost: ~40 lines (sort by user and time, run-so-far encoding, one or two categori
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, history-repeat-exposure-fatigue]
 conflicts_with: []
 status: untried
-evidence: []
+evidence: [ceiling:oracle]
 ---
 ## Claim
 A user shown the same author twice in a row is far less likely to long-view the second exposure (0.142 vs 0.337
@@ -41,3 +41,4 @@ its interactions with tab and duration.
 
 ## Measured
 _Verdict:_ no measurement yet
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

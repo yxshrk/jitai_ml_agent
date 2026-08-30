@@ -14,7 +14,7 @@ cost: ~42 changed lines; measured runtime 423 s versus 143 s for the ensemble pa
 composes_with: [loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)]
-evidence: [live_04:node_024]
+evidence: [live_04:node_024, ceiling:oracle]
 ---
 ## Claim
 Replace a standard FM's raw user-video dot product with one layer of degree-normalized propagation over the
@@ -47,3 +47,4 @@ users; because candidate videos vary within a user, this term can change the sco
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)
 - live_04:node_024 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6043, single-seed Δ -0.0002 — rejected; 42 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'history-cf' — facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR (facts §11, kb/data/screens/CEILING.md)

@@ -13,7 +13,7 @@ cost: ~20 lines (loop over seeds, average logits or within-user ranks); runtime 
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head, regularization-embedding-dropout-l2, training-schedule-lr-decay-early-stop]
 conflicts_with: []
 status: proven — accepted on [official FM], [official FM + loss-bpr-pairwise-within-user]
-evidence: [live_02:node_015, live_05:node_005, live_06:node_005, live_06:node_007, live_07:node_005, live_07:node_009, live_07:node_014, live_07:node_024]
+evidence: [live_02:node_015, live_05:node_005, live_06:node_005, live_06:node_007, live_07:node_005, live_07:node_009, live_07:node_014, live_07:node_024, ceiling:oracle]
 ---
 ## Claim
 Train the champion's script N = 5 times with seeds seed..seed+4 and average the prediction scores (or average
@@ -43,3 +43,4 @@ _Verdict:_ ACCEPTED 4x (live_06:node_005 on [official FM] Δ +0.0013; live_06:no
 - live_07:node_009 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6041, single-seed Δ +0.0010, seed-mean Δ +0.0013 (z 4.7) — ACCEPTED; 63 changed lines
 - live_07:node_014 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6041, single-seed Δ -0.0000 — rejected; 5 changed lines
 - live_07:node_024 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 2 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

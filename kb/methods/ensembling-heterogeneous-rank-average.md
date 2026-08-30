@@ -14,7 +14,7 @@ cost: ~77 lines; runtime ~1.7x versus the field-aware parent (49 s measured); nu
 composes_with: [ensembling-seed-average, model-field-aware-fm-embeddings, model-dcn-cross-head, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ +0.0006)]
-evidence: [live_04:node_012]
+evidence: [live_04:node_012, ceiling:oracle]
 ---
 ## Claim
 Independently early-stop a field-aware FM and a standard FM trained with the same within-user BPR sampler, then
@@ -46,3 +46,4 @@ can preserve agreements while correcting errors unique to either representation.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ +0.0006)
 - live_04:node_012 on [official FM + field-aware FM embeddings]: primary 0.6036, single-seed Δ +0.0006, seed-mean Δ +0.0006 (t 2.43) — rejected; 77 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

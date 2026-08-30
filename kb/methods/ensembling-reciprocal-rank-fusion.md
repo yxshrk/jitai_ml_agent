@@ -14,7 +14,7 @@ cost: ~16 lines; fusion overhead only, but total runtime inherits the underlying
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings, model-dcn-cross-head]
 conflicts_with: [ensembling-heterogeneous-rank-average]
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)]
-evidence: [live_04:node_023]
+evidence: [live_04:node_023, ceiling:oracle]
 ---
 ## Claim
 Replace linear Borda-style averaging of branch ranks with fixed reciprocal-rank fusion, using `1/(2+r)` for each
@@ -46,3 +46,4 @@ user's list. This can alter top-five ordering while remaining invariant to each 
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)
 - live_04:node_023 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6045, single-seed Δ -0.0000 — rejected; 16 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0016 for the signal family 'ensembling' — facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging (facts §11, kb/data/screens/CEILING.md)

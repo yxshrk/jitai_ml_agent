@@ -14,7 +14,7 @@ cost: 9 lines; unchanged pair count and approximately 1x training cost; numpy on
 composes_with: [loss-bpr-pairwise-within-user, loss-bpr-hard-negatives, model-field-aware-fm-embeddings, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user]
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0019)]
-evidence: [live_04:node_022]
+evidence: [live_04:node_022, ceiling:oracle]
 ---
 ## Claim
 Construct each BPR epoch from an equal mixture of the usual positive-proportional sample and positives drawn by
@@ -44,3 +44,4 @@ per-user weighting while every pair still changes only within-user order.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0019)
 - live_04:node_022 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6026, single-seed Δ -0.0019 — rejected; 9 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'pair-sampling' — facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001 (facts §11, kb/data/screens/CEILING.md)

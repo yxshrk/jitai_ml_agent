@@ -15,7 +15,7 @@ cost: 51 changed lines; an extra logistic pair stream per BPR batch; measured ru
 composes_with: [features-exposure-session, loss-bpr-pairwise-within-user, ensembling-seed-average]
 conflicts_with: [loss-lambdarank-pairs, loss-approxndcg-soft-ranks, loss-warp-within-user-rank-weighting]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0023)]
-evidence: [live_07:node_020]
+evidence: [live_07:node_020, ceiling:oracle]
 ---
 ## Claim
 Add a weak pseudo-preference loss that ranks the first targeted impression in a session above later targeted
@@ -51,3 +51,4 @@ earlier, less-dense rows are pushed above later, denser rows. Pairs are restrict
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0023)
 - live_07:node_020 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6018, single-seed Δ -0.0023 — rejected; 51 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md) (facts §11, kb/data/screens/CEILING.md)

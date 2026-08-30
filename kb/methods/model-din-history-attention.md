@@ -13,7 +13,7 @@ cost: ~110 lines (torch module with FM logit + attention branch, BPR training lo
 composes_with: [loss-bpr-pairwise-within-user, features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average]
 conflicts_with: [model-lightgbm-lambdarank]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]
-evidence: [live_07:node_017]
+evidence: [live_07:node_017, ceiling:oracle]
 ---
 ## Claim
 Scoring a candidate against a candidate-weighted summary of the user's earlier long-views (attention keyed by
@@ -50,3 +50,4 @@ cancels, so the branch is forced to learn candidate-specific ordering.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)
 - live_07:node_017 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 137 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'history-cf' — facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR (facts §11, kb/data/screens/CEILING.md)
