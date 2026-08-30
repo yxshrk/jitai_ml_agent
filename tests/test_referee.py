@@ -16,6 +16,9 @@ def test_pair_breakdown():
     assert all(flat[t]['err'] == 0.5 for t in R.PAIR_TYPES if flat[t]['err'] is not None)
     assert flat['tab1_x_tab1']['share'] > 0.5                                               # facts §11: the feed pairs dominate
     m = R.score([0.0] * len(y), breakdown=True); assert 'by_pair' in m and m['by_pair']['total_err'] == 0.5
+    import random
+    rnd = random.Random(0); sc = [v + rnd.random() for v in y]                             # a non-trivial ordering
+    m = R.score(sc, breakdown=True); assert abs(1 - m['gauc'] - m['by_pair']['total_err']) < 1e-4   # the weighting claim: total_err = 1 - GAUC
 
 def test_accept_and_convergence():
     assert R.accept(0.6015, 0.6040) == (True, pytest.approx(0.0025))

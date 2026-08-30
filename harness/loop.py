@@ -861,7 +861,7 @@ class Loop:
             view['by_group_delta'] = {g: round(m['by_group'][g]['primary'] - cg[g]['primary'], 4) for g in m['by_group'] if g in cg}
         cp = (self.champion.get('metrics') or {}).get('by_pair') or {}
         if m.get('by_pair') and cp:   # misordered-pair fraction per pair type vs the champion; negative = fewer misordered pairs
-            view['by_pair_delta'] = {t: round(m['by_pair'][t]['err'] - cp[t]['err'], 3) for t in m['by_pair']
+            view['by_pair_delta'] = {t: round(m['by_pair'][t]['err'] - cp[t]['err'], 4) for t in m['by_pair']
                                      if isinstance(m['by_pair'].get(t), dict) and isinstance(cp.get(t), dict)
                                      and m['by_pair'][t].get('err') is not None and cp[t].get('err') is not None}
         return view
