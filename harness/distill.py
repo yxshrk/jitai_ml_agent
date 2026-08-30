@@ -74,7 +74,7 @@ def _measured_line(ref, r, stack, run_id):
         return (f"- {ref} on [{stack}]: FAILED at {r.get('failure_stage')} — {str(r.get('error'))[:120]} (recovery: {r.get('recovery')})", None)
     d1 = r.get('realized_delta'); dm = conf.get('delta_mean')
     line = (f"- {ref} on [{stack}]: primary {m['primary']:.4f}, single-seed Δ {d1:+.4f}"
-            + (f", seed-mean Δ {dm:+.4f} (t {conf.get('t')})" if dm is not None else '')
+            + ((f", seed-mean Δ {dm:+.4f} (z {conf['z']})" if 'z' in conf else f", seed-mean Δ {dm:+.4f} (t {conf.get('t')})") if dm is not None else '')
             + (' — NO-OP (predictions identical to the parent)' if r.get('identical_to_parent') else '')
             + f" — {'ACCEPTED' if r.get('accepted') else 'rejected'}; {r.get('diff_lines')} changed lines")
     status = 'proven' if r.get('accepted') else f"dead_under {{run: {run_id}, stack: {stack}, delta: {dm if dm is not None else d1:+.4f}}}"

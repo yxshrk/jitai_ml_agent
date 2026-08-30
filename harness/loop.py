@@ -26,16 +26,25 @@ def pick_champion(results):
         return c.get('delta_mean', r.get('realized_delta') or 0.0)
     return max(acc, key=lambda r: (gain(r), r['metrics']['primary']))['n']
 
-def confirm_stats(v_node, v_ch):
-    """Two-sample test on seed means with sample SDs floored at STD_FLOOR (n = 3 is small): returns
-    (mean_node, mean_champion, diff, se, t, accepted). Seeds are not paired across different scripts (they consume the
-    RNG differently), so a paired test would be wrong."""
+def pooled_sigma(samples, prior=C.SEED_SD_PRIOR, prior_df=C.SEED_SD_PRIOR_DF):
+    """Seed-to-seed SD of the primary pooled over every node with >= 2 fresh seeds (Bessel), blended with the prior:
+    sigma^2 = (sum (n_i - 1) s_i^2 + prior_df * prior^2) / (sum (n_i - 1) + prior_df). Seed noise is a property of
+    the data + model family (every node measured so far: 0.0002-0.0005), so pooling turns a 2-df t-test into a z-test."""
+    ss, df = 0.0, 0
+    for v in samples:
+        if len(v) >= 2:
+            ss += (len(v) - 1) * statistics.variance(v); df += len(v) - 1
+    return ((ss + prior_df * prior ** 2) / (df + prior_df)) ** 0.5, df
+
+def confirm_stats(v_node, v_ch, sigma):
+    """z-test of the difference of fresh-seed means with the pooled seed SD: returns
+    (mean_node, mean_champion, diff, se, z, accepted). Seeds are not paired across different scripts (they consume the
+    RNG differently), so a paired test would be wrong; seed 0 is excluded from both means because it is the selected
+    screen (a maximum of k draws) and would bias the candidate upward."""
     m_node, m_ch = statistics.mean(v_node), statistics.mean(v_ch)
-    sd_node = max(statistics.stdev(v_node) if len(v_node) > 1 else C.STD_FLOOR, C.STD_FLOOR)
-    sd_ch = max(statistics.stdev(v_ch) if len(v_ch) > 1 else C.STD_FLOOR, C.STD_FLOOR)
-    se = (sd_node ** 2 / len(v_node) + sd_ch ** 2 / len(v_ch)) ** 0.5
-    diff = m_node - m_ch; t = diff / se if se else float('inf')
-    return m_node, m_ch, diff, se, t, (diff >= C.MIN_EFFECT and t >= C.T_CRIT)
+    se = sigma * (1.0 / len(v_node) + 1.0 / len(v_ch)) ** 0.5
+    diff = m_node - m_ch; z = diff / se if se else float('inf')
+    return m_node, m_ch, diff, se, z, (diff >= C.MIN_EFFECT and z >= C.Z_CRIT)
 
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
@@ -78,11 +87,20 @@ class Loop:
         """Accepted method chain from node 0 to n, e.g. 'official FM + loss-bpr-pairwise-within-user' — what is actually in a script."""
         from .distill import _stack
         return _stack(self.state['nodes'], n)
+    def fresh_seeds(self, n):
+        """Cached validation primaries of node n on seeds other than the screening seed, in seed order."""
+        pre = f'{n}:'
+        return [v for k_, v in sorted(self.state['seed_cache'].items(), key=lambda kv: int(kv[0].split(':')[1]) if ':' in kv[0] else 0)
+                if k_.startswith(pre) and v is not None and int(k_.split(':')[1]) != self.seed]
+    def node_mean(self, n):
+        """Fresh-seed mean of node n (the statistic acceptance and convergence use); its seed-0 primary if none yet."""
+        v = self.fresh_seeds(n)
+        return statistics.mean(v) if v else self.node(n)['metrics']['primary']
     def champion_mean(self):
-        """Seed-mean validation primary of the champion (its single seed plus every cached confirmation seed)."""
-        n = self.state['champion']; vals = [self.node(n)['metrics']['primary']]
-        vals += [v for k_, v in self.state['seed_cache'].items() if k_.startswith(f'{n}:') and v is not None]
-        return statistics.mean(vals)
+        return self.node_mean(self.state['champion'])
+    def _sigma(self):
+        """Seed SD pooled over every node of this run with >= 2 fresh seeds, blended with the prior."""
+        return pooled_sigma([self.fresh_seeds(int(k)) for k in self.state['nodes']])
     def code_of(self, n): return self.j.node_path(n).read_text()
 
     def ctx(self, **extra):
@@ -277,13 +295,9 @@ class Loop:
             self.state['champion'] = new_champion
         if ok:                                                      # the literal single-seed best, reported alongside
             self.state['best_single'] = max(self.state.get('best_single') or 0.0, max(r['metrics']['primary'] for r in ok))
-        gain = None
-        if new_champion is not None:
-            rec = next(r for r in results if r.get('n') == new_champion)
-            gain = (rec.get('seed_confirmation') or {}).get('delta_mean', rec.get('realized_delta'))
-        conv = R.Convergence(self.state['streak'])
-        improved = conv.update(new_champion is not None, gain)       # ADR-0012: a confirmed change of >= RESET_MIN_GAIN resets the streak
-        self.state['best'] = round(self.champion_mean(), 5)
+        conv = R.Convergence(self.state['streak'], self.state.get('conv_ref'))
+        improved = conv.update(self.champion_mean())                 # ADR-0012: cumulative rise of the champion's fresh-seed mean >= RESET_MIN_GAIN resets
+        self.state['conv_ref'] = conv.ref; self.state['best'] = round(self.champion_mean(), 5)
         off = self.state.setdefault('official_rule', {'best_single_seed': self.node(0)['metrics']['primary'], 'streak': 0,
                                                       'converged_at_generation': None, 'champion_at_stop': None})
         o = R.OfficialRule(off['best_single_seed'], off['streak'], off['converged_at_generation'])
@@ -466,28 +480,41 @@ class Loop:
         if not nd['res'].ok:
             nd['recovery'] += ' -> abandoned'
 
-    def _confirm_with_seeds(self, n):
-        """Run CONFIRM_SEEDS extra seeds of the node (and of the champion, cached) and accept on the seed means:
-        improvement >= MIN_EFFECT and >= T_CRIT standard errors. Selecting the best of k single-seed branches is
-        biased upward (winner's curse) — measured in live_01: +0.0022 on one seed was +0.0017 over three."""
-        seeds = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
+    def _ensure_seeds(self, m, seeds):
         cache = self.state['seed_cache']
-        def vals_for(m):
-            vals = [self.node(m)['metrics']['primary']]
-            for sd in seeds:
-                key = f'{m}:{sd}'
-                if key not in cache:
-                    r = R.run_script(self.j.node_path(m), self.j.out_dir(m, f'_seed{sd}'), seed=sd, threads=os.cpu_count() or 2)
-                    cache[key] = r.metrics['primary'] if r.ok else None
-                if cache[key] is not None:
-                    vals.append(cache[key])
-            return vals
-        v_node, v_ch = vals_for(n), vals_for(self.state['champion'])
-        m_node, m_ch, diff, se, t, accepted = confirm_stats(v_node, v_ch)
-        self.log(f"node_{n:03d}: seed confirmation — node {[round(v, 5) for v in v_node]} mean {m_node:.5f} vs champion "
-                 f"{[round(v, 5) for v in v_ch]} mean {m_ch:.5f}: diff {diff:+.5f}, t {t:.1f} -> {'ACCEPTED' if accepted else 'rejected'}")
-        return accepted, {'node_seeds': v_node, 'champion_seeds': v_ch, 'delta_mean': round(diff, 5), 'se': round(se, 5),
-                          't': round(t, 2), 'rule': f'diff >= {C.MIN_EFFECT} and t >= {C.T_CRIT}'}
+        for sd in seeds:
+            key = f'{m}:{sd}'
+            if key not in cache:
+                r = R.run_script(self.j.node_path(m), self.j.out_dir(m, f'_seed{sd}'), seed=sd, threads=os.cpu_count() or 2)
+                cache[key] = r.metrics['primary'] if r.ok else None
+
+    def _confirm_with_seeds(self, n):
+        """ADR-0012 statistics: FRESH seeds (1..CONFIRM_SEEDS) for the candidate and the champion (cached), a z-test of
+        the difference of their means with the seed SD pooled over the whole run (prior 0.0003), acceptance iff the gain
+        is >= MIN_EFFECT and z >= Z_CRIT; a borderline z gets two more seeds first. Seed 0 is the selected screen and is
+        reported but not counted. Measured reason: the best of k single-seed branches is biased upward — +0.0022 on one
+        seed was +0.0017 over three; a 3-vs-3 t-test at 2.5 passed 3-6 % of null candidates."""
+        base = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
+        ch = self.state['champion']
+        self._ensure_seeds(n, base); self._ensure_seeds(ch, base)
+        sigma, df = self._sigma()
+        v_node, v_ch = self.fresh_seeds(n), self.fresh_seeds(ch)
+        if not v_node or not v_ch:
+            return False, {'error': 'confirmation seeds failed', 'node_seeds': v_node, 'champion_seeds': v_ch}
+        m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
+        adaptive = False
+        if C.Z_BORDER <= z < C.Z_CRIT and len(v_node) < C.MAX_CONFIRM_SEEDS:
+            adaptive = True
+            self._ensure_seeds(n, [self.seed + i for i in range(C.CONFIRM_SEEDS + 1, C.MAX_CONFIRM_SEEDS + 1)])
+            sigma, df = self._sigma(); v_node = self.fresh_seeds(n)
+            m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
+        self.log(f"node_{n:03d}: seed confirmation — fresh seeds {[round(v, 5) for v in v_node]} mean {m_node:.5f} vs champion "
+                 f"{[round(v, 5) for v in v_ch]} mean {m_ch:.5f}: diff {diff:+.5f}, z {z:.1f} (sigma {sigma:.5f}, {df} df"
+                 f"{', adaptive' if adaptive else ''}) -> {'ACCEPTED' if accepted else 'rejected'}")
+        return accepted, {'node_seed0': self.node(n)['metrics']['primary'], 'node_seeds': v_node, 'champion_seeds': v_ch,
+                          'delta_mean': round(diff, 5), 'se': round(se, 6), 'z': round(z, 2), 'sigma_pooled': round(sigma, 6),
+                          'sigma_df': df, 'adaptive': adaptive,
+                          'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the pooled seed SD'}
 
     @staticmethod
     def _result_view(rec):
@@ -501,7 +528,7 @@ class Loop:
         self.start()
         while True:
             if self.state['streak'] >= C.N_CONVERGE:
-                self.state['stop_reason'] = (f'converged: {C.N_CONVERGE} generations without a seed-confirmed champion change of >= {C.RESET_MIN_GAIN} (ADR-0012)'
+                self.state['stop_reason'] = (f'converged: {C.N_CONVERGE} generations without a >= {C.RESET_MIN_GAIN} cumulative rise of the champion fresh-seed mean (ADR-0012)'
                                              if self.convergence == 'confirmed' else f'converged: official rule (single-seed best, eps {C.EPS}, N {C.N_CONVERGE})'); break
             if self.iteration_unit == 'node' and self.state['n_next'] + self.k > self.max_nodes:
                 self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting nodes)'; break
@@ -530,25 +557,17 @@ class Loop:
                 self.log(f'distill/archive failed: {type(e).__name__}: {str(e)[:200]}')
         return summary
 
-    def designate_final(self, top_k=3, extra_seeds=(1, 2)):
-        """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the mean over
-        extra seeds so a lucky single seed cannot be the submission. Ties go to the higher single-seed score."""
+    def designate_final(self, top_k=3):
+        """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the FRESH-seed mean
+        (seeds 1..CONFIRM_SEEDS, cached) so a lucky single seed cannot be the submission. Ties go to the higher seed-0 score."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
-        cache = self.state['seed_cache']
         ranking = []
         for v in top:
-            vals = [v['metrics']['primary']]
             if self.final_reseed:
-                for s in extra_seeds:
-                    key = f"{v['n']}:{self.seed + s}"
-                    if key not in cache:
-                        r = R.run_script(self.j.node_path(v['n']), self.j.out_dir(v['n'], f'_seed{self.seed + s}'),
-                                         seed=self.seed + s, threads=os.cpu_count() or 2)
-                        cache[key] = r.metrics['primary'] if r.ok else None
-                    if cache[key] is not None:
-                        vals.append(cache[key])
-            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'seeds': vals,
+                self._ensure_seeds(v['n'], [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)])
+            vals = self.fresh_seeds(v['n']) or [v['metrics']['primary']]
+            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals,
                             'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None})
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
         self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
@@ -559,9 +578,8 @@ class Loop:
         off = self.state.get('official_rule') or {}; n = off.get('champion_at_stop')
         if n is None:
             return {'note': 'the literal single-seed rule had not converged when the run ended', 'node': None}
-        vals = [self.node(n)['metrics']['primary']] + [v for k_, v in self.state['seed_cache'].items() if k_.startswith(f'{n}:') and v is not None]
         return {'node': n, 'generation': off.get('converged_at_generation'), 'valid_primary': self.node(n)['metrics']['primary'],
-                'seed_mean': round(statistics.mean(vals), 5), 'seeds': len(vals)}
+                'fresh_seed_mean': round(self.node_mean(n), 5), 'fresh_seeds': len(self.fresh_seeds(n))}
 
     def finish(self):
         ch = self.champion; nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]

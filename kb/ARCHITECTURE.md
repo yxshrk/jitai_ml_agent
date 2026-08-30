@@ -23,9 +23,9 @@ flowchart TD
         B1["branch 1<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
         B2["branch …"]
         B3["branch 5<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
-        B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>md5 identical to the parent → NO-OP, rejected<br/>Δ > 0 → 2 more seeds in parallel (all seeds cached)<br/>accept iff seed-mean gain ≥ 0.0005 and ≥ 2.5 standard errors"]
+        B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>md5 identical to the parent → NO-OP, rejected<br/>Δ > 0 → 3 fresh seeds in parallel (all seeds cached; seed 0 excluded)<br/>accept iff fresh-seed mean gain ≥ 0.0005 and z ≥ 3 with the pooled seed SD"]
         REF --> J["JOURNAL (code)<br/>hypothesis · diff · metrics · curve · seeds · critic rounds · errors · recovery · tokens · time"]
-        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged after 3 generations without a confirmed champion change ≥ 0.001 (seed-mean)<br/>(the literal single-seed ε rule is tracked and reported alongside)"]
+        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged after 3 generations without a ≥ 0.001 cumulative rise of the champion's fresh-seed mean<br/>(the literal single-seed ε rule is tracked and reported alongside)"]
         CH --> LIB["LIBRARIAN (LLM + web search), only after a flat generation<br/>when < k untried cards remain (≤ 2× per run): n new cards, validated by code"]
         LIB --> CONS["CONSOLIDATOR (LLM)<br/>reads the verdicts → next generation's slots:<br/>merge orthogonal winners · retest a parked idea · explore after a flat generation"]
     end
@@ -105,17 +105,19 @@ the user message. Never a growing transcript. The rules the roles read are gener
 2. **Delta.** `Δ = node − champion`, the same champion for all branches of a generation.
 3. **No-op.** Predictions byte-identical to the parent's → the change did nothing; rejected without seeds and
    labelled NO-OP for the Diagnostician and Consolidator (live_04 had two such nodes scored as experiments).
-4. **Acceptance (ADR-0010/0011).** `Δ > 0` → the node is re-run with 2 more seeds (every seed of every node is
-   cached once, `state.seed_cache`). Accepted iff the difference of seed means ≥ 0.0005 **and** ≥ 2.5 standard errors
-   (sample SD, floor 0.0002; two-sample, because seeds are not paired across different scripts). Measured reason:
-   the best of k single-seed branches is biased upward — +0.0022 on one seed was +0.0017 on three; +0.0005/+0.0006/
-   +0.0005 were +0.0000/+0.0001/+0.0002.
+4. **Acceptance (ADR-0010/0011/0012).** `Δ > 0` on seed 0 → the node is re-run with **three fresh seeds** (every
+   seed of every node is cached once, `state.seed_cache`); seed 0 is the selected screen and is excluded from the
+   means. Accepted iff the difference of fresh-seed means ≥ 0.0005 **and** z ≥ 3.0, where z uses the seed SD pooled
+   over every fresh-seed run of the run (prior 0.0003 at 4 df) — a z-test, not a 2-df t-test; a borderline
+   2.0 ≤ z < 3.0 gets two more seeds first. Two-sample, because seeds are not paired across different scripts.
+   Measured reason: the best of k single-seed branches is biased upward — +0.0022 on one seed was +0.0017 on three;
+   +0.0005/+0.0006/+0.0005 were +0.0000/+0.0001/+0.0002; the old t-test passed 3–6 % of null candidates.
 5. **Champion (ADR-0012).** The accepted node with the largest seed-mean gain this generation; it parents the next
    generation. A rejected node's lucky single seed cannot block it. Rejected ideas are parked.
-6. **Convergence (ADR-0012, revised).** The streak counts consecutive generations without a seed-confirmed
-   champion change of at least 0.001 on the seed-mean (ε/2 on a statistic with a third of the noise — a false
-   acceptance at the 0.0005 floor cannot buy three more generations); three → converged. Smaller confirmed gains
-   still move the champion. ε remains the per-node single-seed screen; `referee.OfficialRule` tracks the literal
+6. **Convergence (ADR-0012, revised).** The streak resets when the champion's fresh-seed mean has risen by at least
+   0.001 since the last reset (cumulative, like `min_delta` against the best seen: ε/2 on a statistic with a third
+   of the noise — one false acceptance cannot buy three generations, a staircase of real gains counts); three
+   generations without such a rise → converged. Smaller confirmed gains still move the champion. ε remains the per-node single-seed screen; `referee.OfficialRule` tracks the literal
    rule (single-seed best, > ε, N = 3) every generation, and the summary reports where it would have stopped and
    which node it would have submitted (`--convergence official` makes it the stopping rule). Also stops at 50 nodes (or 50 generations with
    `--iteration-unit generation`), 6 h of running time, or the dollar budget.

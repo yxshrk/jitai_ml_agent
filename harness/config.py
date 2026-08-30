@@ -14,13 +14,18 @@ KB = ROOT / 'kb'
 SPLITS = {'train': (20220408, 20220421), 'valid': (20220422, 20220428), 'test': (20220429, 20220508)}
 BASELINE_VALID_PRIMARY = 0.6016   # official FM, 5-seed mean
 EPS = 0.002                       # official convergence epsilon, applied to the champion's seed-mean (ADR-0012)
-CONFIRM_SEEDS = 2                 # extra seeds run for every candidate with a positive single-seed delta
-MIN_EFFECT = 0.0005               # acceptance: the seed-mean improvement must be at least this (ADR-0011: was 0.001) ...
-T_CRIT = 2.5                      # ... and at least T_CRIT standard errors (guards against the winner's curse)
-STD_FLOOR = 0.0002                # floor on a per-node seed std estimate (3 seeds is a small sample)
+CONFIRM_SEEDS = 3                 # FRESH seeds (1..3) run for every candidate whose seed-0 delta is positive; seed 0 is the
+                                  # screen (a selected maximum) and is reported but not used in the decision (ADR-0012)
+MAX_CONFIRM_SEEDS = 5             # adaptive: two more fresh seeds when the z-score is borderline (Z_BORDER <= z < Z_CRIT)
+MIN_EFFECT = 0.0005               # acceptance: the fresh-seed mean gain over the champion must be at least this ...
+Z_CRIT = 3.0                      # ... and at least Z_CRIT standard errors with the POOLED seed SD (a z-test, not a 3-vs-3 t-test)
+Z_BORDER = 2.0                    # below this the candidate is rejected outright; between Z_BORDER and Z_CRIT more seeds decide
+SEED_SD_PRIOR = 0.0003            # prior on the seed-to-seed SD of the primary (live_01/02), blended with the run's pooled estimate
+SEED_SD_PRIOR_DF = 4              # weight of that prior in degrees of freedom
 N_CONVERGE = 3                    # official N
-RESET_MIN_GAIN = 0.001            # a confirmed champion change resets the convergence streak only if its seed-mean gain is at least this:
-                                  # eps/2 on a statistic with ~1/3 the noise, so a false acceptance at the 0.0005 floor cannot buy 3 more generations
+RESET_MIN_GAIN = 0.001            # the convergence streak resets when the champion's fresh-seed mean has risen by at least this since
+                                  # the last reset (cumulative, like min_delta against best-seen): eps/2 on a statistic with ~1/3 the
+                                  # single-seed noise, so one false acceptance cannot buy 3 more generations but a staircase of real gains counts
 MAX_ITERS = 50                    # official cap
 WALL_CLOCK_S = 6 * 3600           # official backstop
 SMOKE_TIMEOUT_S = 120
@@ -36,11 +41,12 @@ FORBIDDEN_PATTERNS = ['KuaiRand-Pure', 'log_standard_4_22', 'log_standard_4_08',
 def rules_text():
     """The acceptance and convergence rules as one sentence each, generated from the constants above so the text
     the LLM roles read can never drift from what the code does (ADR-0012)."""
-    return (f"ACCEPTANCE (code, ADR-0010/0011): a candidate whose single-seed delta is positive is re-run with {CONFIRM_SEEDS} more "
-            f"seeds (seeds {DEFAULT_SEED}..{DEFAULT_SEED + CONFIRM_SEEDS}); it is accepted iff its seed-mean gain over the champion "
-            f"is >= {MIN_EFFECT} AND >= {T_CRIT} standard errors of the difference (seed-to-seed SD ~ {SEED_SD}); a node whose "
+    return (f"ACCEPTANCE (code, ADR-0010/0011/0012): a candidate whose seed-{DEFAULT_SEED} delta is positive is re-run with {CONFIRM_SEEDS} "
+            f"FRESH seeds; it is accepted iff its fresh-seed mean gain over the champion's fresh-seed mean is >= {MIN_EFFECT} AND "
+            f"z >= {Z_CRIT}, where z uses the seed SD pooled over every seed run of this run (prior {SEED_SD_PRIOR}); a borderline "
+            f"z in [{Z_BORDER}, {Z_CRIT}) gets {MAX_CONFIRM_SEEDS - CONFIRM_SEEDS} more seeds before the decision; a node whose "
             f"predictions are byte-identical to its parent's is a no-op and is rejected without seeds. "
-            f"CONVERGENCE (code, ADR-0012): the run stops after {N_CONVERGE} consecutive generations without a seed-confirmed "
-            f"champion change of at least {RESET_MIN_GAIN} on the seed-mean (smaller confirmed gains still move the champion but do "
-            f"not extend the run; this is the organizers' eps = {EPS} rescaled to the seed-mean's noise, and the literal single-seed "
-            f"eps rule is tracked and reported alongside); the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")
+            f"CONVERGENCE (code, ADR-0012): the streak resets when the champion's fresh-seed mean has risen by >= {RESET_MIN_GAIN} since "
+            f"the last reset (cumulative); {N_CONVERGE} consecutive generations without such a rise stop the run. Smaller confirmed "
+            f"gains still move the champion; this is the organizers' eps = {EPS} rescaled to the seed-mean's noise, and the literal "
+            f"single-seed eps rule is tracked and reported alongside; the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")

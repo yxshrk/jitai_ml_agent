@@ -30,13 +30,24 @@ Rules changed at different times had drifted apart, and live_04 showed the cost:
    filter than a fixed 0.002 on one seed, which is what ε exists for. ε keeps two jobs: the single-seed screen
    recorded per node (`single_seed_accept`), and `referee.OfficialRule` — the organizers' rule read literally on
    single-seed bests, tracked every generation and reported in `summary.official_rule` (where it would have
-   stopped) so the judges see both. Guard against false positives (Yash, after the risk was quantified): the seed
-   test admits roughly 2–5 % of null candidates at the 0.0005 floor, and each false champion would buy three more
-   generations — so only a confirmed change of **≥ 0.001 on the seed-mean** (`RESET_MIN_GAIN`: ε/2 on a statistic
-   with about a third of the single-seed noise, a 4σ event under the null) resets the streak; smaller confirmed
-   gains still move the champion. `--convergence official` switches the stopping rule to the literal one, and every
-   summary reports `official_rule_submission` — the node the literal rule would have submitted — next to ours. The
-   caps (50 nodes, 6 h, dollars) bound the extra generations this allows.
+   stopped) so the judges see both. Guard against false positives (Yash, after the risk was quantified): the streak
+   resets only when the champion's fresh-seed mean has risen by **≥ 0.001 since the last reset** (`RESET_MIN_GAIN`,
+   cumulative like early stopping's `min_delta` against the best seen: ε/2 on a statistic with about a third of the
+   single-seed noise, a 4σ event under the null). One false champion (observed gain ≈ +0.0005–0.0007 under the null)
+   cannot buy three generations; a staircase of small real gains adds up and counts; smaller confirmed gains still
+   move the champion. `--convergence official` switches the stopping rule to the literal one, and every summary
+   reports `official_rule_submission` — the node the literal rule would have submitted — next to ours. The caps
+   (50 nodes, 6 h, dollars) bound the extra generations this allows.
+8. **The acceptance statistic is a pooled-variance z-test on fresh seeds.** The 3-vs-3 t-test at t ≥ 2.5 had
+   2–4 degrees of freedom and passed 3–6 % of null candidates (the 0.0005 floor is only ≈ 2 SE and did not bind;
+   live_04's node_017, +0.0005 at t 2.63, is the shape of a false positive — both merges built on it went
+   negative). Seed-to-seed noise is a property of the data + model family (every node measured: σ ≈ 0.0002–0.0005),
+   so σ is **pooled over every fresh-seed run of the run** (Bessel, blended with the prior 0.0003 at 4 df) and the
+   test is z = Δ̄ / (σ·√(1/n_c + 1/n_ch)) ≥ 3.0 with Δ̄ ≥ 0.0005. **Seed 0 is excluded from both means**: it is the
+   selected screen (a maximum of k draws) and biases the candidate by ≈ 0.25 SE; the decision uses three fresh seeds
+   (1–3), with two more (4–5) when 2.0 ≤ z < 3.0. Per-test false-positive rate ≈ 0.13 %, ≈ 0.4 % per generation.
+   Replayed with σ = 0.0003: node_015 z 6.8, node_001 5.0, node_002 4.7, node_003 4.3, node_004 3.8, live_02's
+   ensemble 3.7 — all still accepted; node_017 (z 2.0) and node_012 (z 2.3) go to the adaptive seeds instead.
 2. **Champion = the accepted node with the largest seed-mean gain** (`pick_champion`), not the best single seed.
 3. **One seed cache** (`state.seed_cache`, keyed `node:seed`, never cleared) serves confirmation, prefetch and the
    final designation. Sample SD (`statistics.stdev`) with the 0.0002 floor; two-sample test kept — seeds are not

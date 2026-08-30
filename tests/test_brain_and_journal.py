@@ -72,4 +72,4 @@ def test_seed_cache_migration(tmp_path, monkeypatch):
     lp = Loop('r', FakeBrain([[]]), k=2)
     assert lp.state['seed_cache'] == {'0:1': 0.61, '3:1': 0.62} and 'champion_seeds' not in lp.state
     assert 99 <= lp.elapsed() < 110                             # resumed: 100 s of earlier running time, not the calendar gap
-    assert lp.champion_mean() == pytest.approx((0.6 + 0.61) / 2)
+    assert lp.champion_mean() == pytest.approx(0.61)              # fresh seeds only (seed 0 is the screen)

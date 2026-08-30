@@ -85,7 +85,7 @@ ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
 state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the card's range unless the
 diagnosis gives specific evidence for more. Seed-to-seed SD is ~0.0003; acceptance needs a seed-mean gain of at least
-MIN_EFFECT at T_CRIT standard errors, so real +0.0006 effects pass and single-seed +0.0005 flukes do not; the entire
+MIN_EFFECT on fresh seeds at z >= Z_CRIT with the pooled seed SD, so real +0.0008 effects pass and single-seed flukes do not; the entire
 remaining headroom is ~0.25.
 Output exactly one fenced block:
 ```json
@@ -187,7 +187,7 @@ cards; status: untried; evidence: []; ## Measured "(none yet)"; at most 60 lines
 "source_url": "<url>", "why_now": "<one line tied to the journal evidence>"}]}``` followed by one ```card ... ``` block per card, in
 the same order."""
 
-ROLE_SYSTEM['select'] = ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('T_CRIT', str(C.T_CRIT))
+ROLE_SYSTEM['select'] = ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('Z_CRIT', str(C.Z_CRIT))
 ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
 
 _STABLE = None

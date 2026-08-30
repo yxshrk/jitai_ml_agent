@@ -146,10 +146,11 @@ agent reasons about effect sizes rather than guessing.
 ## 11. One statistic for acceptance and convergence; scope judged from the diff
 
 **What we did (ADR-0012).** Acceptance, champion selection and the convergence rule all read the same evidence —
-the seed-confirmed gain of the champion: the streak counts generations without a confirmed champion change of at
-least 0.001 on the seed-mean (ε/2 on a statistic with a third of the noise, so a false acceptance cannot buy
-generations), and the organizers' ε = 0.002 stays as the per-node single-seed screen and as a literal-rule tracker
-reported in every summary with the node it would have submitted. The Critic reviews the unified diff against the
+the seed-confirmed gain of the champion: acceptance is a pooled-variance z-test on three fresh seeds (seed 0, the
+selected screen, excluded; z ≥ 3 with σ pooled over the run; two more seeds when borderline), the streak resets
+when the champion's fresh-seed mean has risen ≥ 0.001 since the last reset (cumulative — a staircase of real gains
+counts, one false acceptance cannot buy generations), and the organizers' ε = 0.002 stays as the per-node
+single-seed screen and as a literal-rule tracker reported in every summary with the node it would have submitted. The Critic reviews the unified diff against the
 parent's *actual* stack; a change whose predictions are byte-identical to the parent's is a no-op, not a data point.
 
 **Why.** Rules changed at different times had diverged: in live_04 four seed-confirmed acceptances were logged as

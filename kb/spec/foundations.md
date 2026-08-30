@@ -38,10 +38,11 @@ the real effects are. Numbers come from `kb/data/facts.md` and the run journals.
 - Seed-to-seed SD of the primary is ≈ 0.0003 (baseline seeds 0, 1, 2 → 0.60147 / 0.60176 / 0.60109). A single-seed
   Δ below ≈ 0.0005 is inside the noise.
 - Picking the best of k single-seed branches is biased upward (order statistics): +0.0022 on one seed was +0.0017
-  over three; +0.0005/+0.0006/+0.0005 were +0.0000/+0.0001/+0.0002. Hence acceptance requires the SEED-MEAN gain
-  ≥ 0.0005 and ≥ 2.5 standard errors of the difference of seed means; the run converges after 3 generations without
-  a confirmed champion change of ≥ 0.001 on the seed-mean (the organizers' ε rescaled to the seed-mean's noise), and
-  the literal rule (single-seed best, ε = 0.002, N = 3) is tracked and reported alongside.
+  over three; +0.0005/+0.0006/+0.0005 were +0.0000/+0.0001/+0.0002. Hence acceptance uses three FRESH seeds (seed 0,
+  the selected screen, is excluded) and a z-test with the seed SD pooled over the run: fresh-seed mean gain ≥ 0.0005
+  and z ≥ 3 (two more seeds when 2 ≤ z < 3). The run converges after 3 generations without a ≥ 0.001 cumulative rise
+  of the champion's fresh-seed mean (the organizers' ε rescaled to the seed-mean's noise), and the literal rule
+  (single-seed best, ε = 0.002, N = 3) is tracked and reported alongside.
 
 ## 5. Learning dynamics on this data
 - Closed catalogue (0 % unseen videos in validation), median 35 training rows per user: the FM memorises

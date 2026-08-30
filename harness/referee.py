@@ -152,18 +152,22 @@ def accept(champion_primary, new_primary):
     return delta >= C.EPS, delta
 
 class Convergence:
-    """ADR-0012 (revised by Yash): the streak counts consecutive generations WITHOUT a seed-confirmed champion change;
-    N_CONVERGE such generations = converged. The seed test (mean gain >= MIN_EFFECT at >= T_CRIT standard errors) is
-    a stronger noise filter than a fixed eps on one seed, so a confirmed improvement of any size keeps the run alive.
-    The organizers' literal rule is tracked alongside by OfficialRule and reported, never used to stop."""
-    def __init__(self, streak=0):
-        self.streak = streak
-    def update(self, champion_changed, gain=None):
-        """Returns True iff this generation produced a seed-confirmed champion change whose seed-mean gain is at least
-        RESET_MIN_GAIN (eps/2 on a statistic with about a third of the single-seed noise): a false acceptance at the
-        0.0005 floor must not buy three more generations. Smaller confirmed gains still moved the champion."""
-        if champion_changed and (gain is None or gain >= C.RESET_MIN_GAIN):
-            self.streak = 0
+    """ADR-0012 (revised by Yash): the streak counts consecutive generations in which the champion's fresh-seed mean
+    has NOT risen by at least RESET_MIN_GAIN since the last reset — cumulative, like early stopping's min_delta
+    against the best seen, so a staircase of small confirmed gains adds up while one false acceptance (observed gain
+    ~ +0.0005-0.0007 under the null) cannot buy N_CONVERGE more generations. The seed test (fresh seeds, pooled SD,
+    z >= Z_CRIT) is a stronger noise filter than a fixed eps on one seed; the organizers' literal rule is tracked
+    alongside by OfficialRule and reported, never used to stop unless --convergence official."""
+    def __init__(self, streak=0, ref=None):
+        self.streak, self.ref = streak, ref
+    def update(self, champion_mean):
+        """Returns True iff the champion's mean has risen >= RESET_MIN_GAIN since the reference (which then moves)."""
+        if champion_mean is None:
+            self.streak += 1; return False
+        if self.ref is None:
+            self.ref = champion_mean
+        if champion_mean - self.ref >= C.RESET_MIN_GAIN:
+            self.ref, self.streak = champion_mean, 0
             return True
         self.streak += 1
         return False
