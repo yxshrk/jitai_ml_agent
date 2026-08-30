@@ -38,8 +38,8 @@ Each iteration is one research decision, executed as deeply as needed:
 
 The designated run's arc: dial-search over a regularized DCN package (accepted
 0.60424, clearing ε) → ensemble-design sweep in which the agent trained 7 seed
-members and validation-selected a 3-member per-user rank average → 0.60558,
-converged. The dials it found are non-obvious (dropout 0.18, weight decay 9e-5,
+members and validation-selected a 3-member per-user rank average → 0.605575 (the 5- and
+7-member designs scored within 0.0004 — disclosed), stopping under the rule. The dials it found are non-obvious (dropout 0.18, weight decay 9e-5,
 LR ×0.57 every 2 epochs) and were later reproduced from scratch (0.60561).
 
 ## Layout
@@ -54,7 +54,7 @@ LR ×0.57 every 2 epochs) and were later reproduced from scratch (0.60561).
   builder/checker, test CSVs (built train-only; test labels never read).
 - `logs/` — one directory per run: `journal.jsonl` (hypothesis, diff, metrics,
   errors/recovery per iteration), node code, probe logs, `summary.json`.
-  `logs/RUNS.md` indexes all ~45 disclosed runs.
+  `logs/RUNS_INVENTORY.md` (machine-generated) indexes all 113 disclosed runs.
 - `data/` — exporters and (gitignored) encoded splits; `data/official/` is the
   organizer evaluation code.
 - `tests/` — pytest suite (119 tests) covering the harness, scoring parity, and
