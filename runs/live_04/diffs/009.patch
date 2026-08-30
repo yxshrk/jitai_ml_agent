@@ -1,0 +1,98 @@
+--- node_001.py
++++ node_009.py
+@@ -6,12 +6,13 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Encoding appends ordered video-by-tab and author-by-tab target-rate buckets.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'video_tab_rate', 'author_tab_rate']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -87,28 +88,61 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    def rate_bucket(stat):
++        count, positives = stat if stat is not None else (0, 0)
++        return str(min(19, int(20.0 * (positives + 2.0) / (count + 6.0))))
++    def ordered_rate_bins(rows):
++        times = np.fromiter((int(x[5]) for x in rows), dtype=np.int64, count=len(rows))
++        order = np.argsort(times, kind='stable')
++        video_bins = np.empty(len(rows), dtype='<U2'); author_bins = np.empty(len(rows), dtype='<U2')
++        video_stats, author_stats = {}, {}
++        i = 0
++        while i < len(order):
++            j = i + 1
++            while j < len(order) and times[order[j]] == times[order[i]]:
++                j += 1
++            for q in order[i:j]:
++                x = rows[q]; author = vid2author.get(x[1], 'UNK')
++                video_bins[q] = rate_bucket(video_stats.get((x[1], x[2])))
++                author_bins[q] = rate_bucket(author_stats.get((author, x[2])))
++            for q in order[i:j]:
++                x = rows[q]; y = int(x[4] != '0'); author = vid2author.get(x[1], 'UNK')
++                for stats, key in ((video_stats, (x[1], x[2])), (author_stats, (author, x[2]))):
++                    s = stats.setdefault(key, [0, 0]); s[0] += 1; s[1] += y
++            i = j
++        return video_bins, author_bins, video_stats, author_stats
++    def full_rate_bins(rows, vi, ti):
++        video_bins = np.empty(len(rows), dtype='<U2'); author_bins = np.empty(len(rows), dtype='<U2')
++        for n, x in enumerate(rows):
++            author = vid2author.get(x[vi], 'UNK')
++            video_bins[n] = rate_bucket(video_tab_stats.get((x[vi], x[ti])))
++            author_bins[n] = rate_bucket(author_tab_stats.get((author, x[ti])))
++        return video_bins, author_bins
++    tr_video_rate, tr_author_rate, video_tab_stats, author_tab_stats = ordered_rate_bins(tr)
++    va_video_rate, va_author_rate = full_rate_bins(va, 2, 3)
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, video_rate, author_rate):
++        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur)))),
++                video_rate, author_rate]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], tr_video_rate[n], tr_author_rate[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, video_rate, author_rate):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], video_rate[n], author_rate[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, 0, 1, 2, 3, tr_video_rate, tr_author_rate); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, 1, 2, 3, 4, va_video_rate, va_author_rate); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -148,7 +182,8 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        ex_video_rate, ex_author_rate = full_rate_bins(ex, 2, 3)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4, ex_video_rate, ex_author_rate)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

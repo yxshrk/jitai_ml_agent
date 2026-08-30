@@ -1,0 +1,96 @@
+{
+ "run_id": "live_04",
+ "stop_reason": "converged: 3 generations without > 0.002 improvement",
+ "generations": 6,
+ "nodes": 28,
+ "champion": 15,
+ "champion_metrics": {
+  "gauc": 0.6715397677056579,
+  "ndcg5": 0.5374037761703966,
+  "primary": 0.6044717719380273,
+  "ndcg5_disc": 0.7241460514629875
+ },
+ "baseline_valid_primary": 0.6014687563529677,
+ "delta_vs_baseline_valid": 0.003,
+ "top3_valid": [
+  {
+   "n": 27,
+   "primary": 0.6045937128226722
+  },
+  {
+   "n": 26,
+   "primary": 0.6044768498785485
+  },
+  {
+   "n": 15,
+   "primary": 0.6044717719380273
+  }
+ ],
+ "designated": 15,
+ "final_ranking": [
+  {
+   "n": 15,
+   "valid_primary": 0.6044717719380273,
+   "fresh_seeds": [
+    0.6044998700718957,
+    0.6039909929412901
+   ],
+   "accepted": true,
+   "mean": 0.6042454315065928,
+   "std": 0.0003598304698419333,
+   "tie_break": "within one SE (0.00022) of the best mean; accepted lineage preferred"
+  },
+  {
+   "n": 26,
+   "valid_primary": 0.6044768498785485,
+   "fresh_seeds": [
+    0.6045036884104502,
+    0.6039955833890549
+   ],
+   "accepted": false,
+   "mean": 0.6042496358997526,
+   "std": 0.00035928450618356015
+  },
+  {
+   "n": 27,
+   "valid_primary": 0.6045937128226722,
+   "fresh_seeds": [
+    0.604334902493374,
+    0.6039821565726058
+   ],
+   "accepted": false,
+   "mean": 0.6041585295329899,
+   "std": 0.00024942903261106675
+  }
+ ],
+ "usage": {
+  "calls": 99,
+  "tokens_in": 1920190,
+  "tokens_out": 392987,
+  "cache_read": 1471664,
+  "cache_write": 0,
+  "cost_usd": 14.768072000000002
+ },
+ "wall_clock_s": 5796.7,
+ "champion_seed_mean": 0.60425,
+ "best_single_seed": null,
+ "convergence_rule": "ADR-0012 (revised): 3 generations without a seed-confirmed champion change",
+ "official_rule": null,
+ "official_rule_submission": {
+  "note": "the literal single-seed rule had not converged when the run ended",
+  "node": null
+ },
+ "convergence_switch": "confirmed",
+ "tokens": {
+  "in_uncached": 1920190,
+  "in_cached": 1471664,
+  "out": 392987
+ },
+ "interventions": 0,
+ "k": 5,
+ "k_later": 5,
+ "eps": 0.002,
+ "n_converge": 3,
+ "iteration_unit": "node",
+ "iterations_used": 28
+}

@@ -77,15 +77,19 @@ loss change that moves GAUC but not nDCG points at top-of-list ordering; a featu
 (3) the single most informative next probe and the component it targets, citing a numbered data fact;
 (4) one line on validation-overfitting risk given the streak and how many sub-0.002 "wins" have been accepted;
 (5) from the per-group breakdown (tabs, duration bands) and each node's by_group_delta: WHERE the champion is weakest
-and which node moved which group — the deepen slot should target that.""",
+and which node moved which group — the deepen slot should target that. Group metrics are computed within group and
+within user on SHORTER lists, so a group's nDCG@5 is a map of relative weakness, not comparable to the overall number
+(tab=0 or dur=0 users are mostly all-negative, so their nDCG is near zero whatever the model does).""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
 target_components; fill the Consolidator's slots (merge / retest / deepen / explore) first, then the highest expected
-gain per cost given the diagnosis; from generation 2 on at least one candidate must DEEPEN (type "deepen"): a specific
-variant of the champion's own mechanism, or of a near-miss (|delta| <= 0.0005, unconfirmed), driven by the per-group
-breakdown and the diagnosis — e.g. negatives per positive, tab-stratified pair sampling, a schedule change on the
-champion — rather than a new single-shot idea; never repeat an idea already measured on the same parent unless it is a
-planned retest;
+gain per cost given the diagnosis; from generation 2 on EVERY candidate of yours must DEEPEN (type "deepen") unless it fills a
+Consolidator merge/retest slot: a specific variant of the champion's own mechanism, or of a near-miss (|delta| <=
+0.0005, unconfirmed), driven by the per-group breakdown and the diagnosis — e.g. negatives per positive, tab-stratified
+pair sampling, a schedule change on the champion, a second iteration of a feature that moved one group — never a new
+single-shot idea (the Explorer's slot is for those); depth beats breadth here (four runs: the confirmed gains came from
+iterating two families, the wide generations returned flat single shots); never repeat an idea already measured on the
+same parent unless it is a planned retest;
 prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
 ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards

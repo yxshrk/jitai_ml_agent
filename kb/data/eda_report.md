@@ -122,3 +122,30 @@ Train history depth for valid users: mean 47, p10=6, p50=35, p90=103 rows.
 
 Positive rate by hour of day: 00h 0.329, 01h 0.342, 02h 0.347, 03h 0.336, 04h 0.350, 05h 0.344, 06h 0.368, 07h 0.376, 08h 0.375, 09h 0.350, 10h 0.336, 11h 0.335, 12h 0.350, 13h 0.353, 14h 0.339, 15h 0.327, 16h 0.318, 17h 0.323, 18h 0.335, 19h 0.328, 20h 0.325, 21h 0.326, 22h 0.330, 23h 0.329
 
+## User behaviour around exposures (train; facts §10)
+Base P(long_view) = 0.337. Rows sorted by (user, time_ms); "prev" = the same user's previous train impression. "[label-free]" = computable from features of earlier rows alone (usable in valid/test); the others need the previous label.
+
+| situation | rows | P(long_view) | lift |
+|---|---|---|---|
+| prev impression same author, prev long_view=1 | 2,156 | 0.780 | 2.32x |
+| prev impression same author, prev long_view=0 | 21,064 | 0.077 | 0.23x |
+| tab 6: prev same author AND prev long_view=1 | 1,195 | 1.000 | 2.97x |
+| prev impression different author, prev long_view=1 | 372,429 | 0.466 | 1.39x |
+| prev impression different author, prev long_view=0 | 719,253 | 0.273 | 0.81x |
+| [label-free] prev impression same author | 23,220 | 0.142 | 0.42x |
+| [label-free] prev impression same author, tab=1 | 4,676 | 0.268 | 0.80x |
+| [label-free] prev impression different author, tab=1 | 811,097 | 0.384 | 1.14x |
+| [label-free] prev impression same author, tab=4 | 971 | 0.393 | 1.17x |
+| [label-free] prev impression different author, tab=4 | 73,406 | 0.489 | 1.45x |
+| [label-free] author new to this user | 1,070,326 | 0.343 | 1.02x |
+| [label-free] author seen before by this user | 70,786 | 0.247 | 0.73x |
+| user x author prior long_view rate < 0.2 (>= 3 prior) | 1,469 | 0.142 | 0.42x |
+| user x author prior long_view rate 0.2-0.5 (>= 3 prior) | 394 | 0.297 | 0.88x |
+| user x author prior long_view rate >= 0.5 (>= 3 prior) | 117 | 0.419 | 1.24x |
+| [label-free] same video shown before | 48,362 | 0.216 | 0.64x |
+| [label-free] same video shown before, tab=1 | 22,138 | 0.283 | 0.84x |
+
+Share of rows that are same-author-consecutive, by tab (tabs with >= 2,000 rows): tab 1 0.6 %, tab 0 1.0 %, tab 4 1.3 %, tab 2 0.5 %, tab 6 47.5 %, tab 3 0.3 %, tab 5 46.2 %, tab 8 1.2 %
+
+Valid (features only): previous impression by the same author 2.7 % of rows; author never seen by the user in train 96.6 %; user x author with >= 3 train exposures 0.1 %.
+

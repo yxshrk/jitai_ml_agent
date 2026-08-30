@@ -1,0 +1,93 @@
+--- node_015.py
++++ node_027.py
+@@ -6,12 +6,14 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Experiment: append an independently encoded author_id field only to the field-aware branch.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+ FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELD_AWARE_FIELDS = FIELDS + ['author_id_pool']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -40,7 +42,7 @@
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, standard=False):
+         rng = np.random.default_rng(seed)
+         self.standard = standard
+-        self.V = rng.normal(0, 0.01, (dim, k) if standard else (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
++        self.V = rng.normal(0, 0.01, (dim, k) if standard else (dim, len(FIELD_AWARE_FIELDS), k)).astype(np.float32)   # one k-vector per partner field
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
+@@ -54,8 +56,8 @@
+             inter = 0.5 * ((E.sum(1) ** 2 - (E * E).sum(1)).sum(1))
+         else:
+             inter = np.zeros(len(X), dtype=np.float32)
+-            for i in range(len(FIELDS)):
+-                for j in range(i + 1, len(FIELDS)):
++            for i in range(len(FIELD_AWARE_FIELDS)):
++                for j in range(i + 1, len(FIELD_AWARE_FIELDS)):
+                     inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+         return self.b + self.W[X].sum(1) + inter, None, None
+ 
+@@ -71,8 +73,8 @@
+                 E = self.V[X]; S = E.sum(1)
+                 np.add.at(gV, X, h[:, None, None] * (S[:, None, :] - E))
+             else:
+-                for i in range(len(FIELDS)):
+-                    for j in range(i + 1, len(FIELDS)):
++                for i in range(len(FIELD_AWARE_FIELDS)):
++                    for j in range(i + 1, len(FIELD_AWARE_FIELDS)):
+                         Ei = self.V[X[:, i], j]
+                         Ej = self.V[X[:, j], i]
+                         np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+@@ -131,6 +133,9 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    field_aware_dim = dim + dims[2]
++    Xtr_field_aware = np.column_stack((Xtr, Xtr[:, 2] - off[2] + dim)).astype(np.int32)
++    Xva_field_aware = np.column_stack((Xva, Xva[:, 2] - off[2] + dim)).astype(np.int32)
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -143,9 +148,11 @@
+     # ---- train with early stopping on valid primary ----
+     pred_cache = [[], []]; loss_cache = [[], []]; models = [[], []]
+     for branch in range(2):
++        Xtr_branch = Xtr_field_aware if branch == 0 else Xtr
++        Xva_branch = Xva_field_aware if branch == 0 else Xva
+         for member in range(5):
+             member_seed = a.seed + branch * 5 + member
+-            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, standard=bool(branch))
++            m = FM(field_aware_dim if branch == 0 else dim, k=a.k, lr=a.lr, seed=member_seed, standard=bool(branch))
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_pred, bad = -1.0, None, None, 0
+             pred_epochs, loss_epochs = [], []
+@@ -153,8 +160,8 @@
+                 pidx = pair_pos[rng.permutation(len(pair_pos))]
+                 pu = Xtr[pidx, 0]
+                 nidx = neg_order[neg_start[pu] + (rng.random(len(pidx)) * neg_count[pu]).astype(np.int64)]
+-                losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]]) for i in range(0, len(pidx), a.batch)]
+-                current_pred = m.predict(Xva)
++                losses = [m.step(Xtr_branch[pidx[i:i + a.batch]], Xtr_branch[nidx[i:i + a.batch]]) for i in range(0, len(pidx), a.batch)]
++                current_pred = m.predict(Xva_branch)
+                 r = evaluate(uva, yva, current_pred)
+                 print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+                       f"primary {r['primary']:.4f}", flush=True)
+@@ -201,8 +208,9 @@
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+         Xex = encode(ex, 1, 2, 3, 4); uex = [x[1] for x in ex]
++        Xex_field_aware = np.column_stack((Xex, Xex[:, 2] - off[2] + dim)).astype(np.int32)
+         branch_scores = [
+-            np.mean([normalized_ranks(uex, m.predict(Xex)) for m in models[branch]], axis=0)
++            np.mean([normalized_ranks(uex, m.predict(Xex_field_aware if branch == 0 else Xex)) for m in models[branch]], axis=0)
+             for branch in range(2)
+         ]
+         blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]

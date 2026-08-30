@@ -1,0 +1,66 @@
+--- node_015.py
++++ node_026.py
+@@ -109,7 +109,7 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'play_time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+@@ -131,6 +131,30 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    survival_base = np.int64(18001)
++    tr_duration = np.fromiter((int(float(x[3])) for x in tr), dtype=np.int64, count=len(tr))
++    tr_play = np.fromiter((int(float(x[5])) for x in tr), dtype=np.int64, count=len(tr))
++    tr_duration = np.clip(tr_duration, 0, 18000)
++    tr_capacity = np.minimum(tr_duration, np.clip(tr_play, 0, 18000))
++    tr_tab = Xtr[:, 3].astype(np.int64) - int(off[3])
++    tr_group = Xtr[:, 0].astype(np.int64) * dims[3] + tr_tab
++    risk_keys = np.sort(tr_group * survival_base + tr_duration)
++    hit_keys = np.sort(tr_group * survival_base + tr_capacity)
++    tab_risk_keys = np.sort(tr_tab * survival_base + tr_duration)
++    tab_hit_keys = np.sort(tr_tab * survival_base + tr_capacity)
++    def at_risk_survival(X, durations):
++        q = np.clip(np.asarray(durations, dtype=np.int64), 1, 18000)
++        tab = X[:, 3].astype(np.int64) - int(off[3])
++        group = X[:, 0].astype(np.int64) * dims[3] + tab
++        def count_ge(keys, groups):
++            return np.searchsorted(keys, (groups + 1) * survival_base) - np.searchsorted(keys, groups * survival_base + q)
++        risk = count_ge(risk_keys, group); hit = count_ge(hit_keys, group)
++        tab_risk = count_ge(tab_risk_keys, tab); tab_hit = count_ge(tab_hit_keys, tab)
++        prior = (tab_hit + 1.0) / (tab_risk + 2.0)
++        return (hit + 10.0 * prior) / (risk + 10.0)
++    dva = np.array([float(x[4]) for x in va], dtype=np.float64)
++    survival_va = at_risk_survival(Xva, dva)
++    short_va = (dva > 0) & (dva <= 18000)
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -182,7 +206,9 @@
+             for branch in range(2)
+         ]
+         blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        sva = normalized_ranks(uva, blend, branch_scores[0])
++        base = normalized_ranks(uva, blend, branch_scores[0])
++        survival_rank = normalized_ranks(uva, survival_va, base)
++        sva = normalized_ranks(uva, base + 0.04 * short_va * (survival_rank - base), base)
+         r = evaluate(uva, yva, sva)
+         train_loss = float(np.mean([
+             loss_cache[branch][member][min(ep, len(loss_cache[branch][member]) - 1)]
+@@ -206,7 +232,11 @@
+             for branch in range(2)
+         ]
+         blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, normalized_ranks(uex, blend, branch_scores[0]))
++        base = normalized_ranks(uex, blend, branch_scores[0])
++        dex = np.array([float(x[4]) for x in ex], dtype=np.float64)
++        survival_rank = normalized_ranks(uex, at_risk_survival(Xex, dex), base)
++        sex = normalized_ranks(uex, base + 0.04 * ((dex > 0) & (dex <= 18000)) * (survival_rank - base), base)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, sex)
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

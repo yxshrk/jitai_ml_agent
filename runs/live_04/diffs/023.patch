@@ -1,0 +1,39 @@
+--- node_015.py
++++ node_023.py
+@@ -34,6 +34,16 @@
+     ranks = np.empty(len(order), dtype=np.float64)
+     ranks[order] = (np.arange(len(order)) - np.repeat(starts, counts)) / np.repeat(np.maximum(counts - 1, 1), counts)
+     return ranks
++
++def reciprocal_ranks(users, scores):
++    users = np.asarray(users); scores = np.asarray(scores)
++    order = np.lexsort((np.arange(len(scores)), -scores, users))
++    su = users[order]
++    starts = np.r_[0, np.flatnonzero(su[1:] != su[:-1]) + 1]
++    counts = np.diff(np.r_[starts, len(order)])
++    ranks = np.empty(len(order), dtype=np.float64)
++    ranks[order] = np.arange(len(order)) - np.repeat(starts, counts)
++    return 1.0 / (2.0 + ranks)
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
+@@ -181,7 +191,8 @@
+                      for member in range(5)], axis=0)
+             for branch in range(2)
+         ]
+-        blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
++        reciprocal_scores = [reciprocal_ranks(uva, score) for score in branch_scores]
++        blend = 0.6 * reciprocal_scores[0] + 0.4 * reciprocal_scores[1]
+         sva = normalized_ranks(uva, blend, branch_scores[0])
+         r = evaluate(uva, yva, sva)
+         train_loss = float(np.mean([
+@@ -205,7 +216,8 @@
+             np.mean([normalized_ranks(uex, m.predict(Xex)) for m in models[branch]], axis=0)
+             for branch in range(2)
+         ]
+-        blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
++        reciprocal_scores = [reciprocal_ranks(uex, score) for score in branch_scores]
++        blend = 0.6 * reciprocal_scores[0] + 0.4 * reciprocal_scores[1]
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, normalized_ranks(uex, blend, branch_scores[0]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 

@@ -1,0 +1,108 @@
+--- node_001.py
++++ node_017.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Cross   Rank-8 factorized DCN layer over the concatenated shared field embeddings.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -23,42 +24,64 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
++    """Standard FM score plus a rank-8 factorized DCN cross head, trained with BPR + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+-        self.V = rng.normal(0, 0.01, (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
++        self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)      # one shared k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
++        D, rank = len(FIELDS) * k, 8
++        self.CR = rng.normal(0, 1.0 / np.sqrt(D), (rank, D)).astype(np.float32)
++        self.CU = rng.normal(0, 1.0 / np.sqrt(rank), (D, rank)).astype(np.float32)
++        self.Cb = np.zeros(D, dtype=np.float32)
++        self.Cw = rng.normal(0, 0.01, D).astype(np.float32)
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mCR = np.zeros_like(self.CR); self.vCR = np.zeros_like(self.CR)
++        self.mCU = np.zeros_like(self.CU); self.vCU = np.zeros_like(self.CU)
++        self.mCb = np.zeros_like(self.Cb); self.vCb = np.zeros_like(self.Cb)
++        self.mCw = np.zeros_like(self.Cw); self.vCw = np.zeros_like(self.Cw)
+         self.t = 0
+ 
+     def logits(self, X):
+-        inter = np.zeros(len(X), dtype=np.float32)
+-        for i in range(len(FIELDS)):
+-            for j in range(i + 1, len(FIELDS)):
+-                inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+-        return self.b + self.W[X].sum(1) + inter, None, None
++        E = self.V[X]
++        S = E.sum(1)
++        inter = 0.5 * ((S * S).sum(1) - (E * E).sum((1, 2)))
++        x0 = E.reshape(len(X), -1)
++        a = x0 @ self.CR.T
++        h = a @ self.CU.T + self.Cb
++        x1 = x0 * (h + 1.0)
++        return self.b + self.W[X].sum(1) + inter + x1 @ self.Cw, (E, S, x0, a, h, x1), None
+ 
+     def step(self, Xp, Xn):
+         B = len(Xp)
+-        zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
++        zp, cp, _ = self.logits(Xp); zn, cn, _ = self.logits(Xn)
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+-        for X, h in ((Xp, g), (Xn, -g)):
+-            np.add.at(gW, X, h[:, None])
+-            for i in range(len(FIELDS)):
+-                for j in range(i + 1, len(FIELDS)):
+-                    Ei = self.V[X[:, i], j]
+-                    Ej = self.V[X[:, j], i]
+-                    np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+-                    np.add.at(gV, (X[:, j], i), h[:, None] * Ei)
++        gCR = np.zeros_like(self.CR); gCU = np.zeros_like(self.CU)
++        gCb = np.zeros_like(self.Cb); gCw = np.zeros_like(self.Cw)
++        for X, q, cache in ((Xp, g, cp), (Xn, -g, cn)):
++            E, S, x0, a, h, x1 = cache
++            np.add.at(gW, X, q[:, None])
++            dx1 = q[:, None] * self.Cw
++            gCw += x1.T @ q
++            dh = dx1 * x0
++            gCb += dh.sum(0)
++            gCU += dh.T @ a
++            da = dh @ self.CU
++            gCR += da.T @ x0
++            dx0 = dx1 * (h + 1.0) + da @ self.CR
++            dE = q[:, None, None] * (S[:, None, :] - E) + dx0.reshape(E.shape)
++            np.add.at(gV, X, dE)
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        gCR += self.l2 * self.CR; gCU += self.l2 * self.CU; gCw += self.l2 * self.Cw
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.CR, gCR, self.mCR, self.vCR), (self.CU, gCU, self.mCU, self.vCU),
++                            (self.Cb, gCb, self.mCb, self.vCb), (self.Cw, gCw, self.mCw, self.vCw)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -132,12 +155,13 @@
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b),
++                                                     m.CR.copy(), m.CU.copy(), m.Cb.copy(), m.Cw.copy())
+         else:
+             bad += 1
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++    m.V, m.W, m.b, m.CR, m.CU, m.Cb, m.Cw = best_state
+ 
+     # ---- outputs ----
+     sva = m.predict(Xva); r = evaluate(uva, yva, sva)

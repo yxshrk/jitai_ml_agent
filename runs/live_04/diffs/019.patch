@@ -1,0 +1,89 @@
+--- node_015.py
++++ node_019.py
+@@ -109,7 +109,7 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'play_time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+@@ -131,6 +131,54 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++
++    # ---- train-only user-tab watch-survival reranker ----
++    tab_ids = Xtr[:, 3] - off[3]
++    surv_code = Xtr[:, 0].astype(np.int64) * dims[3] + tab_ids
++    surv_codes, surv_gid = np.unique(surv_code, return_inverse=True)
++    group_tab = (surv_codes % dims[3]).astype(np.int32)
++    risk_ms = np.minimum(np.maximum(np.fromiter((float(x[3]) for x in tr), dtype=np.float64), 0.0), 18000.0)
++    play_ms = np.maximum(np.fromiter((float(x[5]) for x in tr), dtype=np.float64), 0.0)
++    surv_den = np.zeros((len(surv_codes), 19), dtype=np.uint32)
++    surv_num = np.zeros((len(surv_codes), 19), dtype=np.uint32)
++    for sec in range(1, 19):
++        at_risk = risk_ms >= sec * 1000
++        reached = at_risk & (play_ms >= sec * 1000)
++        surv_den[:, sec] = np.bincount(surv_gid[at_risk], minlength=len(surv_codes))
++        surv_num[:, sec] = np.bincount(surv_gid[reached], minlength=len(surv_codes))
++    tab_den = np.zeros((dims[3], 19), dtype=np.uint32)
++    tab_num = np.zeros((dims[3], 19), dtype=np.uint32)
++    for sec in range(1, 19):
++        tab_den[:, sec] = np.bincount(group_tab, weights=surv_den[:, sec], minlength=dims[3])
++        tab_num[:, sec] = np.bincount(group_tab, weights=surv_num[:, sec], minlength=dims[3])
++    overall_den = tab_den.sum(0, dtype=np.float64)
++    overall_num = tab_num.sum(0, dtype=np.float64)
++    overall_rate = np.divide(overall_num, overall_den, out=np.zeros(19), where=overall_den > 0)
++    overall_rate[0] = 1.0
++    tab_rate = np.broadcast_to(overall_rate, (dims[3], 19)).copy()
++    np.divide(tab_num, tab_den, out=tab_rate, where=tab_den > 0)
++    tab_rate[:, 0] = 1.0
++    tab_rate[:, 1:] = np.minimum.accumulate(tab_rate[:, 1:], axis=1)
++    surv_prob = (surv_num + 5.0 * tab_rate[group_tab]) / (surv_den + 5.0)
++    surv_prob[:, 1:] = np.minimum.accumulate(surv_prob[:, 1:], axis=1)
++    def survival_scores(rows, X, di):
++        tabs = X[:, 3] - off[3]
++        codes = X[:, 0].astype(np.int64) * dims[3] + tabs
++        loc = np.searchsorted(surv_codes, codes)
++        safe = np.minimum(loc, len(surv_codes) - 1)
++        known = (loc < len(surv_codes)) & (surv_codes[safe] == codes)
++        threshold = np.minimum(np.maximum(np.fromiter((float(x[di]) for x in rows), dtype=np.float64), 0.0), 18000.0) / 1000.0
++        lo = np.floor(threshold).astype(np.int32); hi = np.ceil(threshold).astype(np.int32)
++        def lookup(q):
++            p = tab_rate[tabs, q].copy()
++            p[known] = surv_prob[loc[known], q[known]]
++            return p
++        p = lookup(lo) * (hi - threshold) + lookup(hi) * (threshold - lo)
++        p[lo == hi] = lookup(lo)[lo == hi]
++        p[threshold == 0] = 0.0
++        return p
++    hva = survival_scores(va, Xva, 4)
++
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -182,7 +230,9 @@
+             for branch in range(2)
+         ]
+         blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        sva = normalized_ranks(uva, blend, branch_scores[0])
++        champion_rank = normalized_ranks(uva, blend, branch_scores[0])
++        survival_rank = normalized_ranks(uva, hva, champion_rank)
++        sva = normalized_ranks(uva, 0.85 * champion_rank + 0.15 * survival_rank, champion_rank)
+         r = evaluate(uva, yva, sva)
+         train_loss = float(np.mean([
+             loss_cache[branch][member][min(ep, len(loss_cache[branch][member]) - 1)]
+@@ -206,7 +256,10 @@
+             for branch in range(2)
+         ]
+         blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, normalized_ranks(uex, blend, branch_scores[0]))
++        champion_rank = normalized_ranks(uex, blend, branch_scores[0])
++        survival_rank = normalized_ranks(uex, survival_scores(ex, Xex, 4), champion_rank)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, normalized_ranks(
++            uex, 0.85 * champion_rank + 0.15 * survival_rank, champion_rank))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

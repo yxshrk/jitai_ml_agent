@@ -1,0 +1,105 @@
+--- node_001.py
++++ node_014.py
+@@ -29,9 +29,13 @@
+         self.V = rng.normal(0, 0.01, (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
++        self.Waux = np.zeros((dim, 3), dtype=np.float32)
++        self.Aaux = np.ones(3, dtype=np.float32)
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mWaux = np.zeros_like(self.Waux); self.vWaux = np.zeros_like(self.Waux)
++        self.mAaux = np.zeros_like(self.Aaux); self.vAaux = np.zeros_like(self.Aaux)
+         self.t = 0
+ 
+     def logits(self, X):
+@@ -39,30 +43,46 @@
+         for i in range(len(FIELDS)):
+             for j in range(i + 1, len(FIELDS)):
+                 inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+-        return self.b + self.W[X].sum(1) + inter, None, None
++        return self.b + self.W[X].sum(1) + inter, inter, None
+ 
+-    def step(self, Xp, Xn):
++    def step(self, Xp, Xn, Ap, An, Mp, Mn):
+         B = len(Xp)
+-        zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
++        zp, ip, _ = self.logits(Xp); zn, inn, _ = self.logits(Xn)
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+-        for X, h in ((Xp, g), (Xn, -g)):
+-            np.add.at(gW, X, h[:, None])
++        gWaux = np.zeros_like(self.Waux); gAaux = np.zeros_like(self.Aaux)
++        aux_denom = max(float((Mp.sum() + Mn.sum()) * 3), 1.0)
++        aux_nll = 0.0
++        for X, h, A, M, inter in ((Xp, g, Ap, Mp, ip), (Xn, -g, An, Mn, inn)):
++            za = self.Waux[X].sum(1) + inter[:, None] * self.Aaux[None, :]
++            pa = sigmoid(za)
++            ga = (0.1 * M[:, None] * (pa - A) / aux_denom).astype(np.float32)
++            aux_nll -= float(np.sum(M[:, None] * (A * np.log(pa + 1e-9) +
++                                                   (1.0 - A) * np.log(1.0 - pa + 1e-9))))
++            for i in range(len(FIELDS)):
++                np.add.at(gWaux, X[:, i], ga)
++            gAaux += (ga * inter[:, None]).sum(0)
++            h_main = h
++            h_shared = h_main + (ga * self.Aaux[None, :]).sum(1)
++            np.add.at(gW, X, h_main[:, None])
+             for i in range(len(FIELDS)):
+                 for j in range(i + 1, len(FIELDS)):
+                     Ei = self.V[X[:, i], j]
+                     Ej = self.V[X[:, j], i]
+-                    np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+-                    np.add.at(gV, (X[:, j], i), h[:, None] * Ei)
++                    np.add.at(gV, (X[:, i], j), h_shared[:, None] * Ej)
++                    np.add.at(gV, (X[:, j], i), h_shared[:, None] * Ei)
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        gWaux += self.l2 * self.Waux; gAaux += self.l2 * self.Aaux
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.Waux, gWaux, self.mWaux, self.vWaux),
++                            (self.Aaux, gAaux, self.mAaux, self.vAaux)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
++        return float(-np.mean(np.log(sigmoid(d) + 1e-9)) + 0.1 * aux_nll / aux_denom)
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -87,7 +107,7 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'play_time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+@@ -108,6 +128,11 @@
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    durtr = np.array([float(x[3]) for x in tr], dtype=np.float32)
++    playtr = np.array([float(x[5]) for x in tr], dtype=np.float32)
++    depth_fracs = np.array([0.25, 0.50, 0.75], dtype=np.float32)
++    auxtr = (playtr[:, None] >= np.minimum(durtr, 18000.0)[:, None] * depth_fracs).astype(np.float32)
++    auxmask = (durtr > 0).astype(np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+@@ -125,7 +150,10 @@
+         pidx = pair_pos[rng.permutation(len(pair_pos))]
+         pu = Xtr[pidx, 0]
+         nidx = neg_order[neg_start[pu] + (rng.random(len(pidx)) * neg_count[pu]).astype(np.int64)]
+-        losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]]) for i in range(0, len(pidx), a.batch)]
++        losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]],
++                         auxtr[pidx[i:i + a.batch]], auxtr[nidx[i:i + a.batch]],
++                         auxmask[pidx[i:i + a.batch]], auxmask[nidx[i:i + a.batch]])
++                  for i in range(0, len(pidx), a.batch)]
+         r = evaluate(uva, yva, m.predict(Xva))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})

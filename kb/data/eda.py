@@ -25,7 +25,7 @@ with open(f'{D}/user_features_pure.csv') as fh:
 with open(f'{D}/video_features_statistic_pure.csv') as fh:
     stat_cols = csv.DictReader(fh).fieldnames
 
-rows = {k: [] for k in SPLITS}                     # (user, video, date, hour, tab, y, play, dur, sigs, is_rand)
+rows = {k: [] for k in SPLITS}                     # (user, video, date, hour, tab, y, play, dur, sigs, is_rand, time_ms)
 for f in ('log_standard_4_08_to_4_21_pure.csv', 'log_standard_4_22_to_5_08_pure.csv'):
     with open(f'{D}/{f}') as fh:
         for r in csv.DictReader(fh):
@@ -34,7 +34,7 @@ for f in ('log_standard_4_08_to_4_21_pure.csv', 'log_standard_4_22_to_5_08_pure.
                 if lo <= d <= hi:
                     rows[name].append((r['user_id'], r['video_id'], d, int(r['hourmin']) // 100, r['tab'],
                                        int(r['long_view']), int(r['play_time_ms']), int(r['duration_ms']),
-                                       tuple(int(r[s]) for s in SIG), int(r['is_rand'])))
+                                       tuple(int(r[s]) for s in SIG), int(r['is_rand']), int(r['time_ms'])))
                     break
 n_random = sum(1 for _ in open(f'{D}/log_random_4_22_to_5_08_pure.csv')) - 1
 
@@ -158,6 +158,58 @@ for t in sorted(bt, key=lambda t: -bt[t][0]):
 bh = collections.defaultdict(lambda: [0, 0])
 for x in rows['train']: bh[x[3]][0] += 1; bh[x[3]][1] += x[5]
 P('\nPositive rate by hour of day: ' + ', '.join(f'{h:02d}h {bh[h][1]/bh[h][0]:.3f}' for h in sorted(bh)) + '\n')
+
+# ---------- user behaviour around exposures (facts §10) ----------
+P('## User behaviour around exposures (train; facts §10)')
+tr = sorted(rows['train'], key=lambda x: (x[0], x[10]))
+base = float(np.mean([x[5] for x in tr]))
+grp = collections.defaultdict(list)
+ua_seen = collections.defaultdict(int); ua_pos = collections.defaultdict(int); uv_seen = collections.defaultdict(int)
+prev = {}; sac_by_tab = collections.Counter(); rows_by_tab = collections.Counter()
+for x in tr:
+    u, v, tab, y, t = x[0], x[1], x[4], x[5], x[10]
+    a = vid2author.get(v, 'UNK'); p = prev.get(u); rows_by_tab[tab] += 1
+    if p:
+        if p[0] == a:
+            sac_by_tab[tab] += 1
+            grp['prev impression same author, prev long_view=1' if p[1] else 'prev impression same author, prev long_view=0'].append(y)
+            grp['[label-free] prev impression same author'].append(y)
+            grp[f'[label-free] prev impression same author, tab={tab}'].append(y)
+            if tab == '6' and p[1]: grp['tab 6: prev same author AND prev long_view=1'].append(y)
+        else:
+            grp['prev impression different author, prev long_view=1' if p[1] else 'prev impression different author, prev long_view=0'].append(y)
+            grp[f'[label-free] prev impression different author, tab={tab}'].append(y)
+    k = (u, a); s = ua_seen[k]
+    grp['[label-free] author new to this user' if s == 0 else '[label-free] author seen before by this user'].append(y)
+    if s >= 3:
+        r_ = ua_pos[k] / s
+        grp['user x author prior long_view rate ' + ('< 0.2' if r_ < 0.2 else '0.2-0.5' if r_ < 0.5 else '>= 0.5') + ' (>= 3 prior)'].append(y)
+    if uv_seen[(u, v)] > 0:
+        grp['[label-free] same video shown before'].append(y); grp[f'[label-free] same video shown before, tab={tab}'].append(y)
+    ua_seen[k] += 1; ua_pos[k] += y; uv_seen[(u, v)] += 1; prev[u] = (a, y)
+P(f'Base P(long_view) = {base:.3f}. Rows sorted by (user, time_ms); "prev" = the same user\'s previous train impression. '
+  '"[label-free]" = computable from features of earlier rows alone (usable in valid/test); the others need the previous label.\n')
+P('| situation | rows | P(long_view) | lift |'); P('|---|---|---|---|')
+for k in ['prev impression same author, prev long_view=1', 'prev impression same author, prev long_view=0',
+          'tab 6: prev same author AND prev long_view=1',
+          'prev impression different author, prev long_view=1', 'prev impression different author, prev long_view=0',
+          '[label-free] prev impression same author', '[label-free] prev impression same author, tab=1',
+          '[label-free] prev impression different author, tab=1', '[label-free] prev impression same author, tab=4',
+          '[label-free] prev impression different author, tab=4',
+          '[label-free] author new to this user', '[label-free] author seen before by this user',
+          'user x author prior long_view rate < 0.2 (>= 3 prior)', 'user x author prior long_view rate 0.2-0.5 (>= 3 prior)',
+          'user x author prior long_view rate >= 0.5 (>= 3 prior)',
+          '[label-free] same video shown before', '[label-free] same video shown before, tab=1']:
+    vals = grp.get(k, [])
+    if vals: P(f'| {k} | {len(vals):,} | {np.mean(vals):.3f} | {np.mean(vals) / base:.2f}x |')
+P('\nShare of rows that are same-author-consecutive, by tab (tabs with >= 2,000 rows): '
+  + ', '.join(f'tab {t} {pct(sac_by_tab[t], rows_by_tab[t])}' for t in sorted(rows_by_tab, key=lambda t: -rows_by_tab[t]) if rows_by_tab[t] >= 2000))
+va = sorted(rows['valid'], key=lambda x: (x[0], x[10])); prev = {}; same = new = seen3 = 0
+for x in va:
+    u, a = x[0], vid2author.get(x[1], 'UNK')
+    same += prev.get(u) == a; new += ua_seen[(u, a)] == 0; seen3 += ua_seen[(u, a)] >= 3; prev[u] = a
+P(f'\nValid (features only): previous impression by the same author {pct(same, len(va))} of rows; author never seen by the user in train '
+  f'{pct(new, len(va))}; user x author with >= 3 train exposures {pct(seen3, len(va))}.\n')
 
 open(OUT, 'w').write('\n'.join(md) + '\n')
 print(f'wrote {OUT} ({len(md)} lines)')

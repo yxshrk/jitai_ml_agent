@@ -1,0 +1,102 @@
+--- node_001.py
++++ node_005.py
+@@ -6,12 +6,13 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++History adds strictly prior repeat count and logarithmic time-since-last-exposure fields.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'uv_count', 'uv_gap']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -21,6 +22,28 @@
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
++
++def repeat_history(rows, ui, vi, mi, counts, last):
++    times = np.array([int(x[mi]) for x in rows], dtype=np.int64)
++    order = np.argsort(times, kind='stable')
++    history = [None] * len(rows)
++    p = 0
++    while p < len(order):
++        q = p + 1
++        t = int(times[order[p]])
++        while q < len(order) and times[order[q]] == t:
++            q += 1
++        for k in range(p, q):
++            n = int(order[k]); key = (rows[n][ui], rows[n][vi])
++            count = counts.get(key, 0)
++            gap = 'NEVER' if count == 0 else str(min(20, int(np.log2(1.0 + max(0, t - last[key]) / 1000.0))))
++            history[n] = (str(min(count, 3)), gap)
++        for k in range(p, q):
++            n = int(order[k]); key = (rows[n][ui], rows[n][vi])
++            counts[key] = counts.get(key, 0) + 1
++            last[key] = t
++        p = q
++    return history
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
+@@ -87,28 +110,32 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    repeat_count, repeat_last = {}, {}
++    htr = repeat_history(tr, 0, 1, 5, repeat_count, repeat_last)
++    hva = repeat_history(va, 1, 2, 6, repeat_count, repeat_last)
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 7 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, hist):
++        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur)))),
++                hist[0], hist[1]]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for x, hist in zip(tr, htr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], hist)):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, histories, ui, vi, ti, di):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], histories[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, htr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, hva, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -147,8 +174,9 @@
+                    'best_epoch': int(np.argmax([h['val_primary'] for h in history]) + 1), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
++        hextra = repeat_history(ex, 1, 2, 5, repeat_count, repeat_last)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, hextra, 1, 2, 3, 4)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

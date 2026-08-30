@@ -75,7 +75,8 @@ class Loop:
         for k_ in ('champion_seeds', 'final_seeds'):
             sc.update({k2: v for k2, v in (self.state.pop(k_, {}) or {}).items() if v is not None})
         if self.state_path.exists():   # resumed: the wall clock counts running time, not the calendar
-            self.state['elapsed_before'] = self.state.get('elapsed_before', 0.0) + max(0.0, self.state.get('last_save', self.state['start']) - self.state['start'])
+            last = self.state.get('last_save') or self.state_path.stat().st_mtime
+            self.state['elapsed_before'] = self.state.get('elapsed_before', 0.0) + max(0.0, last - self.state['start'])
             self.state['start'] = time.time()
         self.threads = max(1, (os.cpu_count() or 2) // max(1, k)) if parallel else (os.cpu_count() or 2)
 
@@ -578,17 +579,28 @@ class Loop:
 
     def designate_final(self, top_k=3):
         """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the FRESH-seed mean
-        (seeds 1..CONFIRM_SEEDS, cached) so a lucky single seed cannot be the submission. Ties go to the higher seed-0 score."""
+        (cached; seeds are run only for a node with fewer than two) so a lucky single seed cannot be the submission.
+        Tie-break (ADR-0012): when a node's mean is within one standard error of the best, an ACCEPTED node (the
+        champion lineage) is preferred over an unconfirmed experiment — live_04's designation had picked a rejected
+        near-no-op variant of the champion on a 0.0000045 gap."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
         ranking = []
         for v in top:
-            if self.final_reseed:
+            if self.final_reseed and len(self.fresh_seeds(v['n'])) < 2:
                 self._ensure_seeds(v['n'], [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)])
             vals = self.fresh_seeds(v['n']) or [v['metrics']['primary']]
-            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals,
+            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals, 'accepted': bool(v.get('accepted')),
                             'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None})
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
+        if ranking:
+            sigma, _ = self._sigma(); best = ranking[0]['mean']
+            se = sigma * (1.0 / max(1, len(ranking[0]['fresh_seeds']))) ** 0.5
+            tied = [r for r in ranking if best - r['mean'] <= se]
+            preferred = [r for r in tied if r['accepted']]
+            if preferred and not ranking[0]['accepted']:
+                ranking.remove(preferred[0]); ranking.insert(0, preferred[0])
+                ranking[0]['tie_break'] = f"within one SE ({se:.5f}) of the best mean; accepted lineage preferred"
         self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
         return ranking
 
@@ -604,19 +616,21 @@ class Loop:
         ch = self.champion; nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:3]
         ranking = self.designate_final()
+        usage = self.brain.usage.snapshot()
+        if not usage.get('calls'):                                   # finished offline (resume): keep the run's recorded usage
+            usage = self.state.get('usage', usage)
         summary = {'run_id': self.run_id, 'stop_reason': self.state['stop_reason'], 'generations': self.state['generation'],
                    'nodes': self.state['n_next'], 'champion': ch['n'], 'champion_metrics': ch['metrics'],
                    'baseline_valid_primary': self.node(0)['metrics']['primary'],
                    'delta_vs_baseline_valid': round(ch['metrics']['primary'] - self.node(0)['metrics']['primary'], 5),
                    'top3_valid': [{'n': v['n'], 'primary': v['metrics']['primary']} for v in top],
                    'designated': self.state.get('designated'), 'final_ranking': ranking,
-                   'usage': self.brain.usage.snapshot(), 'wall_clock_s': round(self.elapsed(), 1),
+                   'usage': usage, 'wall_clock_s': round(self.elapsed(), 1),
                    'champion_seed_mean': round(self.champion_mean(), 5), 'best_single_seed': self.state.get('best_single'),
                    'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
                    'official_rule': self.state.get('official_rule'), 'official_rule_submission': self._official_submission(),
                    'convergence_switch': self.convergence,
-                   'tokens': {'in_uncached': self.brain.usage.snapshot().get('tokens_in'), 'in_cached': self.brain.usage.snapshot().get('cache_read'),
-                              'out': self.brain.usage.snapshot().get('tokens_out')},
+                   'tokens': {'in_uncached': usage.get('tokens_in'), 'in_cached': usage.get('cache_read'), 'out': usage.get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k_first, 'k_later': self.k_later, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
                    'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))

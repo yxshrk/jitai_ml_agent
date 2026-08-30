@@ -146,3 +146,34 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   `web_search`) adds untried cards after flat generations (≤ 2× per run) or via `cli librarian`; card status
   `alive` → `proven — accepted on [stack]`, with the champion's actual stack stated in every call.
 
+## 2026-08-30 (evening) — live_04 finished; statistics, breadth and diagnostics revised with the review session
+- **live_04 final:** converged under its (pre-ADR-0012) rule after 6 generations / 28 nodes, 97 min, $14.77, 99 LLM
+  calls, 1.92 M uncached + 1.47 M cached input tokens / 393 K output, 0 interventions. Champion node_015 (5-seed
+  rank-average ensemble, 0.6 field-aware(+BPR) / 0.4 BPR lineage): valid 0.6045, seeds 0.60447 / 0.60450 / 0.60399,
+  **3-seed mean 0.6043 = +0.0029 over the baseline's mean 0.60144**; +0.0017 over its parent at t 7.65 (z ≈ 6.8 under
+  the new test). Generations 5–6 were flat (LightGCN wildcard, gated rank fusion, watch-survival reranker, field-aware
+  author feature, DCN-on-BPR merge, LambdaRank, user-balanced pairs, reciprocal-rank fusion: −0.0029 to +0.0001).
+  The old process designated node_026 (mean 0.6043254 vs node_015's 0.6043209 — a 0.0000045 gap on a 0.00014 SE; an
+  unaccepted near-no-op variant of node_015); the designation was re-run offline under the ADR-0012 code with the
+  new tie-break (within one SE, prefer the accepted lineage) → **node_015 designated; `submission.csv` written for it
+  and passed the organizers' `--check`.** The literal ε rule had not converged when the run ended (node_012's lucky
+  seed had reset it).
+- **Decisions with Yash (ADR-0012 revised):** (a) the run-journal block goes only to the planning roles, old rejected
+  diffs are stubs, cached vs uncached tokens reported separately; (b) convergence: the streak resets on a ≥ 0.001
+  cumulative rise of the champion's fresh-seed mean since the last reset (ε rescaled to the seed-mean's noise — every
+  faithful reading of ε stops live_04 at generation 3, before node_015), the literal rule tracked and reported with the
+  node it would have submitted, `--convergence official` available; (c) acceptance: pooled-variance z-test on three
+  FRESH seeds (seed 0 excluded as the selected screen), z ≥ 3 and gain ≥ 0.0005, two more seeds when 2 ≤ z < 3,
+  node-own SD when clearly unstable — the 3-vs-3 t-test at 2.5 had passed 3–6 % of null candidates (node_017 was
+  the shape of one); (d) breadth: k = 5 in generation 1 then 3 + planned slots, Selector slots are `deepen` from
+  generation 2, Explorer kept; (e) per-tab / per-duration-band GAUC+nDCG from the referee for the Diagnostician
+  (live_04's champion: weakest on tab 1 GAUC 0.62 and dur > 180 s GAUC 0.63).
+- **Review session (second Claude session, read-only) findings adopted:** `conv_ref` was never initialised (generation
+  1's gain never counted) → seeded with the baseline; the sigma guard; designation tie-break; facts §10 (user behaviour
+  around exposures: series continuation is label-conditioned and unobservable at scoring time; label-free same-author
+  consecutive exposure is negative, 0.142, still 0.268 vs 0.384 within tab 1; creator affinity real but 96.6 % of valid
+  rows are unseen user × author pairs; same-video repeat exposure negative) measured on train and reproduced by
+  `eda.py`; cards `history-same-author-run-features` (new) and a tab-aware retest note on `history-repeat-exposure-fatigue`.
+- KB after live_04: 23 cards (6 archived from wildcards/un-carded candidates, 1 from the Librarian's web search);
+  `kb/spec/foundations.md` in the prefix.
+

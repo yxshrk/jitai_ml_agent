@@ -1,0 +1,108 @@
+--- node_001.py
++++ node_016.py
+@@ -29,9 +29,14 @@
+         self.V = rng.normal(0, 0.01, (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
++        self.Wt = np.zeros(dim, dtype=np.float32)
++        self.bt = np.zeros(1, dtype=np.float32)
++        self.watch_weight = 0.05
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mWt = np.zeros_like(self.Wt); self.vWt = np.zeros_like(self.Wt)
++        self.mbt = np.zeros_like(self.bt); self.vbt = np.zeros_like(self.bt)
+         self.t = 0
+ 
+     def logits(self, X):
+@@ -41,12 +46,20 @@
+                 inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+         return self.b + self.W[X].sum(1) + inter, None, None
+ 
+-    def step(self, Xp, Xn):
++    def watch_logits(self, X):
++        inter = np.zeros(len(X), dtype=np.float32)
++        for i in range(len(FIELDS)):
++            for j in range(i + 1, len(FIELDS)):
++                inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
++        return self.bt[0] + self.Wt[X].sum(1) + inter
++
++    def step(self, Xp, Xn, tp, tn, cp, cn, wp, wn):
+         B = len(Xp)
+         zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        gWt = np.zeros_like(self.Wt); gbt = np.zeros_like(self.bt)
+         for X, h in ((Xp, g), (Xn, -g)):
+             np.add.at(gW, X, h[:, None])
+             for i in range(len(FIELDS)):
+@@ -55,14 +68,32 @@
+                     Ej = self.V[X[:, j], i]
+                     np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+                     np.add.at(gV, (X[:, j], i), h[:, None] * Ei)
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        aux_loss = 0.0
++        if np.any(wp) or np.any(wn):
++            Xw = np.concatenate((Xp[wp], Xn[wn]))
++            tw = np.concatenate((tp[wp], tn[wn]))
++            cw = np.concatenate((cp[wp], cn[wn]))
++            resid = (self.watch_logits(Xw) - tw).astype(np.float32)
++            resid[cw & (resid > 0.0)] = 0.0
++            h = (2.0 * self.watch_weight * resid / len(Xw)).astype(np.float32)
++            np.add.at(gWt, Xw, h[:, None])
++            gbt[0] = h.sum()
++            for i in range(len(FIELDS)):
++                for j in range(i + 1, len(FIELDS)):
++                    Ei = self.V[Xw[:, i], j]
++                    Ej = self.V[Xw[:, j], i]
++                    np.add.at(gV, (Xw[:, i], j), h[:, None] * Ej)
++                    np.add.at(gV, (Xw[:, j], i), h[:, None] * Ei)
++            aux_loss = self.watch_weight * float(np.mean(resid * resid))
++        gV += self.l2 * self.V; gW += self.l2 * self.W; gWt += self.l2 * self.Wt
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.Wt, gWt, self.mWt, self.vWt), (self.bt, gbt, self.mbt, self.vbt)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
++        return float(-np.mean(np.log(sigmoid(d) + 1e-9))) + aux_loss
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -87,7 +118,7 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'play_time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+@@ -108,6 +139,10 @@
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    play_ms = np.array([float(x[5]) for x in tr], dtype=np.float32)
++    dur_ms = np.array([float(x[3]) for x in tr], dtype=np.float32)
++    watch_t = np.log1p(np.maximum(play_ms, 0.0) / 1000.0).astype(np.float32)
++    watch_valid = dur_ms > 0.0; watch_censored = watch_valid & (play_ms >= dur_ms)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+@@ -125,7 +160,11 @@
+         pidx = pair_pos[rng.permutation(len(pair_pos))]
+         pu = Xtr[pidx, 0]
+         nidx = neg_order[neg_start[pu] + (rng.random(len(pidx)) * neg_count[pu]).astype(np.int64)]
+-        losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]]) for i in range(0, len(pidx), a.batch)]
++        losses = []
++        for i in range(0, len(pidx), a.batch):
++            pi = pidx[i:i + a.batch]; ni = nidx[i:i + a.batch]
++            losses.append(m.step(Xtr[pi], Xtr[ni], watch_t[pi], watch_t[ni],
++                                 watch_censored[pi], watch_censored[ni], watch_valid[pi], watch_valid[ni]))
+         r = evaluate(uva, yva, m.predict(Xva))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})

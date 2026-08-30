@@ -1,0 +1,103 @@
+--- node_001.py
++++ node_013.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++        A rank-8 DCN-V2 cross layer is added over pooled field-aware embeddings.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -29,9 +30,20 @@
+         self.V = rng.normal(0, 0.01, (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
++        self.k = k
++        d, rank = len(FIELDS) * k, 8
++        self.U = rng.normal(0, 0.035, (d, rank)).astype(np.float32)
++        self.R = rng.normal(0, 0.1, (rank, d)).astype(np.float32)
++        self.c = np.zeros(d, dtype=np.float32)
++        self.q = rng.normal(0, 0.01, d).astype(np.float32)
+         self.lr, self.l2 = lr, l2
++        self.cross_l2 = 1e-4
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mU = np.zeros_like(self.U); self.vU = np.zeros_like(self.U)
++        self.mR = np.zeros_like(self.R); self.vR = np.zeros_like(self.R)
++        self.mc = np.zeros_like(self.c); self.vc = np.zeros_like(self.c)
++        self.mq = np.zeros_like(self.q); self.vq = np.zeros_like(self.q)
+         self.t = 0
+ 
+     def logits(self, X):
+@@ -39,15 +51,24 @@
+         for i in range(len(FIELDS)):
+             for j in range(i + 1, len(FIELDS)):
+                 inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+-        return self.b + self.W[X].sum(1) + inter, None, None
++        E = np.empty((len(X), len(FIELDS), self.k), dtype=np.float32)
++        for i in range(len(FIELDS)):
++            E[:, i] = self.V[X[:, i]].mean(1)
++        x0 = E.reshape(len(X), -1)
++        a = x0 @ self.R.T
++        h = a @ self.U.T + self.c
++        x1 = x0 * (h + 1.0)
++        return self.b + self.W[X].sum(1) + inter + x1 @ self.q, x0, (a, h, x1)
+ 
+     def step(self, Xp, Xn):
+         B = len(Xp)
+-        zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
++        zp, x0p, cachep = self.logits(Xp); zn, x0n, cachen = self.logits(Xn)
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+-        for X, h in ((Xp, g), (Xn, -g)):
++        gU = np.zeros_like(self.U); gR = np.zeros_like(self.R)
++        gc = np.zeros_like(self.c); gq = np.zeros_like(self.q)
++        for X, h, x0, cache in ((Xp, g, x0p, cachep), (Xn, -g, x0n, cachen)):
+             np.add.at(gW, X, h[:, None])
+             for i in range(len(FIELDS)):
+                 for j in range(i + 1, len(FIELDS)):
+@@ -55,10 +76,26 @@
+                     Ej = self.V[X[:, j], i]
+                     np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+                     np.add.at(gV, (X[:, j], i), h[:, None] * Ei)
++            a, cross_h, x1 = cache
++            gq += x1.T @ h
++            dx1 = h[:, None] * self.q
++            dh = dx1 * x0
++            gU += dh.T @ a
++            da = dh @ self.U
++            gR += da.T @ x0
++            gc += dh.sum(0)
++            dx0 = dx1 * (cross_h + 1.0) + da @ self.R
++            dxE = dx0.reshape(len(X), len(FIELDS), self.k) / len(FIELDS)
++            for i in range(len(FIELDS)):
++                for j in range(len(FIELDS)):
++                    np.add.at(gV, (X[:, i], j), dxE[:, i])
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        gU += self.cross_l2 * self.U; gR += self.cross_l2 * self.R
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.U, gU, self.mU, self.vU), (self.R, gR, self.mR, self.vR),
++                            (self.c, gc, self.mc, self.vc), (self.q, gq, self.mq, self.vq)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -132,12 +169,13 @@
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b), m.U.copy(),
++                                                      m.R.copy(), m.c.copy(), m.q.copy())
+         else:
+             bad += 1
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++    m.V, m.W, m.b, m.U, m.R, m.c, m.q = best_state
+ 
+     # ---- outputs ----
+     sva = m.predict(Xva); r = evaluate(uva, yva, sva)

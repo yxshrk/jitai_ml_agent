@@ -1,0 +1,113 @@
+--- node_015.py
++++ node_024.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++        The standard branch replaces its raw user-video dot product with one-layer LightGCN propagation.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -37,9 +38,10 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, standard=False):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, standard=False, graph=None):
+         rng = np.random.default_rng(seed)
+         self.standard = standard
++        self.graph = graph
+         self.V = rng.normal(0, 0.01, (dim, k) if standard else (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+@@ -48,10 +50,23 @@
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def neighbor_sum(self, P):
++        out = np.zeros_like(P)
++        for nodes, starts, other, weight in self.graph:
++            summed = np.add.reduceat(weight[:, None] * P[other], starts, axis=0)
++            np.add.at(out, nodes, summed)
++        return out
++
++    def propagate(self):
++        return 0.5 * (self.V + self.neighbor_sum(self.V))
++
++    def logits(self, X, G=None):
+         if self.standard:
+             E = self.V[X]
+             inter = 0.5 * ((E.sum(1) ** 2 - (E * E).sum(1)).sum(1))
++            if G is None:
++                G = self.propagate()
++            inter += (G[X[:, 0]] * G[X[:, 1]]).sum(1) - (E[:, 0] * E[:, 1]).sum(1)
+         else:
+             inter = np.zeros(len(X), dtype=np.float32)
+             for i in range(len(FIELDS)):
+@@ -61,15 +76,21 @@
+ 
+     def step(self, Xp, Xn):
+         B = len(Xp)
+-        zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
++        G = self.propagate() if self.standard else None
++        zp = self.logits(Xp, G)[0]; zn = self.logits(Xn, G)[0]
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        dG = np.zeros_like(self.V) if self.standard else None
+         for X, h in ((Xp, g), (Xn, -g)):
+             np.add.at(gW, X, h[:, None])
+             if self.standard:
+                 E = self.V[X]; S = E.sum(1)
+                 np.add.at(gV, X, h[:, None, None] * (S[:, None, :] - E))
++                np.add.at(gV, X[:, 0], -h[:, None] * E[:, 1])
++                np.add.at(gV, X[:, 1], -h[:, None] * E[:, 0])
++                np.add.at(dG, X[:, 0], h[:, None] * G[X[:, 1]])
++                np.add.at(dG, X[:, 1], h[:, None] * G[X[:, 0]])
+             else:
+                 for i in range(len(FIELDS)):
+                     for j in range(i + 1, len(FIELDS)):
+@@ -77,6 +98,8 @@
+                         Ej = self.V[X[:, j], i]
+                         np.add.at(gV, (X[:, i], j), h[:, None] * Ej)
+                         np.add.at(gV, (X[:, j], i), h[:, None] * Ei)
++        if self.standard:
++            gV += 0.5 * dG + 0.5 * self.neighbor_sum(dG)
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+@@ -87,7 +110,8 @@
+         return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
+ 
+     def predict(self, X, bs=200_000):
+-        return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
++        G = self.propagate() if self.standard else None
++        return np.concatenate([self.logits(X[i:i + bs], G)[0] for i in range(0, len(X), bs)])
+ 
+ def write_predictions(path, rows, scores):
+     with open(path, 'w', newline='') as fh:
+@@ -131,6 +155,14 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    graph_u = Xtr[ytr != 0, 0]; graph_v = Xtr[ytr != 0, 1]
++    graph_degree = np.bincount(np.r_[graph_u, graph_v], minlength=dim).astype(np.float32)
++    graph_weight = (1.0 / np.sqrt(graph_degree[graph_u] * graph_degree[graph_v])).astype(np.float32)
++    def graph_side(nodes, other):
++        order = np.argsort(nodes, kind='stable'); sorted_nodes = nodes[order]
++        unique_nodes, starts = np.unique(sorted_nodes, return_index=True)
++        return unique_nodes, starts, other[order], graph_weight[order]
++    graph = (graph_side(graph_u, graph_v), graph_side(graph_v, graph_u))
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -145,7 +177,7 @@
+     for branch in range(2):
+         for member in range(5):
+             member_seed = a.seed + branch * 5 + member
+-            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, standard=bool(branch))
++            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, standard=bool(branch), graph=graph if branch else None)
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_pred, bad = -1.0, None, None, 0
+             pred_epochs, loss_epochs = [], []

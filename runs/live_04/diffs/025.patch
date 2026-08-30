@@ -1,0 +1,53 @@
+--- node_015.py
++++ node_025.py
+@@ -34,6 +34,30 @@
+     ranks = np.empty(len(order), dtype=np.float64)
+     ranks[order] = (np.arange(len(order)) - np.repeat(starts, counts)) / np.repeat(np.maximum(counts - 1, 1), counts)
+     return ranks
++
++def rank_positions(users, scores, tiebreak=None):
++    users = np.asarray(users); scores = np.asarray(scores)
++    if tiebreak is None:
++        order = np.lexsort((np.arange(len(scores)), -scores, users))
++    else:
++        order = np.lexsort((np.arange(len(scores)), -np.asarray(tiebreak), -scores, users))
++    su = users[order]
++    starts = np.r_[0, np.flatnonzero(su[1:] != su[:-1]) + 1]
++    counts = np.diff(np.r_[starts, len(order)])
++    positions = np.empty(len(order), dtype=np.int32)
++    positions[order] = np.arange(len(order)) - np.repeat(starts, counts)
++    return positions
++
++def top5_gated_fusion(users, branch_scores):
++    linear = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
++    linear_score = normalized_ranks(users, linear, branch_scores[0])
++    pos0 = rank_positions(users, branch_scores[0])
++    pos1 = rank_positions(users, branch_scores[1])
++    reciprocal = 0.6 / (2.0 + pos0) + 0.4 / (2.0 + pos1)
++    reciprocal_score = normalized_ranks(users, reciprocal, branch_scores[0])
++    affected = (np.minimum(pos0, pos1) < 5) & (pos0 != pos1)
++    hybrid = np.where(affected, reciprocal_score, linear_score)
++    return normalized_ranks(users, hybrid, branch_scores[0])
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
+@@ -181,8 +205,7 @@
+                      for member in range(5)], axis=0)
+             for branch in range(2)
+         ]
+-        blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        sva = normalized_ranks(uva, blend, branch_scores[0])
++        sva = top5_gated_fusion(uva, branch_scores)
+         r = evaluate(uva, yva, sva)
+         train_loss = float(np.mean([
+             loss_cache[branch][member][min(ep, len(loss_cache[branch][member]) - 1)]
+@@ -205,8 +228,7 @@
+             np.mean([normalized_ranks(uex, m.predict(Xex)) for m in models[branch]], axis=0)
+             for branch in range(2)
+         ]
+-        blend = 0.6 * branch_scores[0] + 0.4 * branch_scores[1]
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, normalized_ranks(uex, blend, branch_scores[0]))
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, top5_gated_fusion(uex, branch_scores))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

@@ -1,0 +1,19 @@
+--- node_001.py
++++ node_006.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Variant Field-aware partner embeddings are trained with one-negative within-user BPR updates.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -23,7 +24,7 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
++    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, len(FIELDS), k)).astype(np.float32)   # one k-vector per partner field

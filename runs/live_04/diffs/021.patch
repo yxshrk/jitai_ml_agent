@@ -1,0 +1,70 @@
+--- node_015.py
++++ node_021.py
+@@ -59,11 +59,14 @@
+                     inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+         return self.b + self.W[X].sum(1) + inter, None, None
+ 
+-    def step(self, Xp, Xn):
++    def step(self, Xp, Xn, pair_weight=None):
+         B = len(Xp)
+         zp = self.logits(Xp)[0]; zn = self.logits(Xn)[0]
+         d = zp - zn
+         g = ((sigmoid(d) - 1.0) / B).astype(np.float32)
++        if pair_weight is not None:
++            pair_weight = np.asarray(pair_weight, dtype=np.float32)
++            g *= pair_weight
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         for X, h in ((Xp, g), (Xn, -g)):
+             np.add.at(gW, X, h[:, None])
+@@ -84,7 +87,10 @@
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
++        loss = -np.log(sigmoid(d) + 1e-9)
++        if pair_weight is not None:
++            loss *= pair_weight
++        return float(np.mean(loss))
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -138,6 +144,11 @@
+     neg_start[neg_users] = neg_starts; neg_count[neg_users] = neg_counts
+     pair_pos = np.flatnonzero(ytr != 0)
+     pair_pos = pair_pos[neg_count[Xtr[pair_pos, 0]] > 0]
++    rank_tiebreak = np.arange(len(Xtr), dtype=np.int64)
++    user_pos_count = np.bincount(Xtr[:, 0], weights=ytr, minlength=dims[0]).astype(np.int32)
++    discount5 = 1.0 / np.log2(np.arange(2, 7, dtype=np.float64))
++    idcg5 = np.r_[0.0, np.cumsum(discount5)]
++    user_idcg5 = idcg5[np.minimum(user_pos_count, 5)]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+@@ -150,10 +161,26 @@
+             best, best_state, best_pred, bad = -1.0, None, None, 0
+             pred_epochs, loss_epochs = [], []
+             for ep in range(1, epochs + 1):
++                pair_weight = None
++                if ep > 1:
++                    train_pred = m.predict(Xtr)
++                    rank_order = np.lexsort((rank_tiebreak, -train_pred, Xtr[:, 0]))
++                    sorted_users = Xtr[rank_order, 0]
++                    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1]
++                    counts = np.diff(np.r_[starts, len(rank_order)])
++                    sorted_positions = np.arange(len(rank_order)) - np.repeat(starts, counts) + 1
++                    ranks = np.empty(len(Xtr), dtype=np.int32)
++                    ranks[rank_order] = sorted_positions
+                 pidx = pair_pos[rng.permutation(len(pair_pos))]
+                 pu = Xtr[pidx, 0]
+                 nidx = neg_order[neg_start[pu] + (rng.random(len(pidx)) * neg_count[pu]).astype(np.int64)]
+-                losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]]) for i in range(0, len(pidx), a.batch)]
++                if ep > 1:
++                    pos_discount = np.where(ranks[pidx] <= 5, 1.0 / np.log2(ranks[pidx] + 1.0), 0.0)
++                    neg_discount = np.where(ranks[nidx] <= 5, 1.0 / np.log2(ranks[nidx] + 1.0), 0.0)
++                    pair_weight = np.clip(np.abs(pos_discount - neg_discount) / user_idcg5[pu], 0.05, 1.0).astype(np.float32)
++                losses = [m.step(Xtr[pidx[i:i + a.batch]], Xtr[nidx[i:i + a.batch]],
++                                 None if pair_weight is None else pair_weight[i:i + a.batch])
++                          for i in range(0, len(pidx), a.batch)]
+                 current_pred = m.predict(Xva)
+                 r = evaluate(uva, yva, current_pred)
+                 print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "

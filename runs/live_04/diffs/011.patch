@@ -1,0 +1,110 @@
+--- node_001.py
++++ node_011.py
+@@ -6,12 +6,13 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++History Adds leakage-safe user-by-author, user-by-tab, and user-by-duration long-view-rate fields.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'hist_author', 'hist_tab', 'hist_dur']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -87,28 +88,73 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'time_ms', 'long_view'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 8 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
++    def base_raw(user, video, tab, dur):
+         return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    ytr = np.array([1.0 if x[5] != '0' else 0.0 for x in tr], dtype=np.float32)
++    htr = np.full((len(tr), 3), -1, dtype=np.int8)
++    hkeys = [tuple(base_raw(x[0], x[1], x[2], x[3])[2:]) for x in tr]
++    user_counts = {}
++    hist_counts = [{}, {}, {}]
++    times = np.array([int(x[4]) for x in tr], dtype=np.int64)
++    order = np.argsort(times, kind='stable')
++    start = 0
++    while start < len(order):
++        end = start + 1
++        while end < len(order) and times[order[end]] == times[order[start]]:
++            end += 1
++        for idx in order[start:end]:
++            user = tr[idx][0]
++            un, up = user_counts.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            for j, key in enumerate(hkeys[idx]):
++                count, pos = hist_counts[j].get((user, key), (0, 0))
++                if count:
++                    rate = (pos + 5.0 * prior) / (count + 5.0)
++                    htr[idx, j] = min(9, int(rate * 10.0))
++        for idx in order[start:end]:
++            user = tr[idx][0]; yi = int(ytr[idx])
++            un, up = user_counts.get(user, (0, 0))
++            user_counts[user] = (un + 1, up + yi)
++            for j, key in enumerate(hkeys[idx]):
++                count, pos = hist_counts[j].get((user, key), (0, 0))
++                hist_counts[j][(user, key)] = (count + 1, pos + yi)
++        start = end
++    del hkeys, times, order
++    def history_for(rows, ui, vi, ti, di):
++        hist = np.full((len(rows), 3), -1, dtype=np.int8)
++        for n, x in enumerate(rows):
++            user = x[ui]
++            un, up = user_counts.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            for j, key in enumerate(base_raw(user, x[vi], x[ti], x[di])[2:]):
++                count, pos = hist_counts[j].get((user, key), (0, 0))
++                if count:
++                    rate = (pos + 5.0 * prior) / (count + 5.0)
++                    hist[n, j] = min(9, int(rate * 10.0))
++        return hist
++    hva = history_for(va, 1, 2, 3, 4)
++    def raw(user, video, tab, dur, hist):
++        return base_raw(user, video, tab, dur) + [('NOHIST' if h < 0 else str(int(h))) for h in hist]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for x, hist in zip(tr, htr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], hist)):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, hist):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], hist[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, 0, 1, 2, 3, htr)
++    Xva = encode(va, 1, 2, 3, 4, hva); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_rows = np.flatnonzero(ytr == 0)
+     neg_order = neg_rows[np.argsort(Xtr[neg_rows, 0], kind='stable')]
+     neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_order, 0], return_index=True, return_counts=True)
+@@ -148,7 +194,8 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        hextra = history_for(ex, 1, 2, 3, 4)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4, hextra)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':
