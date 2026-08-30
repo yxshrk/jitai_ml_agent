@@ -10,6 +10,31 @@ its own card.
 Frozen-stack validation references: Pure = 0.6047; 1K = 0.6134 (literal frozen
 default, seed 42).
 
+## Combination & interaction guidance (literature-grounded)
+
+Published methods ship as PACKAGES, not atoms — evaluate them the way their papers do:
+- **Capacity needs regularization.** DCNv2 and DeepFM report their architectures WITH
+  dropout, L2/weight decay, and tuned LR schedules; the bare architecture on a small
+  dataset commonly measures at or below a well-regularized baseline (DCNv2 paper;
+  FuxiCTR/BARS reproducibility studies). If proposing dcn-lite or finalmlp, propose it
+  TOGETHER with regularization-schedule in one node.
+- **Objective changes ride on a stable trainer.** BPR-style pairwise objectives are
+  reported with their own regularization and tuned steps (Rendle et al., BPR); hybrid
+  pointwise+pairwise losses are evaluated as the blend, not the parts. Pair bpr-hybrid
+  with regularization-schedule, not with the raw baseline trainer.
+- **Temporal weighting shows on top of a regularized ranker** (temporal-dynamics /
+  recency literature, e.g. Koren's temporal CF onward): its mean effect is small, so
+  on an underfit or overfit parent it drowns in noise. Prefer recency-weighting as a
+  rider on an already-accepted regularized stack, and confirm with >= 3 seeds.
+- **Ensembling is last.** seed-ensemble amplifies whatever champion exists; apply it to
+  the best single stack, not the baseline (ensemble of a weak model = slightly less
+  weak model).
+- Practical rule: one NOVEL mechanism per node stays the norm, but a node may bundle a
+  novel mechanism with the PROVEN regularization-schedule package (and/or an accepted
+  ancestor's components) when the literature setup does so — cite the pairing. A bundle
+  whose joint expected gain clears epsilon = 0.002 also resets the convergence streak.
+
+
 ### bpr-hybrid: Within-user BPR + pointwise hybrid
 - mechanism: Form positive/negative pairs only inside each user's impressions and optimize logistic score differences. Mix 0.5 BPR with 0.5 BCE so ranking alignment does not discard pointwise stabilization.
 - treats: metric-mismatch | flat-signal

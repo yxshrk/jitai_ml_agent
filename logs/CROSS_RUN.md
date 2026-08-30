@@ -869,3 +869,84 @@ I would:
 Next run
 
 First, verify the ensemble result. Train a fresh pool of FM replicas with preregistered seeds and fixed epoch selection, then measure performance for ensemble sizes 1, 2, 3, and 5 using rank, probability, and logit averaging. Repeat with at least two disjoint seed groups. If the +0.001-level gain replicates, optimize diversity and determine whether three models recover most of the five-model benefit. If it does not replicate, return to the single FM and tune early stopping, regularization, and latent dimension one factor at a time.
+
+## Run logs/run_unseeded_11
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: seed-ensemble | hypothesis: Because validation peaks near epoch 8 and then | primary: 0.602111 | verdict: rejected
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Adding a 0.3-weight cumulative ordinal watch-ratio auxiliary loss | primary: 0.602309 | verdict: rejected
+self_critique:
+The run was too shallow and declared convergence prematurely. It produced only one valid accepted model and two numerically better but statistically unconvincing results.
+
+What was suboptimal
+
+- The run was unseeded despite differences being only 0.0003–0.0005. At that scale, single-run scores cannot reliably distinguish improvements from initialization noise.
+- Node 001’s ensemble hypothesis was reasonable, but it changed both seeds and ensembling while using a fixed epoch. That makes attribution unclear, and three adjacent seeds do not establish robustness. Its 0.6021 score was above baseline but below the acceptance margin.
+- Node 002 failed without a preserved proposal or actionable failure diagnosis. This wasted a scarce iteration.
+- Node 003 was incoherent with its ancestry: it descended from a failed node and referred to an “established regularized DCN-lite” even though the accepted parent was an FM. Recovery should have returned to the last executable accepted node.
+- Node 003 also bundled architecture, BCE/BPR training, and an auxiliary ordinal watch-ratio loss. That is too many changes for one experiment, and its claimed +0.0025 gain was unsupported. The observed gain was only about +0.0005.
+- The policy explored only ensemble variance reduction and one large, poorly grounded objective/model jump. It did not perform basic local search around the FM: epoch, regularization, embedding dimension, learning rate, negative sampling, or loss blend.
+- “Converged” is not a convincing stop reason after three descendants, one of which failed. This looks more like exhausted or low-confidence exploration.
+
+Scaffold changes
+
+- Seed every run and evaluate baseline/candidates on the same 3–5 seeds. Use paired mean delta and uncertainty for acceptance.
+- Separate screening from confirmation: cheap single-seed trials first, then multi-seed confirmation for promising candidates.
+- Require each proposal to state the exact parent implementation, one primary intervention, controlled variables, expected mechanism, and acceptance test.
+- After a failed node, branch from the last valid ancestor unless the failure is explicitly repaired.
+- Add consistency checks that reject proposals referring to models or losses not present in the parent.
+- Preserve failure traces and automatically generate the smallest repair rather than a new unrelated experiment.
+- Do not declare convergence until a predefined local neighborhood has been tested or the experiment budget is genuinely exhausted.
+- Record full-precision scores and actual deltas; rounded values obscure decisions at this noise level.
+
+What the next run should try first
+
+First establish a seeded FM baseline distribution, then run a paired local sweep of training horizon and regularization using identical seeds. Validation reportedly peaks near epoch 8, so test nearby fixed horizons such as 6, 8, 10, and 12 epochs with a small L2/dropout sweep. Confirm the best setting across at least five shared seeds.
+
+Only after that, test seed ensembling as a deployment-time variance reduction step, comparing raw probability averaging and per-user rank averaging. The watch-ratio/DCN-lite experiment should wait until the simpler FM neighborhood is characterized and should then be decomposed into separate architecture, loss, and auxiliary-target experiments.
+
+## Run logs/run_chain_l1
+dataset: pure
+stop_reason: converged
+best_primary: 0.604238
+- node_001 | method: none | hypothesis: team-provided reference implementation: self_seed_06.py (from MENU frozen stack) | primary: 0.604238 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: A preregistered three-seed ensemble using fixed epoch-8 checkpoints | primary: 0.603389 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_004 | method: none | hypothesis: A preregistered five-seed ensemble of the frozen DCN-lite | primary: 0.599869 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a modest gain over baseline (+0.00244), but the subsequent search was too narrow and internally inconsistent to justify “converged.” Most evidence points to insufficient reproducibility checks and a likely ensemble implementation/configuration issue rather than exhaustion of useful ideas.
+
+What the harness/policy did suboptimally
+
+- It duplicated node_001 as both an accepted child and a seed without adding evidence or exploration.
+- It explored only seed ensembles after importing the reference implementation. No architectural, feature, loss, regularization, or training-schedule ablations were attempted.
+- Acceptance logic did not match the preregistered claim for node_002. The hypothesis promised retention within 0.001; the observed drop was 0.00084, so that claim technically succeeded even though the candidate should not replace the best model.
+- The policy treated tiny score differences as decisive without reporting repeated-run uncertainty. The baseline sigma of 0.0001 is unexplained and no comparable uncertainty is given for later nodes.
+- Node_004 descended from a failed node rather than the best verified artifact. Its large drop (-0.0043 versus node_001) contradicts the expected benefit of a five-seed ensemble and should have triggered pipeline debugging, not convergence.
+- “Proposal failed” consumed a node with no metric, suggesting weak preflight validation.
+- The ensemble descriptions are ambiguous: node_002 refers to a “five-member parent,” while node_001 appears to be a single imported implementation. The journal does not establish exactly which checkpoints or predictions were used.
+- Validation-only optimization risks overfitting the split, especially when chasing deltas around 0.001.
+
+What I would change in the scaffold
+
+- Separate hypothesis outcome from model promotion: mark node_002 “hypothesis supported, not promoted.”
+- Require artifact hashes, exact configs, seeds, checkpoint IDs, prediction hashes, and parent lineage for every run.
+- Add ensemble invariance tests:
+  - one-member ensemble must equal the source model;
+  - repeated identical predictions must leave the metric unchanged;
+  - member ordering must not matter;
+  - rank averaging must be tested against score averaging.
+- Re-run the incumbent across several seeds or deterministic repeats and use paired bootstrap confidence intervals before accepting sub-0.001 changes.
+- Add preflight execution checks so malformed proposals fail before consuming a search node.
+- Enforce breadth: after one unsuccessful idea family, try a different intervention rather than another near-duplicate.
+- Reserve “converged” for a run with reproducible incumbents, multiple tested idea families, and no unresolved regressions.
+
+What the next run should try first
+
+First, reproduce node_001 exactly and audit the ensemble path. Evaluate the saved node_001 predictions directly, then pass the same predictions through a one-member and duplicated-member ensemble. All three scores should be identical. If not, fix ranking, user grouping, checkpoint loading, or evaluation alignment.
+
+Once validated, measure individual scores and prediction correlations for each seed, then build ensembles incrementally using only fixed saved predictions. If diversity is low or weaker members consistently reduce the score, stop spending fits on seed averaging and move to a genuinely different model or feature/loss ablation.
