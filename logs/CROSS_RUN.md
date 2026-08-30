@@ -1303,3 +1303,38 @@ What the next run should try first
 First test a validation-prediction blend of the node_001 champion with the baseline FM over a small weight grid. This is cheap and tests cross-model error diversity, which is more promising than adding further identical-config seeds. If predictions are unavailable, regenerate them once and retain them as artifacts.
 
 After that, run a compact one-factor-at-a-time sweep around node_001, prioritizing the BCE/BPR mixing weight and regularization strength. Only revisit the censor-aware objective as a low-weight auxiliary with several weights including zero, so its effect can be isolated.
+
+## Run logs/run_bigclock_05
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: regularization-schedule | hypothesis: Because validation ranking peaks and then declines while | primary: 0.594707 | verdict: rejected
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Applying AdamW weight decay of 3e-4 to the | primary: 0.602130 | verdict: rejected
+self_critique:
+Run critique
+
+The run converged prematurely. It produced only three post-baseline attempts, one of which failed before evaluation, and explored essentially one idea: embedding regularization. That is too little evidence to declare convergence.
+
+Policy/harness issues:
+- node_001 bundled four interventions—dropout, accessed-row L2, AdamW decay, and rapid LR decay. Its failure is not attributable to any component, and the package was likely overaggressive.
+- node_003 isolated weight decay, which was better experimental practice, but it branched from a failed node rather than cleanly from the accepted baseline.
+- The metric/acceptance record is opaque or inconsistent: 0.5947 and 0.6021 were both rejected around a 0.601838 baseline. The journal should explicitly report optimization direction, paired delta, uncertainty, and rejection reason.
+- A proposal-generation failure consumed a substantial fraction of the tiny search budget without an automatic retry.
+- The policy did not test the direct implication of the stated diagnosis: if validation peaks before training ends, checkpoint timing/early stopping should be tested before adding several regularizers.
+
+Scaffold changes:
+- Require a minimum number of valid, diverse experiments before allowing “converged.”
+- Retry failed proposal/evaluation nodes automatically and branch retries from the last valid parent.
+- Enforce mostly single-factor experiments, followed by combinations only after individual gains.
+- Record baseline-relative delta, metric direction, seed, variance/confidence interval, and exact acceptance-test result.
+- Re-run the baseline across multiple seeds so changes near 0.0003 are not judged from noise.
+- Preserve distinct branches for optimization, capacity, and regularization rather than repeatedly pursuing one hypothesis.
+
+Next run:
+1. Reproduce the baseline over at least three seeds.
+2. First test best-validation checkpointing/earlier stopping, or a short patience sweep, with everything else fixed.
+3. Then run small one-factor sweeps: rank 8 versus 16, mild interaction dropout (for example 0.05–0.15), and weight decay separately.
+4. Only combine factors that show repeatable gains.
+
+The strongest first hypothesis is that training duration or capacity, not a large regularization package, is causing the observed memorization.

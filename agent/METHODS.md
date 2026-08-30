@@ -11,6 +11,14 @@ Frozen-stack validation references: Pure = 0.6047; 1K = 0.6134 (literal frozen
 default, seed 42).
 
 
+
+## Clock policy (read this)
+The wall-clock ceiling is 6 HOURS per run and feasibility is graded in coarse tiers —
+spending clock on deeper search is the cheapest resource trade available. When the node
+timeout is measured in hours: probe at full training length (short probes mis-rank
+configs near the optimum), afford 16-24 matrix cells, and refine twice. Reserve time
+for the final full training + the ensemble close.
+
 ## Measured campaign digest (this benchmark, cross-run memory — full seed tables in zoo/EXPERIMENTS*.md)
 
 Interaction facts, each replicated across >= 3 seeds unless noted:
