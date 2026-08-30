@@ -70,3 +70,28 @@ scale.
 5. Watch-time modelling — mechanism-backed, heavier (§3).
 6. Sequence models — histories are short (§2); try history aggregates first.
 7. Static content features — expect nothing (§1) unless a different model family consumes them differently.
+8. Exposure-sequence features — label-free, tab-aware: same-author runs and repeat exposure (§10). Small share of
+   rows; large within-tab effects where they apply.
+
+## 10. User behaviour around exposures (measured on `workspace/data/train.csv` by the review session, 2026-08-30;
+base P(long_view) = 0.337; to be re-verified by `eda.py`)
+1. **Series continuation is real but label-conditioned.** If the user's previous impression was by the same author
+   AND was long-viewed, P(long_view) = 0.78 (2.3×); if it was NOT long-viewed, 0.077. In tab 6, given the previous
+   same-author impression was long-viewed, 1.000 (n = 1,195). The previous impression's LABEL is unobservable in the
+   valid/test windows (no outcome columns), so this is usable only through train history (≥ 1 day stale) or through
+   label-free proxies (fact 2).
+2. **Label-free same-author-consecutive exposure is a NEGATIVE signal.** P(long_view) = 0.142 overall when the
+   previous impression (any label) was by the same author. It is concentrated in profile/series tabs (share of rows
+   that are same-author-consecutive: tab 5 46 %, tab 6 47 %, tab 10 14 %, tab 7 16 %, tab 1 0.6 %), so much of it is
+   tab, which the FM already has — but WITHIN tab 1 it is still 0.268 vs 0.389 and within tab 4 0.393 vs 0.501.
+   Occurs in 2.7 % of valid rows. Observable proxies: the run length of consecutive same-author exposures so far and
+   the position in the run (a 10-run is profile browsing, a 2-run a series). Legal: computed from features
+   (author via video, time_ms) of strictly earlier rows, including earlier valid rows, never from labels.
+3. **Creator affinity is real but almost unavailable in Pure.** User × author prior long-view rate ≥ 0.5 → 0.42 vs
+   < 0.2 → 0.14; but 96.6 % of valid rows are authors the user NEVER saw in train and only 0.1 % have ≥ 3 prior
+   exposures — which is why `history-user-aggregates` measured flat on the BPR stack. "New creator" (no prior
+   exposure) ≈ base rate 0.343; a re-exposed author 0.247 (label-free, negative).
+4. **Same-video repeat exposure is label-free and negative:** in tab 1, 0.292 vs 0.389 (n = 18 K); 5.7 % of valid
+   rows are repeated (user, video) pairs (§8). live_04 node_005 (exposure count 0/1/2/3+ and log time-since) scored
+   −0.0005 on one seed, unconfirmed — a candidate for a cleaner retest (within-window exposure sequence, tab-aware)
+   rather than a dead lever.

@@ -49,8 +49,12 @@ def confirm_stats(v_node, v_ch, sigma):
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
-                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed'):
+                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed', k_later=None):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
+        # adaptive breadth: k branches in generation 1 (breadth pays when nothing is measured), k_later afterwards,
+        # growing back toward k only for the Consolidator's concrete merge/retest slots (live_04: 4 of 5 accepted in
+        # generation 1, then 20 nodes for one hit)
+        self.k_first, self.k_later = k, (k_later if k_later is not None else k)
         assert convergence in ('confirmed', 'official'); self.convergence = convergence   # ADR-0012: which rule stops the run
         self.librarian_max = 2 if librarian else 0     # ADR-0013: web-searched cards after flat generations, at most twice a run
         self.auto_distill = auto_distill               # ADR-0013: fold the journal into the cards when the run ends
@@ -176,6 +180,9 @@ class Loop:
     # ---------------- one generation ----------------
     def generation(self):
         g = self.state['generation'] + 1; self.state['generation'] = g
+        planned = sum(1 for s_ in ((self.state.get('plan') or {}).get('plan') or []) if isinstance(s_, dict) and s_.get('type') in ('merge', 'retest'))
+        self.k = self.k_first if g == 1 else max(self.k_later, min(self.k_first, self.k_later + planned))
+        self.threads = max(1, (os.cpu_count() or 2) // max(1, self.k)) if self.parallel else (os.cpu_count() or 2)
         t_gen = time.time(); snap = self.brain.usage.snapshot()
         self.log(f'=== generation {g}: champion node_{self.champion["n"]:03d} ({self.champion["metrics"]["primary"]:.4f}), streak {self.state["streak"]} ===')
         # the exact journal so far, frozen for this generation, in the cached prefix of the roles that PLAN (ADR-0013);
@@ -516,12 +523,17 @@ class Loop:
                           'sigma_df': df, 'adaptive': adaptive,
                           'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the pooled seed SD'}
 
-    @staticmethod
-    def _result_view(rec):
-        return {k: rec.get(k) for k in ('n', 'parent', 'merge_parents', 'action', 'method', 'target_component', 'hypothesis',
-                                        'change_summary', 'expected_delta', 'metrics', 'realized_delta', 'accepted',
-                                        'seed_confirmation', 'failure_stage', 'error', 'recovery', 'duration_s')} | \
-               {'curve': [round(h.get('val_primary', 0), 4) for h in rec.get('history', [])][:40]}
+    def _result_view(self, rec):
+        m = rec.get('metrics') or {}
+        view = {k: rec.get(k) for k in ('n', 'parent', 'merge_parents', 'action', 'method', 'target_component', 'hypothesis',
+                                        'change_summary', 'expected_delta', 'realized_delta', 'accepted',
+                                        'seed_confirmation', 'failure_stage', 'error', 'recovery', 'duration_s')}
+        view['metrics'] = {k: v for k, v in m.items() if k != 'by_group'}
+        view['curve'] = [round(h.get('val_primary', 0), 4) for h in rec.get('history', [])][:40]
+        cg = (self.champion.get('metrics') or {}).get('by_group') or {}
+        if m.get('by_group') and cg:   # where the node moved relative to the champion, per tab and duration band
+            view['by_group_delta'] = {g: round(m['by_group'][g]['primary'] - cg[g]['primary'], 4) for g in m['by_group'] if g in cg}
+        return view
 
     # ---------------- driver ----------------
     def run(self):

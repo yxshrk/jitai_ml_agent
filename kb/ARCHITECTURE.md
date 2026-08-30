@@ -39,6 +39,9 @@ flowchart TD
   generations count as non-improving and never stop the run.
 - The Selector lists k candidates in priority order although it fills k − 1 slots: the last is a reserve used when
   one of its own collides with the Explorer's component (otherwise a generation silently lost a branch).
+- **Adaptive breadth.** k = 5 in generation 1, when nothing is measured and breadth pays (live_04: four of five
+  accepted), then 3, growing back toward 5 only for the Consolidator's concrete merge/retest slots (live_04's
+  later generations: 20 nodes for one hit). `--k` / `--k-later`.
 
 ## 2. Inside one branch — the role chain
 

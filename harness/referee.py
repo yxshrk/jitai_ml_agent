@@ -19,12 +19,38 @@ def valid_index():
     """(user_ids, video_ids, labels) of the valid split in row_id order, cached."""
     global _VALID
     if _VALID is None:
-        uid, vid, y = [], [], []
+        uid, vid, y, tab, dur = [], [], [], [], []
         with open(C.WS_DATA / 'valid.csv', newline='') as fh:
             for row in csv.DictReader(fh):
                 uid.append(row['user_id']); vid.append(row['video_id']); y.append(1 if row['long_view'] != '0' else 0)
-        _VALID = (uid, vid, y)
+                tab.append(row.get('tab', '')); dur.append(float(row.get('duration_ms') or 0))
+        _VALID = (uid, vid, y); _VALID_EXTRA.update({'tab': tab, 'dur': dur})
     return _VALID
+
+_VALID_EXTRA, _GROUPS = {}, None
+MIN_GROUP_ROWS = 2000
+def valid_groups():
+    """Row-index groups of the valid split for the diagnostic breakdown: each tab, and duration bands that follow the
+    label's definition (0 = always negative; < 18 s must be watched in full; 18-60 s; 60-180 s; > 180 s). Groups with
+    fewer than MIN_GROUP_ROWS rows are dropped. Cached."""
+    global _GROUPS
+    if _GROUPS is None:
+        valid_index(); tab, dur = _VALID_EXTRA['tab'], _VALID_EXTRA['dur']
+        g = {}
+        for i, (t, d) in enumerate(zip(tab, dur)):
+            g.setdefault(f'tab={t}', []).append(i)
+            band = 'dur=0' if d <= 0 else 'dur<18s' if d < 18000 else 'dur18-60s' if d < 60000 else 'dur60-180s' if d < 180000 else 'dur>180s'
+            g.setdefault(band, []).append(i)
+        _GROUPS = {k: v for k, v in sorted(g.items()) if len(v) >= MIN_GROUP_ROWS}
+    return _GROUPS
+
+def group_breakdown(scores):
+    """Official metrics per tab and per duration band — the Diagnostician's map of where a script is wrong."""
+    uid, _, y = valid_index(); out = {}
+    for name, idx in valid_groups().items():
+        m = evaluate([uid[i] for i in idx], [y[i] for i in idx], [scores[i] for i in idx])
+        out[name] = {'rows': len(idx), 'gauc': round(m['GAUC'], 4), 'ndcg5': round(m['nDCG@5'], 4), 'primary': round(m['primary'], 4)}
+    return out
 
 def static_check(code: str):
     """Strings an agent script may not contain (firewall). Returns the offending patterns."""
@@ -69,13 +95,16 @@ def valid_cohorts():
         _COHORTS = {'all_neg': an / n, 'all_pos': ap / n, 'disc': (n - an - ap) / n}
     return _COHORTS
 
-def score(scores):
+def score(scores, breakdown=False):
     """Official metrics plus `ndcg5_disc`: nDCG@5 restricted to discriminative users, the sharper diagnostic
-    (nDCG = all_pos*1 + disc*ndcg_disc + all_neg*0)."""
+    (nDCG = all_pos*1 + disc*ndcg_disc + all_neg*0); with breakdown=True also the per-tab / per-duration map."""
     uid, _, y = valid_index()
     m = evaluate(uid, y, scores); c = valid_cohorts()
     disc = (m['nDCG@5'] - c['all_pos']) / c['disc'] if c['disc'] else float('nan')
-    return {'gauc': m['GAUC'], 'ndcg5': m['nDCG@5'], 'primary': m['primary'], 'ndcg5_disc': disc}
+    out = {'gauc': m['GAUC'], 'ndcg5': m['nDCG@5'], 'primary': m['primary'], 'ndcg5_disc': disc}
+    if breakdown:
+        out['by_group'] = group_breakdown(scores)
+    return out
 
 @dataclass
 class RunResult:
@@ -134,7 +163,7 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
     except Exception as e:  # missing file, bad format, misalignment
         res.error = f'invalid predictions.csv: {e}'
         return res
-    res.metrics = score(scores)
+    res.metrics = score(scores, breakdown=not smoke and seed == C.DEFAULT_SEED)   # the diagnostic map only for the screening seed
     res.pred_hash = hashlib.md5((out_dir / 'predictions.csv').read_bytes()).hexdigest()
     mj = out_dir / 'metrics.json'
     if mj.exists():

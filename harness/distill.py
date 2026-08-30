@@ -127,7 +127,7 @@ def _clamp_expected(fm, log=print, cid=''):
 
 def _archivable(r, methods_dir):
     """Wildcards, and Selector candidates naming a card that does not exist, once they have a measurement."""
-    if r.get('n') is None or not r.get('metrics') or r.get('action') not in ('improve', 'merge', 'retest', 'explore'):
+    if r.get('n') is None or not r.get('metrics') or r.get('action') not in ('improve', 'merge', 'retest', 'explore', 'deepen'):
         return False
     return bool(r.get('wildcard')) or (bool(r.get('method')) and not (methods_dir / f"{r['method']}.md").exists())
 
@@ -202,7 +202,7 @@ def distill(run_id, methods_dir=None, log=print):
     nodes = {str(r['n']): r for r in recs if r.get('n') is not None}
     touched = {}
     for r in recs:
-        if r.get('action') not in ('improve', 'merge', 'retest', 'explore') or not r.get('method'):
+        if r.get('action') not in ('improve', 'merge', 'retest', 'explore', 'deepen') or not r.get('method'):
             continue
         card = methods_dir / f"{r['method']}.md"
         if not card.exists():

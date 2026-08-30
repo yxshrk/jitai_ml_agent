@@ -45,6 +45,10 @@ same score.
 - The diff retained the parent's field-aware representation and BPR loss, so the measured movement is attributable
   to these two history fields rather than a simultaneous loss change.
 
+**Retest idea (facts §10.4):** the −0.0005 single seed was unconfirmed and the encoding was count-only. A cleaner
+version uses the within-window exposure sequence (earlier valid rows included, labels never), tab-aware (tab 1: 0.292
+vs 0.389), and composes with `history-same-author-run-features`; retest on a stack without it.
+
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0005)
 - live_04:node_005 on [official FM + field-aware FM embeddings]: primary 0.6025, single-seed Δ -0.0005 — rejected; 56 changed lines

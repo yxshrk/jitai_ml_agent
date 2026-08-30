@@ -75,11 +75,17 @@ ROLE_SYSTEM = {
 (2) for each node of the last generation, WHICH HALF of the metric moved (GAUC vs nDCG@5) and by how much — a
 loss change that moves GAUC but not nDCG points at top-of-list ordering; a feature that moves neither is dead here;
 (3) the single most informative next probe and the component it targets, citing a numbered data fact;
-(4) one line on validation-overfitting risk given the streak and how many sub-0.002 "wins" have been accepted.""",
+(4) one line on validation-overfitting risk given the streak and how many sub-0.002 "wins" have been accepted;
+(5) from the per-group breakdown (tabs, duration bands) and each node's by_group_delta: WHERE the champion is weakest
+and which node moved which group — the deepen slot should target that.""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
-target_components; fill the Consolidator's slots (merge / retest / explore) first, then the highest expected gain per
-cost given the diagnosis; never repeat an idea already measured on the same parent unless it is a planned retest;
+target_components; fill the Consolidator's slots (merge / retest / deepen / explore) first, then the highest expected
+gain per cost given the diagnosis; from generation 2 on at least one candidate must DEEPEN (type "deepen"): a specific
+variant of the champion's own mechanism, or of a near-miss (|delta| <= 0.0005, unconfirmed), driven by the per-group
+breakdown and the diagnosis — e.g. negatives per positive, tab-stratified pair sampling, a schedule change on the
+champion — rather than a new single-shot idea; never repeat an idea already measured on the same parent unless it is a
+planned retest;
 prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
 ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
@@ -89,7 +95,7 @@ MIN_EFFECT on fresh seeds at z >= Z_CRIT with the pooled seed SD, so real +0.000
 remaining headroom is ~0.25.
 Output exactly one fenced block:
 ```json
-{"selections": [{"type": "improve|merge|retest|explore", "card": "<card id or method name>",
+{"selections": [{"type": "improve|deepen|merge|retest|explore", "card": "<card id or method name>",
   "target_component": "<one of the list>", "hypothesis": "<one sentence: what changes and why it should help>",
   "expected_delta": 0.002, "expected_delta_basis": "<one sentence citing a card range, a numbered data fact or a journal line>",
   "cheapest_test": "<the smallest code change that tests the hypothesis>",
@@ -157,6 +163,7 @@ improve, one slot from the runner-up lineage or an untried family. Leave the rem
 Do NOT decide acceptance — the referee already did. Output exactly one fenced block:
 ```json {"note": "<two lines of reasoning>", "plan": [{"type": "merge", "merge_parents": [3, 5], "hypothesis": "..."},
  {"type": "retest", "parent": "champion", "card": "...", "hypothesis": "...", "reason": "..."},
+ {"type": "deepen", "parent": "champion", "card": "...", "hypothesis": "<a specific variant of the champion's mechanism, driven by the per-group breakdown>"},
  {"type": "explore", "parent": 2, "card": "...", "hypothesis": "..."}]}```""",
 }
 
@@ -249,10 +256,18 @@ def _state(ctx):
             f"(GAUC {ch['metrics']['gauc']:.4f}, nDCG@5 {ch['metrics']['ndcg5']:.4f}); hypothesis: {ch.get('hypothesis')}\n"
             f"Champion stack (accepted methods actually in its script): [{ctx.get('champion_stack', 'official FM')}]\n"
             f"Champion learning curve (epoch:valid primary): {curve}\n"
+            + _breakdown(ch)
             f"Best-so-far {ctx['best']:.4f}; non-improving generation streak {ctx['streak']} "
             f"(converged at {C.N_CONVERGE}); baseline valid primary {C.BASELINE_VALID_PRIMARY}.\n"
             f"Journal index (one line per node; the full record with diffs is the '# Run journal' section of your instructions):\n"
             + ('\n'.join(ctx['journal_lines']) or '(empty)'))
+
+def _breakdown(ch):
+    bg = (ch.get('metrics') or {}).get('by_group') or {}
+    if not bg:
+        return ''
+    return ('Champion by group (where it is wrong; primary / GAUC / nDCG@5, rows): '
+            + '; '.join(f"{g} {v['primary']:.4f}/{v['gauc']:.4f}/{v['ndcg5']:.4f} ({v['rows']})" for g, v in bg.items()) + '\n')
 
 def user_diagnose(ctx):
     return _state(ctx) + '\n\nLast generation results:\n' + json.dumps(ctx.get('last_generation', []), indent=1, default=str)[:24000]
