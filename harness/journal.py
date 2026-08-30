@@ -50,7 +50,7 @@ class Journal:
         out = []
         for r in self.records():
             a = r.get('action')
-            if a == 'event':
+            if a in ('event', 'screen'):
                 continue
             if a == 'generation':
                 out.append(f"--- generation {r.get('generation')}: {'improved' if r.get('improved') else 'no improvement'}, "
@@ -80,6 +80,9 @@ class Journal:
             a = r.get('action')
             if a == 'event':
                 out.append(f"- event: {r.get('note')}"); continue
+            if a == 'screen':
+                out.append(f"- screen (generation {r.get('generation')}) {'KEPT' if r.get('kept') else 'DROPPED'}: {r.get('card')} [{r.get('family')}] — "
+                           f"{r.get('hypothesis')}; {r.get('text')}"); continue
             if a == 'generation':
                 plan = r.get('plan') or {}
                 out.append(f"\n--- generation {r.get('generation')} closed: {'IMPROVED' if r.get('improved') else 'no improvement'}; "
@@ -142,6 +145,8 @@ class Journal:
             a = r.get('action')
             if a == 'event':
                 L.append(f"- _event_ (generation {r.get('generation')}): {r.get('note')}"); L.append(''); continue
+            if a == 'screen':
+                L.append(f"- _screen_ (generation {r.get('generation')}) {'kept' if r.get('kept') else 'DROPPED'}: `{r.get('card')}` — {r.get('text')}"); L.append(''); continue
             if a == 'generation':
                 L += [f"#### generation {r.get('generation')} closed \u2014 {'improved' if r.get('improved') else 'no improvement'}; "
                       f"streak {r.get('streak')}; champion node_{(r.get('champion') or 0):03d}; best {r.get('best', 0):.4f}; "

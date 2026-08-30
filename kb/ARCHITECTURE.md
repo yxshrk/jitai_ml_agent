@@ -50,6 +50,13 @@ flowchart TD
   (`inputs_of`) or it is dropped. The Critic may answer `rebase_to`, and the loop rebuilds the candidate on that
   node's script.
 
+- **The feature screen (ADR-0015, during live_07).** A feature / encoding / history candidate, and any wildcard naming a
+  `new_signal`, is probed before it is built: a Probe-role script computes the signal for the valid rows on a data dir whose
+  `valid.csv` has every outcome column stripped, and `screen.py` measures within-user `varies`, standalone GAUC, the additive
+  gain on the champion's predictions and a lambdarank stack gain. Below `SCREEN_MIN_GAIN` (0.0003) the slot is dropped and
+  journaled (`action: screen`); the planners see "Screened this run". Measured basis: every item-statistic / session /
+  exposure-context feature scored <= +0.0005 on the FM champion (`kb/data/screens/`).
+
 ## 2. Inside one branch — the role chain
 
 ```mermaid
@@ -85,6 +92,7 @@ referee measures that), and it judges scope from the diff against the parent's *
 |---|---|---|---|
 | Diagnostician | champion curve + metrics (GAUC, nDCG@5, ndcg5_disc) + last generation | ≤ 8 lines: dynamics, which metric half moved per node, next probe, overfitting risk | gpt-5.6-sol / medium |
 | Selector | diagnosis + cards + facts + full journal + consolidator plan + parked ideas + the ADR-0014 state (untried cards, proven cards not on the stack, closed mechanisms, hard groups, champion inputs) | k candidates in priority order, distinct components, the free slot first from generation 2, `mechanism` + `target_group` on deepens, calibrated expected Δ with a cited basis, cheapest test, rejected alternative | gpt-5.6-sol / xhigh |
+| Probe | the candidate (card, hypothesis, new_signal), the champion's input set, the data files of the probe dir, the method card | a short standalone script writing `features.csv` (row_id + <= 8 numeric columns aligned to valid) — the signal, not the model | gpt-5.6-sol / medium |
 | Explorer | the same, plus the list of card ids | one off-menu candidate, same schema plus `new_signal` (an input the champion does not read), flagged WILDCARD | gpt-5.6-sol / xhigh |
 | Implementer | one candidate + parent script + parent stack + same-component history (+ critic instructions on a revise) | the whole script with only the necessary lines changed | gpt-5.6-sol / xhigh |
 | Critic | candidate + unified diff + parent docstring/stack + script | ok / revise / veto — leakage, contract, scope, information (wildcards), library determinism; `rebase_to` when the diff is against the wrong parent; terse on ok | gpt-5.6-sol / medium |
@@ -161,6 +169,16 @@ count from `OMP_NUM_THREADS` (the runner sets it to `cores // k` per branch), ev
 `SMOKE_EPOCHS` capping boosting rounds too, the learning curve still required. The Critic checks these; the seed
 confirmation catches what it misses (a non-deterministic script cannot pass a fresh-seed z-test by accident twice).
 `tests/test_rules_adr0014.py` runs LightGBM + torch under the runner twice and asserts identical predictions.
+
+## 6c. The feature screen (ADR-0015)
+
+`harness/screen.py` (no LLM). `probe_data_dir()` builds `workspace/data_probe/` (links + a label-stripped `valid.csv`);
+`run_probe(code, out_dir, champion_predictions, threads)` runs the probe under the firewall and the thread env with a 180 s cap,
+validates `features.csv` (alignment, finiteness, <= 8 columns) and returns a `ScreenResult` with per-column `varies` / `gauc` /
+`additive` and a `stack_gain`; `passes(res)` is the gate (`best_gain >= SCREEN_MIN_GAIN`; a failed screen never blocks).
+`Loop._screen` runs the probes in parallel after `_diversify`, journals every verdict, extends `state['screened']`
+(`generation, card, family, best_gain, kept` — the campaign planner of ADR-0016 reads `family` and `best_gain`), and drops the
+failing slots. `--no-screen` turns it off; a brain without a `probe` role (the FakeBrain) never screens.
 
 ## 7. The firewall (ADR-0005)
 

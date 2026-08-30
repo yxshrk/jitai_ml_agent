@@ -11,7 +11,8 @@ import json, os, re, shutil, statistics, time, traceback
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from . import config as C, referee as R, prompts as P
-from .brain import Usage, ParseError
+from .brain import Usage, ParseError, Brain
+from . import screen as S
 from .data_access import build as build_workspace
 from .journal import Journal, diff_lines
 
@@ -58,7 +59,8 @@ def confirm_stats(v_node, v_ch, sigma):
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
-                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed', k_later=None):
+                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed', k_later=None,
+                 screen=True):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         # adaptive breadth: k branches in generation 1 (breadth pays when nothing is measured), k_later afterwards,
         # growing back toward k only for the Consolidator's concrete merge/retest slots (live_04: 4 of 5 accepted in
@@ -72,6 +74,8 @@ class Loop:
         self.final_reseed = final_reseed
         assert iteration_unit in ('node', 'generation'); self.iteration_unit = iteration_unit   # ADR-0006: what the 50 cap counts
         self.wildcard = wildcard     # ADR-0011: one slot per generation goes to the Explorer role
+        # ADR-0015: feature candidates are probed and measured on valid before a node is spent; needs a brain with a probe role
+        self.screen = bool(screen) and type(brain).probe is not Brain.probe
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
         self.run_dir = C.RUNS / run_id; self.j = Journal(self.run_dir); self._log = log
         self.state_path = self.run_dir / 'state.json'
@@ -128,7 +132,8 @@ class Loop:
              # ADR-0014 planning state: free-slot candidates, closed mechanisms, hard groups, the champion's inputs
              'untried': P.untried_cards(), 'proven_not_on_stack': self._proven_not_on_stack(),
              'closed_mechanisms': self._closed_mechanisms(), 'hard_groups': self._hard_groups(),
-             'champion_inputs': self.inputs_of(ch['n'])}
+             'champion_inputs': self.inputs_of(ch['n']),
+             'screened': self.state.get('screened', [])}
         d.update(extra); return d
 
     def _brain(self, fn, *args, what='', attempts=2):
@@ -181,6 +186,7 @@ class Loop:
                'wildcard': bool(selection.get('wildcard', False)),
                'mechanism': selection.get('mechanism'), 'target_group': selection.get('target_group'),
                'new_signal': selection.get('new_signal'), 'rebased_from': selection.get('rebased_from'),
+               'screen': selection.get('screen'),
                'code_path': str(self.j.node_path(n).relative_to(self.run_dir)),
                'diff_path': diff[0] if diff else None, 'diff_lines': diff[1] if diff else None,
                'metrics': res.metrics if res else None, 'history': res.history if res else [],
@@ -242,6 +248,10 @@ class Loop:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: selector failed ({err})'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
         selections = self._diversify(selections)
+        selections = self._screen(selections, g)                    # ADR-0015: measure feature candidates before building them
+        if not selections:
+            self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: every candidate was screened out'})
+            return self._close_generation(g, [], diagnosis, snap, t_gen)
         gen_tokens_in, gen_tokens_out, _ = self._tokens_since(snap)
 
         # 2. implement + critique each candidate — the k chains run in parallel threads; tokens are attributed per node
@@ -537,6 +547,63 @@ class Loop:
                     self.log(f"  dropping wildcard without a new_signal (capacity-only proposals are closed, ADR-0014): {h}"); continue
             out.append(s)
         return out
+
+    # ---------------- ADR-0015 feature screen ----------------
+    def _screenable(self, s):
+        if s.get('type') in ('merge', 'retest'):
+            return False
+        return s.get('target_component') in C.SCREEN_COMPONENTS or bool(s.get('wildcard') and s.get('new_signal'))
+
+    @staticmethod
+    def _family_of(s):
+        card = (C.KB / 'methods' / f"{s.get('card')}.md") if s.get('card') else None
+        if card and card.exists():
+            fam = P._front_fields(card.read_text()).get('family')
+            if fam:
+                return fam
+        return s.get('target_component')
+
+    def _screen(self, selections, g):
+        """Probe every feature candidate (a Probe-role script computes the signal on the label-stripped valid split), measure it
+        against the champion's predictions, and drop the slot when best_gain < SCREEN_MIN_GAIN. A failed probe never blocks."""
+        if not self.screen or g < C.SCREEN_FROM_GENERATION:
+            return selections
+        todo = [s for s in selections if self._screenable(s)]
+        champ_pred = self.j.out_dir(self.state['champion']) / 'predictions.csv'
+        if not todo or not champ_pred.exists():
+            return selections
+        threads = max(1, (os.cpu_count() or 2) // max(1, len(todo)))
+        def probe(s):
+            code, err = self._brain(self.brain.probe, self.ctx(), s, what='probe', attempts=1)
+            if not code:
+                return s, None, err or 'no probe script'
+            out = self.run_dir / 'screens' / f"g{g:02d}_{(_slug(s.get('card')) or 'candidate')[:48]}"
+            out.mkdir(parents=True, exist_ok=True); (out / 'probe.py').write_text(code)
+            return s, S.run_probe(out / 'probe.py', out, champ_pred, threads=threads), None
+        if self.parallel and len(todo) > 1:
+            with ThreadPoolExecutor(max_workers=len(todo)) as ex:
+                outcomes = list(ex.map(probe, todo))
+        else:
+            outcomes = [probe(s) for s in todo]
+        dropped = set()
+        for s, res, err in outcomes:
+            fam = self._family_of(s); card = s.get('card')
+            if res is None or not res.ok:
+                why = err or (res.error if res else 'unknown')
+                self.log(f"  screen: probe of {card!r} failed ({why}); candidate proceeds unscreened")
+                self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'screen of {card!r} failed: {why}; candidate proceeded'})
+                continue
+            kept = S.passes(res); s['screen'] = res.summary()
+            rec = {'n': None, 'generation': g, 'action': 'screen', 'kept': kept, 'card': card, 'family': fam,
+                   'target_component': s.get('target_component'), 'hypothesis': s.get('hypothesis'), 'new_signal': s.get('new_signal'),
+                   'wildcard': bool(s.get('wildcard')), 'best_gain': res.best_gain, 'best_column': res.best_column, 'stack_gain': res.stack_gain,
+                   'columns': res.columns, 'duration_s': round(res.duration_s, 1), 'text': res.text()}
+            self.j.append(rec)
+            self.state.setdefault('screened', []).append({'generation': g, 'card': card, 'family': fam, 'best_gain': res.best_gain, 'kept': kept})
+            self.log(f"  screen {'kept' if kept else 'DROPPED'} {card!r} [{fam}]: {res.text()[:160]}")
+            if not kept:
+                dropped.add(id(s))
+        return [s for s in selections if id(s) not in dropped]
 
     def _resolve_parents(self, sel):
         """The parent a candidate is built on. A deepen/retest of a specific node must branch from THAT node — live_05's
