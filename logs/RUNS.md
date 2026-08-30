@@ -37,3 +37,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | final_s1 | coral | converged | 3 | 0.60184 | 3 straight rejections incl. session-time-features +0.0002 on Pure (weak-transfer confirmed); gated variant untried |
 | final_s3 | coral | converged | 4 | 0.60396 | full-library lottery ticket; NOTE node_003 gated-session composite measured 0.6044 but grey-zone rejected — reconcile in morning |
 | omega1k audits | ruby | complete | - | 0.6766/0.6762/0.6652 | replication + shuffle: breakthrough confirmed |
+| clean_r3 | ruby | converged | 3 | 0.60381 | GPU clean run; session +0.0001 and gauge-bce flat from dial-swept base — mechanisms overlap confirmed |
