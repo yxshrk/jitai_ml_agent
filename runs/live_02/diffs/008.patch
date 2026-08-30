@@ -1,0 +1,110 @@
+--- node_001.py
++++ node_008.py
+@@ -7,12 +7,13 @@
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node changes only the training objective to within-user BPR with one sampled negative per positive.
++This node adds strictly prior per-user author, tab, and duration long-view rate fields.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'hist_author', 'hist_tab', 'hist_dur']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -83,28 +84,72 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'time_ms', 'long_view'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 8 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def duration_key(dur):
++        return str(int(np.searchsorted(edges, float(dur))))
++    def history_bucket(stat, prior):
++        if stat is None:
++            return -1
++        rate = (stat[1] + 5.0 * prior) / (stat[0] + 5.0)
++        return min(9, int(rate * 10.0))
++    user_stats, author_stats, tab_stats, dur_stats = {}, {}, {}, {}
++    htr = np.full((len(tr), 3), -1, dtype=np.int8)
++    times = np.array([int(x[4]) for x in tr], dtype=np.int64)
++    order = np.argsort(times, kind='stable')
++    start = 0
++    while start < len(order):
++        end = start + 1
++        while end < len(order) and times[order[end]] == times[order[start]]:
++            end += 1
++        for oi in range(start, end):
++            i = int(order[oi]); x = tr[i]; user = x[0]
++            us = user_stats.get(user)
++            prior = us[1] / us[0] if us is not None else 0.0
++            htr[i, 0] = history_bucket(author_stats.get((user, vid2author.get(x[1], 'UNK'))), prior)
++            htr[i, 1] = history_bucket(tab_stats.get((user, x[2])), prior)
++            htr[i, 2] = history_bucket(dur_stats.get((user, duration_key(x[3]))), prior)
++        for oi in range(start, end):
++            i = int(order[oi]); x = tr[i]; user = x[0]; y = 1 if x[5] != '0' else 0
++            for store, key in ((user_stats, user), (author_stats, (user, vid2author.get(x[1], 'UNK'))),
++                               (tab_stats, (user, x[2])), (dur_stats, (user, duration_key(x[3])))):
++                stat = store.get(key)
++                if stat is None:
++                    store[key] = [1, y]
++                else:
++                    stat[0] += 1; stat[1] += y
++        start = end
++    def history_for_rows(rows, ui, vi, ti, di):
++        hist = np.full((len(rows), 3), -1, dtype=np.int8)
++        for n, x in enumerate(rows):
++            user = x[ui]; us = user_stats.get(user)
++            prior = us[1] / us[0] if us is not None else 0.0
++            hist[n, 0] = history_bucket(author_stats.get((user, vid2author.get(x[vi], 'UNK'))), prior)
++            hist[n, 1] = history_bucket(tab_stats.get((user, x[ti])), prior)
++            hist[n, 2] = history_bucket(dur_stats.get((user, duration_key(x[di]))), prior)
++        return hist
++    hva = history_for_rows(va, 1, 2, 3, 4)
++    def raw(user, video, tab, dur, hist):
++        return [user, video, vid2author.get(video, 'UNK'), tab, duration_key(dur),
++                str(int(hist[0])), str(int(hist[1])), str(int(hist[2]))]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], htr[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, hist, ui, vi, ti, di):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], hist[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, htr, 0, 1, 2, 3); ytr = np.array([1.0 if x[5] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, hva, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     user_pairs = {}
+     for i, x in enumerate(tr):
+         user_pairs.setdefault(x[0], [[], []])[int(ytr[i])].append(i)
+@@ -150,7 +195,8 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        hextra = history_for_rows(ex, 1, 2, 3, 4)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, hextra, 1, 2, 3, 4)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

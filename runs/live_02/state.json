@@ -1,9 +1,9 @@
 {
  "run_id": "live_02",
- "n_next": 4,
- "generation": 1,
+ "n_next": 10,
+ "generation": 3,
  "champion": 1,
- "best": 0.6014687563529677,
+ "best": 0.6036905218935378,
  "streak": 1,
  "nodes": {
   "0": {
@@ -550,23 +550,883 @@
    "accepted": false,
    "seed_confirmation": null,
    "single_seed_accept": false
+  },
+  "4": {
+   "n": 4,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "hypothesis": "Combining seven-day recency weighting with BPR should emphasize recent within-user preference pairs and transfer better under temporal drift than recency-weighted pointwise training.",
+   "expected_delta": 0.0008,
+   "expected_delta_basis": "Node_002 was weak but positive at +0.0005 on pointwise FM, while Data Fact 5 documents strong traffic and label drift, so a changed BPR parent justifies a low-cost retest.",
+   "rejected_alternative": {
+    "card": "features-duration-unknown-flag",
+    "reason": "Its isolated pointwise test was negative (-0.0003), whereas recency was positive and has a clearer interaction with the changed BPR loss."
+   },
+   "change_summary": "Add normalized seven-day recency weights and scale each BPR pair gradient by the mean weight of its positive and sampled negative rows.",
+   "code_path": "nodes/004.py",
+   "diff_path": "diffs/004.patch",
+   "diff_lines": 15,
+   "metrics": {
+    "gauc": 0.6695399956718535,
+    "ndcg5": 0.5366999993628598,
+    "primary": 0.6031199975173567,
+    "ndcg5_disc": 0.7229279825000167
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.674971694641925,
+     "val_gauc": 0.6576943151876335,
+     "val_ndcg5": 0.5305370668413917,
+     "val_primary": 0.5941156910145127
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6165935688830436,
+     "val_gauc": 0.6641242275901594,
+     "val_ndcg5": 0.5338955110753041,
+     "val_primary": 0.5990098693327317
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5732685631894051,
+     "val_gauc": 0.6665232382451127,
+     "val_ndcg5": 0.5351271289578805,
+     "val_primary": 0.6008251836014966
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5564771662367151,
+     "val_gauc": 0.6677445886428138,
+     "val_ndcg5": 0.5363746613428583,
+     "val_primary": 0.602059624992836
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5502076491396478,
+     "val_gauc": 0.6695399956718535,
+     "val_ndcg5": 0.5366999993628598,
+     "val_primary": 0.6031199975173567
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5444035580817689,
+     "val_gauc": 0.6686655556983166,
+     "val_ndcg5": 0.5364172788460017,
+     "val_primary": 0.6025414172721592
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5396353475590969,
+     "val_gauc": 0.668885615841884,
+     "val_ndcg5": 0.5361164465618944,
+     "val_primary": 0.6025010312018892
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5361914406431482,
+     "val_gauc": 0.669216950068902,
+     "val_ndcg5": 0.5364098089854047,
+     "val_primary": 0.6028133795271533
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5303934406726918,
+     "val_gauc": 0.6692833396896243,
+     "val_ndcg5": 0.5364673770960332,
+     "val_primary": 0.6028753583928288
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 12.27505087852478,
+   "tokens_in": 34577,
+   "tokens_out": 5216,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or unauthorized data access; outcomes are used only as training labels.",
+      "The change is isolated and contract-compliant, though the expected +0.0008 is below the 0.002 noise floor and requires multi-seed interpretation."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 4e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6031199975173567,
+     0.6030548263316666,
+     0.6029738269946883
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": -0.0,
+    "se": 0.00016,
+    "t": -0.01,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "5": {
+   "n": 5,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "loss-bpr-hard-negatives",
+   "target_component": "loss",
+   "hypothesis": "Sampling three uniform same-user negatives per positive should spend more updates on informative ordering errors and improve both GAUC and top-list ranking over single-negative BPR.",
+   "expected_delta": 0.0013,
+   "expected_delta_basis": "The card range is 0.000\u20130.004, and node_001's +0.0026 GAUC but only +0.0007 nDCG indicates room to refine pair sampling, though calibration places a first attempt in the range's lower third.",
+   "rejected_alternative": {
+    "card": "loss-lambdarank-pairs",
+    "reason": "It targets the same loss component and cannot coexist in this generation; three-negative BPR is cheaper and fills the Consolidator's requested exploration slot."
+   },
+   "change_summary": "Expand each positive into three uniformly sampled same-user negative pairs per epoch, averaging all 3B pair gradients in one Adam step per original-positive batch.",
+   "code_path": "nodes/005.py",
+   "diff_path": "diffs/005.patch",
+   "diff_lines": 7,
+   "metrics": {
+    "gauc": 0.6703246065419738,
+    "ndcg5": 0.5370564372451017,
+    "primary": 0.6036905218935378,
+    "ndcg5_disc": 0.7235448910382581
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6735983693853338,
+     "val_gauc": 0.6588324107541856,
+     "val_ndcg5": 0.5306901004884078,
+     "val_primary": 0.5947612556212967
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6124285129790611,
+     "val_gauc": 0.6657200339559513,
+     "val_ndcg5": 0.5338648839816528,
+     "val_primary": 0.599792458968802
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5701447116567734,
+     "val_gauc": 0.6676766272954274,
+     "val_ndcg5": 0.5357528743943426,
+     "val_primary": 0.601714750844885
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5545771324888189,
+     "val_gauc": 0.6694717929489706,
+     "val_ndcg5": 0.5366279802392067,
+     "val_primary": 0.6030498865940886
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5466515054094031,
+     "val_gauc": 0.6703246065419738,
+     "val_ndcg5": 0.5370564372451017,
+     "val_primary": 0.6036905218935378
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5407929800926371,
+     "val_gauc": 0.6693363537137162,
+     "val_ndcg5": 0.5368893905233993,
+     "val_primary": 0.6031128721185578
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.535183310508728,
+     "val_gauc": 0.669636484509836,
+     "val_ndcg5": 0.5366579575052998,
+     "val_primary": 0.6031472210075679
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5294609120551576,
+     "val_gauc": 0.6695174116089918,
+     "val_ndcg5": 0.5366065358387929,
+     "val_primary": 0.6030619737238924
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5226134061813354,
+     "val_gauc": 0.6685799390095456,
+     "val_ndcg5": 0.5361679735115781,
+     "val_primary": 0.6023739562605619
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 19.914546966552734,
+   "tokens_in": 69237,
+   "tokens_out": 8140,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "Flattening all pairs creates 3x as many Adam updates, confounding multi-negative averaging with a larger optimization budget and stronger repeated regularization.",
+      "Expected +0.0013 is below the 0.002 noise floor, so a single-seed result is inconclusive."
+     ],
+     "instructions": "Batch original positives, sample three negatives per positive, repeat each positive only inside that batch, average gradients over the resulting 3B pairs, and perform one Adam step per original-positive batch. Confirm any sub-0.002 result across at least three seeds."
+    },
+    {
+     "round": 1,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violation; three negatives are sampled uniformly within user and averaged in one update per original-positive batch.",
+      "Expected delta 0.0013 is below the 0.002 noise/acceptance floor, so any apparent sub-threshold gain needs at least three seeds."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00061,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6036905218935378,
+     0.6031319982343639,
+     0.6027924981045094
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00015,
+    "se": 0.00024,
+    "t": 0.63,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "6": {
+   "n": 6,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "regularization-embedding-dropout-l2",
+   "target_component": "regularization",
+   "hypothesis": "Increasing embedding L2 to 1e-5 should reduce the clear post-epoch-8 overfitting of BPR while preserving its personalized ordering signal.",
+   "expected_delta": 0.0012,
+   "expected_delta_basis": "The card range is 0.000\u20130.004, and the champion declines steadily from 0.6031 at epoch 8 to 0.6020 at epoch 12, providing direct evidence that modest regularization may help.",
+   "rejected_alternative": {
+    "card": "training-schedule-weight-averaging",
+    "reason": "EMA has a similarly small expected range but requires more implementation and can lag the rapidly improving early BPR epochs; a one-parameter L2 probe is cheaper."
+   },
+   "change_summary": "Increase only the FM embedding-vector L2 coefficient from 1e-6 to 1e-5 while keeping W regularization at 1e-6 and leaving BPR training unchanged.",
+   "code_path": "nodes/006.py",
+   "diff_path": "diffs/006.patch",
+   "diff_lines": 4,
+   "metrics": {
+    "gauc": 0.6697198538506768,
+    "ndcg5": 0.5374628315089272,
+    "primary": 0.603591342679802,
+    "ndcg5_disc": 0.7242482620987906
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749072239754048,
+     "val_gauc": 0.6578543636544338,
+     "val_ndcg5": 0.5305177028012981,
+     "val_primary": 0.5941860332278659
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6171182698391854,
+     "val_gauc": 0.6642527601208537,
+     "val_ndcg5": 0.5337436225636405,
+     "val_primary": 0.5989981913422471
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5748502130204058,
+     "val_gauc": 0.6660596621688367,
+     "val_ndcg5": 0.5350871822182285,
+     "val_primary": 0.6005734221935326
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5584913403429883,
+     "val_gauc": 0.6674670538792565,
+     "val_ndcg5": 0.535961589514115,
+     "val_primary": 0.6017143216966858
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5525522790056594,
+     "val_gauc": 0.6689411633627008,
+     "val_ndcg5": 0.5365822743309976,
+     "val_primary": 0.6027617188468493
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5477528952537699,
+     "val_gauc": 0.668671914233402,
+     "val_ndcg5": 0.5367077358751505,
+     "val_primary": 0.6026898250542763
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5439354371517262,
+     "val_gauc": 0.6694181325932913,
+     "val_ndcg5": 0.5364243028000394,
+     "val_primary": 0.6029212176966654
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5419776503075945,
+     "val_gauc": 0.6702757994355218,
+     "val_ndcg5": 0.5368251032548905,
+     "val_primary": 0.6035504513452061
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5377910555677211,
+     "val_gauc": 0.6695990276457123,
+     "val_ndcg5": 0.5364444116471367,
+     "val_primary": 0.6030217196464245
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5351384954249605,
+     "val_gauc": 0.6692020900434842,
+     "val_ndcg5": 0.5369712078122904,
+     "val_primary": 0.6030866489278872
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5312187570206662,
+     "val_gauc": 0.6697198538506768,
+     "val_ndcg5": 0.5374628315089272,
+     "val_primary": 0.603591342679802
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5276621846442527,
+     "val_gauc": 0.6688217485032726,
+     "val_ndcg5": 0.5367590836854473,
+     "val_primary": 0.60279041609436
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.5236254042767464,
+     "val_gauc": 0.6682717312421278,
+     "val_ndcg5": 0.53693373898371,
+     "val_primary": 0.6026027351129188
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.5195285728637208,
+     "val_gauc": 0.6676249191364617,
+     "val_ndcg5": 0.5356555997635271,
+     "val_primary": 0.6016402594499943
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.5146502839758041,
+     "val_gauc": 0.6674289067237612,
+     "val_ndcg5": 0.5358826416473897,
+     "val_primary": 0.6016557741855755
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 16.083116054534912,
+   "tokens_in": 69217,
+   "tokens_out": 6933,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "The shared l2 now regularizes both embeddings V and linear biases W, while the hypothesis claims an embedding-only L2 change.",
+      "Expected delta 0.0012 is below the 0.002 acceptance/noise floor."
+     ],
+     "instructions": "Keep W regularization at the parent value 1e-6 and apply 1e-5 only to V; otherwise preserve the parent script exactly. Treat any apparent gain as inconclusive unless it reaches 0.002 or is confirmed across seeds."
+    },
+    {
+     "round": 1,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violation; valid long_view is used only for evaluation, and SMOKE_EPOCHS caps training.",
+      "Scope is limited to V L2=1e-5 while W remains 1e-6; expected +0.0012 is below the 0.002 floor, so only a >=0.002 gain or multi-seed confirmation is meaningful."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00051,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.603591342679802,
+     0.6032550631951964,
+     0.6029592540695468
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00022,
+    "se": 0.00019,
+    "t": 1.15,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "7": {
+   "n": 7,
+   "generation": 3,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "features-duration-unknown-flag",
+   "target_component": "features",
+   "hypothesis": "A dedicated duration-zero category may help BPR directly push always-negative unknown-duration impressions below each user's positive rows.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The card range is +0.001 to +0.004, but node_003 was flat on pointwise FM, so the changed ranking-aligned loss justifies only a lower-bound retest.",
+   "rejected_alternative": {
+    "card": "features-fine-duration-and-tab-cross",
+    "reason": "It adds several fields and confounds the deterministic unknown-duration signal with a broader duration encoding change."
+   },
+   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms=0 as a dedicated UNK0 category.",
+   "code_path": "nodes/007.py",
+   "diff_path": "diffs/007.patch",
+   "diff_lines": 4,
+   "metrics": {
+    "gauc": 0.6696626866324894,
+    "ndcg5": 0.5365127900050612,
+    "primary": 0.6030877383187754,
+    "ndcg5_disc": 0.7226039679745732
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6746947625850109,
+     "val_gauc": 0.6577163492148155,
+     "val_ndcg5": 0.5310753957105968,
+     "val_primary": 0.5943958724627061
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6167457902685125,
+     "val_gauc": 0.6633527077863497,
+     "val_ndcg5": 0.5336053666561567,
+     "val_primary": 0.5984790372212532
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5738504402180935,
+     "val_gauc": 0.6668439972633544,
+     "val_ndcg5": 0.5351074612882726,
+     "val_primary": 0.6009757292758136
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5563715455379892,
+     "val_gauc": 0.6672865197276241,
+     "val_ndcg5": 0.5358768973591983,
+     "val_primary": 0.6015817085434112
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5494938442047607,
+     "val_gauc": 0.6689170547339681,
+     "val_ndcg5": 0.5369421354892447,
+     "val_primary": 0.6029295951116065
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5434341760391884,
+     "val_gauc": 0.6690761087294974,
+     "val_ndcg5": 0.536795594339158,
+     "val_primary": 0.6029358515343277
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5380290924234593,
+     "val_gauc": 0.6693625543902675,
+     "val_ndcg5": 0.5365746208515411,
+     "val_primary": 0.6029685876209043
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5344126922018985,
+     "val_gauc": 0.6696626866324894,
+     "val_ndcg5": 0.5365127900050612,
+     "val_primary": 0.6030877383187754
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.528416319096342,
+     "val_gauc": 0.6689364386952626,
+     "val_ndcg5": 0.5363452157210303,
+     "val_primary": 0.6026408272081465
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.523957962685443,
+     "val_gauc": 0.6687968520236341,
+     "val_ndcg5": 0.5362455270542501,
+     "val_primary": 0.6025211895389422
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5179294537990651,
+     "val_gauc": 0.6685408432853586,
+     "val_ndcg5": 0.5364963705016162,
+     "val_primary": 0.6025186068934874
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5125641252132173,
+     "val_gauc": 0.6670144842179871,
+     "val_ndcg5": 0.5355145599262713,
+     "val_primary": 0.6012645220721292
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.423134803771973,
+   "tokens_in": 34444,
+   "tokens_out": 3439,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violation; duration zero is isolated without changing the BPR training path.",
+      "Expected +0.001 is below the 0.002 acceptance floor, but the card's upper range makes this a defensible targeted retest."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 1e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6030877383187754,
+     0.6032975650957224,
+     0.603313006772546
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00018,
+    "se": 0.00016,
+    "t": 1.11,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "8": {
+   "n": 8,
+   "generation": 3,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Leakage-safe per-user historical rates by author, tab, and duration bucket should add row-varying personalization beyond BPR's user-item interactions, particularly for sparse users.",
+   "expected_delta": 0.002,
+   "expected_delta_basis": "The card range is +0.001 to +0.006, and Data Fact #2 shows a median of only 35 training interactions per valid user, making smoothed aggregates a plausible but modest source of new signal.",
+   "rejected_alternative": {
+    "card": "aux-targets-is-click",
+    "reason": "It is cheaper but is nearly duplicate supervision because P(click|long_view)=0.996, whereas history introduces genuinely new row-varying personalization."
+   },
+   "change_summary": "Added leakage-safe, strictly prior per-user long-view rate buckets for author, tab, and duration as three categorical FM fields, with train totals used for validation and extra scoring.",
+   "code_path": "nodes/008.py",
+   "diff_path": "diffs/008.patch",
+   "diff_lines": 70,
+   "metrics": {
+    "gauc": 0.6690670356712656,
+    "ndcg5": 0.5368357555608934,
+    "primary": 0.6029513956160795,
+    "ndcg5_disc": 0.7231629439389057
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6634916346123878,
+     "val_gauc": 0.6590981830112116,
+     "val_ndcg5": 0.5315962768802053,
+     "val_primary": 0.5953472299457084
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5822224857959342,
+     "val_gauc": 0.6651467858887772,
+     "val_ndcg5": 0.53453266140494,
+     "val_primary": 0.5998397236468587
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5555666964104835,
+     "val_gauc": 0.6673693502918563,
+     "val_ndcg5": 0.5354979329128708,
+     "val_primary": 0.6014336416023636
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5482785891979298,
+     "val_gauc": 0.66737844556248,
+     "val_ndcg5": 0.5358955351537068,
+     "val_primary": 0.6016369903580934
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5459784091787135,
+     "val_gauc": 0.6690670356712656,
+     "val_ndcg5": 0.5368357555608934,
+     "val_primary": 0.6029513956160795
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5423984514906052,
+     "val_gauc": 0.6675584444334103,
+     "val_ndcg5": 0.5355471957714674,
+     "val_primary": 0.6015528201024388
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5389667939632496,
+     "val_gauc": 0.6684093777839722,
+     "val_ndcg5": 0.5357019822701293,
+     "val_primary": 0.6020556800270508
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5366831764261774,
+     "val_gauc": 0.6689398697406311,
+     "val_ndcg5": 0.5357825567152692,
+     "val_primary": 0.6023612132279501
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5312905273538955,
+     "val_gauc": 0.6684612766011127,
+     "val_ndcg5": 0.5359635886773543,
+     "val_primary": 0.6022124326392335
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 22.45482301712036,
+   "tokens_in": 35269,
+   "tokens_out": 7203,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "History labels are used only from strictly earlier time_ms; equal-timestamp rows are updated afterward, and validation/extra use train-only totals.",
+      "Contract and scope are preserved; the expected +0.002 is plausible but exactly at the acceptance/noise floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00013,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "9": {
+   "n": 9,
+   "generation": 3,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "hypothesis": "Weighting BPR pairs by their current nDCG@5 swap impact should focus updates on top-ranked mistakes and convert the observed nDCG-specific movement into a larger primary gain.",
+   "expected_delta": 0.002,
+   "expected_delta_basis": "The card range is +0.001 to +0.006, while node_006 improved nDCG@5 by +0.0010 with no GAUC gain and Data Fact #7 reports short 5.6-row validation lists, providing specific evidence for top-of-list weighting.",
+   "rejected_alternative": {
+    "card": "training-schedule-weight-averaging",
+    "reason": "Checkpoint averaging addresses variance and mild overfitting but does not target the diagnosed top-5 ordering error and has a lower expected ceiling."
+   },
+   "change_summary": "Add LambdaRank nDCG@5 swap-impact weighting to sampled BPR pairs after one plain-BPR warm-up epoch.",
+   "code_path": "nodes/009.py",
+   "diff_path": "diffs/009.patch",
+   "diff_lines": 36,
+   "metrics": {
+    "gauc": 0.6685440813601279,
+    "ndcg5": 0.5356564450726975,
+    "primary": 0.6021002632164127,
+    "ndcg5_disc": 0.7211218401571469
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6748662083706958,
+     "val_gauc": 0.6575714558727384,
+     "val_ndcg5": 0.5305158926694021,
+     "val_primary": 0.5940436742710702
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.05178374638582798,
+     "val_gauc": 0.6603309191537864,
+     "val_ndcg5": 0.5315621002904886,
+     "val_primary": 0.5959465097221375
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.05036143506778047,
+     "val_gauc": 0.6616540774188961,
+     "val_ndcg5": 0.5324285776072801,
+     "val_primary": 0.5970413275130881
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.04902474249297,
+     "val_gauc": 0.6634583425052815,
+     "val_ndcg5": 0.5334460498216442,
+     "val_primary": 0.5984521961634628
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.04792528433051515,
+     "val_gauc": 0.6639722172976189,
+     "val_ndcg5": 0.5337307753894213,
+     "val_primary": 0.5988514963435201
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.046980163597680154,
+     "val_gauc": 0.6645101439636071,
+     "val_ndcg5": 0.5338681927623289,
+     "val_primary": 0.599189168362968
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.04580163654494793,
+     "val_gauc": 0.66568843213851,
+     "val_ndcg5": 0.5348223386737574,
+     "val_primary": 0.6002553854061337
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.045430871004119834,
+     "val_gauc": 0.66651454167228,
+     "val_ndcg5": 0.5350445660147028,
+     "val_primary": 0.6007795538434915
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.044651830608540395,
+     "val_gauc": 0.6676224007042177,
+     "val_ndcg5": 0.5355072517872158,
+     "val_primary": 0.6015648262457167
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.04426645336950079,
+     "val_gauc": 0.6678920258258486,
+     "val_ndcg5": 0.5357372805132544,
+     "val_primary": 0.6018146531695515
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.04365821460143049,
+     "val_gauc": 0.6685440813601279,
+     "val_ndcg5": 0.5356564450726975,
+     "val_primary": 0.6021002632164127
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.04345084742662755,
+     "val_gauc": 0.6677189382184716,
+     "val_ndcg5": 0.535734557696518,
+     "val_primary": 0.6017267479574948
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.04297002198848319,
+     "val_gauc": 0.6676980499209981,
+     "val_ndcg5": 0.5360669555018682,
+     "val_primary": 0.6018825027114332
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.04249577890051172,
+     "val_gauc": 0.6675855224826313,
+     "val_ndcg5": 0.5358357468721249,
+     "val_primary": 0.6017106346773781
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.04224456022394464,
+     "val_gauc": 0.6680877595028902,
+     "val_ndcg5": 0.5359237963795692,
+     "val_primary": 0.6020057779412298
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 20.942926168441772,
+   "tokens_in": 34927,
+   "tokens_out": 7230,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; labels are used only for training pairs and loss weights.",
+      "Contract and scope are preserved; ranking is vectorized and the +0.002 expectation is plausible but at the acceptance floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00098,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
   }
  },
  "plan": {
-  "note": "No merge is eligible: only BPR improved the prior champion by at least 0.001; recency and duration-unknown did not.\nRetest weak recency weighting on the changed BPR stack, and explore hard-negative sampling as the most direct refinement of the accepted ranking loss.",
+  "note": "No merge qualifies: no node from this generation, or prior runner-up, improved the champion by the required >=0.001; duration/history/LambdaRank should remain parked.\nUse one runner-up-lineage slot to stabilize node_005's promising hard-negative gain and one untried auxiliary-target slot; leave the third slot to the Selector.",
   "plan": [
    {
-    "type": "retest",
-    "parent": "champion",
-    "card": "data-weighting-recency",
-    "hypothesis": "Combining seven-day recency weighting with within-user BPR will emphasize recent positive-negative preferences and improve transfer under drift more than recency-weighted pointwise training.",
-    "reason": "The original pointwise result was weak but positive and uncertain (mean delta +0.00036, SE 0.00024); BPR is now the champion and changes which historical rows and pairs drive ranking gradients."
+    "type": "explore",
+    "parent": 5,
+    "card": "training-schedule-weight-averaging",
+    "hypothesis": "EMA parameter averaging may stabilize node_005's +0.0006 hard-negative improvement across its peaked learning curve and turn the best runner-up lineage into a confirmable gain."
    },
    {
     "type": "explore",
     "parent": "champion",
-    "card": "loss-bpr-hard-negatives",
-    "hypothesis": "Sampling three same-user negatives per positive will reduce wasted updates on already-correct pairs and improve GAUC and top-list ordering over single-negative BPR."
+    "card": "aux-targets-is-click",
+    "hypothesis": "A shared is_click auxiliary head should regularize sparse BPR embeddings with dense supervision from the same watch-time mechanism while retaining long_view BPR scores for ranking."
    }
   ]
  },
@@ -584,163 +1444,201 @@
    "target_component": "features",
    "delta": -0.00031,
    "on_champion": 0
+  },
+  {
+   "node": 4,
+   "card": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "delta": 4e-05,
+   "on_champion": 1
+  },
+  {
+   "node": 5,
+   "card": "loss-bpr-hard-negatives",
+   "target_component": "loss",
+   "delta": 0.00061,
+   "on_champion": 1
+  },
+  {
+   "node": 6,
+   "card": "regularization-embedding-dropout-l2",
+   "target_component": "regularization",
+   "delta": 0.00051,
+   "on_champion": 1
+  },
+  {
+   "node": 7,
+   "card": "features-duration-unknown-flag",
+   "target_component": "features",
+   "delta": 1e-05,
+   "on_champion": 1
+  },
+  {
+   "node": 8,
+   "card": "history-user-aggregates",
+   "target_component": "history",
+   "delta": -0.00013,
+   "on_champion": 1
+  },
+  {
+   "node": 9,
+   "card": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "delta": -0.00098,
+   "on_champion": 1
   }
  ],
  "start": 1788087613.6936162,
  "interventions": 0,
  "stop_reason": null,
  "usage": {
-  "calls": 9,
-  "tokens_in": 147487,
-  "tokens_out": 13678,
-  "cache_read": 97454,
+  "calls": 31,
+  "tokens_in": 522047,
+  "tokens_out": 56494,
+  "cache_read": 403738,
   "cache_write": 0,
-  "cost_usd": 0.709232
+  "cost_usd": 2.488234
  },
- "champion_seeds": {},
+ "champion_seeds": {
+  "4:1": 0.6030548263316666,
+  "4:2": 0.6029738269946883,
+  "1:1": 0.6032265276409501,
+  "1:2": 0.6028476475917082,
+  "5:1": 0.6031319982343639,
+  "5:2": 0.6027924981045094,
+  "6:1": 0.6032550631951964,
+  "6:2": 0.6029592540695468,
+  "7:1": 0.6032975650957224,
+  "7:2": 0.603313006772546
+ },
  "last_generation": [
   {
-   "n": 1,
-   "parent": 0,
+   "n": 7,
+   "parent": 1,
    "merge_parents": null,
-   "action": "explore",
-   "method": "loss-bpr-pairwise-within-user",
-   "target_component": "loss",
-   "hypothesis": "Replace pointwise logloss with within-user BPR so training directly improves positive-negative ordering while cancelling metric-irrelevant user-constant effects.",
-   "change_summary": "Replace pointwise logloss updates with pure within-user BPR, precomputing mixed-user positive/negative pools and sampling one same-user negative per positive each epoch.",
-   "expected_delta": 0.0022,
+   "action": "retest",
+   "method": "features-duration-unknown-flag",
+   "target_component": "features",
+   "hypothesis": "A dedicated duration-zero category may help BPR directly push always-negative unknown-duration impressions below each user's positive rows.",
+   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms=0 as a dedicated UNK0 category.",
+   "expected_delta": 0.001,
    "metrics": {
-    "gauc": 0.6696755926496497,
-    "ndcg5": 0.5364878968791964,
-    "primary": 0.603081744764423,
-    "ndcg5_disc": 0.7225608839404268
+    "gauc": 0.6696626866324894,
+    "ndcg5": 0.5365127900050612,
+    "primary": 0.6030877383187754,
+    "ndcg5_disc": 0.7226039679745732
    },
-   "realized_delta": 0.00161,
-   "accepted": true,
+   "realized_delta": 1e-05,
+   "accepted": false,
    "seed_confirmation": {
     "node_seeds": [
+     0.6030877383187754,
+     0.6032975650957224,
+     0.603313006772546
+    ],
+    "champion_seeds": [
      0.603081744764423,
      0.6032265276409501,
      0.6028476475917082
     ],
-    "champion_seeds": [
-     0.6014687563529677,
-     0.6017609746263709,
-     0.6010899806390073
-    ],
-    "delta_mean": 0.00161,
-    "se": 0.0002,
-    "t": 8.22,
+    "delta_mean": 0.00018,
+    "se": 0.00016,
+    "t": 1.11,
     "rule": "diff >= 0.001 and t >= 2.5"
    },
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 14.507008075714111,
+   "duration_s": 14.423134803771973,
    "curve": [
-    0.594,
-    0.5989,
-    0.6008,
-    0.6019,
+    0.5944,
+    0.5985,
+    0.601,
+    0.6016,
+    0.6029,
+    0.6029,
     0.603,
-    0.6024,
-    0.6028,
     0.6031,
     0.6026,
-    0.6024,
-    0.6023,
-    0.602
+    0.6025,
+    0.6025,
+    0.6013
    ]
   },
   {
-   "n": 2,
-   "parent": 0,
+   "n": 8,
+   "parent": 1,
    "merge_parents": null,
    "action": "explore",
-   "method": "data-weighting-recency",
-   "target_component": "data-weighting",
-   "hypothesis": "Exponentially downweight early training rows so item and interaction estimates emphasize the late-April regime that most closely matches validation and hidden test.",
-   "change_summary": "Apply normalized exponential recency weights with a fixed seven-day half-life to pointwise training gradients and loss diagnostics.",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Leakage-safe per-user historical rates by author, tab, and duration bucket should add row-varying personalization beyond BPR's user-item interactions, particularly for sparse users.",
+   "change_summary": "Added leakage-safe, strictly prior per-user long-view rate buckets for author, tab, and duration as three categorical FM fields, with train totals used for validation and extra scoring.",
    "expected_delta": 0.002,
    "metrics": {
-    "gauc": 0.6678403372440794,
-    "ndcg5": 0.5360332110298209,
-    "primary": 0.6019367741369501,
-    "ndcg5_disc": 0.7217739317204969
+    "gauc": 0.6690670356712656,
+    "ndcg5": 0.5368357555608934,
+    "primary": 0.6029513956160795,
+    "ndcg5_disc": 0.7231629439389057
    },
-   "realized_delta": 0.00047,
-   "accepted": false,
-   "seed_confirmation": {
-    "node_seeds": [
-     0.6019367741369501,
-     0.6020871274532423,
-     0.6013703133923629
-    ],
-    "champion_seeds": [
-     0.6014687563529677,
-     0.6017609746263709,
-     0.6010899806390073
-    ],
-    "delta_mean": 0.00036,
-    "se": 0.00024,
-    "t": 1.5,
-    "rule": "diff >= 0.001 and t >= 2.5"
-   },
-   "failure_stage": null,
-   "error": null,
-   "recovery": null,
-   "duration_s": 18.048760175704956,
-   "curve": [
-    0.5875,
-    0.5956,
-    0.5995,
-    0.6003,
-    0.6008,
-    0.6012,
-    0.6019,
-    0.6008,
-    0.601,
-    0.6004,
-    0.5989
-   ]
-  },
-  {
-   "n": 3,
-   "parent": 0,
-   "merge_parents": null,
-   "action": "explore",
-   "method": "features-duration-unknown-flag",
-   "target_component": "features",
-   "hypothesis": "Assign duration-zero impressions a dedicated category so the FM can push these always-negative rows below genuinely short videos within each user.",
-   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms == 0 as a dedicated UNK0 category.",
-   "expected_delta": 0.0015,
-   "metrics": {
-    "gauc": 0.6671075786876843,
-    "ndcg5": 0.5352102664676806,
-    "primary": 0.6011589225776824,
-    "ndcg5_disc": 0.7203496119380686
-   },
-   "realized_delta": -0.00031,
+   "realized_delta": -0.00013,
    "accepted": false,
    "seed_confirmation": null,
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 19.833893299102783,
+   "duration_s": 22.45482301712036,
    "curve": [
-    0.5883,
-    0.5962,
-    0.6,
-    0.5999,
-    0.6006,
-    0.601,
-    0.601,
-    0.601,
-    0.6012,
+    0.5953,
     0.5998,
-    0.5993,
-    0.5993,
-    0.5979
+    0.6014,
+    0.6016,
+    0.603,
+    0.6016,
+    0.6021,
+    0.6024,
+    0.6022
+   ]
+  },
+  {
+   "n": 9,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "hypothesis": "Weighting BPR pairs by their current nDCG@5 swap impact should focus updates on top-ranked mistakes and convert the observed nDCG-specific movement into a larger primary gain.",
+   "change_summary": "Add LambdaRank nDCG@5 swap-impact weighting to sampled BPR pairs after one plain-BPR warm-up epoch.",
+   "expected_delta": 0.002,
+   "metrics": {
+    "gauc": 0.6685440813601279,
+    "ndcg5": 0.5356564450726975,
+    "primary": 0.6021002632164127,
+    "ndcg5_disc": 0.7211218401571469
+   },
+   "realized_delta": -0.00098,
+   "accepted": false,
+   "seed_confirmation": null,
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 20.942926168441772,
+   "curve": [
+    0.594,
+    0.5959,
+    0.597,
+    0.5985,
+    0.5989,
+    0.5992,
+    0.6003,
+    0.6008,
+    0.6016,
+    0.6018,
+    0.6021,
+    0.6017,
+    0.6019,
+    0.6017,
+    0.602
    ]
   }
  ]

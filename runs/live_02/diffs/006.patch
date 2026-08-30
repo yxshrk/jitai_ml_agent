@@ -1,0 +1,20 @@
+--- node_001.py
++++ node_006.py
+@@ -25,7 +25,7 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with within-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-5, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+@@ -51,7 +51,7 @@
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         np.add.at(gW, X, g[:, None])
+         np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        gV += self.l2 * self.V; gW += 1e-6 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+         for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
