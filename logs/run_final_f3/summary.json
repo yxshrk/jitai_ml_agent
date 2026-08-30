@@ -1,0 +1,4949 @@
+{
+  "run_dir": "logs/run_final_f3",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6706743927886303,
+    "ndcg5": 0.5373548573340137,
+    "primary": 0.604014625061322,
+    "selected_config": {
+      "architecture": "dcn",
+      "loss": "logloss",
+      "weighting": "recency",
+      "regularization": "mild"
+    },
+    "selected_cell": 10,
+    "probe_epochs": 8,
+    "final_epochs": 12,
+    "history": {
+      "matrix": [
+        {
+          "phase": "matrix",
+          "cell": 0,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6018415,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.637102,
+              "val_gauc": 0.649846,
+              "val_primary": 0.588885
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.54709,
+              "val_gauc": 0.661034,
+              "val_primary": 0.596914
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.511473,
+              "val_gauc": 0.664894,
+              "val_primary": 0.599873
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499378,
+              "val_gauc": 0.666306,
+              "val_primary": 0.600912
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.493417,
+              "val_gauc": 0.667447,
+              "val_primary": 0.601449
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.489109,
+              "val_gauc": 0.667443,
+              "val_primary": 0.601641
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.485336,
+              "val_gauc": 0.667123,
+              "val_primary": 0.601379
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.481553,
+              "val_gauc": 0.667597,
+              "val_primary": 0.601841
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 0,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6027979,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.63664,
+              "val_gauc": 0.649037,
+              "val_primary": 0.588676
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.54789,
+              "val_gauc": 0.660738,
+              "val_primary": 0.596935
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.511923,
+              "val_gauc": 0.665119,
+              "val_primary": 0.599599
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499562,
+              "val_gauc": 0.666935,
+              "val_primary": 0.601284
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.493429,
+              "val_gauc": 0.668204,
+              "val_primary": 0.601839
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.489316,
+              "val_gauc": 0.669205,
+              "val_primary": 0.602798
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.485557,
+              "val_gauc": 0.667729,
+              "val_primary": 0.601879
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.481985,
+              "val_gauc": 0.666853,
+              "val_primary": 0.601241
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 0,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6025699,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.637196,
+              "val_gauc": 0.651402,
+              "val_primary": 0.590181
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.54628,
+              "val_gauc": 0.66218,
+              "val_primary": 0.597797
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.511022,
+              "val_gauc": 0.665854,
+              "val_primary": 0.600702
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499723,
+              "val_gauc": 0.667103,
+              "val_primary": 0.601354
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.494292,
+              "val_gauc": 0.667166,
+              "val_primary": 0.601445
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.490504,
+              "val_gauc": 0.667602,
+              "val_primary": 0.601683
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.487147,
+              "val_gauc": 0.668397,
+              "val_primary": 0.60257
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.483814,
+              "val_gauc": 0.667407,
+              "val_primary": 0.601825
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 1,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.5945423,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.64185,
+              "val_gauc": 0.648523,
+              "val_primary": 0.588191
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.579488,
+              "val_gauc": 0.653884,
+              "val_primary": 0.592286
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.558308,
+              "val_gauc": 0.655407,
+              "val_primary": 0.593413
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.550564,
+              "val_gauc": 0.656303,
+              "val_primary": 0.594075
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.547302,
+              "val_gauc": 0.656893,
+              "val_primary": 0.594485
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545797,
+              "val_gauc": 0.656941,
+              "val_primary": 0.594534
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.545162,
+              "val_gauc": 0.656861,
+              "val_primary": 0.594488
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544717,
+              "val_gauc": 0.656925,
+              "val_primary": 0.594542
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 1,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.5946048,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.641213,
+              "val_gauc": 0.648229,
+              "val_primary": 0.58851
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.579303,
+              "val_gauc": 0.655033,
+              "val_primary": 0.593129
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.55824,
+              "val_gauc": 0.655917,
+              "val_primary": 0.593853
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.550416,
+              "val_gauc": 0.656727,
+              "val_primary": 0.594323
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.546701,
+              "val_gauc": 0.657213,
+              "val_primary": 0.594605
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545228,
+              "val_gauc": 0.657106,
+              "val_primary": 0.594494
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.544509,
+              "val_gauc": 0.657085,
+              "val_primary": 0.594496
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544083,
+              "val_gauc": 0.657189,
+              "val_primary": 0.594549
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 1,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.59506,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.640545,
+              "val_gauc": 0.651557,
+              "val_primary": 0.590726
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.574529,
+              "val_gauc": 0.655683,
+              "val_primary": 0.593758
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.553511,
+              "val_gauc": 0.65651,
+              "val_primary": 0.59442
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.545948,
+              "val_gauc": 0.656888,
+              "val_primary": 0.594662
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.542775,
+              "val_gauc": 0.657173,
+              "val_primary": 0.594886
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.54141,
+              "val_gauc": 0.657192,
+              "val_primary": 0.594872
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.540653,
+              "val_gauc": 0.657384,
+              "val_primary": 0.595014
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.540316,
+              "val_gauc": 0.657468,
+              "val_primary": 0.59506
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 2,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6016308,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.638556,
+              "val_gauc": 0.648689,
+              "val_primary": 0.588049
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.550934,
+              "val_gauc": 0.66081,
+              "val_primary": 0.596735
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.513178,
+              "val_gauc": 0.664921,
+              "val_primary": 0.59971
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499472,
+              "val_gauc": 0.665899,
+              "val_primary": 0.600488
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.492611,
+              "val_gauc": 0.667663,
+              "val_primary": 0.601631
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.487689,
+              "val_gauc": 0.666481,
+              "val_primary": 0.600882
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.483437,
+              "val_gauc": 0.666749,
+              "val_primary": 0.601039
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.479239,
+              "val_gauc": 0.666274,
+              "val_primary": 0.600601
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 2,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6027517,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.637678,
+              "val_gauc": 0.649123,
+              "val_primary": 0.588405
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.550303,
+              "val_gauc": 0.661285,
+              "val_primary": 0.597145
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.513207,
+              "val_gauc": 0.664667,
+              "val_primary": 0.599433
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499765,
+              "val_gauc": 0.666747,
+              "val_primary": 0.601075
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.492959,
+              "val_gauc": 0.667878,
+              "val_primary": 0.601847
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.488448,
+              "val_gauc": 0.669045,
+              "val_primary": 0.602752
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.484412,
+              "val_gauc": 0.666866,
+              "val_primary": 0.601349
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.480611,
+              "val_gauc": 0.666064,
+              "val_primary": 0.600769
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 2,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.602355,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.63781,
+              "val_gauc": 0.65213,
+              "val_primary": 0.59078
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.547573,
+              "val_gauc": 0.662433,
+              "val_primary": 0.597943
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.511863,
+              "val_gauc": 0.665671,
+              "val_primary": 0.600321
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499811,
+              "val_gauc": 0.666518,
+              "val_primary": 0.600831
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.493886,
+              "val_gauc": 0.666589,
+              "val_primary": 0.600987
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.489755,
+              "val_gauc": 0.667365,
+              "val_primary": 0.601419
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.486152,
+              "val_gauc": 0.668467,
+              "val_primary": 0.602355
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.482558,
+              "val_gauc": 0.667516,
+              "val_primary": 0.601621
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 3,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.5952464,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.642634,
+              "val_gauc": 0.648324,
+              "val_primary": 0.588159
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.581805,
+              "val_gauc": 0.654951,
+              "val_primary": 0.593029
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.560343,
+              "val_gauc": 0.656527,
+              "val_primary": 0.594172
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.552299,
+              "val_gauc": 0.657087,
+              "val_primary": 0.594658
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.548887,
+              "val_gauc": 0.657701,
+              "val_primary": 0.595077
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.547263,
+              "val_gauc": 0.657796,
+              "val_primary": 0.595138
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.546626,
+              "val_gauc": 0.657941,
+              "val_primary": 0.595246
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.546187,
+              "val_gauc": 0.6579,
+              "val_primary": 0.595241
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 3,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.5951851,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.642392,
+              "val_gauc": 0.648643,
+              "val_primary": 0.588266
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.582611,
+              "val_gauc": 0.655442,
+              "val_primary": 0.593315
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.561068,
+              "val_gauc": 0.656874,
+              "val_primary": 0.59426
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.55288,
+              "val_gauc": 0.657748,
+              "val_primary": 0.594943
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.548993,
+              "val_gauc": 0.658016,
+              "val_primary": 0.595185
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.547455,
+              "val_gauc": 0.657757,
+              "val_primary": 0.595056
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.546753,
+              "val_gauc": 0.65783,
+              "val_primary": 0.59507
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.546287,
+              "val_gauc": 0.657884,
+              "val_primary": 0.595103
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 3,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.5957577,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.641353,
+              "val_gauc": 0.652599,
+              "val_primary": 0.591423
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.576616,
+              "val_gauc": 0.657016,
+              "val_primary": 0.59463
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.555536,
+              "val_gauc": 0.657938,
+              "val_primary": 0.595376
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.547814,
+              "val_gauc": 0.658259,
+              "val_primary": 0.595547
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.544562,
+              "val_gauc": 0.658364,
+              "val_primary": 0.595644
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.543127,
+              "val_gauc": 0.658503,
+              "val_primary": 0.595708
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.542346,
+              "val_gauc": 0.658613,
+              "val_primary": 0.595758
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.542037,
+              "val_gauc": 0.658564,
+              "val_primary": 0.59572
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 4,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.5992008,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.63334,
+              "val_gauc": 0.662744,
+              "val_primary": 0.598175
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.545435,
+              "val_gauc": 0.664557,
+              "val_primary": 0.599183
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.512952,
+              "val_gauc": 0.66464,
+              "val_primary": 0.599201
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.490499,
+              "val_gauc": 0.660854,
+              "val_primary": 0.596778
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.469064,
+              "val_gauc": 0.655222,
+              "val_primary": 0.592426
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.448894,
+              "val_gauc": 0.650542,
+              "val_primary": 0.589189
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.430434,
+              "val_gauc": 0.645082,
+              "val_primary": 0.585348
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.414235,
+              "val_gauc": 0.641881,
+              "val_primary": 0.582992
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 4,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6004489,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.634393,
+              "val_gauc": 0.662056,
+              "val_primary": 0.597598
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.544888,
+              "val_gauc": 0.666532,
+              "val_primary": 0.600449
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.507789,
+              "val_gauc": 0.664863,
+              "val_primary": 0.599188
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.482298,
+              "val_gauc": 0.660156,
+              "val_primary": 0.596121
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.457828,
+              "val_gauc": 0.655517,
+              "val_primary": 0.592721
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.436226,
+              "val_gauc": 0.648843,
+              "val_primary": 0.587945
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.417813,
+              "val_gauc": 0.645072,
+              "val_primary": 0.585138
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.402278,
+              "val_gauc": 0.640644,
+              "val_primary": 0.581851
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 4,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.5994551,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.63321,
+              "val_gauc": 0.662453,
+              "val_primary": 0.597877
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.545399,
+              "val_gauc": 0.664539,
+              "val_primary": 0.599455
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.512323,
+              "val_gauc": 0.66302,
+              "val_primary": 0.598172
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.490133,
+              "val_gauc": 0.660908,
+              "val_primary": 0.596545
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.469159,
+              "val_gauc": 0.657636,
+              "val_primary": 0.593834
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.449027,
+              "val_gauc": 0.652203,
+              "val_primary": 0.590077
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.430395,
+              "val_gauc": 0.646586,
+              "val_primary": 0.586235
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.413696,
+              "val_gauc": 0.643031,
+              "val_primary": 0.58398
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 5,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6013337,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.638718,
+              "val_gauc": 0.662422,
+              "val_primary": 0.597962
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.570592,
+              "val_gauc": 0.665949,
+              "val_primary": 0.600385
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.554715,
+              "val_gauc": 0.666508,
+              "val_primary": 0.600981
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.548807,
+              "val_gauc": 0.666809,
+              "val_primary": 0.601189
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.546733,
+              "val_gauc": 0.667031,
+              "val_primary": 0.601334
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545739,
+              "val_gauc": 0.666732,
+              "val_primary": 0.601228
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.545141,
+              "val_gauc": 0.666778,
+              "val_primary": 0.601274
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544847,
+              "val_gauc": 0.666878,
+              "val_primary": 0.601316
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 5,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.601395,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.639478,
+              "val_gauc": 0.662553,
+              "val_primary": 0.597894
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.571861,
+              "val_gauc": 0.66626,
+              "val_primary": 0.600586
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.5552,
+              "val_gauc": 0.667173,
+              "val_primary": 0.601193
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.549816,
+              "val_gauc": 0.667232,
+              "val_primary": 0.60125
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.547014,
+              "val_gauc": 0.667159,
+              "val_primary": 0.601178
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545946,
+              "val_gauc": 0.667439,
+              "val_primary": 0.60137
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.545206,
+              "val_gauc": 0.667432,
+              "val_primary": 0.601384
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.545047,
+              "val_gauc": 0.667472,
+              "val_primary": 0.601395
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 5,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6006884,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.638107,
+              "val_gauc": 0.662687,
+              "val_primary": 0.598026
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.570284,
+              "val_gauc": 0.665346,
+              "val_primary": 0.600233
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.554209,
+              "val_gauc": 0.665735,
+              "val_primary": 0.600429
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.548669,
+              "val_gauc": 0.665969,
+              "val_primary": 0.600609
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.546386,
+              "val_gauc": 0.666179,
+              "val_primary": 0.600669
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545237,
+              "val_gauc": 0.666208,
+              "val_primary": 0.600688
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.544694,
+              "val_gauc": 0.666055,
+              "val_primary": 0.600599
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544211,
+              "val_gauc": 0.665991,
+              "val_primary": 0.60052
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 6,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.599396,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.633594,
+              "val_gauc": 0.662972,
+              "val_primary": 0.598457
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.544875,
+              "val_gauc": 0.66456,
+              "val_primary": 0.599396
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.511275,
+              "val_gauc": 0.664269,
+              "val_primary": 0.598915
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.48802,
+              "val_gauc": 0.660002,
+              "val_primary": 0.596468
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.46566,
+              "val_gauc": 0.656045,
+              "val_primary": 0.593152
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.444632,
+              "val_gauc": 0.650912,
+              "val_primary": 0.589418
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.425069,
+              "val_gauc": 0.646244,
+              "val_primary": 0.586356
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.408323,
+              "val_gauc": 0.642325,
+              "val_primary": 0.583362
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 6,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6010826,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.634783,
+              "val_gauc": 0.661929,
+              "val_primary": 0.597516
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.5452,
+              "val_gauc": 0.667089,
+              "val_primary": 0.601083
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.507488,
+              "val_gauc": 0.664115,
+              "val_primary": 0.598824
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.481578,
+              "val_gauc": 0.660889,
+              "val_primary": 0.596426
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.456043,
+              "val_gauc": 0.655703,
+              "val_primary": 0.592955
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.433322,
+              "val_gauc": 0.649477,
+              "val_primary": 0.588244
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.414036,
+              "val_gauc": 0.645757,
+              "val_primary": 0.585766
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.397746,
+              "val_gauc": 0.640437,
+              "val_primary": 0.581845
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 6,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.5995521,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.633381,
+              "val_gauc": 0.663527,
+              "val_primary": 0.598672
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.544704,
+              "val_gauc": 0.664427,
+              "val_primary": 0.599552
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.510372,
+              "val_gauc": 0.663412,
+              "val_primary": 0.598393
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.486696,
+              "val_gauc": 0.661647,
+              "val_primary": 0.597033
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.464354,
+              "val_gauc": 0.657211,
+              "val_primary": 0.594043
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.443434,
+              "val_gauc": 0.651854,
+              "val_primary": 0.590075
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.423986,
+              "val_gauc": 0.64747,
+              "val_primary": 0.587066
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.406705,
+              "val_gauc": 0.64329,
+              "val_primary": 0.584046
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 7,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6012747,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.639013,
+              "val_gauc": 0.664097,
+              "val_primary": 0.599019
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.570724,
+              "val_gauc": 0.666007,
+              "val_primary": 0.600516
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.554655,
+              "val_gauc": 0.666525,
+              "val_primary": 0.600952
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.548823,
+              "val_gauc": 0.666879,
+              "val_primary": 0.601268
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.546558,
+              "val_gauc": 0.66674,
+              "val_primary": 0.60121
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545699,
+              "val_gauc": 0.66661,
+              "val_primary": 0.601203
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.54483,
+              "val_gauc": 0.666661,
+              "val_primary": 0.601232
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544635,
+              "val_gauc": 0.666772,
+              "val_primary": 0.601275
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 7,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6010621,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.639796,
+              "val_gauc": 0.662843,
+              "val_primary": 0.59805
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.571916,
+              "val_gauc": 0.666374,
+              "val_primary": 0.600834
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.554893,
+              "val_gauc": 0.666848,
+              "val_primary": 0.601062
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.549413,
+              "val_gauc": 0.666522,
+              "val_primary": 0.600825
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.546611,
+              "val_gauc": 0.666398,
+              "val_primary": 0.600802
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.545543,
+              "val_gauc": 0.666189,
+              "val_primary": 0.600608
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.544831,
+              "val_gauc": 0.666022,
+              "val_primary": 0.600506
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.544545,
+              "val_gauc": 0.66606,
+              "val_primary": 0.600509
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 7,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6006918,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.638375,
+              "val_gauc": 0.66345,
+              "val_primary": 0.598698
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.570069,
+              "val_gauc": 0.665562,
+              "val_primary": 0.600459
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.553718,
+              "val_gauc": 0.66573,
+              "val_primary": 0.600548
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.547975,
+              "val_gauc": 0.666079,
+              "val_primary": 0.600692
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.54545,
+              "val_gauc": 0.665899,
+              "val_primary": 0.600595
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.54444,
+              "val_gauc": 0.665819,
+              "val_primary": 0.60052
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.543893,
+              "val_gauc": 0.665811,
+              "val_primary": 0.600486
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.543345,
+              "val_gauc": 0.66575,
+              "val_primary": 0.600446
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 8,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6032012,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.566495,
+              "val_gauc": 0.66496,
+              "val_primary": 0.599471
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.506557,
+              "val_gauc": 0.668385,
+              "val_primary": 0.602453
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500901,
+              "val_gauc": 0.669575,
+              "val_primary": 0.603201
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.49844,
+              "val_gauc": 0.669492,
+              "val_primary": 0.603017
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.49649,
+              "val_gauc": 0.669223,
+              "val_primary": 0.602874
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.49465,
+              "val_gauc": 0.668203,
+              "val_primary": 0.602096
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.491499,
+              "val_gauc": 0.667721,
+              "val_primary": 0.601468
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.487451,
+              "val_gauc": 0.665824,
+              "val_primary": 0.600169
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 8,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6044494,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.565986,
+              "val_gauc": 0.665147,
+              "val_primary": 0.599682
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.506664,
+              "val_gauc": 0.66891,
+              "val_primary": 0.602829
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501188,
+              "val_gauc": 0.669673,
+              "val_primary": 0.603238
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498929,
+              "val_gauc": 0.669784,
+              "val_primary": 0.603314
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497236,
+              "val_gauc": 0.67125,
+              "val_primary": 0.604449
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.495312,
+              "val_gauc": 0.667941,
+              "val_primary": 0.601999
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.492248,
+              "val_gauc": 0.668544,
+              "val_primary": 0.602262
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.488283,
+              "val_gauc": 0.666312,
+              "val_primary": 0.600706
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 8,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6041158,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.568487,
+              "val_gauc": 0.663928,
+              "val_primary": 0.598789
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.506827,
+              "val_gauc": 0.669065,
+              "val_primary": 0.602753
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501195,
+              "val_gauc": 0.669538,
+              "val_primary": 0.603158
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498706,
+              "val_gauc": 0.670689,
+              "val_primary": 0.604066
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496764,
+              "val_gauc": 0.670948,
+              "val_primary": 0.604116
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.494254,
+              "val_gauc": 0.66884,
+              "val_primary": 0.602647
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.490523,
+              "val_gauc": 0.666104,
+              "val_primary": 0.600555
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.486781,
+              "val_gauc": 0.662342,
+              "val_primary": 0.597871
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 9,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6030538,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.569899,
+              "val_gauc": 0.664357,
+              "val_primary": 0.599223
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507711,
+              "val_gauc": 0.668346,
+              "val_primary": 0.602131
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.5011,
+              "val_gauc": 0.669093,
+              "val_primary": 0.602749
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498676,
+              "val_gauc": 0.669193,
+              "val_primary": 0.6029
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497725,
+              "val_gauc": 0.669183,
+              "val_primary": 0.602887
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.497246,
+              "val_gauc": 0.669321,
+              "val_primary": 0.602975
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496887,
+              "val_gauc": 0.669365,
+              "val_primary": 0.603024
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496682,
+              "val_gauc": 0.669436,
+              "val_primary": 0.603054
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 9,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6030865,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.569665,
+              "val_gauc": 0.664234,
+              "val_primary": 0.599039
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508058,
+              "val_gauc": 0.66793,
+              "val_primary": 0.60192
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.5015,
+              "val_gauc": 0.669084,
+              "val_primary": 0.602813
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499015,
+              "val_gauc": 0.669197,
+              "val_primary": 0.602953
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497757,
+              "val_gauc": 0.669386,
+              "val_primary": 0.60305
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.497218,
+              "val_gauc": 0.669441,
+              "val_primary": 0.603087
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496989,
+              "val_gauc": 0.669349,
+              "val_primary": 0.603034
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496719,
+              "val_gauc": 0.669405,
+              "val_primary": 0.603079
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 9,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6031266,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.571316,
+              "val_gauc": 0.662451,
+              "val_primary": 0.59781
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508158,
+              "val_gauc": 0.66821,
+              "val_primary": 0.601966
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501804,
+              "val_gauc": 0.668889,
+              "val_primary": 0.60259
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.499019,
+              "val_gauc": 0.669417,
+              "val_primary": 0.603077
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497994,
+              "val_gauc": 0.669398,
+              "val_primary": 0.603008
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.497424,
+              "val_gauc": 0.66949,
+              "val_primary": 0.603127
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.497162,
+              "val_gauc": 0.669444,
+              "val_primary": 0.603083
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496954,
+              "val_gauc": 0.669427,
+              "val_primary": 0.603075
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 10,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6037035,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.567855,
+              "val_gauc": 0.664976,
+              "val_primary": 0.599686
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507002,
+              "val_gauc": 0.669551,
+              "val_primary": 0.603289
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500842,
+              "val_gauc": 0.670108,
+              "val_primary": 0.603704
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498243,
+              "val_gauc": 0.670001,
+              "val_primary": 0.60333
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496296,
+              "val_gauc": 0.67011,
+              "val_primary": 0.603367
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.494356,
+              "val_gauc": 0.669229,
+              "val_primary": 0.602816
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.491295,
+              "val_gauc": 0.667664,
+              "val_primary": 0.601255
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.487103,
+              "val_gauc": 0.665325,
+              "val_primary": 0.599677
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 10,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6043176,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.567357,
+              "val_gauc": 0.665064,
+              "val_primary": 0.599836
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507078,
+              "val_gauc": 0.668966,
+              "val_primary": 0.602856
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501117,
+              "val_gauc": 0.66949,
+              "val_primary": 0.603326
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498634,
+              "val_gauc": 0.66984,
+              "val_primary": 0.603404
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496833,
+              "val_gauc": 0.671025,
+              "val_primary": 0.604318
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.494949,
+              "val_gauc": 0.669354,
+              "val_primary": 0.602876
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.492034,
+              "val_gauc": 0.668687,
+              "val_primary": 0.602305
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.488062,
+              "val_gauc": 0.667878,
+              "val_primary": 0.601814
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 10,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6047454,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.569764,
+              "val_gauc": 0.662834,
+              "val_primary": 0.598318
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507334,
+              "val_gauc": 0.668888,
+              "val_primary": 0.602669
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501065,
+              "val_gauc": 0.669673,
+              "val_primary": 0.603291
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498325,
+              "val_gauc": 0.671188,
+              "val_primary": 0.604311
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496193,
+              "val_gauc": 0.671707,
+              "val_primary": 0.604745
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.493152,
+              "val_gauc": 0.66975,
+              "val_primary": 0.603429
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.488786,
+              "val_gauc": 0.666694,
+              "val_primary": 0.601077
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.484543,
+              "val_gauc": 0.662591,
+              "val_primary": 0.597964
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 11,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.603644,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.571071,
+              "val_gauc": 0.664848,
+              "val_primary": 0.599739
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507936,
+              "val_gauc": 0.668504,
+              "val_primary": 0.602433
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500862,
+              "val_gauc": 0.669618,
+              "val_primary": 0.603178
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498208,
+              "val_gauc": 0.66997,
+              "val_primary": 0.60354
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497189,
+              "val_gauc": 0.670141,
+              "val_primary": 0.603633
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.496602,
+              "val_gauc": 0.670083,
+              "val_primary": 0.603644
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496319,
+              "val_gauc": 0.6699,
+              "val_primary": 0.603522
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496087,
+              "val_gauc": 0.669973,
+              "val_primary": 0.603546
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 11,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6032002,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.570926,
+              "val_gauc": 0.664063,
+              "val_primary": 0.599216
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508266,
+              "val_gauc": 0.667995,
+              "val_primary": 0.601983
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501307,
+              "val_gauc": 0.66878,
+              "val_primary": 0.602616
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498595,
+              "val_gauc": 0.669188,
+              "val_primary": 0.602928
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497267,
+              "val_gauc": 0.669387,
+              "val_primary": 0.603092
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.496714,
+              "val_gauc": 0.669511,
+              "val_primary": 0.603193
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496489,
+              "val_gauc": 0.669519,
+              "val_primary": 0.603188
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496203,
+              "val_gauc": 0.669541,
+              "val_primary": 0.6032
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 11,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6040071,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.57252,
+              "val_gauc": 0.662794,
+              "val_primary": 0.598132
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508447,
+              "val_gauc": 0.668479,
+              "val_primary": 0.602307
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501527,
+              "val_gauc": 0.670062,
+              "val_primary": 0.603498
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498585,
+              "val_gauc": 0.669972,
+              "val_primary": 0.603545
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497385,
+              "val_gauc": 0.670094,
+              "val_primary": 0.603663
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.496802,
+              "val_gauc": 0.670506,
+              "val_primary": 0.604007
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496494,
+              "val_gauc": 0.670341,
+              "val_primary": 0.603923
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496315,
+              "val_gauc": 0.670279,
+              "val_primary": 0.603858
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 12,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6022055,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.576228,
+              "val_gauc": 0.668446,
+              "val_primary": 0.602206
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.524171,
+              "val_gauc": 0.666787,
+              "val_primary": 0.601157
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.50816,
+              "val_gauc": 0.652848,
+              "val_primary": 0.591286
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.487767,
+              "val_gauc": 0.646385,
+              "val_primary": 0.586083
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.463944,
+              "val_gauc": 0.636523,
+              "val_primary": 0.579033
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.445479,
+              "val_gauc": 0.631721,
+              "val_primary": 0.575388
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.431078,
+              "val_gauc": 0.629868,
+              "val_primary": 0.573962
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.414242,
+              "val_gauc": 0.627205,
+              "val_primary": 0.572201
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 12,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6018241,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.575542,
+              "val_gauc": 0.6682,
+              "val_primary": 0.601824
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.523329,
+              "val_gauc": 0.666607,
+              "val_primary": 0.601076
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.503706,
+              "val_gauc": 0.652015,
+              "val_primary": 0.590606
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.486928,
+              "val_gauc": 0.645502,
+              "val_primary": 0.585689
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.462754,
+              "val_gauc": 0.638096,
+              "val_primary": 0.580277
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.441413,
+              "val_gauc": 0.632344,
+              "val_primary": 0.576286
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.420564,
+              "val_gauc": 0.629253,
+              "val_primary": 0.573827
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.401589,
+              "val_gauc": 0.626055,
+              "val_primary": 0.571522
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 12,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6008296,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.577838,
+              "val_gauc": 0.666723,
+              "val_primary": 0.60083
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.523326,
+              "val_gauc": 0.665041,
+              "val_primary": 0.599949
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.505491,
+              "val_gauc": 0.653282,
+              "val_primary": 0.591764
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.489017,
+              "val_gauc": 0.646883,
+              "val_primary": 0.586615
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.467135,
+              "val_gauc": 0.643598,
+              "val_primary": 0.584217
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.44531,
+              "val_gauc": 0.635686,
+              "val_primary": 0.578589
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.423531,
+              "val_gauc": 0.631559,
+              "val_primary": 0.575635
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.398357,
+              "val_gauc": 0.625868,
+              "val_primary": 0.571542
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 13,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6033188,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.58121,
+              "val_gauc": 0.668687,
+              "val_primary": 0.602349
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.531151,
+              "val_gauc": 0.669324,
+              "val_primary": 0.602744
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.526672,
+              "val_gauc": 0.669459,
+              "val_primary": 0.602899
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.524241,
+              "val_gauc": 0.66934,
+              "val_primary": 0.602961
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.523031,
+              "val_gauc": 0.669622,
+              "val_primary": 0.603195
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.52294,
+              "val_gauc": 0.669895,
+              "val_primary": 0.603253
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.522263,
+              "val_gauc": 0.669856,
+              "val_primary": 0.603319
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.522456,
+              "val_gauc": 0.66977,
+              "val_primary": 0.603257
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 13,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.60355,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.581018,
+              "val_gauc": 0.667579,
+              "val_primary": 0.601292
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.531837,
+              "val_gauc": 0.670015,
+              "val_primary": 0.603462
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.525642,
+              "val_gauc": 0.669699,
+              "val_primary": 0.603328
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.523886,
+              "val_gauc": 0.670048,
+              "val_primary": 0.60355
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.521967,
+              "val_gauc": 0.670074,
+              "val_primary": 0.603507
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.521771,
+              "val_gauc": 0.669971,
+              "val_primary": 0.603394
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.521366,
+              "val_gauc": 0.669932,
+              "val_primary": 0.603439
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.521247,
+              "val_gauc": 0.669881,
+              "val_primary": 0.60339
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 13,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6033015,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.582545,
+              "val_gauc": 0.666433,
+              "val_primary": 0.600673
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.531567,
+              "val_gauc": 0.668752,
+              "val_primary": 0.60223
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.525952,
+              "val_gauc": 0.669371,
+              "val_primary": 0.602738
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.523264,
+              "val_gauc": 0.66995,
+              "val_primary": 0.60319
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.522066,
+              "val_gauc": 0.669983,
+              "val_primary": 0.603302
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.521571,
+              "val_gauc": 0.669935,
+              "val_primary": 0.6033
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.521107,
+              "val_gauc": 0.66992,
+              "val_primary": 0.603263
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.520692,
+              "val_gauc": 0.669849,
+              "val_primary": 0.603211
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 14,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6013981,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.57582,
+              "val_gauc": 0.667362,
+              "val_primary": 0.601398
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.522642,
+              "val_gauc": 0.66706,
+              "val_primary": 0.601363
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.504565,
+              "val_gauc": 0.652263,
+              "val_primary": 0.59062
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.484157,
+              "val_gauc": 0.645479,
+              "val_primary": 0.585713
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.460246,
+              "val_gauc": 0.638503,
+              "val_primary": 0.580627
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.439754,
+              "val_gauc": 0.634073,
+              "val_primary": 0.577184
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.423223,
+              "val_gauc": 0.630545,
+              "val_primary": 0.574964
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.402998,
+              "val_gauc": 0.625029,
+              "val_primary": 0.570937
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 14,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6023038,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.575233,
+              "val_gauc": 0.668694,
+              "val_primary": 0.602304
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.522342,
+              "val_gauc": 0.667986,
+              "val_primary": 0.602108
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.502467,
+              "val_gauc": 0.653002,
+              "val_primary": 0.591177
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.485964,
+              "val_gauc": 0.648062,
+              "val_primary": 0.587373
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.462012,
+              "val_gauc": 0.640434,
+              "val_primary": 0.581943
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.440231,
+              "val_gauc": 0.634109,
+              "val_primary": 0.577551
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.418629,
+              "val_gauc": 0.630807,
+              "val_primary": 0.575106
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.399736,
+              "val_gauc": 0.625548,
+              "val_primary": 0.57135
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 14,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6009263,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.577526,
+              "val_gauc": 0.66641,
+              "val_primary": 0.600926
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.52114,
+              "val_gauc": 0.66323,
+              "val_primary": 0.598766
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500475,
+              "val_gauc": 0.650788,
+              "val_primary": 0.589715
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.48344,
+              "val_gauc": 0.645016,
+              "val_primary": 0.58549
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.461507,
+              "val_gauc": 0.642196,
+              "val_primary": 0.583515
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.441996,
+              "val_gauc": 0.634932,
+              "val_primary": 0.578255
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.423111,
+              "val_gauc": 0.630996,
+              "val_primary": 0.575463
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.40214,
+              "val_gauc": 0.62818,
+              "val_primary": 0.573617
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 15,
+          "repeat": 0,
+          "seed": 42,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6032866,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.580917,
+              "val_gauc": 0.66687,
+              "val_primary": 0.601053
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.530018,
+              "val_gauc": 0.66843,
+              "val_primary": 0.60229
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.525442,
+              "val_gauc": 0.669659,
+              "val_primary": 0.603287
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.523134,
+              "val_gauc": 0.669235,
+              "val_primary": 0.603032
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.521863,
+              "val_gauc": 0.669441,
+              "val_primary": 0.603059
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.521913,
+              "val_gauc": 0.669621,
+              "val_primary": 0.603169
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.521057,
+              "val_gauc": 0.66964,
+              "val_primary": 0.603142
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.521278,
+              "val_gauc": 0.669618,
+              "val_primary": 0.603127
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 15,
+          "repeat": 1,
+          "seed": 143,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6037627,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.580801,
+              "val_gauc": 0.667691,
+              "val_primary": 0.601743
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.530572,
+              "val_gauc": 0.670241,
+              "val_primary": 0.603763
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.52366,
+              "val_gauc": 0.670164,
+              "val_primary": 0.603604
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.521562,
+              "val_gauc": 0.66962,
+              "val_primary": 0.603245
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.519605,
+              "val_gauc": 0.669562,
+              "val_primary": 0.603216
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.519429,
+              "val_gauc": 0.669905,
+              "val_primary": 0.603371
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.51892,
+              "val_gauc": 0.669804,
+              "val_primary": 0.603281
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.518787,
+              "val_gauc": 0.669618,
+              "val_primary": 0.603126
+            }
+          ]
+        },
+        {
+          "phase": "matrix",
+          "cell": 15,
+          "repeat": 2,
+          "seed": 244,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.603031,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.582321,
+              "val_gauc": 0.666389,
+              "val_primary": 0.600751
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.530249,
+              "val_gauc": 0.668717,
+              "val_primary": 0.602513
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.524283,
+              "val_gauc": 0.669415,
+              "val_primary": 0.603031
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.521331,
+              "val_gauc": 0.669436,
+              "val_primary": 0.602979
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.519792,
+              "val_gauc": 0.669444,
+              "val_primary": 0.602946
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.519474,
+              "val_gauc": 0.669419,
+              "val_primary": 0.602999
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.518987,
+              "val_gauc": 0.669213,
+              "val_primary": 0.602915
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.518486,
+              "val_gauc": 0.669197,
+              "val_primary": 0.602889
+            }
+          ]
+        }
+      ],
+      "refinement": [
+        {
+          "phase": "refinement",
+          "cell": 10,
+          "repeat": 3,
+          "seed": 345,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6041466,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.571978,
+              "val_gauc": 0.664708,
+              "val_primary": 0.599628
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507219,
+              "val_gauc": 0.668557,
+              "val_primary": 0.602558
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500819,
+              "val_gauc": 0.669612,
+              "val_primary": 0.60331
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.49836,
+              "val_gauc": 0.67097,
+              "val_primary": 0.604147
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.495933,
+              "val_gauc": 0.669926,
+              "val_primary": 0.603558
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.492466,
+              "val_gauc": 0.670183,
+              "val_primary": 0.603768
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.487874,
+              "val_gauc": 0.666136,
+              "val_primary": 0.600719
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.483758,
+              "val_gauc": 0.662735,
+              "val_primary": 0.598109
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 10,
+          "repeat": 4,
+          "seed": 446,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "primary": 0.6039956,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.574367,
+              "val_gauc": 0.664814,
+              "val_primary": 0.599702
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.507332,
+              "val_gauc": 0.669411,
+              "val_primary": 0.60316
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.50105,
+              "val_gauc": 0.670492,
+              "val_primary": 0.603996
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498419,
+              "val_gauc": 0.67033,
+              "val_primary": 0.603796
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496643,
+              "val_gauc": 0.669924,
+              "val_primary": 0.603511
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.494744,
+              "val_gauc": 0.670306,
+              "val_primary": 0.60357
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.491801,
+              "val_gauc": 0.669154,
+              "val_primary": 0.602805
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.487548,
+              "val_gauc": 0.667141,
+              "val_primary": 0.601052
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 8,
+          "repeat": 3,
+          "seed": 345,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6038327,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.570727,
+              "val_gauc": 0.663921,
+              "val_primary": 0.598873
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.50684,
+              "val_gauc": 0.66822,
+              "val_primary": 0.60233
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.500957,
+              "val_gauc": 0.669831,
+              "val_primary": 0.603407
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498674,
+              "val_gauc": 0.670334,
+              "val_primary": 0.603833
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496388,
+              "val_gauc": 0.66956,
+              "val_primary": 0.603318
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.493272,
+              "val_gauc": 0.669506,
+              "val_primary": 0.603232
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.488865,
+              "val_gauc": 0.667582,
+              "val_primary": 0.601714
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.484633,
+              "val_gauc": 0.661231,
+              "val_primary": 0.596999
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 8,
+          "repeat": 4,
+          "seed": 446,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "primary": 0.6035707,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.573143,
+              "val_gauc": 0.665387,
+              "val_primary": 0.600019
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.506929,
+              "val_gauc": 0.669166,
+              "val_primary": 0.602912
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501075,
+              "val_gauc": 0.669935,
+              "val_primary": 0.603571
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498504,
+              "val_gauc": 0.669735,
+              "val_primary": 0.603502
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.496637,
+              "val_gauc": 0.669625,
+              "val_primary": 0.603322
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.494629,
+              "val_gauc": 0.669695,
+              "val_primary": 0.603085
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.491449,
+              "val_gauc": 0.668553,
+              "val_primary": 0.602377
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.487066,
+              "val_gauc": 0.666576,
+              "val_primary": 0.600598
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 11,
+          "repeat": 3,
+          "seed": 345,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6035055,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.575379,
+              "val_gauc": 0.664204,
+              "val_primary": 0.599075
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508211,
+              "val_gauc": 0.667977,
+              "val_primary": 0.601892
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501085,
+              "val_gauc": 0.669195,
+              "val_primary": 0.602884
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498516,
+              "val_gauc": 0.669419,
+              "val_primary": 0.603017
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497342,
+              "val_gauc": 0.669607,
+              "val_primary": 0.603248
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.496683,
+              "val_gauc": 0.669764,
+              "val_primary": 0.603409
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496386,
+              "val_gauc": 0.669947,
+              "val_primary": 0.603505
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496095,
+              "val_gauc": 0.669866,
+              "val_primary": 0.603455
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 11,
+          "repeat": 4,
+          "seed": 446,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "primary": 0.6035383,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.577053,
+              "val_gauc": 0.664928,
+              "val_primary": 0.599893
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.508385,
+              "val_gauc": 0.668896,
+              "val_primary": 0.602761
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.501271,
+              "val_gauc": 0.66938,
+              "val_primary": 0.603038
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.498324,
+              "val_gauc": 0.66981,
+              "val_primary": 0.603356
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.497211,
+              "val_gauc": 0.669841,
+              "val_primary": 0.603412
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.496764,
+              "val_gauc": 0.669937,
+              "val_primary": 0.603465
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.496363,
+              "val_gauc": 0.66998,
+              "val_primary": 0.603471
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.496277,
+              "val_gauc": 0.670071,
+              "val_primary": 0.603538
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 13,
+          "repeat": 3,
+          "seed": 345,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6035474,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.583288,
+              "val_gauc": 0.667848,
+              "val_primary": 0.601834
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.531311,
+              "val_gauc": 0.669195,
+              "val_primary": 0.602723
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.525408,
+              "val_gauc": 0.670272,
+              "val_primary": 0.603547
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.523308,
+              "val_gauc": 0.670154,
+              "val_primary": 0.603268
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.521673,
+              "val_gauc": 0.669992,
+              "val_primary": 0.603241
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.521353,
+              "val_gauc": 0.670069,
+              "val_primary": 0.603335
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.520903,
+              "val_gauc": 0.670127,
+              "val_primary": 0.603342
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.520558,
+              "val_gauc": 0.670153,
+              "val_primary": 0.603353
+            }
+          ]
+        },
+        {
+          "phase": "refinement",
+          "cell": 13,
+          "repeat": 4,
+          "seed": 446,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "primary": 0.6037505,
+          "curve": [
+            {
+              "epoch": 1,
+              "part": 1,
+              "step": 140,
+              "train_loss": 0.584597,
+              "val_gauc": 0.667344,
+              "val_primary": 0.601383
+            },
+            {
+              "epoch": 2,
+              "part": 1,
+              "step": 280,
+              "train_loss": 0.531735,
+              "val_gauc": 0.669062,
+              "val_primary": 0.602989
+            },
+            {
+              "epoch": 3,
+              "part": 1,
+              "step": 420,
+              "train_loss": 0.527204,
+              "val_gauc": 0.670565,
+              "val_primary": 0.60375
+            },
+            {
+              "epoch": 4,
+              "part": 1,
+              "step": 560,
+              "train_loss": 0.525162,
+              "val_gauc": 0.670119,
+              "val_primary": 0.603415
+            },
+            {
+              "epoch": 5,
+              "part": 1,
+              "step": 700,
+              "train_loss": 0.52435,
+              "val_gauc": 0.670224,
+              "val_primary": 0.603501
+            },
+            {
+              "epoch": 6,
+              "part": 1,
+              "step": 840,
+              "train_loss": 0.523472,
+              "val_gauc": 0.670255,
+              "val_primary": 0.603486
+            },
+            {
+              "epoch": 7,
+              "part": 1,
+              "step": 980,
+              "train_loss": 0.523084,
+              "val_gauc": 0.670086,
+              "val_primary": 0.60337
+            },
+            {
+              "epoch": 8,
+              "part": 1,
+              "step": 1120,
+              "train_loss": 0.523263,
+              "val_gauc": 0.669996,
+              "val_primary": 0.603279
+            }
+          ]
+        }
+      ],
+      "cell_summaries": [
+        {
+          "cell": 0,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.6024031,
+          "std_primary": 0.0004079,
+          "scores": [
+            0.6018415,
+            0.6027979,
+            0.6025699
+          ]
+        },
+        {
+          "cell": 1,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.5947357,
+          "std_primary": 0.0002307,
+          "scores": [
+            0.5945423,
+            0.5946048,
+            0.59506
+          ]
+        },
+        {
+          "cell": 2,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.6022458,
+          "std_primary": 0.0004641,
+          "scores": [
+            0.6016308,
+            0.6027517,
+            0.602355
+          ]
+        },
+        {
+          "cell": 3,
+          "config": {
+            "architecture": "fm",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.5953964,
+          "std_primary": 0.0002567,
+          "scores": [
+            0.5952464,
+            0.5951851,
+            0.5957577
+          ]
+        },
+        {
+          "cell": 4,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.5997016,
+          "std_primary": 0.0005385,
+          "scores": [
+            0.5992008,
+            0.6004489,
+            0.5994551
+          ]
+        },
+        {
+          "cell": 5,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.6011391,
+          "std_primary": 0.0003196,
+          "scores": [
+            0.6013337,
+            0.601395,
+            0.6006884
+          ]
+        },
+        {
+          "cell": 6,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.6000102,
+          "std_primary": 0.0007609,
+          "scores": [
+            0.599396,
+            0.6010826,
+            0.5995521
+          ]
+        },
+        {
+          "cell": 7,
+          "config": {
+            "architecture": "fm",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.6010095,
+          "std_primary": 0.0002409,
+          "scores": [
+            0.6012747,
+            0.6010621,
+            0.6006918
+          ]
+        },
+        {
+          "cell": 8,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "n": 5,
+          "mean_primary": 0.603834,
+          "std_primary": 0.0004308,
+          "scores": [
+            0.6032012,
+            0.6044494,
+            0.6041158,
+            0.6038327,
+            0.6035707
+          ]
+        },
+        {
+          "cell": 9,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.603089,
+          "std_primary": 2.97e-05,
+          "scores": [
+            0.6030538,
+            0.6030865,
+            0.6031266
+          ]
+        },
+        {
+          "cell": 10,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "n": 5,
+          "mean_primary": 0.6041817,
+          "std_primary": 0.0003466,
+          "scores": [
+            0.6037035,
+            0.6043176,
+            0.6047454,
+            0.6041466,
+            0.6039956
+          ]
+        },
+        {
+          "cell": 11,
+          "config": {
+            "architecture": "dcn",
+            "loss": "logloss",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "n": 5,
+          "mean_primary": 0.603579,
+          "std_primary": 0.00026,
+          "scores": [
+            0.603644,
+            0.6032002,
+            0.6040071,
+            0.6035055,
+            0.6035383
+          ]
+        },
+        {
+          "cell": 12,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.6016197,
+          "std_primary": 0.00058,
+          "scores": [
+            0.6022055,
+            0.6018241,
+            0.6008296
+          ]
+        },
+        {
+          "cell": 13,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "uniform",
+            "regularization": "strong"
+          },
+          "n": 5,
+          "mean_primary": 0.6034936,
+          "std_primary": 0.000167,
+          "scores": [
+            0.6033188,
+            0.60355,
+            0.6033015,
+            0.6035474,
+            0.6037505
+          ]
+        },
+        {
+          "cell": 14,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "mild"
+          },
+          "n": 3,
+          "mean_primary": 0.6015427,
+          "std_primary": 0.0005716,
+          "scores": [
+            0.6013981,
+            0.6023038,
+            0.6009263
+          ]
+        },
+        {
+          "cell": 15,
+          "config": {
+            "architecture": "dcn",
+            "loss": "hybrid",
+            "weighting": "recency",
+            "regularization": "strong"
+          },
+          "n": 3,
+          "mean_primary": 0.6033601,
+          "std_primary": 0.0003032,
+          "scores": [
+            0.6032866,
+            0.6037627,
+            0.603031
+          ]
+        }
+      ],
+      "final": [
+        {
+          "epoch": 1,
+          "part": 1,
+          "step": 70,
+          "train_loss": 0.614709,
+          "val_gauc": 0.652948,
+          "val_primary": 0.591162
+        },
+        {
+          "epoch": 1,
+          "part": 2,
+          "step": 140,
+          "train_loss": 0.530225,
+          "val_gauc": 0.664842,
+          "val_primary": 0.599578
+        },
+        {
+          "epoch": 2,
+          "part": 1,
+          "step": 210,
+          "train_loss": 0.504692,
+          "val_gauc": 0.66825,
+          "val_primary": 0.602048
+        },
+        {
+          "epoch": 2,
+          "part": 2,
+          "step": 280,
+          "train_loss": 0.509896,
+          "val_gauc": 0.668689,
+          "val_primary": 0.602612
+        },
+        {
+          "epoch": 3,
+          "part": 1,
+          "step": 350,
+          "train_loss": 0.497425,
+          "val_gauc": 0.66821,
+          "val_primary": 0.602427
+        },
+        {
+          "epoch": 3,
+          "part": 2,
+          "step": 420,
+          "train_loss": 0.504425,
+          "val_gauc": 0.670674,
+          "val_primary": 0.604015
+        },
+        {
+          "epoch": 4,
+          "part": 1,
+          "step": 490,
+          "train_loss": 0.494441,
+          "val_gauc": 0.670168,
+          "val_primary": 0.603564
+        },
+        {
+          "epoch": 4,
+          "part": 2,
+          "step": 560,
+          "train_loss": 0.502219,
+          "val_gauc": 0.669873,
+          "val_primary": 0.603435
+        },
+        {
+          "epoch": 5,
+          "part": 1,
+          "step": 630,
+          "train_loss": 0.49371,
+          "val_gauc": 0.670053,
+          "val_primary": 0.603377
+        },
+        {
+          "epoch": 5,
+          "part": 2,
+          "step": 700,
+          "train_loss": 0.498839,
+          "val_gauc": 0.670055,
+          "val_primary": 0.603777
+        },
+        {
+          "epoch": 6,
+          "part": 1,
+          "step": 770,
+          "train_loss": 0.489579,
+          "val_gauc": 0.670631,
+          "val_primary": 0.603657
+        },
+        {
+          "epoch": 6,
+          "part": 2,
+          "step": 840,
+          "train_loss": 0.498431,
+          "val_gauc": 0.66888,
+          "val_primary": 0.602507
+        },
+        {
+          "epoch": 7,
+          "part": 1,
+          "step": 910,
+          "train_loss": 0.487061,
+          "val_gauc": 0.666842,
+          "val_primary": 0.600921
+        },
+        {
+          "epoch": 7,
+          "part": 2,
+          "step": 980,
+          "train_loss": 0.494023,
+          "val_gauc": 0.668207,
+          "val_primary": 0.601886
+        },
+        {
+          "epoch": 8,
+          "part": 1,
+          "step": 1050,
+          "train_loss": 0.481799,
+          "val_gauc": 0.665384,
+          "val_primary": 0.599838
+        },
+        {
+          "epoch": 8,
+          "part": 2,
+          "step": 1120,
+          "train_loss": 0.489848,
+          "val_gauc": 0.666155,
+          "val_primary": 0.600641
+        },
+        {
+          "epoch": 9,
+          "part": 1,
+          "step": 1190,
+          "train_loss": 0.47701,
+          "val_gauc": 0.660442,
+          "val_primary": 0.596185
+        },
+        {
+          "epoch": 9,
+          "part": 2,
+          "step": 1260,
+          "train_loss": 0.484643,
+          "val_gauc": 0.66131,
+          "val_primary": 0.596832
+        },
+        {
+          "epoch": 10,
+          "part": 1,
+          "step": 1330,
+          "train_loss": 0.47155,
+          "val_gauc": 0.652675,
+          "val_primary": 0.590794
+        },
+        {
+          "epoch": 10,
+          "part": 2,
+          "step": 1400,
+          "train_loss": 0.481033,
+          "val_gauc": 0.654377,
+          "val_primary": 0.591721
+        },
+        {
+          "epoch": 11,
+          "part": 1,
+          "step": 1470,
+          "train_loss": 0.467445,
+          "val_gauc": 0.650803,
+          "val_primary": 0.58922
+        },
+        {
+          "epoch": 11,
+          "part": 2,
+          "step": 1540,
+          "train_loss": 0.476931,
+          "val_gauc": 0.651658,
+          "val_primary": 0.589815
+        },
+        {
+          "epoch": 12,
+          "part": 1,
+          "step": 1610,
+          "train_loss": 0.463181,
+          "val_gauc": 0.644312,
+          "val_primary": 0.584736
+        },
+        {
+          "epoch": 12,
+          "part": 2,
+          "step": 1680,
+          "train_loss": 0.47416,
+          "val_gauc": 0.645355,
+          "val_primary": 0.585317
+        }
+      ]
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 9065,
+      "out": 829,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11309,
+      "out": 15046,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3249,
+      "out": 1225,
+      "calls": 2
+    }
+  },
+  "tokens_total": 40723,
+  "wall_s": 5395.9,
+  "self_critique": "Overall assessment\n\nThe run found a modest accepted gain: 0.6018 to 0.6040 (+0.0022), then converged without establishing which component caused it. The result is useful but under-explored and not especially robust given two proposal-generation failures and the limited replication evidence shown.\n\nWhat the harness/policy did suboptimally\n\n- It attempted a large factorial change at node_001: architecture, objective, recency weighting, and regularization all changed together. This can discover gains, but it provides little causal attribution and makes follow-up search inefficient.\n- Two of five nodes failed before producing metrics. A 40% proposal failure rate is a major loss of budget and suggests brittle proposal generation, parsing, or code synthesis.\n- node_003 was spawned from failed node_002 rather than explicitly from the last valid checkpoint. Even if execution internally recovered the accepted stack, the lineage is misleading and risks inheriting invalid state.\n- The acceptance logic is opaque. node_003 scored 0.6045, above the accepted 0.604015, yet was rejected. That may be correct due to replication variance or another gate, but the journal should report confidence intervals, per-seed scores, and the exact rejection reason.\n- Only the baseline reports sigma, and sigma=0.0001 is implausibly precise unless based on substantial replication. Uncertainty should be reported consistently for every candidate.\n- The policy stopped before performing ablations of the winning combination. It therefore cannot say whether DCN-lite, hybrid BPR, recency weighting, or scheduled regularization produced the improvement.\n- The original hypothesis predicted roughly +0.0028, but the accepted gain was about +0.0022. That is close enough to be promising, but the journal should distinguish prediction quality from optimization success.\n\nWhat I would change in the scaffold\n\n- Add automatic proposal repair and retry for malformed proposals, with a safe fallback to a simple single-factor experiment.\n- Permit execution only from validated ancestors; failed nodes should never be usable parents.\n- Require each proposal to identify one primary intervention. Reserve factorial searches for screening, then automatically schedule ablations.\n- Record per-seed metrics, mean, standard error/confidence interval, compute cost, and the exact acceptance or rejection test for every node.\n- Separate \u201chighest raw score\u201d from \u201cbest statistically accepted score\u201d in the summary.\n- After a multi-component winner, automatically run leave-one-out ablations and a clean replicated comparison against baseline.\n- Use early probes only for pruning, followed by equal-budget full-length confirmation to avoid favoring candidates with different learning curves.\n- Preserve enough implementation detail to reproduce node_001 exactly; \u201cmild versus strong scheduled regularization\u201d and \u201chybrid BPR\u201d are too vague for an archival record.\n\nWhat the next run should try first\n\nFirst, replicate node_001 against node_000 over several matched seeds and full training schedules. If the gain survives, run four leave-one-component-out ablations:\n\n1. FM instead of DCN-lite.\n2. Logloss instead of hybrid BPR.\n3. Uniform weighting instead of 7-day recency weighting.\n4. Fixed or mild regularization instead of the winning schedule.\n\nThis will identify the active component and interactions far more efficiently than adding another auxiliary objective. After that, revisit the CWM auxiliary loss only if its 0.6045 raw result was consistently positive across seeds. Sweep its weight narrowly on the confirmed winning stack and report why the prior result failed acceptance."
+}

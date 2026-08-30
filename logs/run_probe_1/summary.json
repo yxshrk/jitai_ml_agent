@@ -1,0 +1,4409 @@
+{
+  "run_dir": "logs/run_probe_1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6705421246269109,
+    "ndcg5": 0.5375097171479102,
+    "primary": 0.6040259208874106,
+    "winner": {
+      "cell": 11,
+      "config": {
+        "architecture": "dcn_lite",
+        "loss": "logloss",
+        "weighting": "recency7d",
+        "regularization": "strong"
+      },
+      "probe_mean": 0.6040065517758576,
+      "probe_std": 2.8899982636866196e-05,
+      "probe_scores": [
+        0.6040217962204266,
+        0.6040317703616775,
+        0.6039660887454686
+      ],
+      "best_steps": [
+        7.0,
+        5.0,
+        3.0
+      ],
+      "refine_scores": [
+        0.6041310144548389,
+        0.6039938426653793
+      ],
+      "selection_mean": 0.6040289024895582,
+      "selection_std": 5.596487277381752e-05
+    },
+    "matrix_summary": [
+      {
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6015013775301706,
+        "probe_std": 0.00033788944291176034,
+        "probe_scores": [
+          0.6018377479019454,
+          0.601627122851701,
+          0.6010392618368654
+        ],
+        "best_steps": [
+          8.0,
+          5.0,
+          5.0
+        ]
+      },
+      {
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6008217454443571,
+        "probe_std": 0.00034704139728418653,
+        "probe_scores": [
+          0.6006699606410805,
+          0.6004934378617497,
+          0.6013018378302409
+        ],
+        "best_steps": [
+          8.0,
+          7.0,
+          7.0
+        ]
+      },
+      {
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6017712884167793,
+        "probe_std": 0.00011795793879786259,
+        "probe_scores": [
+          0.6016307720027207,
+          0.6019194084631347,
+          0.6017636847844823
+        ],
+        "best_steps": [
+          5.0,
+          7.0,
+          5.0
+        ]
+      },
+      {
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6010321618503944,
+        "probe_std": 0.0004835331211833121,
+        "probe_scores": [
+          0.6008830158818292,
+          0.6005287875801915,
+          0.6016846820891627
+        ],
+        "best_steps": [
+          8.0,
+          7.0,
+          8.0
+        ]
+      },
+      {
+        "cell": 4,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6015217960638453,
+        "probe_std": 0.00031828559825200704,
+        "probe_scores": [
+          0.6012599265659787,
+          0.601335671106024,
+          0.6019697905195331
+        ],
+        "best_steps": [
+          2.0,
+          3.0,
+          2.0
+        ]
+      },
+      {
+        "cell": 5,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6020656759860569,
+        "probe_std": 0.00027976686787667046,
+        "probe_scores": [
+          0.6017831983151678,
+          0.6024468294409582,
+          0.6019670002020445
+        ],
+        "best_steps": [
+          4.0,
+          7.0,
+          3.0
+        ]
+      },
+      {
+        "cell": 6,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6015400135649559,
+        "probe_std": 0.0005538264483124029,
+        "probe_scores": [
+          0.6015370140857645,
+          0.6008632221763338,
+          0.6022198044327693
+        ],
+        "best_steps": [
+          2.0,
+          3.0,
+          2.0
+        ]
+      },
+      {
+        "cell": 7,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6023992831279684,
+        "probe_std": 9.0923485498947e-05,
+        "probe_scores": [
+          0.6025264794007664,
+          0.6023520083326073,
+          0.6023193616505316
+        ],
+        "best_steps": [
+          7.0,
+          7.0,
+          3.0
+        ]
+      },
+      {
+        "cell": 8,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6037912792674919,
+        "probe_std": 2.934715989411975e-05,
+        "probe_scores": [
+          0.6038298887044709,
+          0.6037587886769076,
+          0.6037851604210971
+        ],
+        "best_steps": [
+          4.0,
+          3.0,
+          3.0
+        ]
+      },
+      {
+        "cell": 9,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6039783135880987,
+        "probe_std": 7.329571067409457e-05,
+        "probe_scores": [
+          0.6040601927784377,
+          0.6039924216127407,
+          0.6038823263731178
+        ],
+        "best_steps": [
+          8.0,
+          5.0,
+          6.0
+        ],
+        "refine_scores": [
+          0.6040964128763738,
+          0.6039792077644422
+        ],
+        "selection_mean": 0.6040021122810224,
+        "selection_std": 7.380126845480788e-05
+      },
+      {
+        "cell": 10,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6039115437600394,
+        "probe_std": 0.00011510004367430094,
+        "probe_scores": [
+          0.6038628075915992,
+          0.6040704132178402,
+          0.603801410470679
+        ],
+        "best_steps": [
+          4.0,
+          3.0,
+          3.0
+        ],
+        "refine_scores": [
+          0.6042657618598355,
+          0.6037679946751509
+        ],
+        "selection_mean": 0.6039536775630209,
+        "selection_std": 0.00018811941706721038
+      },
+      {
+        "cell": 11,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6040065517758576,
+        "probe_std": 2.8899982636866196e-05,
+        "probe_scores": [
+          0.6040217962204266,
+          0.6040317703616775,
+          0.6039660887454686
+        ],
+        "best_steps": [
+          7.0,
+          5.0,
+          3.0
+        ],
+        "refine_scores": [
+          0.6041310144548389,
+          0.6039938426653793
+        ],
+        "selection_mean": 0.6040289024895582,
+        "selection_std": 5.596487277381752e-05
+      },
+      {
+        "cell": 12,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6034326521160246,
+        "probe_std": 0.0004934622029217577,
+        "probe_scores": [
+          0.6034399039919582,
+          0.6028246935078421,
+          0.6040333588482737
+        ],
+        "best_steps": [
+          2.0,
+          2.0,
+          2.0
+        ]
+      },
+      {
+        "cell": 13,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.603754745472227,
+        "probe_std": 7.311970839146238e-05,
+        "probe_scores": [
+          0.6038537992099238,
+          0.6036795085777251,
+          0.6037309286290321
+        ],
+        "best_steps": [
+          2.0,
+          2.0,
+          2.0
+        ]
+      },
+      {
+        "cell": 14,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "probe_mean": 0.6029958973244062,
+        "probe_std": 0.0002317133810632985,
+        "probe_scores": [
+          0.6030664617490953,
+          0.6026834831346178,
+          0.6032377470895054
+        ],
+        "best_steps": [
+          2.0,
+          2.0,
+          2.0
+        ]
+      },
+      {
+        "cell": 15,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "probe_mean": 0.6038518590233711,
+        "probe_std": 0.00028309667280587594,
+        "probe_scores": [
+          0.6042222831312092,
+          0.6035350982162085,
+          0.6037981957226959
+        ],
+        "best_steps": [
+          2.0,
+          2.0,
+          2.0
+        ],
+        "refine_scores": [
+          0.6034240685743781,
+          0.6024459247283935
+        ],
+        "selection_mean": 0.6034851140745771,
+        "selection_std": 0.0005878057164021475
+      }
+    ],
+    "history": [
+      {
+        "phase": "matrix_probe",
+        "cell": 0,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 8.0,
+        "primary": 0.6018377479019454,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637102,
+            "val_gauc": 0.649846,
+            "val_primary": 0.588885
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.54709,
+            "val_gauc": 0.661034,
+            "val_primary": 0.596914
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.511473,
+            "val_gauc": 0.664894,
+            "val_primary": 0.599873
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499378,
+            "val_gauc": 0.666306,
+            "val_primary": 0.600912
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.493417,
+            "val_gauc": 0.667447,
+            "val_primary": 0.601449
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.489109,
+            "val_gauc": 0.667443,
+            "val_primary": 0.601641
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.485336,
+            "val_gauc": 0.667123,
+            "val_primary": 0.601379
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.481553,
+            "val_gauc": 0.667596,
+            "val_primary": 0.601838
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 0,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.601627122851701,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.636315,
+            "val_gauc": 0.646618,
+            "val_primary": 0.587168
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.54635,
+            "val_gauc": 0.65969,
+            "val_primary": 0.596111
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.511417,
+            "val_gauc": 0.66356,
+            "val_primary": 0.598836
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499381,
+            "val_gauc": 0.666887,
+            "val_primary": 0.601438
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.493411,
+            "val_gauc": 0.667145,
+            "val_primary": 0.601627
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.489106,
+            "val_gauc": 0.667222,
+            "val_primary": 0.601611
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.485062,
+            "val_gauc": 0.667368,
+            "val_primary": 0.601426
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.481144,
+            "val_gauc": 0.667855,
+            "val_primary": 0.601611
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 0,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.6010392618368654,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637224,
+            "val_gauc": 0.647407,
+            "val_primary": 0.587253
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.548492,
+            "val_gauc": 0.659986,
+            "val_primary": 0.596169
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.512462,
+            "val_gauc": 0.663698,
+            "val_primary": 0.599158
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.49961,
+            "val_gauc": 0.66579,
+            "val_primary": 0.60076
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.493275,
+            "val_gauc": 0.667145,
+            "val_primary": 0.601039
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.48854,
+            "val_gauc": 0.665515,
+            "val_primary": 0.600286
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.48444,
+            "val_gauc": 0.66487,
+            "val_primary": 0.599726
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.48039,
+            "val_gauc": 0.665654,
+            "val_primary": 0.600293
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 1,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 8.0,
+        "primary": 0.6006699606410805,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.641883,
+            "val_gauc": 0.647983,
+            "val_primary": 0.587897
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.567654,
+            "val_gauc": 0.657457,
+            "val_primary": 0.594711
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.535091,
+            "val_gauc": 0.660755,
+            "val_primary": 0.597164
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.520518,
+            "val_gauc": 0.664408,
+            "val_primary": 0.599633
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.512162,
+            "val_gauc": 0.664726,
+            "val_primary": 0.599895
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.509752,
+            "val_gauc": 0.665236,
+            "val_primary": 0.60015
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.508029,
+            "val_gauc": 0.666039,
+            "val_primary": 0.60066
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.506128,
+            "val_gauc": 0.666166,
+            "val_primary": 0.60067
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 1,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6004934378617497,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.640402,
+            "val_gauc": 0.646756,
+            "val_primary": 0.587341
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.564648,
+            "val_gauc": 0.656668,
+            "val_primary": 0.594356
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.533447,
+            "val_gauc": 0.661513,
+            "val_primary": 0.597783
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.519736,
+            "val_gauc": 0.662916,
+            "val_primary": 0.59873
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.511589,
+            "val_gauc": 0.66375,
+            "val_primary": 0.599315
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.509423,
+            "val_gauc": 0.664606,
+            "val_primary": 0.599781
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.507546,
+            "val_gauc": 0.665613,
+            "val_primary": 0.600493
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505706,
+            "val_gauc": 0.665425,
+            "val_primary": 0.600334
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 1,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6013018378302409,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.641015,
+            "val_gauc": 0.647655,
+            "val_primary": 0.587829
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.563652,
+            "val_gauc": 0.658173,
+            "val_primary": 0.595203
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.530618,
+            "val_gauc": 0.662576,
+            "val_primary": 0.598283
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.51663,
+            "val_gauc": 0.664702,
+            "val_primary": 0.599911
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.509092,
+            "val_gauc": 0.665381,
+            "val_primary": 0.600233
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.507492,
+            "val_gauc": 0.666105,
+            "val_primary": 0.600882
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.505547,
+            "val_gauc": 0.666623,
+            "val_primary": 0.601302
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.504047,
+            "val_gauc": 0.666295,
+            "val_primary": 0.601077
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 2,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.6016307720027207,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.638556,
+            "val_gauc": 0.648689,
+            "val_primary": 0.588049
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.550934,
+            "val_gauc": 0.66081,
+            "val_primary": 0.596735
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.513178,
+            "val_gauc": 0.664921,
+            "val_primary": 0.59971
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499472,
+            "val_gauc": 0.665899,
+            "val_primary": 0.600488
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.492611,
+            "val_gauc": 0.667663,
+            "val_primary": 0.601631
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.487689,
+            "val_gauc": 0.666481,
+            "val_primary": 0.600882
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.483437,
+            "val_gauc": 0.666749,
+            "val_primary": 0.601039
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.479239,
+            "val_gauc": 0.666274,
+            "val_primary": 0.600601
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 2,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6019194084631347,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637306,
+            "val_gauc": 0.647993,
+            "val_primary": 0.588025
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.548372,
+            "val_gauc": 0.659048,
+            "val_primary": 0.595592
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.512357,
+            "val_gauc": 0.663898,
+            "val_primary": 0.598963
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499521,
+            "val_gauc": 0.666002,
+            "val_primary": 0.600861
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.493113,
+            "val_gauc": 0.66683,
+            "val_primary": 0.601487
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.48862,
+            "val_gauc": 0.666868,
+            "val_primary": 0.601438
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.484439,
+            "val_gauc": 0.668024,
+            "val_primary": 0.601919
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.480414,
+            "val_gauc": 0.667685,
+            "val_primary": 0.6016
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 2,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.6017636847844823,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.638171,
+            "val_gauc": 0.64836,
+            "val_primary": 0.587837
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.550234,
+            "val_gauc": 0.660164,
+            "val_primary": 0.596543
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.513205,
+            "val_gauc": 0.66443,
+            "val_primary": 0.599665
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499757,
+            "val_gauc": 0.666493,
+            "val_primary": 0.601128
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.493039,
+            "val_gauc": 0.66763,
+            "val_primary": 0.601764
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.488028,
+            "val_gauc": 0.666553,
+            "val_primary": 0.601153
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.48377,
+            "val_gauc": 0.665181,
+            "val_primary": 0.599946
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.479542,
+            "val_gauc": 0.666911,
+            "val_primary": 0.601304
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 3,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 8.0,
+        "primary": 0.6008830158818292,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.642586,
+            "val_gauc": 0.648766,
+            "val_primary": 0.58866
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.569701,
+            "val_gauc": 0.658601,
+            "val_primary": 0.595608
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.536664,
+            "val_gauc": 0.662536,
+            "val_primary": 0.598185
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.521497,
+            "val_gauc": 0.664736,
+            "val_primary": 0.599893
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.512568,
+            "val_gauc": 0.665225,
+            "val_primary": 0.600256
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.509973,
+            "val_gauc": 0.665894,
+            "val_primary": 0.600625
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.507952,
+            "val_gauc": 0.666049,
+            "val_primary": 0.600609
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505909,
+            "val_gauc": 0.666468,
+            "val_primary": 0.600883
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 3,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6005287875801915,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.641328,
+            "val_gauc": 0.647021,
+            "val_primary": 0.587414
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.567025,
+            "val_gauc": 0.657602,
+            "val_primary": 0.595092
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.535405,
+            "val_gauc": 0.662149,
+            "val_primary": 0.598067
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.521227,
+            "val_gauc": 0.664156,
+            "val_primary": 0.599448
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.512494,
+            "val_gauc": 0.664779,
+            "val_primary": 0.599941
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.510064,
+            "val_gauc": 0.665298,
+            "val_primary": 0.600197
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.50798,
+            "val_gauc": 0.665782,
+            "val_primary": 0.600529
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505943,
+            "val_gauc": 0.665535,
+            "val_primary": 0.60038
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 3,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 8.0,
+        "primary": 0.6016846820891627,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.642224,
+            "val_gauc": 0.648131,
+            "val_primary": 0.588119
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.56666,
+            "val_gauc": 0.658252,
+            "val_primary": 0.595198
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.531854,
+            "val_gauc": 0.662542,
+            "val_primary": 0.598299
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.517164,
+            "val_gauc": 0.665337,
+            "val_primary": 0.600263
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.509035,
+            "val_gauc": 0.666577,
+            "val_primary": 0.600984
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.5073,
+            "val_gauc": 0.666825,
+            "val_primary": 0.601279
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.505263,
+            "val_gauc": 0.666924,
+            "val_primary": 0.601424
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.50364,
+            "val_gauc": 0.667238,
+            "val_primary": 0.601685
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 4,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6012599265659787,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637001,
+            "val_gauc": 0.662281,
+            "val_primary": 0.59771
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.552895,
+            "val_gauc": 0.666939,
+            "val_primary": 0.60126
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.524665,
+            "val_gauc": 0.665968,
+            "val_primary": 0.60046
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.50948,
+            "val_gauc": 0.665481,
+            "val_primary": 0.599879
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496595,
+            "val_gauc": 0.662054,
+            "val_primary": 0.597351
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.483194,
+            "val_gauc": 0.659724,
+            "val_primary": 0.595281
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.469932,
+            "val_gauc": 0.654139,
+            "val_primary": 0.591567
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.458029,
+            "val_gauc": 0.65054,
+            "val_primary": 0.589027
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 4,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.601335671106024,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.635817,
+            "val_gauc": 0.664135,
+            "val_primary": 0.59937
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.553446,
+            "val_gauc": 0.665742,
+            "val_primary": 0.600434
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.527138,
+            "val_gauc": 0.666928,
+            "val_primary": 0.601336
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.514133,
+            "val_gauc": 0.665844,
+            "val_primary": 0.600305
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.501894,
+            "val_gauc": 0.665443,
+            "val_primary": 0.600176
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.488948,
+            "val_gauc": 0.659729,
+            "val_primary": 0.596162
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.475271,
+            "val_gauc": 0.658666,
+            "val_primary": 0.594833
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.463191,
+            "val_gauc": 0.65395,
+            "val_primary": 0.591589
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 4,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6019697905195331,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637084,
+            "val_gauc": 0.663115,
+            "val_primary": 0.598127
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.553236,
+            "val_gauc": 0.668097,
+            "val_primary": 0.60197
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.525847,
+            "val_gauc": 0.667639,
+            "val_primary": 0.601749
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.510119,
+            "val_gauc": 0.665985,
+            "val_primary": 0.600334
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496981,
+            "val_gauc": 0.662533,
+            "val_primary": 0.598032
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.484079,
+            "val_gauc": 0.659908,
+            "val_primary": 0.596009
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.470191,
+            "val_gauc": 0.657082,
+            "val_primary": 0.593819
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.45774,
+            "val_gauc": 0.653025,
+            "val_primary": 0.590806
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 5,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 4.0,
+        "primary": 0.6017831983151678,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.642173,
+            "val_gauc": 0.663026,
+            "val_primary": 0.598326
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.567882,
+            "val_gauc": 0.666119,
+            "val_primary": 0.600765
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.545396,
+            "val_gauc": 0.667293,
+            "val_primary": 0.601637
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.536258,
+            "val_gauc": 0.667903,
+            "val_primary": 0.601783
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.531757,
+            "val_gauc": 0.667458,
+            "val_primary": 0.601453
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.529967,
+            "val_gauc": 0.667874,
+            "val_primary": 0.601635
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.527748,
+            "val_gauc": 0.667504,
+            "val_primary": 0.601451
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.526634,
+            "val_gauc": 0.667617,
+            "val_primary": 0.601555
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 5,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6024468294409582,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.64091,
+            "val_gauc": 0.664579,
+            "val_primary": 0.599508
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.566447,
+            "val_gauc": 0.666737,
+            "val_primary": 0.601076
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.544254,
+            "val_gauc": 0.667903,
+            "val_primary": 0.602068
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.535902,
+            "val_gauc": 0.667659,
+            "val_primary": 0.601589
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.53148,
+            "val_gauc": 0.668174,
+            "val_primary": 0.602132
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.529364,
+            "val_gauc": 0.668171,
+            "val_primary": 0.602231
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.52727,
+            "val_gauc": 0.668645,
+            "val_primary": 0.602447
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.526637,
+            "val_gauc": 0.668348,
+            "val_primary": 0.60226
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 5,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6019670002020445,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.641898,
+            "val_gauc": 0.662855,
+            "val_primary": 0.597995
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.567755,
+            "val_gauc": 0.667301,
+            "val_primary": 0.6014
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.546408,
+            "val_gauc": 0.667948,
+            "val_primary": 0.601967
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.535946,
+            "val_gauc": 0.667008,
+            "val_primary": 0.601044
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.530771,
+            "val_gauc": 0.667496,
+            "val_primary": 0.601556
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.528743,
+            "val_gauc": 0.667897,
+            "val_primary": 0.601848
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.526681,
+            "val_gauc": 0.667408,
+            "val_primary": 0.60146
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.525703,
+            "val_gauc": 0.667776,
+            "val_primary": 0.601741
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 6,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6015370140857645,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.637506,
+            "val_gauc": 0.663082,
+            "val_primary": 0.598423
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.553345,
+            "val_gauc": 0.667299,
+            "val_primary": 0.601537
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.524756,
+            "val_gauc": 0.666268,
+            "val_primary": 0.600659
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.50887,
+            "val_gauc": 0.664954,
+            "val_primary": 0.599376
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.495237,
+            "val_gauc": 0.661731,
+            "val_primary": 0.597062
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.481323,
+            "val_gauc": 0.659017,
+            "val_primary": 0.594823
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.467475,
+            "val_gauc": 0.653727,
+            "val_primary": 0.591499
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.455091,
+            "val_gauc": 0.650411,
+            "val_primary": 0.588976
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 6,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6008632221763338,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.636329,
+            "val_gauc": 0.664109,
+            "val_primary": 0.599303
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.553822,
+            "val_gauc": 0.665892,
+            "val_primary": 0.600629
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.527035,
+            "val_gauc": 0.666571,
+            "val_primary": 0.600863
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.513219,
+            "val_gauc": 0.665294,
+            "val_primary": 0.599977
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.500261,
+            "val_gauc": 0.664674,
+            "val_primary": 0.599674
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.486712,
+            "val_gauc": 0.659864,
+            "val_primary": 0.596345
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.472498,
+            "val_gauc": 0.658512,
+            "val_primary": 0.594523
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.459972,
+            "val_gauc": 0.653247,
+            "val_primary": 0.591035
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 6,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6022198044327693,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.63751,
+            "val_gauc": 0.664005,
+            "val_primary": 0.598846
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.553521,
+            "val_gauc": 0.668624,
+            "val_primary": 0.60222
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.525606,
+            "val_gauc": 0.667311,
+            "val_primary": 0.601372
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.509121,
+            "val_gauc": 0.665659,
+            "val_primary": 0.599995
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.495454,
+            "val_gauc": 0.662204,
+            "val_primary": 0.597831
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.481891,
+            "val_gauc": 0.658464,
+            "val_primary": 0.594934
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.467429,
+            "val_gauc": 0.656695,
+            "val_primary": 0.593503
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.454505,
+            "val_gauc": 0.651475,
+            "val_primary": 0.58994
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 7,
+        "seed": 42,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6025264794007664,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.642664,
+            "val_gauc": 0.66341,
+            "val_primary": 0.598712
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.568338,
+            "val_gauc": 0.665928,
+            "val_primary": 0.600553
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.545683,
+            "val_gauc": 0.66793,
+            "val_primary": 0.601877
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.536202,
+            "val_gauc": 0.668256,
+            "val_primary": 0.601953
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.531381,
+            "val_gauc": 0.668274,
+            "val_primary": 0.602064
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.529576,
+            "val_gauc": 0.668023,
+            "val_primary": 0.601906
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.527163,
+            "val_gauc": 0.669021,
+            "val_primary": 0.602526
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.526111,
+            "val_gauc": 0.668544,
+            "val_primary": 0.602191
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 7,
+        "seed": 1051,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6023520083326073,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.641476,
+            "val_gauc": 0.664602,
+            "val_primary": 0.599375
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.567065,
+            "val_gauc": 0.667324,
+            "val_primary": 0.601397
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.544447,
+            "val_gauc": 0.668275,
+            "val_primary": 0.60234
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.535508,
+            "val_gauc": 0.667785,
+            "val_primary": 0.601647
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.530718,
+            "val_gauc": 0.667881,
+            "val_primary": 0.601854
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.528533,
+            "val_gauc": 0.66797,
+            "val_primary": 0.602058
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.526308,
+            "val_gauc": 0.668645,
+            "val_primary": 0.602352
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.525528,
+            "val_gauc": 0.668567,
+            "val_primary": 0.602343
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 7,
+        "seed": 2060,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6023193616505316,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.64245,
+            "val_gauc": 0.663965,
+            "val_primary": 0.59877
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.568331,
+            "val_gauc": 0.667953,
+            "val_primary": 0.601755
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.546638,
+            "val_gauc": 0.668507,
+            "val_primary": 0.602319
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.535838,
+            "val_gauc": 0.667931,
+            "val_primary": 0.601692
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.530571,
+            "val_gauc": 0.667785,
+            "val_primary": 0.601679
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.528359,
+            "val_gauc": 0.668072,
+            "val_primary": 0.601957
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.52621,
+            "val_gauc": 0.668527,
+            "val_primary": 0.602236
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.525136,
+            "val_gauc": 0.668286,
+            "val_primary": 0.602153
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 8,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 4.0,
+        "primary": 0.6038298887044709,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.56514,
+            "val_gauc": 0.66578,
+            "val_primary": 0.60038
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.506887,
+            "val_gauc": 0.669894,
+            "val_primary": 0.603408
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501372,
+            "val_gauc": 0.670251,
+            "val_primary": 0.603664
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499025,
+            "val_gauc": 0.670722,
+            "val_primary": 0.60383
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.497315,
+            "val_gauc": 0.669587,
+            "val_primary": 0.602921
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.49503,
+            "val_gauc": 0.668575,
+            "val_primary": 0.602374
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.49157,
+            "val_gauc": 0.667372,
+            "val_primary": 0.60137
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.487118,
+            "val_gauc": 0.665391,
+            "val_primary": 0.600266
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 8,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6037587886769076,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.567261,
+            "val_gauc": 0.666219,
+            "val_primary": 0.600634
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.506617,
+            "val_gauc": 0.669366,
+            "val_primary": 0.60311
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501335,
+            "val_gauc": 0.670014,
+            "val_primary": 0.603759
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498976,
+            "val_gauc": 0.669955,
+            "val_primary": 0.603697
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496914,
+            "val_gauc": 0.669187,
+            "val_primary": 0.60275
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.494124,
+            "val_gauc": 0.669145,
+            "val_primary": 0.602851
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.489849,
+            "val_gauc": 0.666325,
+            "val_primary": 0.600675
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.484708,
+            "val_gauc": 0.66434,
+            "val_primary": 0.598947
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 8,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6037851604210971,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.566544,
+            "val_gauc": 0.664369,
+            "val_primary": 0.599264
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.507033,
+            "val_gauc": 0.669859,
+            "val_primary": 0.603384
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501417,
+            "val_gauc": 0.670621,
+            "val_primary": 0.603785
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499172,
+            "val_gauc": 0.670235,
+            "val_primary": 0.603456
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496953,
+            "val_gauc": 0.669179,
+            "val_primary": 0.602904
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.493809,
+            "val_gauc": 0.66827,
+            "val_primary": 0.602274
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.489456,
+            "val_gauc": 0.667791,
+            "val_primary": 0.601825
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.48454,
+            "val_gauc": 0.664315,
+            "val_primary": 0.599162
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 9,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 8.0,
+        "primary": 0.6040601927784377,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.56695,
+            "val_gauc": 0.666159,
+            "val_primary": 0.600547
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511356,
+            "val_gauc": 0.668645,
+            "val_primary": 0.602768
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505435,
+            "val_gauc": 0.669703,
+            "val_primary": 0.603278
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.503059,
+            "val_gauc": 0.669813,
+            "val_primary": 0.603396
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496953,
+            "val_gauc": 0.670168,
+            "val_primary": 0.603447
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.496236,
+            "val_gauc": 0.670529,
+            "val_primary": 0.603744
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.495745,
+            "val_gauc": 0.670719,
+            "val_primary": 0.603785
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.493615,
+            "val_gauc": 0.671051,
+            "val_primary": 0.60406
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 9,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.6039924216127407,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.56817,
+            "val_gauc": 0.6659,
+            "val_primary": 0.60021
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511055,
+            "val_gauc": 0.669451,
+            "val_primary": 0.603081
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505211,
+            "val_gauc": 0.669663,
+            "val_primary": 0.603178
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502823,
+            "val_gauc": 0.670182,
+            "val_primary": 0.603616
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496548,
+            "val_gauc": 0.670535,
+            "val_primary": 0.603992
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495808,
+            "val_gauc": 0.67001,
+            "val_primary": 0.603522
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.495339,
+            "val_gauc": 0.66961,
+            "val_primary": 0.603131
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.493341,
+            "val_gauc": 0.669692,
+            "val_primary": 0.60315
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 9,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 6.0,
+        "primary": 0.6038823263731178,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.567757,
+            "val_gauc": 0.665385,
+            "val_primary": 0.599966
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511267,
+            "val_gauc": 0.668744,
+            "val_primary": 0.602764
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505478,
+            "val_gauc": 0.669676,
+            "val_primary": 0.6034
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502928,
+            "val_gauc": 0.670233,
+            "val_primary": 0.603706
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496711,
+            "val_gauc": 0.670426,
+            "val_primary": 0.603728
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.496116,
+            "val_gauc": 0.670921,
+            "val_primary": 0.603882
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.495531,
+            "val_gauc": 0.670186,
+            "val_primary": 0.603369
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.493618,
+            "val_gauc": 0.670161,
+            "val_primary": 0.603259
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 10,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 4.0,
+        "primary": 0.6038628075915992,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.56651,
+            "val_gauc": 0.666108,
+            "val_primary": 0.600739
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.507331,
+            "val_gauc": 0.670029,
+            "val_primary": 0.603761
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501178,
+            "val_gauc": 0.669968,
+            "val_primary": 0.60341
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.49853,
+            "val_gauc": 0.670641,
+            "val_primary": 0.603863
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496494,
+            "val_gauc": 0.668933,
+            "val_primary": 0.602584
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.493557,
+            "val_gauc": 0.668212,
+            "val_primary": 0.602007
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.489282,
+            "val_gauc": 0.666823,
+            "val_primary": 0.601099
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.483756,
+            "val_gauc": 0.663458,
+            "val_primary": 0.598618
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 10,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6040704132178402,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568421,
+            "val_gauc": 0.666009,
+            "val_primary": 0.600462
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.507019,
+            "val_gauc": 0.66979,
+            "val_primary": 0.603509
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501191,
+            "val_gauc": 0.670527,
+            "val_primary": 0.60407
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498593,
+            "val_gauc": 0.669855,
+            "val_primary": 0.603493
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496357,
+            "val_gauc": 0.668717,
+            "val_primary": 0.60244
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.493305,
+            "val_gauc": 0.66869,
+            "val_primary": 0.602368
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.488471,
+            "val_gauc": 0.665434,
+            "val_primary": 0.600051
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.482904,
+            "val_gauc": 0.661364,
+            "val_primary": 0.59702
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 10,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.603801410470679,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.567658,
+            "val_gauc": 0.66522,
+            "val_primary": 0.599904
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.507429,
+            "val_gauc": 0.66994,
+            "val_primary": 0.603455
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501322,
+            "val_gauc": 0.670606,
+            "val_primary": 0.603801
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498836,
+            "val_gauc": 0.670586,
+            "val_primary": 0.603732
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496428,
+            "val_gauc": 0.669311,
+            "val_primary": 0.602867
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.493162,
+            "val_gauc": 0.668809,
+            "val_primary": 0.602723
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.488835,
+            "val_gauc": 0.667754,
+            "val_primary": 0.601708
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.484291,
+            "val_gauc": 0.66436,
+            "val_primary": 0.599126
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 11,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 7.0,
+        "primary": 0.6040217962204266,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568213,
+            "val_gauc": 0.666089,
+            "val_primary": 0.600479
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511749,
+            "val_gauc": 0.669191,
+            "val_primary": 0.603031
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.50537,
+            "val_gauc": 0.669449,
+            "val_primary": 0.603257
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502763,
+            "val_gauc": 0.669334,
+            "val_primary": 0.603019
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496175,
+            "val_gauc": 0.670501,
+            "val_primary": 0.603839
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495429,
+            "val_gauc": 0.670785,
+            "val_primary": 0.604019
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494927,
+            "val_gauc": 0.670727,
+            "val_primary": 0.604022
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492661,
+            "val_gauc": 0.670334,
+            "val_primary": 0.603745
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 11,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 5.0,
+        "primary": 0.6040317703616775,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.569337,
+            "val_gauc": 0.665474,
+            "val_primary": 0.599934
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511509,
+            "val_gauc": 0.668756,
+            "val_primary": 0.602685
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.50522,
+            "val_gauc": 0.669248,
+            "val_primary": 0.603043
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502644,
+            "val_gauc": 0.670268,
+            "val_primary": 0.603853
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.495854,
+            "val_gauc": 0.670734,
+            "val_primary": 0.604032
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.494998,
+            "val_gauc": 0.669928,
+            "val_primary": 0.603462
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494522,
+            "val_gauc": 0.669365,
+            "val_primary": 0.602919
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492362,
+            "val_gauc": 0.669079,
+            "val_primary": 0.602837
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 11,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 3.0,
+        "primary": 0.6039660887454686,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.56886,
+            "val_gauc": 0.665856,
+            "val_primary": 0.6003
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511635,
+            "val_gauc": 0.668866,
+            "val_primary": 0.602867
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.50551,
+            "val_gauc": 0.670434,
+            "val_primary": 0.603966
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.50268,
+            "val_gauc": 0.669666,
+            "val_primary": 0.60329
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496031,
+            "val_gauc": 0.669707,
+            "val_primary": 0.603339
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495366,
+            "val_gauc": 0.670031,
+            "val_primary": 0.603403
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494787,
+            "val_gauc": 0.669178,
+            "val_primary": 0.602821
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492673,
+            "val_gauc": 0.669066,
+            "val_primary": 0.602724
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 12,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6034399039919582,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.57622,
+            "val_gauc": 0.667937,
+            "val_primary": 0.602022
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.528529,
+            "val_gauc": 0.669537,
+            "val_primary": 0.60344
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.51946,
+            "val_gauc": 0.655474,
+            "val_primary": 0.593394
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.503416,
+            "val_gauc": 0.647897,
+            "val_primary": 0.58707
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.482038,
+            "val_gauc": 0.642528,
+            "val_primary": 0.583525
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.45884,
+            "val_gauc": 0.635462,
+            "val_primary": 0.578294
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.437414,
+            "val_gauc": 0.627165,
+            "val_primary": 0.572548
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.416943,
+            "val_gauc": 0.625904,
+            "val_primary": 0.571727
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 12,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6028246935078421,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.577989,
+            "val_gauc": 0.66833,
+            "val_primary": 0.60215
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.528197,
+            "val_gauc": 0.669273,
+            "val_primary": 0.602825
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.516664,
+            "val_gauc": 0.656088,
+            "val_primary": 0.593353
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.500899,
+            "val_gauc": 0.649093,
+            "val_primary": 0.587882
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.479055,
+            "val_gauc": 0.634711,
+            "val_primary": 0.577794
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.453222,
+            "val_gauc": 0.628291,
+            "val_primary": 0.573315
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.42829,
+            "val_gauc": 0.627026,
+            "val_primary": 0.572372
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.407972,
+            "val_gauc": 0.619219,
+            "val_primary": 0.566554
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 12,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6040333588482737,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.577527,
+            "val_gauc": 0.669133,
+            "val_primary": 0.602589
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.528604,
+            "val_gauc": 0.670992,
+            "val_primary": 0.604033
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.517734,
+            "val_gauc": 0.658752,
+            "val_primary": 0.595451
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.50052,
+            "val_gauc": 0.648177,
+            "val_primary": 0.587254
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.480697,
+            "val_gauc": 0.64086,
+            "val_primary": 0.582031
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.460612,
+            "val_gauc": 0.634463,
+            "val_primary": 0.577566
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.43778,
+            "val_gauc": 0.628486,
+            "val_primary": 0.57322
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.417253,
+            "val_gauc": 0.62525,
+            "val_primary": 0.570929
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 13,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6038537992099238,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.580386,
+            "val_gauc": 0.668764,
+            "val_primary": 0.602467
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.535855,
+            "val_gauc": 0.670042,
+            "val_primary": 0.603854
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.530196,
+            "val_gauc": 0.666554,
+            "val_primary": 0.60137
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.524879,
+            "val_gauc": 0.660524,
+            "val_primary": 0.59671
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.518768,
+            "val_gauc": 0.657561,
+            "val_primary": 0.595003
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.514995,
+            "val_gauc": 0.655705,
+            "val_primary": 0.593301
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.511746,
+            "val_gauc": 0.654391,
+            "val_primary": 0.592143
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.509075,
+            "val_gauc": 0.653094,
+            "val_primary": 0.591229
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 13,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6036795085777251,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.58105,
+            "val_gauc": 0.667369,
+            "val_primary": 0.601459
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.53551,
+            "val_gauc": 0.6701,
+            "val_primary": 0.60368
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.529175,
+            "val_gauc": 0.668487,
+            "val_primary": 0.602402
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.522463,
+            "val_gauc": 0.660093,
+            "val_primary": 0.596246
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.514894,
+            "val_gauc": 0.658664,
+            "val_primary": 0.595367
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.511181,
+            "val_gauc": 0.656393,
+            "val_primary": 0.593966
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.507699,
+            "val_gauc": 0.654593,
+            "val_primary": 0.592395
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505423,
+            "val_gauc": 0.653679,
+            "val_primary": 0.591714
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 13,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6037309286290321,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.580683,
+            "val_gauc": 0.668593,
+            "val_primary": 0.602107
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.535988,
+            "val_gauc": 0.670495,
+            "val_primary": 0.603731
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.529821,
+            "val_gauc": 0.669608,
+            "val_primary": 0.603339
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.521875,
+            "val_gauc": 0.660951,
+            "val_primary": 0.596738
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.514814,
+            "val_gauc": 0.658512,
+            "val_primary": 0.595247
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.511638,
+            "val_gauc": 0.656671,
+            "val_primary": 0.593973
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.50805,
+            "val_gauc": 0.654109,
+            "val_primary": 0.592178
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505915,
+            "val_gauc": 0.653059,
+            "val_primary": 0.591502
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 14,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6030664617490953,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.576715,
+            "val_gauc": 0.667396,
+            "val_primary": 0.601598
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.528505,
+            "val_gauc": 0.668789,
+            "val_primary": 0.603066
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.518714,
+            "val_gauc": 0.653206,
+            "val_primary": 0.592269
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502698,
+            "val_gauc": 0.646279,
+            "val_primary": 0.586141
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.483686,
+            "val_gauc": 0.640607,
+            "val_primary": 0.582412
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.462755,
+            "val_gauc": 0.633121,
+            "val_primary": 0.576586
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.441422,
+            "val_gauc": 0.627533,
+            "val_primary": 0.573027
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.419902,
+            "val_gauc": 0.62718,
+            "val_primary": 0.572733
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 14,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6026834831346178,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.578515,
+            "val_gauc": 0.668487,
+            "val_primary": 0.602559
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.52805,
+            "val_gauc": 0.668987,
+            "val_primary": 0.602683
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.516452,
+            "val_gauc": 0.658485,
+            "val_primary": 0.595136
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.499199,
+            "val_gauc": 0.649061,
+            "val_primary": 0.58825
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.476009,
+            "val_gauc": 0.635894,
+            "val_primary": 0.578665
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.450123,
+            "val_gauc": 0.627712,
+            "val_primary": 0.572936
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.426874,
+            "val_gauc": 0.623914,
+            "val_primary": 0.570322
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.406196,
+            "val_gauc": 0.615898,
+            "val_primary": 0.564449
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 14,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6032377470895054,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.578036,
+            "val_gauc": 0.669794,
+            "val_primary": 0.602954
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.528474,
+            "val_gauc": 0.670114,
+            "val_primary": 0.603238
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.517305,
+            "val_gauc": 0.656357,
+            "val_primary": 0.593552
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498022,
+            "val_gauc": 0.646109,
+            "val_primary": 0.586042
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.47755,
+            "val_gauc": 0.639604,
+            "val_primary": 0.581001
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.457841,
+            "val_gauc": 0.63386,
+            "val_primary": 0.577145
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.436704,
+            "val_gauc": 0.625889,
+            "val_primary": 0.571183
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.41348,
+            "val_gauc": 0.621728,
+            "val_primary": 0.568185
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 15,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6042222831312092,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.580872,
+            "val_gauc": 0.668642,
+            "val_primary": 0.602425
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.535758,
+            "val_gauc": 0.670507,
+            "val_primary": 0.604222
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.530078,
+            "val_gauc": 0.668488,
+            "val_primary": 0.60256
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.524466,
+            "val_gauc": 0.659165,
+            "val_primary": 0.595847
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.517694,
+            "val_gauc": 0.65602,
+            "val_primary": 0.59393
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.513687,
+            "val_gauc": 0.652933,
+            "val_primary": 0.591336
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.510348,
+            "val_gauc": 0.653257,
+            "val_primary": 0.591485
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.507551,
+            "val_gauc": 0.651375,
+            "val_primary": 0.590268
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 15,
+        "seed": 1051,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6035350982162085,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.581545,
+            "val_gauc": 0.667288,
+            "val_primary": 0.601454
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.535455,
+            "val_gauc": 0.670121,
+            "val_primary": 0.603535
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.529164,
+            "val_gauc": 0.66843,
+            "val_primary": 0.602164
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.522106,
+            "val_gauc": 0.659895,
+            "val_primary": 0.595905
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.514584,
+            "val_gauc": 0.659129,
+            "val_primary": 0.595627
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.51082,
+            "val_gauc": 0.655817,
+            "val_primary": 0.593597
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.507673,
+            "val_gauc": 0.654084,
+            "val_primary": 0.592144
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505138,
+            "val_gauc": 0.653216,
+            "val_primary": 0.59147
+          }
+        ]
+      },
+      {
+        "phase": "matrix_probe",
+        "cell": 15,
+        "seed": 2060,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 8,
+        "best_step": 2.0,
+        "primary": 0.6037981957226959,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.581195,
+            "val_gauc": 0.669249,
+            "val_primary": 0.602513
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.53594,
+            "val_gauc": 0.670535,
+            "val_primary": 0.603798
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.52941,
+            "val_gauc": 0.669291,
+            "val_primary": 0.602975
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.521216,
+            "val_gauc": 0.66074,
+            "val_primary": 0.596623
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.513994,
+            "val_gauc": 0.657115,
+            "val_primary": 0.594423
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.510679,
+            "val_gauc": 0.65559,
+            "val_primary": 0.593256
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.507273,
+            "val_gauc": 0.652932,
+            "val_primary": 0.59141
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.505064,
+            "val_gauc": 0.652984,
+            "val_primary": 0.591279
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 11,
+        "seed": 5045,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 5.0,
+        "primary": 0.6041310144548389,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.569665,
+            "val_gauc": 0.665491,
+            "val_primary": 0.599987
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511478,
+            "val_gauc": 0.669324,
+            "val_primary": 0.60295
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505025,
+            "val_gauc": 0.670076,
+            "val_primary": 0.603543
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502474,
+            "val_gauc": 0.670406,
+            "val_primary": 0.603839
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.495837,
+            "val_gauc": 0.670832,
+            "val_primary": 0.604131
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495164,
+            "val_gauc": 0.669994,
+            "val_primary": 0.603629
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494746,
+            "val_gauc": 0.669639,
+            "val_primary": 0.603365
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492147,
+            "val_gauc": 0.669396,
+            "val_primary": 0.603164
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.492166,
+            "val_gauc": 0.669134,
+            "val_primary": 0.602929
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.49188,
+            "val_gauc": 0.668915,
+            "val_primary": 0.602763
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.491795,
+            "val_gauc": 0.668469,
+            "val_primary": 0.602505
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.491277,
+            "val_gauc": 0.668376,
+            "val_primary": 0.602394
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 11,
+        "seed": 6058,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 3.0,
+        "primary": 0.6039938426653793,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.569274,
+            "val_gauc": 0.666504,
+            "val_primary": 0.600633
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511762,
+            "val_gauc": 0.669613,
+            "val_primary": 0.603116
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505594,
+            "val_gauc": 0.67074,
+            "val_primary": 0.603994
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502634,
+            "val_gauc": 0.670158,
+            "val_primary": 0.60365
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.495813,
+            "val_gauc": 0.670471,
+            "val_primary": 0.603945
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495194,
+            "val_gauc": 0.670301,
+            "val_primary": 0.603874
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494791,
+            "val_gauc": 0.67032,
+            "val_primary": 0.603794
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492344,
+            "val_gauc": 0.670227,
+            "val_primary": 0.603662
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.49219,
+            "val_gauc": 0.669814,
+            "val_primary": 0.603377
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.491797,
+            "val_gauc": 0.669758,
+            "val_primary": 0.603372
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.491704,
+            "val_gauc": 0.669519,
+            "val_primary": 0.603208
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.490961,
+            "val_gauc": 0.669295,
+            "val_primary": 0.603059
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 9,
+        "seed": 5045,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 5.0,
+        "primary": 0.6040964128763738,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568223,
+            "val_gauc": 0.666347,
+            "val_primary": 0.600595
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511043,
+            "val_gauc": 0.669203,
+            "val_primary": 0.602808
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505148,
+            "val_gauc": 0.67007,
+            "val_primary": 0.603679
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502755,
+            "val_gauc": 0.670745,
+            "val_primary": 0.603885
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496537,
+            "val_gauc": 0.670786,
+            "val_primary": 0.604096
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495956,
+            "val_gauc": 0.669863,
+            "val_primary": 0.603343
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.49554,
+            "val_gauc": 0.669908,
+            "val_primary": 0.603455
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.493123,
+            "val_gauc": 0.669961,
+            "val_primary": 0.603643
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.493161,
+            "val_gauc": 0.669831,
+            "val_primary": 0.603433
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.492856,
+            "val_gauc": 0.669829,
+            "val_primary": 0.603412
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.492802,
+            "val_gauc": 0.66983,
+            "val_primary": 0.603404
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.492212,
+            "val_gauc": 0.669657,
+            "val_primary": 0.603228
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 9,
+        "seed": 6058,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 3.0,
+        "primary": 0.6039792077644422,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568195,
+            "val_gauc": 0.66638,
+            "val_primary": 0.600728
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.51129,
+            "val_gauc": 0.669689,
+            "val_primary": 0.603049
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.505564,
+            "val_gauc": 0.670594,
+            "val_primary": 0.603979
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502891,
+            "val_gauc": 0.669992,
+            "val_primary": 0.603618
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496439,
+            "val_gauc": 0.670366,
+            "val_primary": 0.603728
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495886,
+            "val_gauc": 0.670666,
+            "val_primary": 0.603887
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.495438,
+            "val_gauc": 0.670466,
+            "val_primary": 0.60375
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.493098,
+            "val_gauc": 0.670474,
+            "val_primary": 0.603718
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.492967,
+            "val_gauc": 0.670485,
+            "val_primary": 0.603698
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.492515,
+            "val_gauc": 0.670074,
+            "val_primary": 0.603377
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.49244,
+            "val_gauc": 0.670104,
+            "val_primary": 0.603338
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.491654,
+            "val_gauc": 0.669996,
+            "val_primary": 0.603275
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 10,
+        "seed": 5045,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 12,
+        "best_step": 4.0,
+        "primary": 0.6042657618598355,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568131,
+            "val_gauc": 0.666306,
+            "val_primary": 0.600638
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.5073,
+            "val_gauc": 0.670137,
+            "val_primary": 0.603758
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501419,
+            "val_gauc": 0.670683,
+            "val_primary": 0.604158
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498878,
+            "val_gauc": 0.670962,
+            "val_primary": 0.604266
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.497022,
+            "val_gauc": 0.67046,
+            "val_primary": 0.603792
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.494973,
+            "val_gauc": 0.669435,
+            "val_primary": 0.602715
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.491689,
+            "val_gauc": 0.667514,
+            "val_primary": 0.601533
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.487433,
+            "val_gauc": 0.665473,
+            "val_primary": 0.600198
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.483086,
+            "val_gauc": 0.661793,
+            "val_primary": 0.597245
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.478317,
+            "val_gauc": 0.652698,
+            "val_primary": 0.590736
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.473091,
+            "val_gauc": 0.651026,
+            "val_primary": 0.589693
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.467542,
+            "val_gauc": 0.646101,
+            "val_primary": 0.585943
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 10,
+        "seed": 6058,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "mild"
+        },
+        "epochs": 12,
+        "best_step": 5.0,
+        "primary": 0.6037679946751509,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.568101,
+            "val_gauc": 0.66643,
+            "val_primary": 0.600701
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.507521,
+            "val_gauc": 0.669436,
+            "val_primary": 0.602873
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.501455,
+            "val_gauc": 0.670318,
+            "val_primary": 0.603739
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.498921,
+            "val_gauc": 0.670215,
+            "val_primary": 0.603522
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496894,
+            "val_gauc": 0.670378,
+            "val_primary": 0.603768
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.494407,
+            "val_gauc": 0.668762,
+            "val_primary": 0.602407
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.490102,
+            "val_gauc": 0.66611,
+            "val_primary": 0.600607
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.485014,
+            "val_gauc": 0.664223,
+            "val_primary": 0.599301
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.480059,
+            "val_gauc": 0.655377,
+            "val_primary": 0.593065
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.475042,
+            "val_gauc": 0.650739,
+            "val_primary": 0.589496
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.470178,
+            "val_gauc": 0.649855,
+            "val_primary": 0.588593
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.46491,
+            "val_gauc": 0.644689,
+            "val_primary": 0.58505
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 15,
+        "seed": 5045,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 2.0,
+        "primary": 0.6034240685743781,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.583074,
+            "val_gauc": 0.665692,
+            "val_primary": 0.600425
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.536483,
+            "val_gauc": 0.670414,
+            "val_primary": 0.603424
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.529342,
+            "val_gauc": 0.668924,
+            "val_primary": 0.602708
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.525421,
+            "val_gauc": 0.660744,
+            "val_primary": 0.596972
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.51869,
+            "val_gauc": 0.656893,
+            "val_primary": 0.594246
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.51466,
+            "val_gauc": 0.654207,
+            "val_primary": 0.592615
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.512223,
+            "val_gauc": 0.65164,
+            "val_primary": 0.590516
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.509702,
+            "val_gauc": 0.651598,
+            "val_primary": 0.590393
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.508392,
+            "val_gauc": 0.651765,
+            "val_primary": 0.590444
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.507486,
+            "val_gauc": 0.65152,
+            "val_primary": 0.590359
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.50581,
+            "val_gauc": 0.650813,
+            "val_primary": 0.590035
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.504924,
+            "val_gauc": 0.650444,
+            "val_primary": 0.589833
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "cell": 15,
+        "seed": 6058,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "bpr_hybrid",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 12,
+        "best_step": 3.0,
+        "primary": 0.6024459247283935,
+        "curve": [
+          {
+            "step": 1.0,
+            "train_loss": 0.581666,
+            "val_gauc": 0.668422,
+            "val_primary": 0.602223
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.535876,
+            "val_gauc": 0.66899,
+            "val_primary": 0.602406
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.529496,
+            "val_gauc": 0.668808,
+            "val_primary": 0.602446
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.524184,
+            "val_gauc": 0.66001,
+            "val_primary": 0.596181
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.517205,
+            "val_gauc": 0.658728,
+            "val_primary": 0.595212
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.512718,
+            "val_gauc": 0.65518,
+            "val_primary": 0.592973
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.509914,
+            "val_gauc": 0.654862,
+            "val_primary": 0.592545
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.507162,
+            "val_gauc": 0.654354,
+            "val_primary": 0.59226
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.506071,
+            "val_gauc": 0.653944,
+            "val_primary": 0.592088
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.504721,
+            "val_gauc": 0.652982,
+            "val_primary": 0.591408
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.503686,
+            "val_gauc": 0.652962,
+            "val_primary": 0.591214
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.50247,
+            "val_gauc": 0.652751,
+            "val_primary": 0.591063
+          }
+        ]
+      },
+      {
+        "phase": "final",
+        "cell": 11,
+        "seed": 42,
+        "config": {
+          "architecture": "dcn_lite",
+          "loss": "logloss",
+          "weighting": "recency7d",
+          "regularization": "strong"
+        },
+        "epochs": 16,
+        "best_step": 3.5,
+        "primary": 0.6040259208874106,
+        "curve": [
+          {
+            "step": 0.5,
+            "train_loss": 0.606379,
+            "val_gauc": 0.653682,
+            "val_primary": 0.591717
+          },
+          {
+            "step": 1.0,
+            "train_loss": 0.568213,
+            "val_gauc": 0.666089,
+            "val_primary": 0.600479
+          },
+          {
+            "step": 1.5,
+            "train_loss": 0.50966,
+            "val_gauc": 0.668692,
+            "val_primary": 0.602397
+          },
+          {
+            "step": 2.0,
+            "train_loss": 0.511749,
+            "val_gauc": 0.669191,
+            "val_primary": 0.603031
+          },
+          {
+            "step": 2.5,
+            "train_loss": 0.502393,
+            "val_gauc": 0.669074,
+            "val_primary": 0.60263
+          },
+          {
+            "step": 3.0,
+            "train_loss": 0.50537,
+            "val_gauc": 0.669449,
+            "val_primary": 0.603257
+          },
+          {
+            "step": 3.5,
+            "train_loss": 0.499467,
+            "val_gauc": 0.670542,
+            "val_primary": 0.604026
+          },
+          {
+            "step": 4.0,
+            "train_loss": 0.502763,
+            "val_gauc": 0.669334,
+            "val_primary": 0.603019
+          },
+          {
+            "step": 4.5,
+            "train_loss": 0.495033,
+            "val_gauc": 0.670386,
+            "val_primary": 0.603969
+          },
+          {
+            "step": 5.0,
+            "train_loss": 0.496175,
+            "val_gauc": 0.670501,
+            "val_primary": 0.603839
+          },
+          {
+            "step": 5.5,
+            "train_loss": 0.494503,
+            "val_gauc": 0.670172,
+            "val_primary": 0.603678
+          },
+          {
+            "step": 6.0,
+            "train_loss": 0.495429,
+            "val_gauc": 0.670785,
+            "val_primary": 0.604019
+          },
+          {
+            "step": 6.5,
+            "train_loss": 0.493473,
+            "val_gauc": 0.670552,
+            "val_primary": 0.603839
+          },
+          {
+            "step": 7.0,
+            "train_loss": 0.494927,
+            "val_gauc": 0.670727,
+            "val_primary": 0.604022
+          },
+          {
+            "step": 7.5,
+            "train_loss": 0.492563,
+            "val_gauc": 0.670323,
+            "val_primary": 0.603826
+          },
+          {
+            "step": 8.0,
+            "train_loss": 0.492661,
+            "val_gauc": 0.670334,
+            "val_primary": 0.603745
+          },
+          {
+            "step": 8.5,
+            "train_loss": 0.491974,
+            "val_gauc": 0.670261,
+            "val_primary": 0.603802
+          },
+          {
+            "step": 9.0,
+            "train_loss": 0.492466,
+            "val_gauc": 0.670228,
+            "val_primary": 0.60366
+          },
+          {
+            "step": 9.5,
+            "train_loss": 0.491364,
+            "val_gauc": 0.670483,
+            "val_primary": 0.603772
+          },
+          {
+            "step": 10.0,
+            "train_loss": 0.492229,
+            "val_gauc": 0.67042,
+            "val_primary": 0.603704
+          },
+          {
+            "step": 10.5,
+            "train_loss": 0.49155,
+            "val_gauc": 0.670142,
+            "val_primary": 0.603463
+          },
+          {
+            "step": 11.0,
+            "train_loss": 0.491967,
+            "val_gauc": 0.670018,
+            "val_primary": 0.603429
+          },
+          {
+            "step": 11.5,
+            "train_loss": 0.491327,
+            "val_gauc": 0.669966,
+            "val_primary": 0.603399
+          },
+          {
+            "step": 12.0,
+            "train_loss": 0.491307,
+            "val_gauc": 0.669941,
+            "val_primary": 0.603349
+          },
+          {
+            "step": 12.5,
+            "train_loss": 0.491414,
+            "val_gauc": 0.669968,
+            "val_primary": 0.603411
+          },
+          {
+            "step": 13.0,
+            "train_loss": 0.491219,
+            "val_gauc": 0.669743,
+            "val_primary": 0.603222
+          },
+          {
+            "step": 13.5,
+            "train_loss": 0.490432,
+            "val_gauc": 0.66978,
+            "val_primary": 0.60332
+          },
+          {
+            "step": 14.0,
+            "train_loss": 0.491207,
+            "val_gauc": 0.669894,
+            "val_primary": 0.603321
+          },
+          {
+            "step": 14.5,
+            "train_loss": 0.491663,
+            "val_gauc": 0.669586,
+            "val_primary": 0.603142
+          },
+          {
+            "step": 15.0,
+            "train_loss": 0.490875,
+            "val_gauc": 0.669633,
+            "val_primary": 0.603142
+          },
+          {
+            "step": 15.5,
+            "train_loss": 0.491321,
+            "val_gauc": 0.669345,
+            "val_primary": 0.602989
+          },
+          {
+            "step": 16.0,
+            "train_loss": 0.491058,
+            "val_gauc": 0.669368,
+            "val_primary": 0.603015
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 51767,
+      "out": 3196,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 38874,
+      "out": 34338,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3569,
+      "out": 1362,
+      "calls": 2
+    }
+  },
+  "tokens_total": 133106,
+  "wall_s": 7636.5,
+  "self_critique": "Overall assessment\n\nThe run found a modest improvement from 0.6018 to 0.604026, but learned little about why it worked. The search then converged prematurely after testing three narrow follow-ups with expected gains near or below likely evaluation noise.\n\nWhat the harness/policy did suboptimally\n\n- Node_001 bundled architecture, ranking loss, recency weighting, and regularization into one \u201cmatched matrix.\u201d Its success is therefore not attributable to any specific change. Subsequent proposals did not systematically ablate the winning combination.\n- The diagnostic record is inconsistent. Node_001 claimed the parent curve showed overfitting, while nodes 002\u2013004 said the curve was missing. The harness should not permit curve-based claims unless the relevant observations are present in the journal.\n- The acceptance logic is opaque. Node_004 reports 0.6045, numerically above the listed champion, yet was rejected. That may be justified by variance or a significance rule, but the journal needs exact unrounded scores, seed counts, uncertainty, and rejection thresholds.\n- Only the baseline reports sigma, and likely only one evaluation was used for later nodes. At gains of 0.0005\u20130.0015, paired multi-seed validation is essential.\n- The policy spent trials on speculative replacements for two apparently successful ingredients:\n  - metric-weighted BPR substantially regressed;\n  - learned density-ratio weighting did not beat the simpler recency prior.\n  These were reasonable hypotheses, but they were lower priority than identifying and tuning the components that produced node_001\u2019s larger gain.\n- Node_004 introduced a fairly complex gated ensemble before establishing stable seed diversity or component complementarity. Its raw result was promising, but the proposal mixed ensemble size, gating, checkpoint anchoring, and aggregation method.\n- \u201cConverged\u201d is too strong after four descendants, especially when the last raw score exceeded the champion and the main accepted intervention remained unablated.\n\nWhat I would change in the scaffold\n\n- Require every proposal to cite available evidence explicitly; mark unavailable curves or diagnostics rather than infer them.\n- Store complete per-node artifacts: exact configuration diff, train/validation curves, checkpoint selected, runtime, per-seed metrics, paired deltas, and acceptance calculation.\n- After a bundled winner, automatically enter an attribution phase:\n  1. one-factor removals;\n  2. one-factor additions to baseline;\n  3. limited interaction tests among factors that survive.\n- Match evaluation effort to effect size. Recheck apparent gains under roughly 0.001 with paired seeds or bootstrap uncertainty before accepting or rejecting them.\n- Separate exploration from confirmation. A cheap single-seed screen can nominate candidates, but champion replacement should require repeated evaluation.\n- Require ensemble proposals to test one dimension at a time and report member diversity and per-member performance.\n- Use a convergence criterion based on exhausted high-value local tests and confidence bounds, not merely several rejected descendants.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 across multiple paired seeds and ablate its four change categories: architecture, ranking loss, recency weighting, and regularization. This is the highest-value experiment because it determines whether the gain is robust and identifies the actual source of improvement.\n\nThen:\n\n1. Retain the successful node_001 components and tune only the strongest one or two locally.\n2. Confirm whether the simple seven-day recency weighting is genuinely beneficial; do not revisit learned density-ratio weighting unless diagnostics show meaningful temporal covariate shift.\n3. Re-evaluate node_004\u2019s ensemble with paired seeds and a minimal design\u2014e.g. fixed three-member probability averaging versus the best single model. Promote it only if the gain is stable after accounting for compute.\n4. Deprioritize |\u0394nDCG|-weighted BPR in its tested form, given the clear regression, unless a concrete implementation flaw or pair-weighting pathology is identified.\n\nThe key next objective is not another broad invention; it is turning node_001\u2019s unexplained gain into a reproducible, attributable result."
+}

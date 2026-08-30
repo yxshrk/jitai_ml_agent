@@ -1,0 +1,81 @@
+{
+  "run_dir": "logs/run_final_deck",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6692772392364607,
+    "ndcg5": 0.5374157846702191,
+    "primary": 0.6033465119533399,
+    "best_epoch": 3,
+    "seed": 42,
+    "runtime_seconds": 8.911033582990058,
+    "acceptance_threshold": 0.002,
+    "method": "gauge-fixed-bce",
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.6629183530627916,
+        "val_gauc": 0.6668425894641624,
+        "val_ndcg5": 0.5354105030022213,
+        "val_primary": 0.6011265462331918
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.6272951321298945,
+        "val_gauc": 0.6687285788243001,
+        "val_ndcg5": 0.536732135638745,
+        "val_primary": 0.6027303572315226
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.6125001592421498,
+        "val_gauc": 0.6692772392364607,
+        "val_ndcg5": 0.5374157846702191,
+        "val_primary": 0.6033465119533399
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.6021305130745245,
+        "val_gauc": 0.6692256809028293,
+        "val_ndcg5": 0.5372821427455057,
+        "val_primary": 0.6032539118241675
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.594438546802336,
+        "val_gauc": 0.6688809825432277,
+        "val_ndcg5": 0.5369558179805626,
+        "val_primary": 0.6029184002618951
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 39410,
+      "out": 2067,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 20964,
+      "out": 20416,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 5124,
+      "out": 8763,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 418,
+      "out": 1200,
+      "calls": 1
+    }
+  },
+  "tokens_total": 98362,
+  "wall_s": 1031.4,
+  "self_critique": "Overall assessment\n\nThe run found one credible improvement: complete-slate user-centered BCE raised primary from 0.601838 to 0.603347, about +0.00151. That is a useful mechanistic result, especially if the metric is invariant to per-user score shifts. However, the search stopped too early and did not adequately validate or exploit that finding.\n\nWhat the harness/policy did suboptimally\n\n- The acceptance rule is unclear or inconsistently enforced. Node_002 was accepted despite improving by only about 0.00151, below the repeatedly cited 0.002 threshold. If acceptance is based on significance, tolerance, or another criterion, the journal should record it explicitly.\n- Node_001 bundled architecture, objective, recency weighting, and regularization into a factorial sweep. This creates selection bias and weak attribution: a rejection does not reveal which factor failed or whether useful interactions were obscured.\n- Node_003 was knowingly low-value: its own hypothesis said it was unlikely to clear the threshold. Spending a scarce trial on it was poor allocation, particularly after discovering a promising loss formulation.\n- \u201cValidation peaks and then declines\u201d was repeatedly treated as a diagnosis of generic overfitting, but the interventions were not tightly matched to that diagnosis. Early stopping, regularization, learning-rate schedules, and epoch-level variance should have been tested directly.\n- The run declared convergence after only one successful branch and four nodes. That is premature; node_002 opened a new local search neighborhood that was barely explored.\n- Uncertainty reporting is insufficient. Only the baseline sigma is shown, and sigma=0.0001 is suspiciously precise unless based on multiple seeds or repeated evaluations. The +0.0015 gain needs seed-level confirmation.\n- The selected validation maximum may itself be optimistic if many epochs/configurations were compared. The journal does not report selection-corrected uncertainty or a fixed early-stopping protocol.\n\nWhat I would change in the scaffold\n\n- Enforce atomic experiments: vary one conceptual factor per node unless a factorial design is explicitly budgeted and all cell results are preserved.\n- Make acceptance criteria machine-readable and journaled: absolute gain, uncertainty, number of seeds, and whether the threshold is relative to the parent or baseline.\n- Require replication before promoting a small improvement. For gains near 0.001\u20130.002, compare paired seeds and report mean, standard deviation, and win rate.\n- Separate diagnosis from intervention. If the evidence is epoch-wise decay, first test early stopping and regularization; if the evidence is metric invariance, test centering and ranking losses.\n- After an accepted mechanistic change, automatically allocate several local follow-ups before allowing convergence.\n- Record full sweep outcomes rather than only the winning aggregate score.\n- Penalize hypotheses that explicitly predict failure unless they are cheap, high-information falsification tests.\n\nWhat the next run should try first\n\nStart from node_002 and run a small, replicated one-factor study of the centering mechanism:\n\n1. Reproduce baseline BCE and complete-slate user-centered BCE across at least 3\u20135 matched seeds.\n2. Test partial centering, such as subtracting \u03b1 times the per-user/slate mean logit for \u03b1 in {0.5, 0.75, 1.0}.\n3. Keep architecture and sampling fixed, with a predeclared early-stopping rule.\n4. Report both primary and logloss to determine whether the gain is genuine ranking alignment or merely validation selection noise.\n\nIf node_002 replicates, the next highest-value experiment is a centered BCE"
+}

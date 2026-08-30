@@ -1546,3 +1546,46 @@ Then run a compact leave-one-out ablation of node_001, prioritizing:
 5. Revert AdamW/dropout changes together only if they cannot be separated cheaply.
 
 Use short early-stopped screens, then confirm only the best one or two variants with paired seeds. If node_001 is reproducibly better, the first optimization should be checkpoint/regularization tuning around its early validation peak, not another large package or ensemble. Only revisit ensembling after measuring prediction diversity and comparing raw-score averaging against within-user rank averaging.
+
+## Run logs/run_final_deck
+dataset: pure
+stop_reason: converged
+best_primary: 0.603347
+- node_001 | method: stage-matrix-sweep | hypothesis: Because the parent validation curve peaks early and | primary: 0.599104 | verdict: rejected
+- node_002 | method: gauge-fixed-bce | hypothesis: Because the parent validation primary peaks at epoch | primary: 0.603347 | verdict: accepted
+- node_003 | method: adversarial-recency | hypothesis: The parent’s validation primary peaks at epoch 3 | primary: 0.601697 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found one credible improvement: complete-slate user-centered BCE raised primary from 0.601838 to 0.603347, about +0.00151. That is a useful mechanistic result, especially if the metric is invariant to per-user score shifts. However, the search stopped too early and did not adequately validate or exploit that finding.
+
+What the harness/policy did suboptimally
+
+- The acceptance rule is unclear or inconsistently enforced. Node_002 was accepted despite improving by only about 0.00151, below the repeatedly cited 0.002 threshold. If acceptance is based on significance, tolerance, or another criterion, the journal should record it explicitly.
+- Node_001 bundled architecture, objective, recency weighting, and regularization into a factorial sweep. This creates selection bias and weak attribution: a rejection does not reveal which factor failed or whether useful interactions were obscured.
+- Node_003 was knowingly low-value: its own hypothesis said it was unlikely to clear the threshold. Spending a scarce trial on it was poor allocation, particularly after discovering a promising loss formulation.
+- “Validation peaks and then declines” was repeatedly treated as a diagnosis of generic overfitting, but the interventions were not tightly matched to that diagnosis. Early stopping, regularization, learning-rate schedules, and epoch-level variance should have been tested directly.
+- The run declared convergence after only one successful branch and four nodes. That is premature; node_002 opened a new local search neighborhood that was barely explored.
+- Uncertainty reporting is insufficient. Only the baseline sigma is shown, and sigma=0.0001 is suspiciously precise unless based on multiple seeds or repeated evaluations. The +0.0015 gain needs seed-level confirmation.
+- The selected validation maximum may itself be optimistic if many epochs/configurations were compared. The journal does not report selection-corrected uncertainty or a fixed early-stopping protocol.
+
+What I would change in the scaffold
+
+- Enforce atomic experiments: vary one conceptual factor per node unless a factorial design is explicitly budgeted and all cell results are preserved.
+- Make acceptance criteria machine-readable and journaled: absolute gain, uncertainty, number of seeds, and whether the threshold is relative to the parent or baseline.
+- Require replication before promoting a small improvement. For gains near 0.001–0.002, compare paired seeds and report mean, standard deviation, and win rate.
+- Separate diagnosis from intervention. If the evidence is epoch-wise decay, first test early stopping and regularization; if the evidence is metric invariance, test centering and ranking losses.
+- After an accepted mechanistic change, automatically allocate several local follow-ups before allowing convergence.
+- Record full sweep outcomes rather than only the winning aggregate score.
+- Penalize hypotheses that explicitly predict failure unless they are cheap, high-information falsification tests.
+
+What the next run should try first
+
+Start from node_002 and run a small, replicated one-factor study of the centering mechanism:
+
+1. Reproduce baseline BCE and complete-slate user-centered BCE across at least 3–5 matched seeds.
+2. Test partial centering, such as subtracting α times the per-user/slate mean logit for α in {0.5, 0.75, 1.0}.
+3. Keep architecture and sampling fixed, with a predeclared early-stopping rule.
+4. Report both primary and logloss to determine whether the gain is genuine ranking alignment or merely validation selection noise.
+
+If node_002 replicates, the next highest-value experiment is a centered BCE

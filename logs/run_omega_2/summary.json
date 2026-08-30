@@ -1,0 +1,71 @@
+{
+  "run_dir": "logs/run_omega_2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6692772392364607,
+    "ndcg5": 0.5374157846702191,
+    "primary": 0.6033465119533399,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.66292,
+        "val_gauc": 0.666841,
+        "val_primary": 0.601125
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.6273,
+        "val_gauc": 0.668729,
+        "val_primary": 0.60273
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.6125,
+        "val_gauc": 0.669277,
+        "val_primary": 0.603347
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.60213,
+        "val_gauc": 0.669226,
+        "val_primary": 0.603254
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.59444,
+        "val_gauc": 0.668881,
+        "val_primary": 0.602918
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 34844,
+      "out": 2722,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 21360,
+      "out": 18052,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 5449,
+      "out": 8536,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 396,
+      "out": 762,
+      "calls": 1
+    }
+  },
+  "tokens_total": 92121,
+  "wall_s": 826.2,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally:\n- It explored only three descendants and declared convergence prematurely. The successful node_002 opened a promising objective-design direction, but the run spent its only follow-up on an expensive five-model ensemble rather than understanding or extending the gain.\n- Node_001 was a \u201ckitchen sink\u201d proposal: architecture, BCE/BPR mixing, recency weighting, regularization, LR decay, and checkpointing changed simultaneously. Its rejection provides almost no actionable attribution.\n- The hypotheses overinterpreted single learning curves. Claims about overfitting and \u201cseed variance\u201d were made without reported multi-seed measurements or uncertainty estimates.\n- The expected gains were near the noise floor, yet the journal does not report acceptance thresholds, repeated-seed confidence intervals, or paired comparisons. Node_003\u2019s higher displayed score but rejection especially needs an explicit reason; otherwise the search trace is difficult to audit.\n- Repeated validation-based checkpoint selection, proposal selection, and ensemble evaluation risk adapting to the validation set. Node_003 compounds this with five replicas and per-user rank averaging.\n- The baseline sigma of 0.0001 appears implausibly precise unless established from enough independent runs. If it is merely evaluator noise, it should not be used as model-training variance.\n- The harness did not ablate node_002. It remains unclear whether its gain came from complete-slate batching, user centering, gauge fixing, altered weighting, or another implementation detail.\n\nWhat I would change in the scaffold:\n- Require atomic proposals: one conceptual change per node, with a small ablation matrix for tightly coupled components.\n- Track paired multi-seed results and report mean, standard deviation, confidence interval, compute cost, and the exact acceptance rule\u2014not just one rounded primary score.\n- Separate search/checkpoint validation from final acceptance, or use nested folds/frozen holdouts to reduce validation overfitting.\n- Require hypotheses to cite measured evidence. Do not infer seed variance from one run.\n- Allocate follow-up budget preferentially to accepted mechanistic changes before trying ensembles.\n- Record rejection reasons explicitly, particularly when the raw primary exceeds the current best.\n- Add safeguards confirming that complete-slate/user-centered training uses only information available under the intended inference protocol.\n\nWhat the next run should try first:\nReplicate node_002 against the FM baseline over several paired seeds, then ablate its components:\n1. Standard BCE with identical batching and training schedule.\n2. Complete-slate BCE only.\n3. User-centered BCE only.\n4. Gauge fixing only.\n5. The full node_002 objective.\n\nIf the gain is robust, first optimize the strongest component with modest objective-level changes\u2014such as centering strength, negative weighting, or a small pairwise auxiliary loss\u2014while keeping architecture and training schedule fixed. Defer ensembling until the single-model improvement is statistically credible and the ensemble is evaluated on a fresh holdout."
+}
