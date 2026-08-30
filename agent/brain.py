@@ -221,11 +221,17 @@ class _AnthropicBackend:
         self.client = anthropic.Anthropic(api_key=load_api_key("ANTHROPIC_API_KEY"))
 
     def call(self, model: str, system_text: str, user_text: str, max_tokens: int) -> tuple[str, int, int]:
+        kwargs = {}
+        if max_tokens >= 8000:
+            # Cap internal thinking so long code replies keep text budget.
+            kwargs["thinking"] = {"type": "adaptive"}
+            kwargs["output_config"] = {"effort": "medium"}
         response = self.client.messages.create(
             model=model,
             max_tokens=max_tokens,
             system=[{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": user_text}],
+            **kwargs,
         )
         usage = response.usage
         tokens_in = (
