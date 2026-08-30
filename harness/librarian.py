@@ -18,6 +18,7 @@ def run_librarian(brain, n=2, run_id=None, methods_dir=None, log=print, extra=''
     ctx = {'n': n, 'card_ids': sorted(existing), 'untried': P.untried_cards(), 'has_digest': bool(getattr(brain, '_block', '')),
            'extra': extra}
     cards = brain.librarian(ctx, example) or []
+    proposed = {(c.get('id') or '').strip() for c in cards} - {''}     # a batch may reference its own siblings
     written = []
     for c in cards:
         cid, text = (c.get('id') or '').strip(), c.get('card') or ''
@@ -33,11 +34,20 @@ def run_librarian(brain, n=2, run_id=None, methods_dir=None, log=print, extra=''
         text = f'---\n{fm}\n---\n{body.rstrip()}\n'
         if cid in existing:
             log(f'  librarian: {cid} already exists; skipped'); continue
-        errors = validate_text(cid, text, set(existing) | {cid})
+        errors = validate_text(cid, text, set(existing) | proposed)
         if errors:
             log(f'  librarian: {cid} rejected by the validator: {errors[:3]}'); continue
         (methods_dir / f'{cid}.md').write_text(text); existing[cid] = text; written.append(cid)
         log(f"  librarian: new card {cid} — {str(c.get('why_now', ''))[:140]}")
+    for cid in written:      # a written card may reference a sibling that was rejected: scrub those references
+        text = (methods_dir / f'{cid}.md').read_text()
+        def scrub(m):
+            ids = [x for x in re.findall(r'[a-z0-9-]+', m.group(2)) if x in existing]
+            return f"{m.group(1)}: [{', '.join(ids)}]"
+        new_text = re.sub(r'^(composes_with|conflicts_with):\s*\[(.*?)\]\s*$', scrub, text, flags=re.M)
+        if new_text != text:
+            (methods_dir / f'{cid}.md').write_text(new_text); existing[cid] = new_text
+            log(f'  librarian: {cid}: dropped references to rejected siblings')
     if written:
         P.refresh_menu()
     return written

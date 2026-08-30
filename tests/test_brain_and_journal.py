@@ -73,3 +73,19 @@ def test_seed_cache_migration(tmp_path, monkeypatch):
     assert lp.state['seed_cache'] == {'0:1': 0.61, '3:1': 0.62} and 'champion_seeds' not in lp.state
     assert 99 <= lp.elapsed() < 110                             # resumed: 100 s of earlier running time, not the calendar gap
     assert lp.champion_mean() == pytest.approx(0.61)              # fresh seeds only (seed 0 is the screen)
+
+
+def test_librarian_batch_validation(tmp_path, monkeypatch):
+    from harness import prompts as P
+    from harness.librarian import run_librarian
+    from harness.brain import Brain
+    good = "---\nid: %s\nfamily: model\ntarget_component: model\nsource: x\napplies_when:\n  - a\nexpected_delta: [0.0, 0.001]\nexpected_delta_basis: b\ncost: c\ncomposes_with: [%s]\nconflicts_with: []\nstatus: untried\nevidence: []\n---\n## Claim\nx\n## Mechanism\nx\n## How to implement on node_000\nx\n## Risks\nx\n## Measured\n(none yet)\n"
+    class Stub(Brain):
+        def librarian(self, ctx, example):
+            return [{'id': 'model-alpha', 'card': good % ('model-alpha', 'model-beta')},
+                    {'id': 'model-beta', 'card': (good % ('model-beta', 'model-alpha')).replace('target_component: model', 'target_component: optimizer')}]
+    (tmp_path / 'loss-bpr-pairwise-within-user.md').write_text(good % ('loss-bpr-pairwise-within-user', ''))
+    monkeypatch.setattr(P, 'refresh_menu', lambda: None); monkeypatch.setattr(P, 'untried_cards', lambda: [])
+    written = run_librarian(Stub(), n=2, methods_dir=tmp_path, log=lambda *a: None)
+    assert written == ['model-alpha']                                           # beta fails the validator (bad component)
+    assert 'composes_with: []' in (tmp_path / 'model-alpha.md').read_text()     # the dangling reference to beta was scrubbed
