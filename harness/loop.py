@@ -382,6 +382,19 @@ class Loop:
 
     def acceptance(self, node: Node, metrics: dict) -> tuple[bool, str | None]:
         """Returns (accepted, note). May run one confirm reseed."""
+        # No-op guard (ported from teammate harness yash-attempt): predictions
+        # byte-identical to the parent's are a disguised no-change.
+        try:
+            import hashlib
+            parent = self.nodes.get(node.parent)
+            mine = self.run_dir / node.node_id / "predictions.csv"
+            theirs = (self.run_dir / parent.node_id / "predictions.csv") if parent else None
+            if theirs and mine.exists() and theirs.exists():
+                h = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+                if h(mine) == h(theirs):
+                    return False, "no-op: predictions byte-identical to parent"
+        except Exception:
+            pass
         delta = metrics["primary"] - self.champion.primary
         threshold = max(2 * self.sigma, self.config.accept_floor if self.config.accept_floor is not None else self.config.epsilon)
         if delta >= threshold:
@@ -395,11 +408,20 @@ class Loop:
                 if not confirm.ok:
                     return False, f"grey-zone confirm run failed: {confirm.error}"
                 primaries.append(confirm.metrics["primary"])
-            mean_delta = sum(primaries) / len(primaries) - self.champion.primary
-            floor = max(self.sigma / (len(primaries) ** 0.5), 0.0007)
-            if mean_delta >= floor:
-                return True, f"grey-zone confirm passed (mean delta {mean_delta:+.4f}, n={len(primaries)})"
-            return False, f"grey-zone confirm failed (mean delta {mean_delta:+.4f}, n={len(primaries)})"
+            n = len(primaries)
+            mean_delta = sum(primaries) / n - self.champion.primary
+            if n >= 2:
+                m = sum(primaries) / n
+                sd = (sum((p - m) ** 2 for p in primaries) / (n - 1)) ** 0.5
+            else:
+                sd = self.sigma
+            se = max(sd / (n ** 0.5), 1e-6)
+            z = mean_delta / se
+            floor = max(self.sigma / (n ** 0.5), 0.0007)
+            # seed-mean z-test (ported from yash-attempt): require the floor AND z >= 2
+            if mean_delta >= floor and z >= 2.0:
+                return True, f"grey-zone confirm passed (mean delta {mean_delta:+.4f}, z={z:.1f}, n={n})"
+            return False, f"grey-zone confirm failed (mean delta {mean_delta:+.4f}, z={z:.1f}, n={n})"
         return False, None
 
     # ---------- measured method routing ----------
