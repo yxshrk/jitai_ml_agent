@@ -33,7 +33,7 @@ CWM fields; embedding size k = 8 / 16 / 32.
 """
 
 def menu():
-    cards = sorted((C.KB / 'methods').glob('*.md')) if (C.KB / 'methods').exists() else []
+    cards = sorted(p for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []
     if not cards:
         return FALLBACK_MENU
     return '\n\n'.join(p.read_text() for p in cards)

@@ -233,3 +233,4 @@ kb/literature/**/*.pdf
 runs/_selfcheck/
 .DS_Store
 runs/_test_fake/
+kb/literature/text/

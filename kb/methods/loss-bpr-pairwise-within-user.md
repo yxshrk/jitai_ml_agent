@@ -1,0 +1,48 @@
+---
+id: loss-bpr-pairwise-within-user
+family: ranking-loss
+target_component: loss
+source: kb/literature/losses/1205.2618_bpr.pdf §3–4 (BPR-Opt, LearnBPR); organizer README "unexplored" #1
+applies_when:
+  - the metric is within-user ranking (task.md) — GAUC is literally the fraction of correctly ordered (pos, neg) pairs
+  - most training users have both positives and negatives (facts §7: 92.7 % of train users are discriminative)
+  - the model produces a per-row score that can be differenced (any FM/DCN head)
+expected_delta: [0.002, 0.010]
+expected_delta_basis: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
+  captures the user x video signal, so the gain is in ordering not calibration — do not expect more than 0.01
+cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
+composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
+conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
+status: untried
+evidence: []
+---
+## Claim
+Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
+that GAUC measures, instead of per-row probabilities that only matter through their order.
+
+## Mechanism (why it moves within-user ranking)
+Logloss spends capacity on calibration across users (a user-constant bias term is a free win for logloss but worth
+exactly zero to the metric, task.md). BPR's gradient is the *difference* of two rows of the same user, so every
+user-constant term cancels and all capacity goes to the ordering the metric scores. AUC = P(s_pos > s_neg) within a
+user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
+
+## How to implement on node_000
+1. After encoding, group train row indices by user; keep users with at least one positive and one negative.
+2. Each epoch, build pairs: for every positive row of a user, sample one negative row of the same user (uniform).
+   ~380 K pairs per epoch (facts: 1.14 M rows, positive rate 0.337, most users mixed).
+3. In `FM.step`, compute logits for the positive batch and the negative batch, `d = z_pos − z_neg`,
+   `g = −σ(−d)` (d(−log σ(d))/dd); accumulate gradients as the existing code does, once with +g on the positive
+   rows' features and once with −g on the negative rows' features (the existing `np.add.at` pattern).
+4. Keep early stopping on validation primary unchanged; keep the logits as the prediction score.
+5. Hybrid variant (safer first try): loss = 0.5·BPR + 0.5·logloss on the same batch — keeps the pointwise signal
+   for users with a single class in the batch.
+
+## Risks / failure modes
+- Pair sampling in pure Python per epoch is slow — vectorise: precompute per-user positive/negative index arrays
+  once, sample negatives with `rng.integers` over per-user counts.
+- Users with only one class contribute no pairs; the hybrid variant keeps their rows in play.
+- Ties: BPR can leave scores of rows never paired together nearly equal; evaluate.py breaks ties by file order —
+  add a tiny logloss term or a small L2 to avoid exact ties.
+
+## Measured
+(none yet)
