@@ -1,0 +1,37 @@
+{
+  "bpr_member": "../runs/context_pairwise_fm_seed4_scores.npy",
+  "candidates": [
+    {
+      "bpr_weight": 0.3,
+      "metrics": {
+        "GAUC": 0.6690304279327393,
+        "nDCG@5": 0.5368383526802063,
+        "primary": 0.6029343605041504,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    }
+  ],
+  "fm_members": [
+    "../runs/temporal_context_score_members/seed_0_scores.npy",
+    "../runs/temporal_context_score_members/seed_1_scores.npy",
+    "../runs/temporal_context_score_members/seed_2_scores.npy"
+  ],
+  "manual_interventions": 0,
+  "phase": "heterogeneous_contextual_validation_ensemble",
+  "predeclared_bpr_weights": [
+    0.3
+  ],
+  "selected": {
+    "bpr_weight": 0.3,
+    "metrics": {
+      "GAUC": 0.6690304279327393,
+      "nDCG@5": 0.5368383526802063,
+      "primary": 0.6029343605041504,
+      "rows": 124909.0,
+      "users": 22377.0
+    }
+  },
+  "selection_split": "validation",
+  "test_data_used": false
+}

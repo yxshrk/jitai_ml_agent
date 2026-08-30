@@ -22,5 +22,7 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Causal Sequence DeepFM, seed 0 | 0.53871 | Reject: unstable optimization |
 | Context FM rank ensemble, seeds 0–2 | 0.60276 | Reject: below mean-logit aggregation |
 | Context FM + BPR refinement, seed 3 | 0.60290 | Near-tie; reserve for diversity ensemble test |
+| 70% Context-FM mean + 30% Context-BPR, seed 3 | **0.60334** | Best observed; validation-selected BPR weight |
+| Same fixed 30% BPR blend, seed 4 | 0.60293 | Confirmation; two-seed mean 0.60314 |
 
 The contextual fields only help as a group. The next research iteration should prioritize train-history features with strict time ordering and out-of-fold safeguards; retain the validation-only model-selection rule and record each outer experiment's hypothesis, diff, metrics, and any recovery event.

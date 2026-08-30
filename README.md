@@ -31,6 +31,8 @@ The organizer's baseline also prints a score for its bundled public test split. 
 
 The first validated improvement is a small contextual FM that adds `hour`, `weekday`, and `is_rand` to the organizer's five fields. Across seeds 0-2, its mean best validation primary is **0.60236**, above the organizer reference of **0.6016**. Averaging the three validation-selected members reaches **0.60289** on validation.
 
+The best observed validation value is now **0.60334**: a 70% contextual-FM / 30% contextual-BPR blend. Because the BPR seed was selected on validation, this remains provisional; applying the fixed 30% blend to an independent BPR seed gave **0.60293** (two-seed mean **0.60314**). The complete weight sweep and confirmation are retained in `runs/`.
+
 Run the reproducible validation-only ensemble from `kuairand-starter-kit/`:
 
 ```bash

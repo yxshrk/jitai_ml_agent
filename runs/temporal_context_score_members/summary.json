@@ -1,0 +1,73 @@
+{
+  "aggregation": "mean_logit",
+  "ensemble_metrics": {
+    "GAUC": 0.6688110828399658,
+    "nDCG@5": 0.5369679927825928,
+    "primary": 0.6028895378112793,
+    "rows": 124909.0,
+    "users": 22377.0
+  },
+  "extra_features": [
+    "hour",
+    "weekday",
+    "is_rand"
+  ],
+  "member_best_primary_mean": 0.6023606459299723,
+  "members": [
+    {
+      "change": "FM fields: ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'hour', 'weekday', 'is_rand']",
+      "error_or_recovery": null,
+      "hypothesis": "Time of day, day of week, and randomized-exposure status add ranking signal beyond the organizer's five static FM fields.",
+      "iteration": 6,
+      "manual_interventions": 0,
+      "metrics": {
+        "GAUC": 0.6683561205863953,
+        "nDCG@5": 0.5365586280822754,
+        "primary": 0.6024574041366577,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "phase": "temporal_fm",
+      "train_loss": 0.4893535
+    },
+    {
+      "change": "FM fields: ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'hour', 'weekday', 'is_rand']",
+      "error_or_recovery": null,
+      "hypothesis": "Time of day, day of week, and randomized-exposure status add ranking signal beyond the organizer's five static FM fields.",
+      "iteration": 4,
+      "manual_interventions": 0,
+      "metrics": {
+        "GAUC": 0.6683605313301086,
+        "nDCG@5": 0.5367032289505005,
+        "primary": 0.602531909942627,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "phase": "temporal_fm",
+      "train_loss": 0.4982227
+    },
+    {
+      "change": "FM fields: ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'hour', 'weekday', 'is_rand']",
+      "error_or_recovery": null,
+      "hypothesis": "Time of day, day of week, and randomized-exposure status add ranking signal beyond the organizer's five static FM fields.",
+      "iteration": 5,
+      "manual_interventions": 0,
+      "metrics": {
+        "GAUC": 0.6682063937187195,
+        "nDCG@5": 0.5359787940979004,
+        "primary": 0.6020926237106323,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "phase": "temporal_fm",
+      "train_loss": 0.4920712
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "selection_split": "validation",
+  "test_data_used": false
+}

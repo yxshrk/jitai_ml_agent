@@ -197,6 +197,12 @@ def train(args):
         validate("pairwise", epoch, np.mean(losses))
 
     model.V, model.W, model.b = best_state
+    if args.validation_scores_out:
+        score_path = Path(args.validation_scores_out)
+        if score_path.exists():
+            raise FileExistsError(f"Refusing to overwrite existing validation scores: {score_path}")
+        score_path.parent.mkdir(parents=True, exist_ok=True)
+        np.save(score_path, model.predict(valid_x))
     print("\nBest validation result")
     print(json.dumps(best_record, indent=2, sort_keys=True))
     return best_record
@@ -228,6 +234,7 @@ def parse_args():
     parser.add_argument("--pairwise_epochs", type=int, default=8)
     parser.add_argument("--batch_size", type=int, default=8192)
     parser.add_argument("--run_log", default=None, help="Optional JSONL iteration log path")
+    parser.add_argument("--validation_scores_out", default=None)
     parser.add_argument("--self_test", action="store_true")
     return parser.parse_args()
 

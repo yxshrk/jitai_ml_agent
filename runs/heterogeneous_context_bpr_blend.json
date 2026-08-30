@@ -1,0 +1,125 @@
+{
+  "bpr_member": "../runs/context_pairwise_fm_seed3_scores.npy",
+  "candidates": [
+    {
+      "bpr_weight": 0.0,
+      "metrics": {
+        "GAUC": 0.6688110828399658,
+        "nDCG@5": 0.5369679927825928,
+        "primary": 0.6028895378112793,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.1,
+      "metrics": {
+        "GAUC": 0.6692503094673157,
+        "nDCG@5": 0.5369654893875122,
+        "primary": 0.6031079292297363,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.2,
+      "metrics": {
+        "GAUC": 0.6693944931030273,
+        "nDCG@5": 0.5372000932693481,
+        "primary": 0.6032972931861877,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.3,
+      "metrics": {
+        "GAUC": 0.6696337461471558,
+        "nDCG@5": 0.5370474457740784,
+        "primary": 0.6033406257629395,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.4,
+      "metrics": {
+        "GAUC": 0.6693018078804016,
+        "nDCG@5": 0.5366559624671936,
+        "primary": 0.6029788851737976,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.5,
+      "metrics": {
+        "GAUC": 0.6694291234016418,
+        "nDCG@5": 0.5367082953453064,
+        "primary": 0.6030687093734741,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.6,
+      "metrics": {
+        "GAUC": 0.6695701479911804,
+        "nDCG@5": 0.5368671417236328,
+        "primary": 0.603218674659729,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 0.75,
+      "metrics": {
+        "GAUC": 0.6694477796554565,
+        "nDCG@5": 0.5365562438964844,
+        "primary": 0.6030020117759705,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    },
+    {
+      "bpr_weight": 1.0,
+      "metrics": {
+        "GAUC": 0.6693596839904785,
+        "nDCG@5": 0.5364421010017395,
+        "primary": 0.6029008626937866,
+        "rows": 124909.0,
+        "users": 22377.0
+      }
+    }
+  ],
+  "fm_members": [
+    "../runs/temporal_context_score_members/seed_0_scores.npy",
+    "../runs/temporal_context_score_members/seed_1_scores.npy",
+    "../runs/temporal_context_score_members/seed_2_scores.npy"
+  ],
+  "manual_interventions": 0,
+  "phase": "heterogeneous_contextual_validation_ensemble",
+  "predeclared_bpr_weights": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.75,
+    1.0
+  ],
+  "selected": {
+    "bpr_weight": 0.3,
+    "metrics": {
+      "GAUC": 0.6696337461471558,
+      "nDCG@5": 0.5370474457740784,
+      "primary": 0.6033406257629395,
+      "rows": 124909.0,
+      "users": 22377.0
+    }
+  },
+  "selection_split": "validation",
+  "test_data_used": false
+}

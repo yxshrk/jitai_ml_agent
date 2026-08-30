@@ -43,6 +43,11 @@ def parse_args():
         default="mean_logit",
         help="Combine validation-selected member predictions without accessing test data.",
     )
+    parser.add_argument(
+        "--save_member_scores",
+        action="store_true",
+        help="Write each selected validation score vector into the new run directory.",
+    )
     return parser.parse_args()
 
 
@@ -100,6 +105,8 @@ def main(args):
             raise RuntimeError("Validation split changed between seeds")
         records.append(record)
         scores_by_seed.append(scores)
+        if args.save_member_scores:
+            np.save(run_dir / f"seed_{seed}_scores.npy", scores)
 
     if args.aggregation == "mean_logit":
         ensemble_scores = np.mean(scores_by_seed, axis=0)
