@@ -248,7 +248,7 @@ class Loop:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: selector failed ({err})'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
         selections = self._diversify(selections)
-        selections = self._screen(selections, g)                    # ADR-0015: measure feature candidates before building them
+        selections = self._screen(selections, g)[:self.k]           # ADR-0015: measure feature candidates before building them; then k
         if not selections:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: every candidate was screened out'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
@@ -462,7 +462,7 @@ class Loop:
                 self.log(f'  dropping duplicate target_component {tc!r}: {s.get("hypothesis", "")[:60]}')
                 continue
             seen[tc] = len(out); out.append(s)
-        return out[:self.k]
+        return out                       # the k truncation happens after the screen (ADR-0015), so a dropped slot is refilled from the reserve
 
     def _node_ref(self, x):
         """Parse a node reference the roles may write: 12, "12", "node_012", "champion"; None if unknown."""
@@ -552,7 +552,9 @@ class Loop:
     def _screenable(self, s):
         if s.get('type') in ('merge', 'retest'):
             return False
-        return s.get('target_component') in C.SCREEN_COMPONENTS or bool(s.get('wildcard') and s.get('new_signal'))
+        # a wildcard is probed only when its signal is a column of the row (features / encoding / history); a model-family
+        # wildcard (attention over the history, a tree model) has no column to compute, and a null probe would kill it
+        return s.get('target_component') in C.SCREEN_COMPONENTS and (not s.get('wildcard') or bool(s.get('new_signal')))
 
     @staticmethod
     def _family_of(s):
@@ -576,7 +578,7 @@ class Loop:
         def probe(s):
             code, err = self._brain(self.brain.probe, self.ctx(), s, what='probe', attempts=1)
             if not code:
-                return s, None, err or 'no probe script'
+                return s, None, err or 'the Probe declined: not a per-row column signal'
             out = self.run_dir / 'screens' / f"g{g:02d}_{(_slug(s.get('card')) or 'candidate')[:48]}"
             out.mkdir(parents=True, exist_ok=True); (out / 'probe.py').write_text(code)
             return s, S.run_probe(out / 'probe.py', out, champ_pred, threads=threads), None

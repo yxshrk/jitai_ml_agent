@@ -199,7 +199,14 @@ class LLMBrain(Brain):
         return self._with_retry('implement', P.user_implement(ctx, selection, parent_code, extra_parent_code), parse)
 
     def probe(self, ctx, selection):
-        return self._with_retry('probe', P.user_probe(ctx, selection), parse_code)
+        def parse(t):
+            try:
+                if parse_header(t).get('not_a_column'):
+                    return None                       # the Probe declined: the signal is not a per-row column
+            except ParseError:
+                pass
+            return parse_code(t)
+        return self._with_retry('probe', P.user_probe(ctx, selection), parse)
 
     def critique(self, ctx, code, selection, diff_text=''):
         def parse(t):
