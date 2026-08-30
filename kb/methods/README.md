@@ -29,3 +29,13 @@ Three sources write cards (ADR-0013): hand-written from the literature; the **Ar
 wildcard of a run into a card written from its actual diff (`cli distill`); and the **Librarian**, which drafts
 `untried` cards from web-searched sources (`cli librarian`, or in-loop after a flat generation). All three pass
 `validate.py`; only measurement changes a status.
+
+## The family ledger (ADR-0018)
+`ledger.py` generates `families.json` — one row per card family with its oracle bound (from `family_bounds.json`,
+each bound citing its `kb/data/facts.md` §11 row), every screen gain and measured node parsed from the cards'
+`## Measured` lines, `best_measured`, and a status: `bounded` (every card draws on a signal whose oracle bound is at
+or below the acceptance threshold — nothing in the family can be accepted), `exhausted` (all measured, nothing
+above +0.0005, nothing untried) or `open`. Per card: `expected`, `basis_class` (measured / oracle / measured-fact /
+paper / analogy), `measured_max`, `bound`. This is the table the code ranks families from; the cards remain the
+narrative. Regenerate with `.venv/bin/python kb/methods/ledger.py --write` (distill does it at the end of a run).
+
