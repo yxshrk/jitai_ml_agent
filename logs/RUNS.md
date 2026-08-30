@@ -41,3 +41,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | omega CSV | ruby | built+checked | - | ens-val 0.68020 | evidence/test_submission_1k_omega.csv (4.13M rows, checker OK); old max_1k_c CSV preserved pending decision |
 | final_s2 | coral | converged | 4 | 0.60499 | best of final wave: gauge-bce -> hetero-ensemble close (+0.0010, first measured win for that card); gated-session +0.0006 sub-eps |
 | final_s4 | coral | converged | 3 | 0.60521 | context-stratified-pairs FIRST WIN +0.0015 in one node; converged before any close — close-on-top untried |
+| 1k_push | ruby | converged | 7 | 0.65977 | 2nd independent 1K run: session features +0.022 from different base; below omega designation |
