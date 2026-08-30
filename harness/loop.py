@@ -911,17 +911,19 @@ class Loop:
         pool = {v['n']: v for v in nodes if v.get('accepted')}
         if self.state.get('champion') is not None:
             pool[self.state['champion']] = self.node(self.state['champion'])
+        unacc_top = [v for v in sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k] if v['n'] not in pool]
         if self.designation == 'adaptive':
-            for v in sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]:
-                pool.setdefault(v['n'], v)
-        top = sorted(pool.values(), key=lambda v: -v['metrics']['primary'])
-        ranking = []
-        for v in top:
-            if self.final_reseed and len(self.fresh_seeds(v['n'])) < 2:
+            for v in unacc_top:
+                pool[v['n']] = v
+        def entry(v, reseed):
+            if reseed and self.final_reseed and len(self.fresh_seeds(v['n'])) < 2:
                 self._ensure_seeds(v['n'], [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)])
             vals = self.fresh_seeds(v['n']) or [v['metrics']['primary']]
-            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals, 'accepted': bool(v.get('accepted')),
-                            'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None})
+            return {'n': v['n'], 'valid_primary': v['metrics']['primary'], 'fresh_seeds': vals, 'accepted': bool(v.get('accepted')),
+                    'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None}
+        ranking = [entry(v, True) for v in sorted(pool.values(), key=lambda v: -v['metrics']['primary'])]
+        if self.designation == 'strict':      # reported for the record from cached seeds only — never re-run, never eligible
+            ranking += [entry(v, False) for v in unacc_top]
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
         events = []
         unacc = [r for r in ranking if not r['accepted']]
