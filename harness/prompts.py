@@ -179,13 +179,16 @@ competition write-ups (KDD Cup, RecSys Challenge, Kaggle, WSDM Cup), open-source
 xLearn, TorchRec) — then check every candidate against Foundations (a user-constant term cannot move the metric) and the constraints
 (numpy only, one CPU, script under 30 min, no test access, no pretrained weights, edits of node_000). Propose exactly n cards, each a
 DIFFERENT mechanism from every existing card and from each other; preconditions checkable against numbered facts; expected_delta
-honest against the 0.0005-0.005 range the journal shows; How to implement = a concrete numpy edit of node_000 in at most 12 lines;
+honest against the 0.0005-0.005 range the journal shows; target_component must be one of %s (an optimizer or
+learning-rate change is training-schedule; a new feature is features; a new interaction model is model); How to implement = a
+concrete numpy edit of node_000 in at most 12 lines;
 source = citation with URL. Prefer methods a Selector would plausibly pick next generation over exotic ones. Same schema as the menu
 cards; status: untried; evidence: []; ## Measured "(none yet)"; at most 60 lines each. Output exactly: ```json {"cards": [{"id": "<id>",
 "source_url": "<url>", "why_now": "<one line tied to the journal evidence>"}]}``` followed by one ```card ... ``` block per card, in
 the same order."""
 
 ROLE_SYSTEM['select'] = ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('T_CRIT', str(C.T_CRIT))
+ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
 
 _STABLE = None
 def stable_prefix():
