@@ -35,9 +35,12 @@ def _kb(tmp_path, bounds, cards):
         (d / f"{c['cid']}.md").write_text(CARD.format(**c))
     return d
 
+def feats_ref_ok(led):
+    return led['families']['features']['best_measured_ref'] == 0.0002
+
 def test_ledger_parses_measured_lines_bounds_and_statuses(tmp_path):
     bounds = {'signal_families': {'item-side': {'bound': 0.0003, 'source': 'facts §11 row'}, 'session': {'bound': 0.001, 'source': 'facts §11.1'}},
-              'cards': {'a-card': 'item-side', 'c-card': 'session'}}
+              'cards': {'a-card': 'item-side', 'c-card': 'session'}, 'reference_stack': ['BPR']}
     cards = [dict(cid='a-card', fam='features', source='kb/data/facts.md', lo=0.001, hi=0.004, basis='facts', status='dead_under [x]',
                   measured='- live_04:node_005 on [official FM]: primary 0.6010, single-seed Δ -0.0005 — rejected; 10 changed lines\n'
                            '- live_06:node_011 on [official FM + BPR]: primary 0.6030, single-seed Δ +0.0004, seed-mean Δ +0.0002 (z 0.9) — rejected; 12 changed lines\n'
@@ -47,6 +50,7 @@ def test_ledger_parses_measured_lines_bounds_and_statuses(tmp_path):
     led = L.build(_kb(tmp_path, bounds, cards))
     a, b, c = led['cards']['a-card'], led['cards']['b-card'], led['cards']['c-card']
     assert a['bound'] == 0.0003 and a['measured_max'] == 0.0002 and a['basis_class'] == 'measured' and not a['accepted']
+    assert a['measured_max_ref'] == 0.0002 and feats_ref_ok(led) and L.violations(led) == []   # live_04 on [official FM] is off the reference stack
     assert b['bound'] is None and b['basis_class'] == 'paper' and b['measured_max'] is None
     assert c['bound'] == 0.001 and c['basis_class'] == 'oracle'
     feats = led['families']['features']
@@ -59,6 +63,11 @@ def test_ledger_parses_measured_lines_bounds_and_statuses(tmp_path):
     led = L.build(_kb(tmp_path / 'two', bounds, cards[:1]))
     assert led['families']['features']['status'] == 'bounded'
     out = L.write(tmp_path / 'two' / 'methods'); assert json.loads(out.read_text())['families']['features']['bound'] == 0.0003
+    assert out.read_text() == json.dumps(L.build(tmp_path / 'two' / 'methods'), indent=1, ensure_ascii=False) + '\n'   # deterministic
+    # a reference-stack gain above the bound is a mapping violation
+    cards[0]['measured'] += '\n- live_08:node_003 on [official FM + BPR]: primary 0.6050, single-seed Δ +0.0012, seed-mean Δ +0.0011 (z 4.0) — ACCEPTED; 9 changed lines'
+    led = L.build(_kb(tmp_path / 'three', bounds, cards[:1]))
+    assert L.violations(led) == [('a-card', 'item-side', 0.0003, 0.0011)]
 
 def test_ledger_on_the_real_knowledge_base():
     led = L.build()
@@ -67,6 +76,8 @@ def test_ledger_on_the_real_knowledge_base():
     assert len(led['cards']) >= 40 and 'ranking-loss' in led['families']
     bpr = led['cards']['loss-bpr-pairwise-within-user']
     assert bpr['accepted'] and bpr['measured_max'] >= 0.001 and bpr['basis_class'] == 'measured'
+    assert L.violations(led) == []                                                   # no card beats its signal's bound on the reference stack
+    assert L.CLOSED_BOUND == 0.0005                                                  # = harness.config.MIN_EFFECT
     for fam, f in led['families'].items():                                          # a closed family clears nothing
         if f['status'] == 'bounded':
             assert f['bound'] <= L.CLOSED_BOUND and not any(led['cards'][c]['accepted'] for c in f['cards'])

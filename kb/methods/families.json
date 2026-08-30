@@ -1,9 +1,12 @@
 {
- "generated": "2026-08-30T17:37:46+00:00",
+ "reference_stack": [
+  "loss-bpr-pairwise-within-user",
+  "ensembling-seed-average"
+ ],
  "signal_families": {
   "item-side": {
    "bound": 0.0003,
-   "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "day-state": {
    "bound": 0.0,
@@ -34,18 +37,18 @@
    "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "ensembling": {
-   "bound": 0.0006,
-   "source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "session-context": {
    "bound": 0.001,
-   "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"
+   "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   }
  },
  "families": {
   "aux-targets": {
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000",
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
     "aux-targets-discrete-watch-survival-queries",
@@ -61,6 +64,7 @@
      "delta": -0.0007,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "aux-targets-discrete-watch-survival-queries"
     },
     {
@@ -70,6 +74,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "aux-targets-is-click"
     },
     {
@@ -79,10 +84,12 @@
      "delta": 0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "aux-targets-ordinal-watch-depth"
     }
    ],
-   "best_measured": 0.0002
+   "best_measured": 0.0002,
+   "best_measured_ref": null
   },
   "data-weighting": {
    "bound": 0.0,
@@ -102,6 +109,7 @@
      "delta": -0.0026,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-inverse-day-volume"
     },
     {
@@ -111,6 +119,7 @@
      "delta": 0.0005,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-recency"
     },
     {
@@ -120,6 +129,7 @@
      "delta": 0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-recency"
     },
     {
@@ -129,6 +139,7 @@
      "delta": 0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-recency"
     },
     {
@@ -138,6 +149,7 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-recency"
     },
     {
@@ -147,14 +159,16 @@
      "delta": -0.0019,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "data-weighting-user-balanced-bpr-pairs"
     }
    ],
-   "best_measured": 0.0005
+   "best_measured": 0.0005,
+   "best_measured_ref": null
   },
   "encoding": {
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000",
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
     "encoding-ordered-item-context-target-statistics"
@@ -168,14 +182,16 @@
      "delta": -0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "encoding-ordered-item-context-target-statistics"
     }
    ],
-   "best_measured": -0.0004
+   "best_measured": -0.0004,
+   "best_measured_ref": null
   },
   "ensembling": {
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information; facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001",
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging",
    "status": "open",
    "cards": [
     "ensembling-heterogeneous-rank-average",
@@ -194,6 +210,7 @@
      "delta": 0.0006,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-heterogeneous-rank-average"
     },
     {
@@ -203,6 +220,7 @@
      "delta": 0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "ensembling-long-duration-slot-specialists"
     },
     {
@@ -212,6 +230,7 @@
      "delta": 0.0017,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-multiseed-heterogeneous-rank-blend"
     },
     {
@@ -221,6 +240,7 @@
      "delta": 0.0005,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-multiseed-heterogeneous-rank-blend"
     },
     {
@@ -230,6 +250,7 @@
      "delta": null,
      "accepted": false,
      "failed": true,
+     "on_reference": false,
      "card": "ensembling-multiseed-heterogeneous-rank-blend"
     },
     {
@@ -239,6 +260,7 @@
      "delta": -0.0006,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "ensembling-multiseed-heterogeneous-rank-blend"
     },
     {
@@ -248,6 +270,7 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-reciprocal-rank-fusion"
     },
     {
@@ -257,6 +280,7 @@
      "delta": 0.0009,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-seed-average"
     },
     {
@@ -266,6 +290,7 @@
      "delta": 0.0008,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-seed-average"
     },
     {
@@ -275,6 +300,7 @@
      "delta": 0.0013,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-seed-average"
     },
     {
@@ -284,6 +310,7 @@
      "delta": 0.0016,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-seed-average"
     },
     {
@@ -293,14 +320,16 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "ensembling-top5-gated-hybrid-rank-fusion"
     }
    ],
-   "best_measured": 0.0017
+   "best_measured": 0.0017,
+   "best_measured_ref": 0.0003
   },
   "features": {
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md); facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "open",
    "cards": [
     "features-duration-unknown-flag",
@@ -319,6 +348,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-duration-unknown-flag"
     },
     {
@@ -328,6 +358,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-duration-unknown-flag"
     },
     {
@@ -337,6 +368,7 @@
      "delta": 0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-duration-unknown-flag"
     },
     {
@@ -346,6 +378,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-duration-unknown-flag"
     },
     {
@@ -355,6 +388,7 @@
      "delta": -0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-duration-zero-lexicographic-demotion"
     },
     {
@@ -364,6 +398,7 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-field-aware-author-pooling"
     },
     {
@@ -373,6 +408,7 @@
      "delta": -0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-fine-duration-and-tab-cross"
     },
     {
@@ -382,6 +418,7 @@
      "delta": 0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "features-fine-duration-and-tab-cross"
     },
     {
@@ -391,14 +428,16 @@
      "delta": -0.0006,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "features-upper-tail-tab-duration-cross"
     }
    ],
-   "best_measured": 0.0002
+   "best_measured": 0.0002,
+   "best_measured_ref": -0.0006
   },
   "history": {
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR; facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md); facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR; facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
    "status": "open",
    "cards": [
     "history-ordered-user-tag-affinity",
@@ -416,6 +455,7 @@
      "delta": -0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "history-ordered-user-tag-affinity"
     },
     {
@@ -425,6 +465,7 @@
      "delta": -0.0005,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-repeat-exposure-fatigue"
     },
     {
@@ -434,6 +475,7 @@
      "delta": -0.0014,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -443,6 +485,7 @@
      "delta": -0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -452,6 +495,7 @@
      "delta": 0.001,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -461,6 +505,7 @@
      "delta": -0.0014,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -470,6 +515,7 @@
      "delta": 0.0006,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -479,6 +525,7 @@
      "delta": 0.0008,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-aggregates"
     },
     {
@@ -488,6 +535,7 @@
      "delta": -0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-tab-watch-survival-reranker"
     },
     {
@@ -497,10 +545,12 @@
      "delta": 0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "history-user-tab-watch-survival-reranker"
     }
    ],
-   "best_measured": 0.001
+   "best_measured": 0.001,
+   "best_measured_ref": -0.0004
   },
   "model": {
    "bound": null,
@@ -526,6 +576,7 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-continuous-date-drift-head"
     },
     {
@@ -535,6 +586,7 @@
      "delta": -0.0006,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-dcn-cross-head"
     },
     {
@@ -544,6 +596,7 @@
      "delta": 0.0005,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "model-dcn-cross-head"
     },
     {
@@ -553,6 +606,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-dcn-cross-head"
     },
     {
@@ -562,6 +616,7 @@
      "delta": 0.0012,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "model-field-aware-fm-embeddings"
     },
     {
@@ -571,6 +626,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-field-weighted-fm-relation-scalars"
     },
     {
@@ -580,6 +636,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-lightgcn-positive-id-propagation"
     },
     {
@@ -589,6 +646,7 @@
      "delta": -0.0007,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "model-user-tab-duration-cp-interaction"
     },
     {
@@ -598,10 +656,12 @@
      "delta": -0.0005,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "model-user-video-tab-cp-interaction"
     }
    ],
-   "best_measured": 0.0012
+   "best_measured": 0.0012,
+   "best_measured_ref": -0.0005
   },
   "ranking-loss": {
    "bound": null,
@@ -628,6 +688,7 @@
      "delta": 0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-hard-negatives"
     },
     {
@@ -637,6 +698,7 @@
      "delta": 0.0022,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -646,6 +708,7 @@
      "delta": 0.0016,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -655,6 +718,7 @@
      "delta": 0.0017,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -664,6 +728,7 @@
      "delta": 0.0011,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -673,6 +738,7 @@
      "delta": 0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -682,6 +748,7 @@
      "delta": 0.0017,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -691,6 +758,7 @@
      "delta": 0.0013,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "loss-bpr-pairwise-within-user"
     },
     {
@@ -700,6 +768,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-context-matched-two-stream-bpr"
     },
     {
@@ -709,6 +778,7 @@
      "delta": -0.002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-duration-cohort-weighted-bpr"
     },
     {
@@ -718,6 +788,7 @@
      "delta": -0.0005,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-lambdarank-pairs"
     },
     {
@@ -727,6 +798,7 @@
      "delta": -0.001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-lambdarank-pairs"
     },
     {
@@ -736,6 +808,7 @@
      "delta": -0.0016,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-lambdarank-pairs"
     },
     {
@@ -745,6 +818,7 @@
      "delta": -0.0029,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-listwise-softmax-within-user"
     },
     {
@@ -754,6 +828,7 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "loss-long-duration-matched-bpr"
     },
     {
@@ -763,6 +838,7 @@
      "delta": -0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-ranksvm-margin-pairs"
     },
     {
@@ -772,6 +848,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "loss-same-tab-long-duration-bpr"
     },
     {
@@ -781,10 +858,12 @@
      "delta": -0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "loss-tab4-long-duration-bpr"
     }
    ],
-   "best_measured": 0.0022
+   "best_measured": 0.0022,
+   "best_measured_ref": -0.0
   },
   "regularization": {
    "bound": null,
@@ -807,6 +886,7 @@
      "delta": 0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -816,6 +896,7 @@
      "delta": null,
      "accepted": false,
      "failed": true,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -825,6 +906,7 @@
      "delta": 0.0009,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -834,6 +916,7 @@
      "delta": 0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -843,6 +926,7 @@
      "delta": 0.001,
      "accepted": true,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -852,6 +936,7 @@
      "delta": 0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -861,6 +946,7 @@
      "delta": 0.0008,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-dropout-l2"
     },
     {
@@ -870,6 +956,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "regularization-embedding-only-l2"
     },
     {
@@ -879,6 +966,7 @@
      "delta": 0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "regularization-id-field-targeted-l2"
     },
     {
@@ -888,6 +976,7 @@
      "delta": -0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-lr-decay-early-stop"
     },
     {
@@ -897,6 +986,7 @@
      "delta": 0.0,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-lr-decay-early-stop"
     },
     {
@@ -906,6 +996,7 @@
      "delta": 0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-lr-decay-early-stop"
     },
     {
@@ -915,6 +1006,7 @@
      "delta": 0.0004,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-lr-decay-early-stop"
     },
     {
@@ -924,6 +1016,7 @@
      "delta": -0.0002,
      "accepted": false,
      "failed": false,
+     "on_reference": true,
      "card": "training-schedule-lr-decay-early-stop"
     },
     {
@@ -933,6 +1026,7 @@
      "delta": -0.0027,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-weight-averaging"
     },
     {
@@ -942,25 +1036,28 @@
      "delta": 0.0001,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "training-schedule-weight-averaging"
     }
    ],
-   "best_measured": 0.001
+   "best_measured": 0.001,
+   "best_measured_ref": 0.0001
   },
   "sequential-model": {
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)",
    "status": "open",
    "cards": [
     "model-first-order-exposure-transition-fm"
    ],
    "screen_gains": [],
    "measured": [],
-   "best_measured": null
+   "best_measured": null,
+   "best_measured_ref": null
   },
   "watch-time": {
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000",
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
     "loss-watchtime-censored"
@@ -974,6 +1071,7 @@
      "delta": 0.0003,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-watchtime-censored"
     },
     {
@@ -983,10 +1081,12 @@
      "delta": -0.0021,
      "accepted": false,
      "failed": false,
+     "on_reference": false,
      "card": "loss-watchtime-censored"
     }
    ],
-   "best_measured": 0.0003
+   "best_measured": 0.0003,
+   "best_measured_ref": null
   }
  },
  "cards": {
@@ -1000,9 +1100,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0007,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "aux-targets-is-click": {
    "family": "aux-targets",
@@ -1014,9 +1115,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0003,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "aux-targets-ordinal-watch-depth": {
    "family": "aux-targets",
@@ -1028,9 +1130,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "data-weighting-inverse-day-volume": {
    "family": "data-weighting",
@@ -1042,6 +1145,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0026,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
@@ -1056,6 +1160,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0005,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
@@ -1070,6 +1175,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0019,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1084,9 +1190,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0004,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "ensembling-heterogeneous-rank-average": {
    "family": "ensembling",
@@ -1098,13 +1205,14 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0006,
+   "measured_max_ref": null,
    "accepted": false,
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-long-duration-slot-specialists": {
    "family": "ensembling",
-   "signal_family": "pair-sampling",
+   "signal_family": "ensembling",
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)]",
    "expected": [
     0.0,
@@ -1112,9 +1220,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0003,
+   "measured_max_ref": 0.0003,
    "accepted": false,
-   "bound": 0.0,
-   "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-multiseed-heterogeneous-rank-blend": {
    "family": "ensembling",
@@ -1126,9 +1235,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0017,
+   "measured_max_ref": -0.0006,
    "accepted": true,
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-reciprocal-rank-fusion": {
    "family": "ensembling",
@@ -1140,9 +1250,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0,
+   "measured_max_ref": null,
    "accepted": false,
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-seed-average": {
    "family": "ensembling",
@@ -1154,9 +1265,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0016,
+   "measured_max_ref": null,
    "accepted": true,
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-top5-gated-hybrid-rank-fusion": {
    "family": "ensembling",
@@ -1168,9 +1280,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0002,
+   "measured_max_ref": null,
    "accepted": false,
-   "bound": 0.0006,
-   "bound_source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"
+   "bound": 0.0016,
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "features-duration-unknown-flag": {
    "family": "features",
@@ -1182,9 +1295,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-duration-zero-lexicographic-demotion": {
    "family": "features",
@@ -1196,9 +1310,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0004,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-exposure-session": {
    "family": "features",
@@ -1210,9 +1325,10 @@
    ],
    "basis_class": "oracle",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "features-field-aware-author-pooling": {
    "family": "features",
@@ -1224,9 +1340,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-fine-duration-and-tab-cross": {
    "family": "features",
@@ -1238,9 +1355,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-upper-tail-tab-duration-cross": {
    "family": "features",
@@ -1252,9 +1370,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0006,
+   "measured_max_ref": -0.0006,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "history-ordered-user-tag-affinity": {
    "family": "history",
@@ -1266,6 +1385,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0004,
+   "measured_max_ref": -0.0004,
    "accepted": false,
    "bound": 0.0003,
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
@@ -1280,9 +1400,10 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0005,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "history-same-author-run-features": {
    "family": "history",
@@ -1294,9 +1415,10 @@
    ],
    "basis_class": "oracle",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "history-user-aggregates": {
    "family": "history",
@@ -1308,6 +1430,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.001,
+   "measured_max_ref": null,
    "accepted": true,
    "bound": 0.0002,
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
@@ -1322,6 +1445,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
@@ -1336,6 +1460,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1350,6 +1475,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0022,
+   "measured_max_ref": null,
    "accepted": true,
    "bound": null,
    "bound_source": null
@@ -1364,6 +1490,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0003,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1378,6 +1505,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1392,6 +1520,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0005,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1406,6 +1535,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0029,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1420,6 +1550,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0,
+   "measured_max_ref": -0.0,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1434,6 +1565,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0003,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1448,6 +1580,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0002,
+   "measured_max_ref": -0.0002,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1462,6 +1595,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0,
+   "measured_max_ref": -0.0,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
@@ -1476,9 +1610,10 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0003,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "model-continuous-date-drift-head": {
    "family": "model",
@@ -1490,6 +1625,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
@@ -1504,6 +1640,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0005,
+   "measured_max_ref": null,
    "accepted": true,
    "bound": null,
    "bound_source": null
@@ -1518,6 +1655,7 @@
    ],
    "basis_class": "oracle",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0002,
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
@@ -1532,6 +1670,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0012,
+   "measured_max_ref": null,
    "accepted": true,
    "bound": null,
    "bound_source": null
@@ -1546,6 +1685,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1560,9 +1700,10 @@
    ],
    "basis_class": "oracle",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
-   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "model-lightgbm-lambdarank": {
    "family": "model",
@@ -1574,6 +1715,7 @@
    ],
    "basis_class": "paper",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1588,6 +1730,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0002,
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
@@ -1602,6 +1745,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0007,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
@@ -1616,6 +1760,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0005,
+   "measured_max_ref": -0.0005,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1630,6 +1775,7 @@
    ],
    "basis_class": "paper",
    "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1644,6 +1790,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.001,
+   "measured_max_ref": null,
    "accepted": true,
    "bound": null,
    "bound_source": null
@@ -1658,6 +1805,7 @@
    ],
    "basis_class": "measured",
    "measured_max": -0.0002,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1672,6 +1820,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
+   "measured_max_ref": 0.0001,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1686,6 +1835,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0004,
+   "measured_max_ref": -0.0002,
    "accepted": false,
    "bound": null,
    "bound_source": null
@@ -1700,6 +1850,7 @@
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": null,
    "bound_source": null
