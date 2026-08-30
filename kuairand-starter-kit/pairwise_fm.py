@@ -15,8 +15,8 @@ import time
 import numpy as np
 
 import baseline as organizer_baseline
-from data import encode, load
 from evaluate import evaluate
+from temporal_fm import ALLOWED_EXTRAS, encode, load_rows
 
 
 HYPOTHESIS = (
@@ -118,13 +118,13 @@ def pair_batches(rng, positive_indices, positive_users, negatives_by_user, batch
         yield positive_batch, negative_batch
 
 
-def metric_record(phase, epoch, loss, users, labels, scores):
+def metric_record(phase, epoch, loss, users, labels, scores, fields):
     metrics = {name: float(value) for name, value in evaluate(users, labels, scores).items()}
     return {
         "phase": phase,
         "iteration": epoch,
         "hypothesis": HYPOTHESIS,
-        "change": CHANGE_DESCRIPTION,
+        "change": f"{CHANGE_DESCRIPTION} Fields: {fields}",
         "train_loss": round(float(loss), 7),
         "metrics": metrics,
         "error_or_recovery": None,
@@ -141,11 +141,17 @@ def append_log(path, record):
 
 
 def train(args):
-    splits = load(args.data_dir)
-    encoded, dimension = encode(splits)
+    extra_fields = tuple(field.strip() for field in args.extra_features.split(",") if field.strip())
+    unsupported = set(extra_fields) - ALLOWED_EXTRAS
+    if unsupported:
+        raise ValueError(f"Unsupported context fields: {sorted(unsupported)}")
+    rows = load_rows(args.data_dir)
+    encoded, dimension, fields = encode(rows, extra_fields)
     train_x, train_y, train_users = encoded["train"]
     valid_x, valid_y, valid_users = encoded["valid"]
-    model = BPRFM(dimension, k=args.embedding_dim, lr=args.pointwise_lr, seed=args.seed)
+    model = BPRFM(
+        dimension, k=args.embedding_dim, lr=args.pointwise_lr, l2=args.weight_decay, seed=args.seed
+    )
     rng = np.random.default_rng(args.seed)
     log_path = Path(args.run_log) if args.run_log else None
     if log_path is not None and log_path.exists():
@@ -157,7 +163,7 @@ def train(args):
 
     def validate(phase, epoch, loss):
         nonlocal best_primary, best_record, best_state
-        record = metric_record(phase, epoch, loss, valid_users, valid_y, model.predict(valid_x))
+        record = metric_record(phase, epoch, loss, valid_users, valid_y, model.predict(valid_x), fields)
         append_log(log_path, record)
         metrics = record["metrics"]
         print(
@@ -212,10 +218,12 @@ def self_test():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", default="./KuaiRand-Pure/data")
+    parser.add_argument("--extra_features", default="hour,weekday,is_rand")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--embedding_dim", type=int, default=16)
     parser.add_argument("--pointwise_lr", type=float, default=0.001)
     parser.add_argument("--pairwise_lr", type=float, default=0.0005)
+    parser.add_argument("--weight_decay", type=float, default=1e-6)
     parser.add_argument("--warmup_epochs", type=int, default=5)
     parser.add_argument("--pairwise_epochs", type=int, default=8)
     parser.add_argument("--batch_size", type=int, default=8192)

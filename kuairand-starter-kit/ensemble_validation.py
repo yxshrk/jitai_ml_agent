@@ -6,6 +6,7 @@ public validation split, and averages only the resulting validation logits.
 """
 
 import argparse
+from collections import defaultdict
 import json
 from pathlib import Path
 import time
@@ -36,7 +37,37 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--patience", type=int, default=4)
     parser.add_argument("--batch_size", type=int, default=8192)
+    parser.add_argument(
+        "--aggregation",
+        choices=("mean_logit", "per_user_rank_average"),
+        default="mean_logit",
+        help="Combine validation-selected member predictions without accessing test data.",
+    )
     return parser.parse_args()
+
+
+def per_user_rank_average(scores_by_seed, users):
+    """Average normalized ranks within each user's evaluation slate.
+
+    The official metric orders impressions only within a user, so this preserves
+    each member's scale-free ranking rather than allowing logit calibration to
+    dominate an ensemble.  It is solely a validation selection operation.
+    """
+    groups = defaultdict(list)
+    for index, user in enumerate(users):
+        groups[user].append(index)
+    member_ranks = []
+    for scores in scores_by_seed:
+        ranks = np.empty(len(scores), dtype=np.float32)
+        for indices in groups.values():
+            slate_scores = scores[indices]
+            order = np.argsort(-slate_scores, kind="mergesort")
+            if len(indices) == 1:
+                ranks[indices[0]] = 0.5
+            else:
+                ranks[np.asarray(indices)[order]] = np.linspace(1.0, 0.0, len(indices), dtype=np.float32)
+        member_ranks.append(ranks)
+    return np.mean(member_ranks, axis=0)
 
 
 def main(args):
@@ -70,14 +101,19 @@ def main(args):
         records.append(record)
         scores_by_seed.append(scores)
 
+    if args.aggregation == "mean_logit":
+        ensemble_scores = np.mean(scores_by_seed, axis=0)
+    else:
+        ensemble_scores = per_user_rank_average(scores_by_seed, valid_users)
     ensemble_metrics = {
         name: float(value)
-        for name, value in evaluate(valid_users, valid_labels, np.mean(scores_by_seed, axis=0)).items()
+        for name, value in evaluate(valid_users, valid_labels, ensemble_scores).items()
     }
     summary = {
         "selection_split": "validation",
         "test_data_used": False,
         "seeds": seeds,
+        "aggregation": args.aggregation,
         "extra_features": [feature for feature in args.extra_features.split(",") if feature],
         "member_best_primary_mean": float(np.mean([record["metrics"]["primary"] for record in records])),
         "ensemble_metrics": ensemble_metrics,

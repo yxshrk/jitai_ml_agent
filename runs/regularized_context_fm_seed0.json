@@ -1,0 +1,161 @@
+{
+  "best": {
+    "epoch": 6,
+    "learning_rate": 0.0003249,
+    "metrics": {
+      "GAUC": 0.661129891872406,
+      "nDCG@5": 0.5338875651359558,
+      "primary": 0.5975087285041809,
+      "rows": 124909.0,
+      "users": 22377.0
+    },
+    "train_loss": 0.5458589255809784
+  },
+  "config": {
+    "batch_size": 8192,
+    "dropout": 0.18,
+    "embedding_dim": 16,
+    "learning_rate": 0.001,
+    "lr_decay": 0.57,
+    "lr_step_epochs": 2,
+    "seed": 0,
+    "weight_decay": 9e-05
+  },
+  "fields": [
+    "user_id",
+    "video_id",
+    "author_id",
+    "tab",
+    "dur_bucket",
+    "hour",
+    "weekday",
+    "is_rand"
+  ],
+  "hypothesis": "Field dropout and scheduled regularization reduce contextual FM overfit while retaining its efficient within-user ranking signal.",
+  "manual_interventions": 0,
+  "phase": "regularized_context_fm",
+  "selection_split": "validation",
+  "test_data_used": false,
+  "trajectory": [
+    {
+      "epoch": 1,
+      "learning_rate": 0.001,
+      "metrics": {
+        "GAUC": 0.649564802646637,
+        "nDCG@5": 0.528647243976593,
+        "primary": 0.589106023311615,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.6394810012408665
+    },
+    {
+      "epoch": 2,
+      "learning_rate": 0.001,
+      "metrics": {
+        "GAUC": 0.6569231152534485,
+        "nDCG@5": 0.5325016379356384,
+        "primary": 0.5947123765945435,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5719641259738377
+    },
+    {
+      "epoch": 3,
+      "learning_rate": 0.00057,
+      "metrics": {
+        "GAUC": 0.6579456925392151,
+        "nDCG@5": 0.5325790047645569,
+        "primary": 0.595262348651886,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5549131150756563
+    },
+    {
+      "epoch": 4,
+      "learning_rate": 0.00057,
+      "metrics": {
+        "GAUC": 0.6599454879760742,
+        "nDCG@5": 0.5334089994430542,
+        "primary": 0.5966772437095642,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5506328025034496
+    },
+    {
+      "epoch": 5,
+      "learning_rate": 0.0003249,
+      "metrics": {
+        "GAUC": 0.6602504849433899,
+        "nDCG@5": 0.5336423516273499,
+        "primary": 0.5969464182853699,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5472373660121645
+    },
+    {
+      "epoch": 6,
+      "learning_rate": 0.0003249,
+      "metrics": {
+        "GAUC": 0.661129891872406,
+        "nDCG@5": 0.5338875651359558,
+        "primary": 0.5975087285041809,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5458589255809784
+    },
+    {
+      "epoch": 7,
+      "learning_rate": 0.00018519299999999995,
+      "metrics": {
+        "GAUC": 0.6611419320106506,
+        "nDCG@5": 0.5338306427001953,
+        "primary": 0.5974862575531006,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5447422653436661
+    },
+    {
+      "epoch": 8,
+      "learning_rate": 0.00018519299999999995,
+      "metrics": {
+        "GAUC": 0.6610491275787354,
+        "nDCG@5": 0.533816397190094,
+        "primary": 0.5974327325820923,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5440943407160895
+    },
+    {
+      "epoch": 9,
+      "learning_rate": 0.00010556000999999997,
+      "metrics": {
+        "GAUC": 0.6609892249107361,
+        "nDCG@5": 0.5336285829544067,
+        "primary": 0.597308874130249,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5431381221328463
+    },
+    {
+      "epoch": 10,
+      "learning_rate": 0.00010556000999999997,
+      "metrics": {
+        "GAUC": 0.6610968708992004,
+        "nDCG@5": 0.5338091254234314,
+        "primary": 0.5974529981613159,
+        "rows": 124909.0,
+        "users": 22377.0
+      },
+      "train_loss": 0.5427575635058539
+    }
+  ]
+}

@@ -21,7 +21,10 @@ from evaluate import evaluate
 
 SPLITS = {"train": (20220408, 20220421), "valid": (20220422, 20220428)}
 BASE_FIELDS = ["user_id", "video_id", "author_id", "tab", "dur_bucket"]
-ALLOWED_EXTRAS = {"hour", "weekday", "is_rand", "video_age"}
+ALLOWED_EXTRAS = {
+    "hour", "weekday", "is_rand", "video_age",
+    "user_tab", "author_tab", "tab_hour", "tab_is_rand",
+}
 ENGAGEMENT_TARGETS = ("long_view", "is_click", "is_like", "is_follow", "is_comment", "is_forward")
 HYPOTHESIS = (
     "Time of day, day of week, and randomized-exposure status add ranking signal "
@@ -85,17 +88,25 @@ def load_rows(data_dir):
                 if split is None:
                     continue
                 author_id, upload_day = video_metadata.get(record["video_id"], ("UNK", None))
+                user_id, tab = record["user_id"], record["tab"]
+                hour, is_rand = str(int(record["hourmin"]) // 100), record["is_rand"]
                 rows[split].append(
                     {
-                        "user_id": record["user_id"],
+                        "user_id": user_id,
                         "video_id": record["video_id"],
                         "author_id": author_id,
-                        "tab": record["tab"],
+                        "tab": tab,
                         "duration_ms": float(record["duration_ms"]),
-                        "hour": str(int(record["hourmin"]) // 100),
+                        "hour": hour,
                         "weekday": weekday(date_value),
-                        "is_rand": record["is_rand"],
+                        "is_rand": is_rand,
                         "video_age": video_age_bucket(date_ordinal(date_value), upload_day),
+                        # Wide crosses are all derived from columns available at
+                        # impression time; they do not use outcomes or test data.
+                        "user_tab": f"{user_id}|{tab}",
+                        "author_tab": f"{author_id}|{tab}",
+                        "tab_hour": f"{tab}|{hour}",
+                        "tab_is_rand": f"{tab}|{is_rand}",
                         "label": 1 if record["long_view"] != "0" else 0,
                         "targets": {
                             target: 1 if record[target] != "0" else 0 for target in ENGAGEMENT_TARGETS
