@@ -1,0 +1,360 @@
+{
+  "run_dir": "logs/run_deep_c3",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6697563560594658,
+    "ndcg5": 0.5359628645411614,
+    "primary": 0.6028596103003137,
+    "history": {
+      "matrix": [
+        {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.567023
+        },
+        {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.565299
+        },
+        {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.568114
+        },
+        {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.567938
+        },
+        {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.585009
+        },
+        {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.585101
+        },
+        {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.583363
+        },
+        {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.582966
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.589382
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.587193
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.588146
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.58572
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.591325
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.591993
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.591982
+        },
+        {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong",
+          "probe_epochs": 2,
+          "probe_rows": 250000,
+          "val_primary": 0.591087
+        }
+      ],
+      "winner": {
+        "architecture": "dcn-lite",
+        "loss": "bpr-hybrid",
+        "weighting": "uniform",
+        "regularization": "strong"
+      },
+      "winner_probe_primary": 0.591993,
+      "final_curve": [
+        {
+          "epoch": 1,
+          "half": 1,
+          "train_loss": 0.544824,
+          "val_gauc": 0.664723,
+          "val_primary": 0.599739
+        },
+        {
+          "epoch": 1,
+          "half": 2,
+          "train_loss": 0.544914,
+          "val_gauc": 0.666944,
+          "val_primary": 0.601021
+        },
+        {
+          "epoch": 2,
+          "half": 1,
+          "train_loss": 0.527067,
+          "val_gauc": 0.668317,
+          "val_primary": 0.602019
+        },
+        {
+          "epoch": 2,
+          "half": 2,
+          "train_loss": 0.534508,
+          "val_gauc": 0.668215,
+          "val_primary": 0.601797
+        },
+        {
+          "epoch": 3,
+          "half": 1,
+          "train_loss": 0.532089,
+          "val_gauc": 0.669377,
+          "val_primary": 0.602399
+        },
+        {
+          "epoch": 3,
+          "half": 2,
+          "train_loss": 0.527566,
+          "val_gauc": 0.66941,
+          "val_primary": 0.602591
+        },
+        {
+          "epoch": 4,
+          "half": 1,
+          "train_loss": 0.518661,
+          "val_gauc": 0.669756,
+          "val_primary": 0.60286
+        },
+        {
+          "epoch": 4,
+          "half": 2,
+          "train_loss": 0.524507,
+          "val_gauc": 0.668837,
+          "val_primary": 0.602289
+        },
+        {
+          "epoch": 5,
+          "half": 1,
+          "train_loss": 0.516445,
+          "val_gauc": 0.669023,
+          "val_primary": 0.6024
+        },
+        {
+          "epoch": 5,
+          "half": 2,
+          "train_loss": 0.523357,
+          "val_gauc": 0.669322,
+          "val_primary": 0.602694
+        },
+        {
+          "epoch": 6,
+          "half": 1,
+          "train_loss": 0.517964,
+          "val_gauc": 0.669183,
+          "val_primary": 0.602563
+        },
+        {
+          "epoch": 6,
+          "half": 2,
+          "train_loss": 0.526215,
+          "val_gauc": 0.669096,
+          "val_primary": 0.602508
+        },
+        {
+          "epoch": 7,
+          "half": 1,
+          "train_loss": 0.518113,
+          "val_gauc": 0.669225,
+          "val_primary": 0.602581
+        },
+        {
+          "epoch": 7,
+          "half": 2,
+          "train_loss": 0.511303,
+          "val_gauc": 0.669176,
+          "val_primary": 0.602506
+        },
+        {
+          "epoch": 8,
+          "half": 1,
+          "train_loss": 0.524764,
+          "val_gauc": 0.669334,
+          "val_primary": 0.602691
+        },
+        {
+          "epoch": 8,
+          "half": 2,
+          "train_loss": 0.517591,
+          "val_gauc": 0.669436,
+          "val_primary": 0.602772
+        },
+        {
+          "epoch": 9,
+          "half": 1,
+          "train_loss": 0.511507,
+          "val_gauc": 0.669458,
+          "val_primary": 0.602772
+        },
+        {
+          "epoch": 9,
+          "half": 2,
+          "train_loss": 0.523497,
+          "val_gauc": 0.6695,
+          "val_primary": 0.6028
+        },
+        {
+          "epoch": 10,
+          "half": 1,
+          "train_loss": 0.525046,
+          "val_gauc": 0.669409,
+          "val_primary": 0.602748
+        },
+        {
+          "epoch": 10,
+          "half": 2,
+          "train_loss": 0.525574,
+          "val_gauc": 0.669456,
+          "val_primary": 0.602782
+        },
+        {
+          "epoch": 11,
+          "half": 1,
+          "train_loss": 0.520947,
+          "val_gauc": 0.669457,
+          "val_primary": 0.60278
+        },
+        {
+          "epoch": 11,
+          "half": 2,
+          "train_loss": 0.525081,
+          "val_gauc": 0.669444,
+          "val_primary": 0.602768
+        },
+        {
+          "epoch": 12,
+          "half": 1,
+          "train_loss": 0.517513,
+          "val_gauc": 0.669459,
+          "val_primary": 0.602775
+        },
+        {
+          "epoch": 12,
+          "half": 2,
+          "train_loss": 0.520821,
+          "val_gauc": 0.669429,
+          "val_primary": 0.602751
+        }
+      ],
+      "final_best_primary": 0.60286
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 8869,
+      "out": 634,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11603,
+      "out": 13691,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 332,
+      "out": 924,
+      "calls": 1
+    }
+  },
+  "tokens_total": 36053,
+  "wall_s": 461.2,
+  "self_critique": "Run critique\n\nWhat was suboptimal:\n- The run declared convergence after only three non-baseline nodes, one of which failed without metrics. That is insufficient evidence of convergence.\n- node_001 improved primary from 0.6018 to 0.60286 (+0.00106), but its hypothesis predicted roughly +0.003. The miss should have triggered attribution and calibration rather than immediate broad acceptance.\n- node_001 bundled architecture, objective, recency weighting, and regularization into a factorial sweep. This found a better configuration but did not establish which change mattered. Selecting the best cell also introduces validation-selection bias.\n- There were no repeated seeds or confidence estimates for the winning configuration. The baseline sigma of 0.0001 does not establish the variance of the comparison.\n- node_002\u2019s proposal failure was handled poorly. node_003 was then attached to a failed node instead of restarting from the best valid ancestor, making lineage and the meaning of \u201cparent\u201d ambiguous.\n- node_003 added a relatively speculative auxiliary loss before decomposing the successful node_001 recipe. It scored 0.6002, down 0.00266 from the best, so this direction should be deprioritized unless diagnostics show a specific censored-play failure mode.\n\nWhat I would change in the scaffold:\n- Treat proposal/infrastructure failures as retryable events that do not create experimental ancestry or consume a scientific trial.\n- Require every experiment to inherit from the latest valid checkpoint or explicitly name the actual configuration used.\n- Separate exploration from confirmation: broad sweeps may nominate a winner, but acceptance should require reruns and comparison against an equally rerun baseline.\n- Automatically schedule ablations after a multi-factor winner. Report every sweep cell, not only the selected maximum.\n- Track seed-level scores, mean, standard error, delta confidence intervals, and validation-selection budget.\n- Calibrate hypothesis claims: record predicted versus realized gain and penalize repeated unsupported \u201cat least +0.003\u201d claims.\n- Do not permit a convergence stop with only two scored challengers unless the search budget was genuinely exhausted and local perturbations around the incumbent were tested.\n- Log exact winning hyperparameters and component-level diagnostics so subsequent proposals are grounded in observed effects.\n\nWhat the next run should try first:\n1. Reproduce node_001\u2019s exact winning configuration across at least 3\u20135 seeds, alongside rerun node_000 seeds.\n2. Run one-factor ablations around node_001: FM versus DCN-lite, logloss versus hybrid-BPR, uniform versus 7-day weighting, and mild versus strong regularization.\n3. Once the responsible factors are identified, perform a narrow local search over their key continuous parameters, especially regularization strength, BPR mixing weight, and recency decay.\n4. Confirm the selected configuration on an untouched validation split or nested selection protocol.\n5. Only then test new auxiliary objectives. Do not retry CWM-style watch-time loss first; it produced a clear regression without supporting diagnostics."
+}

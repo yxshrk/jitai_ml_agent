@@ -1,0 +1,61 @@
+{
+  "run_dir": "logs/run_unseeded_21",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6688071971167646,
+    "ndcg5": 0.5368147462892245,
+    "primary": 0.6028109717029946,
+    "experiment": {
+      "member_seeds": [
+        42,
+        43,
+        44
+      ],
+      "member_best_epochs": [
+        8,
+        7,
+        6
+      ],
+      "baseline_member_primaries": [
+        0.6018377479019454,
+        0.6019024895742308,
+        0.601715905728104
+      ],
+      "baseline_mean_primary": 0.6018187144014268,
+      "baseline_std_primary": 9.473694377255493e-05,
+      "ensemble_minus_each_member": [
+        0.000973223801049139,
+        0.0009084821287638212,
+        0.0010950659748906189
+      ],
+      "ensemble_minus_baseline_mean": 0.0009922573015678227,
+      "n_members": 3,
+      "aggregation": "within_user_percentile_rank_mean"
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 32715,
+      "out": 5044,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 13134,
+      "out": 8349,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 345,
+      "out": 824,
+      "calls": 1
+    }
+  },
+  "tokens_total": 60411,
+  "wall_s": 391.8,
+  "self_critique": "Run critique\n\nWhat went well\n- The run found a modest improvement: 0.6018 to 0.602811 (+0.0010) using a simple three-seed rank ensemble.\n- It correctly identified the likely epoch-8 validation peak and avoided spending further trials on the clearly harmful aggressive regularization package.\n\nWhat was suboptimal\n- Convergence was declared too early. Only one substantive model change was tested after the ensemble; another proposal failed before evaluation. This is insufficient exploration.\n- Node_001 mainly reduced seed variance rather than improving the underlying model. Its gain should have been compared against paired single-seed results with uncertainty, not just accepted from one validation outcome.\n- Node_002 bundled interaction dropout, embedding L2, AdamW weight decay, and rapid LR decay. The 0.0077 regression is uninterpretable because four strong interventions changed simultaneously. The promised +0.002 was also poorly calibrated.\n- A 0.5-per-epoch LR decay is especially aggressive and likely caused underfitting. Combining it with dropout and multiple regularizers compounded that risk.\n- The policy did not exploit its own observation that performance peaks near epoch 8. Checkpoint averaging, tighter epoch selection, and mild early stopping were more direct next steps.\n- Node_003\u2019s proposal failure should have triggered a fallback proposal rather than consuming the remaining search opportunity.\n- Repeated decisions on one validation split risk adapting to validation noise, particularly when the winning margin is only about 0.001.\n\nScaffold changes\n- Require atomic ablations: vary one regularizer or training-control parameter at a time.\n- Use matched seeds and report mean, standard deviation, and paired differences before accepting small gains.\n- Add proposal validation and automatic fallback generation so malformed proposals do not become terminal failed nodes.\n- Separate \u201cbetter base learner\u201d from \u201cvariance reduction by ensembling,\u201d and track compute cost alongside score.\n- Preserve per-epoch predictions/checkpoints so epoch selection, checkpoint averaging, and ensemble variants can be evaluated cheaply.\n- Do not declare convergence until a minimum number of valid, nonredundant hypotheses have been tested.\n\nWhat the next run should try first\n1. Reproduce the FM over the same three seeds and sweep only the stopping epoch around the observed peak, roughly epochs 6\u201310.\n2. Test averaging predictions or checkpoints from epochs 7\u20139 versus the current rank ensemble.\n3. If regularization is still needed, try one mild intervention at a time\u2014e.g. small weight decay or interaction dropout around 0.05\u20130.1\u2014while keeping the original optimizer and LR schedule.\n4. Confirm any gain with paired seeds or a second validation split before expanding the ensemble.\n\nThe highest-priority opportunity is better epoch/checkpoint handling, not another aggressive regularization bundle."
+}

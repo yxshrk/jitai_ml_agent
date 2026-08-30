@@ -1,0 +1,86 @@
+{
+  "run_dir": "logs/run_deep_c2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "anthropic/claude-sonnet-5/reflector": {
+      "in": 4442,
+      "out": 1526,
+      "calls": 2
+    }
+  },
+  "tokens_total": 5968,
+  "wall_s": 431.7,
+  "self_critique": "What happened\n\nThe run produced exactly one valid result (baseline FM, primary=0.6018) and then burned its entire remaining budget on three consecutive dead nodes, all failing before a metric was even produced (\"proposal failed\" / \"no-metric FAILED\"). The debug branch (node_002, node_003) tried to recover from node_001's failure twice and never succeeded, so the run converged on the baseline with zero actual improvement search performed.\n\nWhat the harness/policy did suboptimally\n\n1. **No diagnosis before retrying.** node_001 failed at proposal-generation stage (not even execution), yet the harness immediately spawned a debug child rather than inspecting *why* the proposal failed. If the failure is structural (e.g., a malformed spec, an API/schema mismatch, missing dependency), retrying with more debug nodes against the same broken proposal is very unlikely to fix it \u2014 and that's exactly what happened twice.\n2. **Repeated the same failure mode 3x without variation.** node_002 and node_003 are both children of a failed chain with no evidence the underlying issue was changed between attempts. This looks like the debug policy re-submitted a similar patch rather than substantively altering the approach (e.g., simplifying the proposed change, falling back to a smaller diff, or reverting to baseline and trying a different idea altogether).\n3. **No fallback/diversity mechanism.** After one debug failure, the policy should have escalated to a different proposal strategy (different node type, simpler change, or explicit \"return to baseline and pick new idea\" branch) instead of continuing to debug the same lineage.\n4. **Budget exhausted on non-executing code.** All compute/wall-clock spent on this run went to proposal/debug failures rather than any real experimentation \u2014 a total loss for search purposes. There's no evidence of a circuit breaker (e.g., \"after 2 consecutive no-metric failures, abandon this lineage and start fresh from baseline with a different idea\").\n\nWhat I'd change in the scaffold\n\n- **Add a failure-type classifier**: distinguish \"no-metric / proposal failed\" (likely a code-gen or spec error) from \"metric produced but worse\" (an actual experimental result). These should trigger different recovery policies \u2014 the former should trigger a lightweight lint/validation pass or regeneration with stricter constraints, not a full debug-and-rerun cycle.\n- **Cap consecutive debug attempts per lineage** (e.g., max 1-2) and force a branch back to baseline with a new, unrelated proposal after that cap is hit, rather than deepening the same failing chain.\n- **Log the actual error/exception content** in the journal summary (currently just \"(proposal failed)\" \u2014 opaque). Reflection and future debugging are impossible without the underlying stack trace or validation error surfaced here.\n- **Cheap pre-flight validation** of proposals (schema check, dry-run compile/import) before committing a full node, so proposal-stage failures are caught before wasting a \"debug\" cycle.\n\nWhat the next run should try first\n\n- Before anything else, fix/inspect the proposal-generation pipeline that produced node_001's failure \u2014 this is an infrastructure bug, not a modeling problem, and needs to be resolved or the next run will likely repeat the same 0-improvement outcome.\n- Once unblocked, try one genuinely different, simple modification to the baseline FM (e.g., a single hyperparameter change or a small architectural tweak) rather than whatever complex proposal caused the original failure, to re-establish a working non-baseline node quickly.\n- Increase logging verbosity for failed nodes so any future run's journal is diagnosable without re-running."
+}

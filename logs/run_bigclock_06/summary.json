@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_bigclock_06",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6694101095199585,
+    "ndcg5": 0.5367603898048401,
+    "primary": 0.6030852794647217
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14892,
+      "out": 1924,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10861,
+      "out": 15321,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 319,
+      "out": 670,
+      "calls": 1
+    }
+  },
+  "tokens_total": 43987,
+  "wall_s": 1075.4,
+  "self_critique": "The run found a modest improvement (0.6018 \u2192 0.6031), but the search was too shallow to justify \u201cconverged.\u201d\n\nWhat was suboptimal\n\n- Node_001 bundled architecture, loss, optimizer, schedule, dropout, and recency weighting into one proposal. Its rejection provides almost no information about which components helped or hurt.\n- Node_002 failed without a metric, yet node_003 was attached to it and accepted. This makes lineage and attribution unclear: it is difficult to know which implementation/configuration node_003 actually inherited.\n- Only a few trials were attempted. Stopping after one rejected bundle, one failure, and one improvement is premature.\n- The claimed gains were small and apparently based on single evaluations. The baseline sigma was reported, but no repeat-seed uncertainty was shown for node_003, so the 0.0013 improvement may not be robust.\n- The policy reacted to presumed overfitting with a broad \u201cliterature-backed package\u201d rather than diagnosing train/validation curves and changing one control at a time.\n- The temporal-feature result is promising, but there were no ablations separating hour-of-day, day-of-week, their encodings, or their interactions.\n\nScaffold changes\n\n- Enforce atomic proposals: one architectural, feature, loss, or regularization change per node.\n- Require executable lineage from the latest valid checkpoint; failed nodes should not be parents unless recovery explicitly records the inherited configuration.\n- Automatically retry infrastructure/proposal failures once, then fall back to the last valid parent.\n- Evaluate promising improvements across multiple seeds and report mean, standard deviation, and paired deltas.\n- Add minimum search-budget and convergence criteria based on several consecutive well-formed trials, not raw node count.\n- Record train/validation curves and component-level config diffs so overfitting claims and causal attribution are testable.\n- Use staged bundles only after individual components have demonstrated value.\n\nWhat the next run should try first\n\nFirst reproduce node_003 across several seeds from a clearly specified valid baseline. Then run a compact temporal ablation:\n\n1. Baseline + hour-of-day only.\n2. Baseline + day-of-week only.\n3. Baseline + both.\n4. Cyclic sin/cos encoding versus categorical embeddings.\n5. Temporal features with user/time interactions, if supported.\n\nOnly after confirming the temporal gain should the run test recency weighting, regularization, hybrid BCE/BPR loss, and DCN-lite separately. The immediate priority is validating and attributing the node_003 improvement, not adding another multi-component package."
+}

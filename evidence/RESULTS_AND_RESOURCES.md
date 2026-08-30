@@ -8,7 +8,7 @@
 
 | Benchmark | Official baseline (valid) | Ours (valid) | Absolute delta |
 |---|---|---|---|
-| KuaiRand-Pure (required) | GAUC 0.6674 / nDCG@5 0.5357 / primary 0.6016 | GAUC 0.6728 / nDCG@5 0.5383 / **primary 0.60558** | **+0.0040** primary (+0.0054 GAUC, +0.0026 nDCG@5) |
+| KuaiRand-Pure (required) | GAUC 0.6674 / nDCG@5 0.5357 / primary 0.6016 | GAUC 0.6728 / nDCG@5 0.5383 / **primary 0.605575** | **+0.00398** primary (+0.0054 GAUC, +0.0026 nDCG@5) |
 | KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.63874** | +0.0179 vs our single-model start |
 | KuaiRand-27K (bonus, out-of-protocol scaling demo) | n/a | primary 0.67263 | — (GPU demo, not an agent run) |
 
@@ -26,14 +26,16 @@ are never read anywhere in the pipeline (see tools/predict_test*.py guards).
 | Agent wall-clock | 17.0 min (1,019 s) | 62.7 min (3,763 s) |
 | Iterations used (of 50) | 6 | 7 |
 | GPU-hours in the run | 0 (CPU only) | 0 (CPU only) |
-| Manual interventions | 0 (machine-counted from journals) | 0 |
+| Mid-run human actions | 0 (team attestation + no intervention events journaled) | 0 |
 
 ## Full development disclosure (voluntary)
 
-~45 additional agent runs were executed during development and harness evolution
-(all journals in `logs/run_*/`, indexed in `logs/RUNS.md`); typical run: 35k–120k
-tokens, 10–70 min wall-clock. Aggregate development LLM spend ≈ US$95 (per-machine
-ledgers). GPU usage occurred only in development and bonus work (RTX 4090:
+The complete campaign comprises 113 runs including incomplete/aborted ones
+(machine-generated inventory: logs/RUNS_INVENTORY.md, evidence/run_inventory.csv):
+aggregate ≥4.8M LLM tokens and ≈30 run-hours wall-clock, ≈US$95-120 LLM spend
+(per-machine ledgers). The designated runs' own usage is the scored figure; the
+campaign totals are disclosed because cross-run knowledge from the campaign
+informed the designated runs' method cards. GPU usage occurred only in development and bonus work (RTX 4090:
 hyperparameter farms, 27K scaling demo, some development runs) — estimated ~12
 GPU-hours total, none in the designated runs. Wall-clock is the scored measure per
 the brief; GPU-hours are reported for completeness.

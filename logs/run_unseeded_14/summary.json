@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_14",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6705779867281161,
+    "ndcg5": 0.5375101037902054,
+    "primary": 0.6040440452591607
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 29851,
+      "out": 4210,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 20085,
+      "out": 11593,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 404,
+      "out": 926,
+      "calls": 1
+    }
+  },
+  "tokens_total": 67069,
+  "wall_s": 498.2,
+  "self_critique": "Overall\n\nThe run found a modest improvement: 0.604044 versus the 0.6018 baseline, mainly from ensembling and duration-regime residual heads. That is useful, but \u201cconverged\u201d is not well supported after only four nodes and two meaningful architectural directions.\n\nWhat was suboptimal\n\n- The search stopped too early. Node_003 improved over node_001 by roughly 0.0011, so the latest branch was still productive.\n- Node_002 bundled dropout, embedding L2, AdamW decay, learning-rate decay, and GAUC selection. Its large regression cannot identify which change caused harm. This should have been a sequence of controlled ablations.\n- Predictions were poorly calibrated. Node_002 forecast +0.0030 but lost about 0.008; node_003 also forecast +0.0030 but gained only about 0.0011. The policy should use more conservative effect estimates.\n- Statistical confidence is unclear. A sigma is shown only for the baseline, while the improvements are seed-sensitive and small. There were no paired repeats or fold-level comparisons establishing that 0.604044 is robust.\n- Node_001 mentions diminishing returns from seven seeds, but that evidence is not present in this journal. The rationale should rely on recorded experiments or explicitly mark external evidence.\n- The fixed 18-second split in node_003 appears under-justified. Choosing a threshold on the same validation set can introduce validation overfitting.\n- Ensembling was adopted before establishing whether it is the best use of compute. A five-member ensemble complicates attribution and may hide improvements available in a stronger single model.\n\nScaffold changes\n\n- Require one major intervention per node, especially for regularization and optimization changes.\n- Track mean, standard deviation, and paired deltas across seeds for every accepted candidate.\n- Add a minimum evidence rule before declaring convergence: no improvement across several independent branches or a fixed patience/budget.\n- Record prediction error and use it to calibrate future expected gains.\n- Separate discovery from confirmation: tune thresholds or architecture on one split, then confirm on another.\n- Report both single-model and ensemble results so architectural gains are not conflated with variance reduction.\n- Generate follow-ups automatically after a successful structural change: ablation, robustness replication, and one nearby generalization.\n\nWhat the next run should try first\n\nFirst, confirm node_003 with paired seeds against node_001, keeping identical training seeds and ensemble construction. Include an ablation where the duration heads are present but share parameters, to verify that the gain comes from regime specialization rather than extra capacity.\n\nIf confirmed, replace the hard 18-second boundary with a small, controlled duration interaction: test a few predeclared thresholds or a smooth gated residual head. Avoid selecting many thresholds on one validation set. Only after that should the run revisit regularization, one component at a time, starting with mild embedding L2 or milder dropout rather than the failed aggressive package."
+}

@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_unseeded_17",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13606,
+      "out": 2400,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 4520,
+      "out": 10270,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3036,
+      "out": 1113,
+      "calls": 2
+    }
+  },
+  "tokens_total": 34945,
+  "wall_s": 427.5,
+  "self_critique": "Run critique\n\nThe run \u201cconverged\u201d without conducting enough valid exploration. Only two nodes produced metrics, while two proposal-generation failures consumed half the search. Counting those failures toward convergence was suboptimal. Node_002\u2019s lineage through failed node_001 is also misleading; executable experiments should branch from the last valid checkpoint.\n\nRejecting node_002 was correct. Its approximately 0.00006 apparent gain is below the stated sigma of 0.0001 and far short of its predeclared +0.002 target. The hard duration split likely added fragmentation without useful signal. However, the journal claims a three-seed paired comparison while reporting only one aggregate score and no per-seed deltas, variance, or ablation result, making the conclusion difficult to audit.\n\nScaffold changes\n\n- Validate and dry-run proposals before creating nodes; use a safe fallback proposal after generation failure.\n- Do not let failed nodes become experiment parents.\n- Require several successful, materially distinct trials before declaring convergence.\n- Record baseline, candidate, paired-seed deltas, mean, and uncertainty explicitly.\n- Formulate smaller hypotheses. The node_002 proposal combined architecture, hard routing, parameter matching, ensembling, and a large effect-size claim.\n- Prefer cheap signal-validation ablations before introducing separate heads.\n\nNext run\n\nFirst reproduce the baseline over paired seeds to establish actual run-to-run variance. Then test one minimal duration-aware variant: add normalized/log duration and a soft regime indicator as inputs to the shared FM, keeping training and parameter budget fixed. Compare it against the baseline over the same seeds. Only if that shows a consistent gain should the run try soft gating or regime-specific heads; do not retry the hard 18-second split first."
+}

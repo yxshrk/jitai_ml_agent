@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_26",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6690777794444076,
+    "ndcg5": 0.5366921358334986,
+    "primary": 0.6028849576389531
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 27663,
+      "out": 3246,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 12422,
+      "out": 9539,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 348,
+      "out": 756,
+      "calls": 1
+    }
+  },
+  "tokens_total": 53974,
+  "wall_s": 410.1,
+  "self_critique": "Run critique\n\nThe run found a real but narrow improvement: five-seed per-user rank averaging raised primary from 0.6018 to 0.602885 (+0.001085). However, the search was too shallow to justify \u201cconverged.\u201d\n\nSuboptimal harness/policy behavior:\n- It stopped after only two evaluated alternatives and one failed proposal. A proposal-generation or implementation failure is not evidence of search convergence.\n- node_001 bundled many changes at once: architecture, BCE/BPR mixing, recency weighting, dropout, AdamW, LR scheduling, and checkpoint frequency. Its rejection provides almost no causal information.\n- The baseline\u2019s reported sigma=0.0001 is difficult to interpret without repeated-seed measurements. Since the winner is explicitly a five-seed ensemble, the comparison should distinguish ensemble benefit from single-seed variance.\n- The policy jumped from an overfitting diagnosis to a highly complex package rather than testing atomic interventions such as earlier stopping, stronger regularization, or checkpoint averaging.\n- Repeated selection on one validation split risks tuning noise, especially when gains are around 0.001.\n- No efficiency accounting was reported. A five-model ensemble should be compared both at equal model count and under an equal training/inference budget.\n\nScaffold changes:\n- Require one main intervention per proposal, with ablations for bundled methods.\n- Add preflight validation and an automatic fallback/retry when proposal construction fails.\n- Do not declare convergence from a failed child; require a minimum search breadth and multiple unsuccessful valid trials.\n- Report mean, standard deviation, and confidence intervals across matched seeds for both parent and candidate.\n- Separate exploration from confirmation: select ideas on one split, then confirm the final candidate on untouched folds or seeds.\n- Track compute and inference cost alongside primary score.\n- Preserve learning curves and per-seed predictions so checkpoint averaging and ensemble diversity can be evaluated directly.\n\nWhat the next run should try first:\n1. Reproduce node_002 with matched seeds and compare:\n   - individual FM replicas,\n   - probability/logit averaging,\n   - per-user rank averaging,\n   - checkpoint averaging within one run,\n   - ensembles of 2, 3, and 5 seeds.\n2. Confirm the gain on an untouched split or cross-validation folds.\n3. If the ensemble gain holds, test one atomic anti-overfitting change at a time on the FM\u2014earlier stopping, modest L2/dropout, or weight averaging\u2014then ensemble only the strongest variant.\n\nThe immediate priority is to verify whether the +0.001085 gain is robust ensemble diversity or validation-selection noise, not to introduce another large architecture-and-loss bundle."
+}

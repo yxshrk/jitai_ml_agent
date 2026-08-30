@@ -1,0 +1,4431 @@
+{
+  "run_dir": "logs/run_max_r4",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6706452801304242,
+    "ndcg5": 0.537233395578121,
+    "primary": 0.6039393378542726,
+    "selected_config": {
+      "architecture": "dcn-lite",
+      "loss": "logloss",
+      "weighting": "uniform",
+      "regularization": "strong"
+    },
+    "matrix_summary": [
+      {
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6040661529989252,
+        "std_primary": 9.617450012602499e-05
+      },
+      {
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6040444372348105,
+        "std_primary": 0.0001435706866889394
+      },
+      {
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6039614998053953,
+        "std_primary": 0.00012168666199829852
+      },
+      {
+        "config_id": 8,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6038104699385628,
+        "std_primary": 0.00017068503987382566
+      },
+      {
+        "config_id": 14,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6022645726634476,
+        "std_primary": 0.0003122512099983591
+      },
+      {
+        "config_id": 0,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6022412661334847,
+        "std_primary": 0.00020328734716016232
+      },
+      {
+        "config_id": 12,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6021804955239177,
+        "std_primary": 0.0004022342243190331
+      },
+      {
+        "config_id": 13,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6021482270096058,
+        "std_primary": 0.0005236509225423522
+      },
+      {
+        "config_id": 15,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6021420651110551,
+        "std_primary": 0.00012713104141622592
+      },
+      {
+        "config_id": 2,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6018290239813806,
+        "std_primary": 0.0003477756794267877
+      },
+      {
+        "config_id": 7,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6012647760339045,
+        "std_primary": 0.0004805175111171504
+      },
+      {
+        "config_id": 5,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6012192307148655,
+        "std_primary": 0.0002958540559795159
+      },
+      {
+        "config_id": 4,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.600664679921833,
+        "std_primary": 0.0003092612560287321
+      },
+      {
+        "config_id": 6,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6006315529793427,
+        "std_primary": 9.316180855387236e-05
+      },
+      {
+        "config_id": 3,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6001674310380075,
+        "std_primary": 0.00018328536334996786
+      },
+      {
+        "config_id": 1,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.5997684778024973,
+        "std_primary": 0.0001689179469891427
+      }
+    ],
+    "refinement_summary": [
+      {
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6039609976330752,
+        "std_primary": 7.535941200115057e-05
+      },
+      {
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6037569194576805,
+        "std_primary": 0.00018031488580252873
+      },
+      {
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6032432476430699,
+        "std_primary": 0.00037834897237847703
+      }
+    ],
+    "history": [
+      {
+        "phase": "matrix",
+        "config_id": 0,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.601984,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.586845,
+            "gauc": 0.649059,
+            "primary": 0.588704
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.526758,
+            "gauc": 0.659642,
+            "primary": 0.596034
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.497181,
+            "gauc": 0.665259,
+            "primary": 0.600019
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.509758,
+            "gauc": 0.666539,
+            "primary": 0.601007
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.514089,
+            "gauc": 0.668034,
+            "primary": 0.601984
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.497134,
+            "gauc": 0.666716,
+            "primary": 0.601137
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.490965,
+            "gauc": 0.667403,
+            "primary": 0.601634
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.473612,
+            "gauc": 0.66637,
+            "primary": 0.600837
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 0,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.602258,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.576288,
+            "gauc": 0.648015,
+            "primary": 0.587653
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.529719,
+            "gauc": 0.660139,
+            "primary": 0.596457
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.516936,
+            "gauc": 0.666235,
+            "primary": 0.600564
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.489927,
+            "gauc": 0.665793,
+            "primary": 0.600726
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.482857,
+            "gauc": 0.667718,
+            "primary": 0.601891
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.511525,
+            "gauc": 0.667296,
+            "primary": 0.601409
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.514256,
+            "gauc": 0.66828,
+            "primary": 0.602258
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.48473,
+            "gauc": 0.666999,
+            "primary": 0.601282
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 0,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.602481,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.59336,
+            "gauc": 0.650095,
+            "primary": 0.589503
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.525556,
+            "gauc": 0.660348,
+            "primary": 0.596367
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.507817,
+            "gauc": 0.664304,
+            "primary": 0.599506
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.509118,
+            "gauc": 0.666616,
+            "primary": 0.600982
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.498455,
+            "gauc": 0.667198,
+            "primary": 0.601398
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.47224,
+            "gauc": 0.668735,
+            "primary": 0.602422
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.48258,
+            "gauc": 0.668663,
+            "primary": 0.602481
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.488496,
+            "gauc": 0.667715,
+            "primary": 0.601722
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 1,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.59953,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.601792,
+            "gauc": 0.648969,
+            "primary": 0.588438
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.550464,
+            "gauc": 0.657053,
+            "primary": 0.594587
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.52488,
+            "gauc": 0.659787,
+            "primary": 0.596319
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.529007,
+            "gauc": 0.662434,
+            "primary": 0.598265
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.536215,
+            "gauc": 0.663031,
+            "primary": 0.598769
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.513695,
+            "gauc": 0.66393,
+            "primary": 0.59935
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.518669,
+            "gauc": 0.663988,
+            "primary": 0.59939
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.505129,
+            "gauc": 0.664131,
+            "primary": 0.59953
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 1,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.599896,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.588799,
+            "gauc": 0.64716,
+            "primary": 0.587343
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542862,
+            "gauc": 0.657153,
+            "primary": 0.594514
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.542322,
+            "gauc": 0.660735,
+            "primary": 0.596996
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.517995,
+            "gauc": 0.662421,
+            "primary": 0.598242
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.50888,
+            "gauc": 0.663415,
+            "primary": 0.599027
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.534389,
+            "gauc": 0.663589,
+            "primary": 0.59922
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.539205,
+            "gauc": 0.663902,
+            "primary": 0.599473
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.512934,
+            "gauc": 0.664401,
+            "primary": 0.599896
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 1,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.599879,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.605912,
+            "gauc": 0.650204,
+            "primary": 0.589793
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542938,
+            "gauc": 0.656678,
+            "primary": 0.59434
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.528543,
+            "gauc": 0.660593,
+            "primary": 0.597072
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.527676,
+            "gauc": 0.662721,
+            "primary": 0.59846
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.521693,
+            "gauc": 0.663459,
+            "primary": 0.599052
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.500475,
+            "gauc": 0.663816,
+            "primary": 0.599369
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.50475,
+            "gauc": 0.664183,
+            "primary": 0.599598
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.518363,
+            "gauc": 0.664695,
+            "primary": 0.599879
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 2,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.601337,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.592922,
+            "gauc": 0.649097,
+            "primary": 0.588629
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542883,
+            "gauc": 0.661077,
+            "primary": 0.597139
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.497858,
+            "gauc": 0.666038,
+            "primary": 0.600535
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.513354,
+            "gauc": 0.666627,
+            "primary": 0.601212
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.514385,
+            "gauc": 0.66723,
+            "primary": 0.601337
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.49883,
+            "gauc": 0.666318,
+            "primary": 0.600904
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.491215,
+            "gauc": 0.666783,
+            "primary": 0.601223
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.478881,
+            "gauc": 0.665862,
+            "primary": 0.600536
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 2,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.602074,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.580518,
+            "gauc": 0.647693,
+            "primary": 0.587231
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.532361,
+            "gauc": 0.660334,
+            "primary": 0.596572
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.524474,
+            "gauc": 0.665844,
+            "primary": 0.60023
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.492256,
+            "gauc": 0.66592,
+            "primary": 0.600931
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.48793,
+            "gauc": 0.667797,
+            "primary": 0.602074
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.501902,
+            "gauc": 0.667737,
+            "primary": 0.601791
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.516683,
+            "gauc": 0.666971,
+            "primary": 0.601352
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.482643,
+            "gauc": 0.666293,
+            "primary": 0.600883
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 2,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.602076,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.605272,
+            "gauc": 0.649978,
+            "primary": 0.589505
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.526456,
+            "gauc": 0.661167,
+            "primary": 0.596974
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.50906,
+            "gauc": 0.664529,
+            "primary": 0.599365
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.512749,
+            "gauc": 0.66675,
+            "primary": 0.601123
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.492483,
+            "gauc": 0.665615,
+            "primary": 0.600287
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.473529,
+            "gauc": 0.667848,
+            "primary": 0.602076
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.491174,
+            "gauc": 0.667677,
+            "primary": 0.601813
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.489174,
+            "gauc": 0.665804,
+            "primary": 0.600484
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 3,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.599948,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.606897,
+            "gauc": 0.648806,
+            "primary": 0.588406
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.564937,
+            "gauc": 0.656968,
+            "primary": 0.594583
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.52518,
+            "gauc": 0.661017,
+            "primary": 0.597183
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.532653,
+            "gauc": 0.663215,
+            "primary": 0.598763
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.538579,
+            "gauc": 0.664038,
+            "primary": 0.599295
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.518481,
+            "gauc": 0.664307,
+            "primary": 0.599506
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.522659,
+            "gauc": 0.664371,
+            "primary": 0.599713
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.511627,
+            "gauc": 0.664695,
+            "primary": 0.599948
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 3,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.600396,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.591581,
+            "gauc": 0.647639,
+            "primary": 0.587654
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.54473,
+            "gauc": 0.65807,
+            "primary": 0.595133
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.54946,
+            "gauc": 0.661117,
+            "primary": 0.597255
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.519764,
+            "gauc": 0.663273,
+            "primary": 0.598775
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.515076,
+            "gauc": 0.66418,
+            "primary": 0.599327
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.526734,
+            "gauc": 0.664526,
+            "primary": 0.599734
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.54337,
+            "gauc": 0.664976,
+            "primary": 0.60003
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.517143,
+            "gauc": 0.665355,
+            "primary": 0.600396
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 3,
+        "config": {
+          "architecture": "FM",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.600158,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.61744,
+            "gauc": 0.648919,
+            "primary": 0.588917
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542533,
+            "gauc": 0.657971,
+            "primary": 0.595187
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.529625,
+            "gauc": 0.661023,
+            "primary": 0.59738
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.53225,
+            "gauc": 0.663213,
+            "primary": 0.598765
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.515624,
+            "gauc": 0.664227,
+            "primary": 0.599476
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.502118,
+            "gauc": 0.664857,
+            "primary": 0.600061
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.514205,
+            "gauc": 0.665076,
+            "primary": 0.600158
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.520475,
+            "gauc": 0.665094,
+            "primary": 0.600143
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 4,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.601053,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.576897,
+            "gauc": 0.663149,
+            "primary": 0.598352
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.529119,
+            "gauc": 0.666722,
+            "primary": 0.601053
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.498711,
+            "gauc": 0.664804,
+            "primary": 0.599629
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.480568,
+            "gauc": 0.659446,
+            "primary": 0.59583
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.457392,
+            "gauc": 0.655781,
+            "primary": 0.59295
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.436685,
+            "gauc": 0.649587,
+            "primary": 0.588444
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.411498,
+            "gauc": 0.644075,
+            "primary": 0.584625
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.401411,
+            "gauc": 0.639057,
+            "primary": 0.581341
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 4,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.600646,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.571441,
+            "gauc": 0.662591,
+            "primary": 0.598094
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.527485,
+            "gauc": 0.666505,
+            "primary": 0.600646
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.513783,
+            "gauc": 0.66402,
+            "primary": 0.598866
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.476298,
+            "gauc": 0.660496,
+            "primary": 0.596516
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.455716,
+            "gauc": 0.656094,
+            "primary": 0.5936
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.458233,
+            "gauc": 0.652019,
+            "primary": 0.590523
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.435752,
+            "gauc": 0.647679,
+            "primary": 0.587525
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.407286,
+            "gauc": 0.643403,
+            "primary": 0.58451
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 4,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.600296,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.582178,
+            "gauc": 0.663894,
+            "primary": 0.598973
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.528319,
+            "gauc": 0.665723,
+            "primary": 0.600296
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.510378,
+            "gauc": 0.664785,
+            "primary": 0.599392
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.499402,
+            "gauc": 0.662141,
+            "primary": 0.597394
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.469652,
+            "gauc": 0.658922,
+            "primary": 0.59511
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.445902,
+            "gauc": 0.654776,
+            "primary": 0.592139
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.432038,
+            "gauc": 0.649734,
+            "primary": 0.58839
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.413724,
+            "gauc": 0.645544,
+            "primary": 0.585749
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 5,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.601576,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.58831,
+            "gauc": 0.664156,
+            "primary": 0.599099
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.55033,
+            "gauc": 0.667006,
+            "primary": 0.601226
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.536466,
+            "gauc": 0.667055,
+            "primary": 0.601288
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.535814,
+            "gauc": 0.66728,
+            "primary": 0.601305
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.531931,
+            "gauc": 0.667444,
+            "primary": 0.601576
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.524315,
+            "gauc": 0.666891,
+            "primary": 0.601177
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.523563,
+            "gauc": 0.666671,
+            "primary": 0.600948
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.520107,
+            "gauc": 0.666637,
+            "primary": 0.601021
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 5,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.600851,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.584152,
+            "gauc": 0.662785,
+            "primary": 0.598323
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.54572,
+            "gauc": 0.666098,
+            "primary": 0.600456
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.545096,
+            "gauc": 0.66666,
+            "primary": 0.600851
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.52227,
+            "gauc": 0.665999,
+            "primary": 0.600371
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.523332,
+            "gauc": 0.666532,
+            "primary": 0.600737
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.542428,
+            "gauc": 0.666019,
+            "primary": 0.6005
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.533949,
+            "gauc": 0.66593,
+            "primary": 0.600505
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.519908,
+            "gauc": 0.665996,
+            "primary": 0.600491
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 5,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.601231,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.591466,
+            "gauc": 0.663706,
+            "primary": 0.598818
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.546806,
+            "gauc": 0.666879,
+            "primary": 0.601184
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.538081,
+            "gauc": 0.666781,
+            "primary": 0.601119
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.541022,
+            "gauc": 0.66706,
+            "primary": 0.601231
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.529721,
+            "gauc": 0.666638,
+            "primary": 0.600887
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.522742,
+            "gauc": 0.666675,
+            "primary": 0.60094
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.520653,
+            "gauc": 0.666584,
+            "primary": 0.600786
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.525527,
+            "gauc": 0.666638,
+            "primary": 0.600835
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 6,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.600756,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.581676,
+            "gauc": 0.663834,
+            "primary": 0.598878
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.538072,
+            "gauc": 0.666214,
+            "primary": 0.600756
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.497185,
+            "gauc": 0.664093,
+            "primary": 0.599209
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.483032,
+            "gauc": 0.65893,
+            "primary": 0.595578
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.454887,
+            "gauc": 0.654965,
+            "primary": 0.592484
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.435884,
+            "gauc": 0.649619,
+            "primary": 0.588531
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.407963,
+            "gauc": 0.645285,
+            "primary": 0.585239
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.400929,
+            "gauc": 0.64081,
+            "primary": 0.582509
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 6,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.600607,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.574922,
+            "gauc": 0.663822,
+            "primary": 0.598931
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.531465,
+            "gauc": 0.666748,
+            "primary": 0.600607
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.515401,
+            "gauc": 0.664186,
+            "primary": 0.598803
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.476882,
+            "gauc": 0.659901,
+            "primary": 0.596072
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.45504,
+            "gauc": 0.656319,
+            "primary": 0.593541
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.449488,
+            "gauc": 0.650573,
+            "primary": 0.589736
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.433295,
+            "gauc": 0.646432,
+            "primary": 0.58677
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.402748,
+            "gauc": 0.642194,
+            "primary": 0.58342
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 6,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.600532,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.588673,
+            "gauc": 0.664337,
+            "primary": 0.59942
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.530587,
+            "gauc": 0.666042,
+            "primary": 0.600532
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.510468,
+            "gauc": 0.664829,
+            "primary": 0.599531
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.496089,
+            "gauc": 0.662521,
+            "primary": 0.597711
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.467484,
+            "gauc": 0.658471,
+            "primary": 0.594705
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.444243,
+            "gauc": 0.654148,
+            "primary": 0.591679
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.434999,
+            "gauc": 0.649446,
+            "primary": 0.588243
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.410361,
+            "gauc": 0.645132,
+            "primary": 0.585634
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 7,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.601709,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.593602,
+            "gauc": 0.664116,
+            "primary": 0.599075
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.559122,
+            "gauc": 0.667633,
+            "primary": 0.601709
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.535587,
+            "gauc": 0.667328,
+            "primary": 0.601458
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.541573,
+            "gauc": 0.667342,
+            "primary": 0.601336
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.533423,
+            "gauc": 0.66746,
+            "primary": 0.601433
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.526753,
+            "gauc": 0.667119,
+            "primary": 0.601244
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.524605,
+            "gauc": 0.666934,
+            "primary": 0.601166
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.522228,
+            "gauc": 0.666467,
+            "primary": 0.600873
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 7,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.600597,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.586734,
+            "gauc": 0.663478,
+            "primary": 0.598828
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.549791,
+            "gauc": 0.666197,
+            "primary": 0.600597
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.549574,
+            "gauc": 0.666141,
+            "primary": 0.600351
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.524815,
+            "gauc": 0.666047,
+            "primary": 0.600305
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.525214,
+            "gauc": 0.665788,
+            "primary": 0.600231
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.538542,
+            "gauc": 0.666076,
+            "primary": 0.600521
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.538594,
+            "gauc": 0.665892,
+            "primary": 0.600371
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.522385,
+            "gauc": 0.665792,
+            "primary": 0.600386
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 7,
+        "config": {
+          "architecture": "FM",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.601488,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.598331,
+            "gauc": 0.664526,
+            "primary": 0.599583
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.548817,
+            "gauc": 0.66628,
+            "primary": 0.600846
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.539717,
+            "gauc": 0.667306,
+            "primary": 0.601488
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.538703,
+            "gauc": 0.667273,
+            "primary": 0.601299
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.530717,
+            "gauc": 0.667021,
+            "primary": 0.601161
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.52536,
+            "gauc": 0.666913,
+            "primary": 0.600982
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.527251,
+            "gauc": 0.667053,
+            "primary": 0.601103
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.528236,
+            "gauc": 0.666941,
+            "primary": 0.601042
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 8,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.603591,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.525657,
+            "gauc": 0.664275,
+            "primary": 0.599122
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.511559,
+            "gauc": 0.669477,
+            "primary": 0.603264
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.493393,
+            "gauc": 0.670127,
+            "primary": 0.603591
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.513262,
+            "gauc": 0.669775,
+            "primary": 0.603426
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.515212,
+            "gauc": 0.66983,
+            "primary": 0.603407
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.500327,
+            "gauc": 0.66707,
+            "primary": 0.601151
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.493509,
+            "gauc": 0.664,
+            "primary": 0.598818
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.471218,
+            "gauc": 0.655195,
+            "primary": 0.592549
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 8,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.603832,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.505729,
+            "gauc": 0.664567,
+            "primary": 0.599579
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.518331,
+            "gauc": 0.669483,
+            "primary": 0.603281
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.514521,
+            "gauc": 0.670649,
+            "primary": 0.603832
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.493316,
+            "gauc": 0.670475,
+            "primary": 0.603758
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.484331,
+            "gauc": 0.668509,
+            "primary": 0.602563
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.516295,
+            "gauc": 0.666922,
+            "primary": 0.601049
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.514939,
+            "gauc": 0.66171,
+            "primary": 0.597031
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.488581,
+            "gauc": 0.659415,
+            "primary": 0.595432
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 8,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.604008,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.543422,
+            "gauc": 0.662204,
+            "primary": 0.597577
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.512854,
+            "gauc": 0.669502,
+            "primary": 0.603089
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.503938,
+            "gauc": 0.669615,
+            "primary": 0.603058
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.50946,
+            "gauc": 0.67039,
+            "primary": 0.604008
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.498078,
+            "gauc": 0.66599,
+            "primary": 0.600572
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.474062,
+            "gauc": 0.663958,
+            "primary": 0.598872
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.474989,
+            "gauc": 0.658572,
+            "primary": 0.594858
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.486258,
+            "gauc": 0.653294,
+            "primary": 0.59126
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.604194,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.530308,
+            "gauc": 0.662825,
+            "primary": 0.598008
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.517903,
+            "gauc": 0.669003,
+            "primary": 0.602836
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.492854,
+            "gauc": 0.670744,
+            "primary": 0.604041
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.511944,
+            "gauc": 0.670122,
+            "primary": 0.603593
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.512001,
+            "gauc": 0.67088,
+            "primary": 0.604067
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.499265,
+            "gauc": 0.670916,
+            "primary": 0.604149
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.494342,
+            "gauc": 0.670894,
+            "primary": 0.604194
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.484328,
+            "gauc": 0.670718,
+            "primary": 0.604073
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.603962,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.513614,
+            "gauc": 0.662993,
+            "primary": 0.598322
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.52044,
+            "gauc": 0.66803,
+            "primary": 0.602158
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.513815,
+            "gauc": 0.670574,
+            "primary": 0.603787
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.496595,
+            "gauc": 0.669987,
+            "primary": 0.603405
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.483337,
+            "gauc": 0.670081,
+            "primary": 0.603415
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.518975,
+            "gauc": 0.670274,
+            "primary": 0.603663
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.518223,
+            "gauc": 0.670729,
+            "primary": 0.603962
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.500321,
+            "gauc": 0.670377,
+            "primary": 0.60369
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.604042,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.550392,
+            "gauc": 0.66105,
+            "primary": 0.596776
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.516898,
+            "gauc": 0.668205,
+            "primary": 0.602083
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.508149,
+            "gauc": 0.668875,
+            "primary": 0.602721
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.513499,
+            "gauc": 0.67037,
+            "primary": 0.603587
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.499308,
+            "gauc": 0.670405,
+            "primary": 0.603686
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.477524,
+            "gauc": 0.67024,
+            "primary": 0.603686
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.489415,
+            "gauc": 0.670458,
+            "primary": 0.603846
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.502437,
+            "gauc": 0.670693,
+            "primary": 0.604042
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.603959,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.529483,
+            "gauc": 0.663635,
+            "primary": 0.598776
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.525785,
+            "gauc": 0.669588,
+            "primary": 0.603228
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.493249,
+            "gauc": 0.670551,
+            "primary": 0.603959
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.517207,
+            "gauc": 0.669641,
+            "primary": 0.603386
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.516829,
+            "gauc": 0.669628,
+            "primary": 0.603058
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.504728,
+            "gauc": 0.665923,
+            "primary": 0.6002
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.494578,
+            "gauc": 0.66231,
+            "primary": 0.597611
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.477675,
+            "gauc": 0.65608,
+            "primary": 0.593166
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.603814,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.511505,
+            "gauc": 0.664499,
+            "primary": 0.599513
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.519415,
+            "gauc": 0.670205,
+            "primary": 0.603759
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.520749,
+            "gauc": 0.67068,
+            "primary": 0.603814
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.495349,
+            "gauc": 0.669916,
+            "primary": 0.603491
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.490728,
+            "gauc": 0.668826,
+            "primary": 0.602404
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.503796,
+            "gauc": 0.666051,
+            "primary": 0.600431
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.514392,
+            "gauc": 0.657227,
+            "primary": 0.594274
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.48524,
+            "gauc": 0.657044,
+            "primary": 0.593963
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.604112,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.553653,
+            "gauc": 0.662588,
+            "primary": 0.598071
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.512965,
+            "gauc": 0.669445,
+            "primary": 0.602933
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.505728,
+            "gauc": 0.669761,
+            "primary": 0.603419
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.513091,
+            "gauc": 0.670875,
+            "primary": 0.604112
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.493073,
+            "gauc": 0.667064,
+            "primary": 0.601424
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.477777,
+            "gauc": 0.666027,
+            "primary": 0.600473
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.487742,
+            "gauc": 0.658693,
+            "primary": 0.595164
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.484272,
+            "gauc": 0.654855,
+            "primary": 0.592144
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.604229,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.534524,
+            "gauc": 0.662597,
+            "primary": 0.598
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.532696,
+            "gauc": 0.66959,
+            "primary": 0.603205
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.491966,
+            "gauc": 0.670849,
+            "primary": 0.604229
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.516133,
+            "gauc": 0.669582,
+            "primary": 0.603464
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.513027,
+            "gauc": 0.67061,
+            "primary": 0.604045
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.502177,
+            "gauc": 0.670282,
+            "primary": 0.603783
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.495836,
+            "gauc": 0.670542,
+            "primary": 0.604056
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.48978,
+            "gauc": 0.67018,
+            "primary": 0.603805
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.603879,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.519542,
+            "gauc": 0.662815,
+            "primary": 0.598099
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.521035,
+            "gauc": 0.668727,
+            "primary": 0.602698
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.519836,
+            "gauc": 0.670352,
+            "primary": 0.603879
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.496962,
+            "gauc": 0.669792,
+            "primary": 0.603519
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.488841,
+            "gauc": 0.670006,
+            "primary": 0.603615
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.509323,
+            "gauc": 0.670158,
+            "primary": 0.603579
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.519601,
+            "gauc": 0.670386,
+            "primary": 0.603737
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.500723,
+            "gauc": 0.670483,
+            "primary": 0.603828
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.604025,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.560854,
+            "gauc": 0.661438,
+            "primary": 0.597093
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.516455,
+            "gauc": 0.668632,
+            "primary": 0.602456
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.508184,
+            "gauc": 0.669072,
+            "primary": 0.602847
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.517366,
+            "gauc": 0.670261,
+            "primary": 0.603668
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.491834,
+            "gauc": 0.670152,
+            "primary": 0.603661
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.477897,
+            "gauc": 0.670539,
+            "primary": 0.603966
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.498131,
+            "gauc": 0.670548,
+            "primary": 0.603928
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.500782,
+            "gauc": 0.670729,
+            "primary": 0.604025
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 12,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.602749,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.532006,
+            "gauc": 0.668985,
+            "primary": 0.602749
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.50623,
+            "gauc": 0.651432,
+            "primary": 0.590614
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.453332,
+            "gauc": 0.638236,
+            "primary": 0.580933
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.418041,
+            "gauc": 0.622185,
+            "primary": 0.569213
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.375861,
+            "gauc": 0.615674,
+            "primary": 0.565192
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.334588,
+            "gauc": 0.610173,
+            "primary": 0.561332
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.30432,
+            "gauc": 0.607599,
+            "primary": 0.559882
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.285007,
+            "gauc": 0.600654,
+            "primary": 0.554967
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 12,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.601907,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.523114,
+            "gauc": 0.668291,
+            "primary": 0.601907
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.510963,
+            "gauc": 0.648852,
+            "primary": 0.588788
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.480444,
+            "gauc": 0.638547,
+            "primary": 0.581104
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.416256,
+            "gauc": 0.627021,
+            "primary": 0.572509
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.370803,
+            "gauc": 0.622818,
+            "primary": 0.569447
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.353396,
+            "gauc": 0.615129,
+            "primary": 0.564158
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.312603,
+            "gauc": 0.609208,
+            "primary": 0.56002
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.282379,
+            "gauc": 0.607772,
+            "primary": 0.558786
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 12,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.601885,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.545663,
+            "gauc": 0.667982,
+            "primary": 0.601885
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.496052,
+            "gauc": 0.650188,
+            "primary": 0.589574
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.43289,
+            "gauc": 0.631609,
+            "primary": 0.576745
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.40012,
+            "gauc": 0.618497,
+            "primary": 0.567304
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.350426,
+            "gauc": 0.615999,
+            "primary": 0.565501
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.313831,
+            "gauc": 0.612549,
+            "primary": 0.563219
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.287978,
+            "gauc": 0.605468,
+            "primary": 0.558436
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.263187,
+            "gauc": 0.608935,
+            "primary": 0.561019
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 13,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.602374,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.539899,
+            "gauc": 0.668754,
+            "primary": 0.602374
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.529319,
+            "gauc": 0.667528,
+            "primary": 0.601685
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.509483,
+            "gauc": 0.664608,
+            "primary": 0.599643
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.51466,
+            "gauc": 0.657766,
+            "primary": 0.594524
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.505627,
+            "gauc": 0.656057,
+            "primary": 0.593343
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.503569,
+            "gauc": 0.652298,
+            "primary": 0.590449
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.494584,
+            "gauc": 0.650952,
+            "primary": 0.589442
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.488969,
+            "gauc": 0.649442,
+            "primary": 0.58845
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 13,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.602646,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.534098,
+            "gauc": 0.667934,
+            "primary": 0.601789
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.53569,
+            "gauc": 0.669259,
+            "primary": 0.602646
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.521514,
+            "gauc": 0.66402,
+            "primary": 0.599239
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.503856,
+            "gauc": 0.656498,
+            "primary": 0.593979
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.490302,
+            "gauc": 0.651611,
+            "primary": 0.590434
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.510841,
+            "gauc": 0.650943,
+            "primary": 0.589787
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.495711,
+            "gauc": 0.648656,
+            "primary": 0.588286
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.487648,
+            "gauc": 0.647685,
+            "primary": 0.587551
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 13,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.601425,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.555015,
+            "gauc": 0.667221,
+            "primary": 0.601425
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.52056,
+            "gauc": 0.666844,
+            "primary": 0.601214
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.517447,
+            "gauc": 0.661766,
+            "primary": 0.59739
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.521808,
+            "gauc": 0.658586,
+            "primary": 0.595241
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.499389,
+            "gauc": 0.654932,
+            "primary": 0.592608
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.487672,
+            "gauc": 0.653513,
+            "primary": 0.591536
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.479962,
+            "gauc": 0.651949,
+            "primary": 0.590463
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.486747,
+            "gauc": 0.650882,
+            "primary": 0.589635
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 14,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.602387,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.535428,
+            "gauc": 0.668501,
+            "primary": 0.602387
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.51293,
+            "gauc": 0.651838,
+            "primary": 0.590868
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.457893,
+            "gauc": 0.638468,
+            "primary": 0.580323
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.424077,
+            "gauc": 0.62117,
+            "primary": 0.569113
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.385057,
+            "gauc": 0.617253,
+            "primary": 0.566432
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.344686,
+            "gauc": 0.611239,
+            "primary": 0.562312
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.306045,
+            "gauc": 0.609914,
+            "primary": 0.561245
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.285556,
+            "gauc": 0.605502,
+            "primary": 0.55796
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 14,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.601836,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.526058,
+            "gauc": 0.668113,
+            "primary": 0.601836
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.517485,
+            "gauc": 0.648183,
+            "primary": 0.588275
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.483639,
+            "gauc": 0.637657,
+            "primary": 0.580798
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.413895,
+            "gauc": 0.628284,
+            "primary": 0.573184
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.374209,
+            "gauc": 0.623479,
+            "primary": 0.569876
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.345301,
+            "gauc": 0.614857,
+            "primary": 0.563791
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.313102,
+            "gauc": 0.610839,
+            "primary": 0.561234
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.276919,
+            "gauc": 0.605666,
+            "primary": 0.557715
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 14,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.602571,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.550461,
+            "gauc": 0.668834,
+            "primary": 0.602571
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.503117,
+            "gauc": 0.650805,
+            "primary": 0.590411
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.435853,
+            "gauc": 0.631135,
+            "primary": 0.576594
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.397035,
+            "gauc": 0.618804,
+            "primary": 0.567859
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.35368,
+            "gauc": 0.61359,
+            "primary": 0.564168
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.322018,
+            "gauc": 0.611412,
+            "primary": 0.562112
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.286266,
+            "gauc": 0.606458,
+            "primary": 0.558432
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.259723,
+            "gauc": 0.607232,
+            "primary": 0.559085
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 15,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_primary": 0.602016,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.543072,
+            "gauc": 0.66813,
+            "primary": 0.602016
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.538316,
+            "gauc": 0.666151,
+            "primary": 0.600807
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.508468,
+            "gauc": 0.661309,
+            "primary": 0.597175
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.516161,
+            "gauc": 0.654622,
+            "primary": 0.592568
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.505576,
+            "gauc": 0.652106,
+            "primary": 0.590791
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.505436,
+            "gauc": 0.649409,
+            "primary": 0.588772
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.493182,
+            "gauc": 0.648089,
+            "primary": 0.588014
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.490056,
+            "gauc": 0.646334,
+            "primary": 0.586694
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 15,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 43,
+        "epochs": 8,
+        "best_primary": 0.602316,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.536565,
+            "gauc": 0.667414,
+            "primary": 0.601321
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.538545,
+            "gauc": 0.668517,
+            "primary": 0.602316
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.525512,
+            "gauc": 0.663109,
+            "primary": 0.598783
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.507719,
+            "gauc": 0.656977,
+            "primary": 0.594385
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.492988,
+            "gauc": 0.652228,
+            "primary": 0.590922
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.506454,
+            "gauc": 0.649191,
+            "primary": 0.588669
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.497885,
+            "gauc": 0.647371,
+            "primary": 0.587419
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.491063,
+            "gauc": 0.646373,
+            "primary": 0.586558
+          }
+        ]
+      },
+      {
+        "phase": "matrix",
+        "config_id": 15,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 44,
+        "epochs": 8,
+        "best_primary": 0.602094,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.560286,
+            "gauc": 0.66696,
+            "primary": 0.601094
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.522791,
+            "gauc": 0.667942,
+            "primary": 0.602094
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.518171,
+            "gauc": 0.66125,
+            "primary": 0.597378
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.517862,
+            "gauc": 0.657841,
+            "primary": 0.594987
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.499659,
+            "gauc": 0.655033,
+            "primary": 0.592973
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.492869,
+            "gauc": 0.653186,
+            "primary": 0.591662
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.490092,
+            "gauc": 0.651914,
+            "primary": 0.590634
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.48765,
+            "gauc": 0.650634,
+            "primary": 0.589756
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 143,
+        "epochs": 10,
+        "best_primary": 0.604008,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.532028,
+            "gauc": 0.663964,
+            "primary": 0.598879
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.509228,
+            "gauc": 0.668913,
+            "primary": 0.602582
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.498369,
+            "gauc": 0.669004,
+            "primary": 0.602787
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.515264,
+            "gauc": 0.670021,
+            "primary": 0.603496
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.495856,
+            "gauc": 0.670055,
+            "primary": 0.603654
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.500259,
+            "gauc": 0.670216,
+            "primary": 0.60369
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.495861,
+            "gauc": 0.670637,
+            "primary": 0.603981
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.490397,
+            "gauc": 0.67057,
+            "primary": 0.603826
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.49159,
+            "gauc": 0.670753,
+            "primary": 0.604008
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.51361,
+            "gauc": 0.670631,
+            "primary": 0.603892
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 144,
+        "epochs": 10,
+        "best_primary": 0.603855,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.51123,
+            "gauc": 0.66349,
+            "primary": 0.598539
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.51658,
+            "gauc": 0.668045,
+            "primary": 0.60204
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.511647,
+            "gauc": 0.669344,
+            "primary": 0.602996
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.515552,
+            "gauc": 0.669757,
+            "primary": 0.603317
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.519026,
+            "gauc": 0.669667,
+            "primary": 0.603521
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.493825,
+            "gauc": 0.670346,
+            "primary": 0.603828
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.504343,
+            "gauc": 0.669745,
+            "primary": 0.603443
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.49385,
+            "gauc": 0.669938,
+            "primary": 0.603548
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.487437,
+            "gauc": 0.670129,
+            "primary": 0.603768
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.488167,
+            "gauc": 0.670284,
+            "primary": 0.603855
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 145,
+        "epochs": 10,
+        "best_primary": 0.60402,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.520421,
+            "gauc": 0.663332,
+            "primary": 0.598593
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.516133,
+            "gauc": 0.668931,
+            "primary": 0.602539
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.507179,
+            "gauc": 0.66948,
+            "primary": 0.603019
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.526729,
+            "gauc": 0.669441,
+            "primary": 0.603014
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.496413,
+            "gauc": 0.67039,
+            "primary": 0.60366
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.495771,
+            "gauc": 0.670716,
+            "primary": 0.60402
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.514079,
+            "gauc": 0.670783,
+            "primary": 0.604006
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.50114,
+            "gauc": 0.670482,
+            "primary": 0.603855
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.496053,
+            "gauc": 0.670245,
+            "primary": 0.603652
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.490817,
+            "gauc": 0.670305,
+            "primary": 0.603676
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 143,
+        "epochs": 10,
+        "best_primary": 0.603998,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.535076,
+            "gauc": 0.663602,
+            "primary": 0.59883
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.510264,
+            "gauc": 0.668467,
+            "primary": 0.602383
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.494375,
+            "gauc": 0.669472,
+            "primary": 0.603125
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.516974,
+            "gauc": 0.670309,
+            "primary": 0.603802
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.496153,
+            "gauc": 0.670257,
+            "primary": 0.60392
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.5052,
+            "gauc": 0.670108,
+            "primary": 0.603766
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.496553,
+            "gauc": 0.67006,
+            "primary": 0.603685
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.483752,
+            "gauc": 0.670519,
+            "primary": 0.603998
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.491497,
+            "gauc": 0.670467,
+            "primary": 0.603967
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.514403,
+            "gauc": 0.670463,
+            "primary": 0.603932
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 144,
+        "epochs": 10,
+        "best_primary": 0.603709,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.504839,
+            "gauc": 0.663754,
+            "primary": 0.598823
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.516573,
+            "gauc": 0.668682,
+            "primary": 0.602416
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.515786,
+            "gauc": 0.669017,
+            "primary": 0.602897
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.511944,
+            "gauc": 0.669949,
+            "primary": 0.603709
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.517961,
+            "gauc": 0.669336,
+            "primary": 0.603281
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.500105,
+            "gauc": 0.669881,
+            "primary": 0.603637
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.497087,
+            "gauc": 0.669735,
+            "primary": 0.603508
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.493945,
+            "gauc": 0.669777,
+            "primary": 0.603622
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.487103,
+            "gauc": 0.669739,
+            "primary": 0.603514
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.489365,
+            "gauc": 0.669726,
+            "primary": 0.603441
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 145,
+        "epochs": 10,
+        "best_primary": 0.603564,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.517352,
+            "gauc": 0.66337,
+            "primary": 0.598476
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.517131,
+            "gauc": 0.668866,
+            "primary": 0.602362
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.506183,
+            "gauc": 0.668979,
+            "primary": 0.602597
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.528185,
+            "gauc": 0.669217,
+            "primary": 0.602863
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.495952,
+            "gauc": 0.669846,
+            "primary": 0.603564
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.496119,
+            "gauc": 0.669802,
+            "primary": 0.603432
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.512109,
+            "gauc": 0.66959,
+            "primary": 0.603189
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.508713,
+            "gauc": 0.66968,
+            "primary": 0.603189
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.490227,
+            "gauc": 0.669507,
+            "primary": 0.603058
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.486907,
+            "gauc": 0.66969,
+            "primary": 0.603194
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 143,
+        "epochs": 10,
+        "best_primary": 0.603728,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.534485,
+            "gauc": 0.663519,
+            "primary": 0.598775
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.505545,
+            "gauc": 0.668796,
+            "primary": 0.602728
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.49597,
+            "gauc": 0.669803,
+            "primary": 0.603655
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.512989,
+            "gauc": 0.670179,
+            "primary": 0.603728
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.493659,
+            "gauc": 0.667766,
+            "primary": 0.601897
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.501902,
+            "gauc": 0.662431,
+            "primary": 0.597986
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.491575,
+            "gauc": 0.658143,
+            "primary": 0.594952
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.465506,
+            "gauc": 0.649823,
+            "primary": 0.588767
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.466831,
+            "gauc": 0.64604,
+            "primary": 0.586111
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.500823,
+            "gauc": 0.63901,
+            "primary": 0.581084
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 144,
+        "epochs": 10,
+        "best_primary": 0.603197,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.498725,
+            "gauc": 0.66438,
+            "primary": 0.59941
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.511024,
+            "gauc": 0.668737,
+            "primary": 0.602558
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.516135,
+            "gauc": 0.669346,
+            "primary": 0.603197
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.509089,
+            "gauc": 0.669598,
+            "primary": 0.603074
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.513384,
+            "gauc": 0.667531,
+            "primary": 0.60163
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.494683,
+            "gauc": 0.662894,
+            "primary": 0.59832
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.487283,
+            "gauc": 0.656923,
+            "primary": 0.594198
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.478985,
+            "gauc": 0.656807,
+            "primary": 0.594029
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.474327,
+            "gauc": 0.649774,
+            "primary": 0.588817
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.469288,
+            "gauc": 0.640973,
+            "primary": 0.582646
+          }
+        ]
+      },
+      {
+        "phase": "refinement",
+        "config_id": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 145,
+        "epochs": 10,
+        "best_primary": 0.602805,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.511637,
+            "gauc": 0.663684,
+            "primary": 0.598843
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.513833,
+            "gauc": 0.669345,
+            "primary": 0.602805
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.508003,
+            "gauc": 0.668681,
+            "primary": 0.602603
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.528191,
+            "gauc": 0.668841,
+            "primary": 0.602724
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.496483,
+            "gauc": 0.667182,
+            "primary": 0.601676
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.488965,
+            "gauc": 0.664281,
+            "primary": 0.599171
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.503636,
+            "gauc": 0.659863,
+            "primary": 0.596052
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.496981,
+            "gauc": 0.656273,
+            "primary": 0.59374
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.477344,
+            "gauc": 0.649559,
+            "primary": 0.588846
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.464461,
+            "gauc": 0.643988,
+            "primary": 0.584635
+          }
+        ]
+      },
+      {
+        "phase": "final",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1043,
+        "epochs": 12,
+        "best_primary": 0.603716,
+        "curve": [
+          {
+            "checkpoint": 0.5,
+            "train_loss": 0.562267,
+            "gauc": 0.652905,
+            "primary": 0.590917
+          },
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.52485,
+            "gauc": 0.662786,
+            "primary": 0.598311
+          },
+          {
+            "checkpoint": 1.5,
+            "train_loss": 0.511081,
+            "gauc": 0.666949,
+            "primary": 0.600858
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.522766,
+            "gauc": 0.668668,
+            "primary": 0.602446
+          },
+          {
+            "checkpoint": 2.5,
+            "train_loss": 0.516265,
+            "gauc": 0.668127,
+            "primary": 0.602099
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.504697,
+            "gauc": 0.669359,
+            "primary": 0.602853
+          },
+          {
+            "checkpoint": 3.5,
+            "train_loss": 0.49427,
+            "gauc": 0.669118,
+            "primary": 0.60287
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.496878,
+            "gauc": 0.670298,
+            "primary": 0.603539
+          },
+          {
+            "checkpoint": 4.5,
+            "train_loss": 0.498282,
+            "gauc": 0.669911,
+            "primary": 0.603452
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.490326,
+            "gauc": 0.670466,
+            "primary": 0.603716
+          },
+          {
+            "checkpoint": 5.5,
+            "train_loss": 0.490844,
+            "gauc": 0.669998,
+            "primary": 0.603342
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.498765,
+            "gauc": 0.669787,
+            "primary": 0.603272
+          },
+          {
+            "checkpoint": 6.5,
+            "train_loss": 0.50293,
+            "gauc": 0.669873,
+            "primary": 0.603311
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.506578,
+            "gauc": 0.669995,
+            "primary": 0.603457
+          },
+          {
+            "checkpoint": 7.5,
+            "train_loss": 0.498094,
+            "gauc": 0.669955,
+            "primary": 0.603514
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.514564,
+            "gauc": 0.669722,
+            "primary": 0.603341
+          },
+          {
+            "checkpoint": 8.5,
+            "train_loss": 0.491343,
+            "gauc": 0.669633,
+            "primary": 0.60323
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.483006,
+            "gauc": 0.669678,
+            "primary": 0.603277
+          },
+          {
+            "checkpoint": 9.5,
+            "train_loss": 0.497863,
+            "gauc": 0.67003,
+            "primary": 0.603563
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.471551,
+            "gauc": 0.669806,
+            "primary": 0.603419
+          },
+          {
+            "checkpoint": 10.5,
+            "train_loss": 0.4859,
+            "gauc": 0.669954,
+            "primary": 0.603477
+          },
+          {
+            "checkpoint": 11.0,
+            "train_loss": 0.488256,
+            "gauc": 0.67,
+            "primary": 0.603563
+          },
+          {
+            "checkpoint": 11.5,
+            "train_loss": 0.49732,
+            "gauc": 0.670072,
+            "primary": 0.603597
+          },
+          {
+            "checkpoint": 12.0,
+            "train_loss": 0.495745,
+            "gauc": 0.670056,
+            "primary": 0.603599
+          }
+        ]
+      },
+      {
+        "phase": "final",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1044,
+        "epochs": 12,
+        "best_primary": 0.604313,
+        "curve": [
+          {
+            "checkpoint": 0.5,
+            "train_loss": 0.551149,
+            "gauc": 0.65214,
+            "primary": 0.590487
+          },
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.52633,
+            "gauc": 0.662352,
+            "primary": 0.597758
+          },
+          {
+            "checkpoint": 1.5,
+            "train_loss": 0.52195,
+            "gauc": 0.666654,
+            "primary": 0.60109
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.51601,
+            "gauc": 0.668346,
+            "primary": 0.602065
+          },
+          {
+            "checkpoint": 2.5,
+            "train_loss": 0.508124,
+            "gauc": 0.668038,
+            "primary": 0.602071
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.496338,
+            "gauc": 0.670258,
+            "primary": 0.603563
+          },
+          {
+            "checkpoint": 3.5,
+            "train_loss": 0.497348,
+            "gauc": 0.669135,
+            "primary": 0.603042
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.519097,
+            "gauc": 0.670749,
+            "primary": 0.604085
+          },
+          {
+            "checkpoint": 4.5,
+            "train_loss": 0.493401,
+            "gauc": 0.670285,
+            "primary": 0.603598
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.502131,
+            "gauc": 0.670067,
+            "primary": 0.603483
+          },
+          {
+            "checkpoint": 5.5,
+            "train_loss": 0.493593,
+            "gauc": 0.671196,
+            "primary": 0.604313
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.5039,
+            "gauc": 0.670228,
+            "primary": 0.60364
+          },
+          {
+            "checkpoint": 6.5,
+            "train_loss": 0.504009,
+            "gauc": 0.670448,
+            "primary": 0.603948
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.499158,
+            "gauc": 0.670426,
+            "primary": 0.603754
+          },
+          {
+            "checkpoint": 7.5,
+            "train_loss": 0.495714,
+            "gauc": 0.670166,
+            "primary": 0.6036
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.495083,
+            "gauc": 0.670741,
+            "primary": 0.603938
+          },
+          {
+            "checkpoint": 8.5,
+            "train_loss": 0.493221,
+            "gauc": 0.67073,
+            "primary": 0.603984
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.499094,
+            "gauc": 0.670503,
+            "primary": 0.603766
+          },
+          {
+            "checkpoint": 9.5,
+            "train_loss": 0.495763,
+            "gauc": 0.670362,
+            "primary": 0.603731
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.507799,
+            "gauc": 0.670554,
+            "primary": 0.603912
+          },
+          {
+            "checkpoint": 10.5,
+            "train_loss": 0.494912,
+            "gauc": 0.670473,
+            "primary": 0.603821
+          },
+          {
+            "checkpoint": 11.0,
+            "train_loss": 0.494616,
+            "gauc": 0.670632,
+            "primary": 0.603925
+          },
+          {
+            "checkpoint": 11.5,
+            "train_loss": 0.492964,
+            "gauc": 0.670664,
+            "primary": 0.603896
+          },
+          {
+            "checkpoint": 12.0,
+            "train_loss": 0.494672,
+            "gauc": 0.670449,
+            "primary": 0.603758
+          }
+        ]
+      },
+      {
+        "phase": "final",
+        "config_id": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1045,
+        "epochs": 12,
+        "best_primary": 0.603869,
+        "curve": [
+          {
+            "checkpoint": 0.5,
+            "train_loss": 0.556466,
+            "gauc": 0.650569,
+            "primary": 0.589764
+          },
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.5272,
+            "gauc": 0.664057,
+            "primary": 0.599208
+          },
+          {
+            "checkpoint": 1.5,
+            "train_loss": 0.516951,
+            "gauc": 0.667514,
+            "primary": 0.601477
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.504793,
+            "gauc": 0.668462,
+            "primary": 0.602331
+          },
+          {
+            "checkpoint": 2.5,
+            "train_loss": 0.501695,
+            "gauc": 0.668501,
+            "primary": 0.602351
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.503274,
+            "gauc": 0.6693,
+            "primary": 0.602882
+          },
+          {
+            "checkpoint": 3.5,
+            "train_loss": 0.498823,
+            "gauc": 0.669197,
+            "primary": 0.602902
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.494606,
+            "gauc": 0.669928,
+            "primary": 0.60353
+          },
+          {
+            "checkpoint": 4.5,
+            "train_loss": 0.503141,
+            "gauc": 0.670176,
+            "primary": 0.603532
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.498661,
+            "gauc": 0.669875,
+            "primary": 0.603474
+          },
+          {
+            "checkpoint": 5.5,
+            "train_loss": 0.496485,
+            "gauc": 0.670046,
+            "primary": 0.603719
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.503863,
+            "gauc": 0.670282,
+            "primary": 0.603694
+          },
+          {
+            "checkpoint": 6.5,
+            "train_loss": 0.48822,
+            "gauc": 0.670064,
+            "primary": 0.603588
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.501361,
+            "gauc": 0.670048,
+            "primary": 0.603546
+          },
+          {
+            "checkpoint": 7.5,
+            "train_loss": 0.496496,
+            "gauc": 0.670298,
+            "primary": 0.60382
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.507539,
+            "gauc": 0.670526,
+            "primary": 0.603856
+          },
+          {
+            "checkpoint": 8.5,
+            "train_loss": 0.498386,
+            "gauc": 0.670523,
+            "primary": 0.603768
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.486472,
+            "gauc": 0.670385,
+            "primary": 0.603725
+          },
+          {
+            "checkpoint": 9.5,
+            "train_loss": 0.496959,
+            "gauc": 0.670502,
+            "primary": 0.603817
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.501954,
+            "gauc": 0.670349,
+            "primary": 0.603729
+          },
+          {
+            "checkpoint": 10.5,
+            "train_loss": 0.502177,
+            "gauc": 0.670465,
+            "primary": 0.603804
+          },
+          {
+            "checkpoint": 11.0,
+            "train_loss": 0.481365,
+            "gauc": 0.670541,
+            "primary": 0.603869
+          },
+          {
+            "checkpoint": 11.5,
+            "train_loss": 0.497989,
+            "gauc": 0.670438,
+            "primary": 0.603769
+          },
+          {
+            "checkpoint": 12.0,
+            "train_loss": 0.495114,
+            "gauc": 0.670523,
+            "primary": 0.603837
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 44879,
+      "out": 6902,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 38075,
+      "out": 31723,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3473,
+      "out": 1204,
+      "calls": 2
+    }
+  },
+  "tokens_total": 126256,
+  "wall_s": 4568.4,
+  "self_critique": "Overall\n\nThe run found a real-looking gain from 0.6018 to 0.603939, but learned little about why it worked. After node_001, the search became a sequence of large, validation-selected bundles, and convergence after only three rejected descendants was premature.\n\nWhat the harness/policy did suboptimally\n\n- Node_001 changed too many dimensions at once: architecture, BPR objective, recency, and scheduled regularization. This produced a champion but no causal attribution or reliable local search direction.\n- Subsequent hypotheses continued bundling many choices. Node_003 combined four supervision add-ons; node_004 crossed ensemble size, aggregation method, and member jitter. Negative results therefore provide weak information.\n- The policy repeatedly asserted \u201cearly peak implies overfitting\u201d without testing the simplest direct interventions: earlier stopping, regularization-strength sweeps, reduced capacity, or checkpoint averaging.\n- Recency weighting was pursued despite the parent stack apparently already including recency-related changes. Node_002 tested only a specific normalized 7-day form, so its rejection does not establish that temporal weighting is useless.\n- Ensemble selection was attempted before establishing several independently strong members. Ensembles of weaker or highly correlated models predictably failed to beat the single champion.\n- Heavy validation selection creates winner\u2019s-curse risk. The reported gain is much larger than the baseline sigma, but uncertainty for node_001 and the number of configurations considered are not shown.\n- Declaring convergence after three heterogeneous failures around one winner was too aggressive. None was a clean local ablation or narrow parameter search.\n\nWhat I would change in the scaffold\n\n- Require atomic experiments by default: one mechanism or one small parameter sweep per node.\n- After any bundled winner, automatically launch an attribution phase:\n  - leave-one-component-out ablations;\n  - each component added independently to baseline;\n  - a small interaction test only for components showing individual value.\n- Record per-seed scores, mean, standard error, training peak epoch, and final epoch\u2014not only one primary number.\n- Separate exploratory validation from final confirmation. Freeze promising settings and evaluate them on fresh seeds or an untouched validation split.\n- Make \u201coverfitting\u201d hypotheses operational: specify which train/validation curves support the claim and test early stopping or capacity/regularization directly.\n- Use a patience rule based on informative local experiments rather than raw consecutive rejections.\n- Avoid numerical improvement promises such as \u201cat least 0.002\u201d unless supported by prior effect estimates.\n\nWhat the next run should try first\n\nStart from node_001 and perform a replicated component-ablation study. Remove, one at a time:\n\n1. DCN-lite architecture change;\n2. hybrid BPR objective;\n3. recency weighting;\n4. scheduled/strong regularization.\n\nUse identical splits, seeds, training budgets, and checkpoint selection. In parallel, rerun node_001 across enough seeds to estimate its variance and confirm the 0.0021 gain.\n\nIf the early-peak diagnosis is reproducible, the first focused optimization should then be a small early-stopping/checkpoint-averaging and regularization-strength sweep on the minimal ablated stack that retains the gain. This is more likely to produce a trustworthy incremental improvement than another multi-feature supervision bundle or ensemble."
+}

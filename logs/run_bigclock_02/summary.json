@@ -1,0 +1,692 @@
+{
+  "run_dir": "logs/run_bigclock_02",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.669233358201173,
+    "ndcg5": 0.5367421844959335,
+    "primary": 0.6029877713485532,
+    "winning_config": {
+      "dropout": 0.15,
+      "weight_decay": 1.5e-05,
+      "lr": 0.0011,
+      "step_epochs": 2,
+      "gamma": 0.75,
+      "half_life": 14.0
+    },
+    "history": [
+      {
+        "stage": "coarse",
+        "probe": 0,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "step_epochs": 2,
+          "gamma": 0.7,
+          "half_life": 14.0
+        },
+        "best_primary": 0.58770217,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.668716,
+            "gauc": 0.63310167,
+            "primary": 0.57653586
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.637669,
+            "gauc": 0.64876533,
+            "primary": 0.58770217
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 1,
+        "config": {
+          "dropout": 0.19,
+          "weight_decay": 0.0001,
+          "lr": 0.0009,
+          "step_epochs": 1,
+          "gamma": 0.72,
+          "half_life": 7.0
+        },
+        "best_primary": 0.5846696,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.670845,
+            "gauc": 0.62646719,
+            "primary": 0.57217504
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.649245,
+            "gauc": 0.64453151,
+            "primary": 0.5846696
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 2,
+        "config": {
+          "dropout": 0.23,
+          "weight_decay": 0.0003,
+          "lr": 0.001,
+          "step_epochs": 1,
+          "gamma": 0.58,
+          "half_life": 3.5
+        },
+        "best_primary": 0.5852868,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.667169,
+            "gauc": 0.63410588,
+            "primary": 0.57732641
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.646845,
+            "gauc": 0.64557258,
+            "primary": 0.5852868
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 3,
+        "config": {
+          "dropout": 0.27,
+          "weight_decay": 0.001,
+          "lr": 0.0008,
+          "step_epochs": 2,
+          "gamma": 0.52,
+          "half_life": 7.0
+        },
+        "best_primary": 0.58291981,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.674064,
+            "gauc": 0.61688881,
+            "primary": 0.56532859
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.651146,
+            "gauc": 0.64243779,
+            "primary": 0.58291981
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 4,
+        "config": {
+          "dropout": 0.31,
+          "weight_decay": 0.003,
+          "lr": 0.0007,
+          "step_epochs": 1,
+          "gamma": 0.65,
+          "half_life": 14.0
+        },
+        "best_primary": 0.57940657,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.675108,
+            "gauc": 0.62026252,
+            "primary": 0.56745127
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.66026,
+            "gauc": 0.63759961,
+            "primary": 0.57940657
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 5,
+        "config": {
+          "dropout": 0.34,
+          "weight_decay": 0.0001,
+          "lr": 0.0011,
+          "step_epochs": 2,
+          "gamma": 0.45,
+          "half_life": 3.5
+        },
+        "best_primary": 0.58692282,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.665252,
+            "gauc": 0.6332463,
+            "primary": 0.57676142
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.628449,
+            "gauc": 0.64774699,
+            "primary": 0.58692282
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 6,
+        "config": {
+          "dropout": 0.37,
+          "weight_decay": 0.0005,
+          "lr": 0.0008,
+          "step_epochs": 1,
+          "gamma": 0.5,
+          "half_life": 7.0
+        },
+        "best_primary": 0.58197779,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.672749,
+            "gauc": 0.62984853,
+            "primary": 0.57475196
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.659253,
+            "gauc": 0.64056929,
+            "primary": 0.58197779
+          }
+        ]
+      },
+      {
+        "stage": "coarse",
+        "probe": 7,
+        "config": {
+          "dropout": 0.4,
+          "weight_decay": 0.002,
+          "lr": 0.0006,
+          "step_epochs": 2,
+          "gamma": 0.62,
+          "half_life": 14.0
+        },
+        "best_primary": 0.58392328,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.677383,
+            "gauc": 0.62918599,
+            "primary": 0.57430004
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.659619,
+            "gauc": 0.64361528,
+            "primary": 0.58392328
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 0,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "step_epochs": 2,
+          "gamma": 0.7,
+          "half_life": 14.0
+        },
+        "best_primary": 0.60197338,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.584353,
+            "gauc": 0.66135356,
+            "primary": 0.59689622
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542727,
+            "gauc": 0.66467608,
+            "primary": 0.59965967
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.536766,
+            "gauc": 0.6670785,
+            "primary": 0.60104207
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.526085,
+            "gauc": 0.667911,
+            "primary": 0.60197338
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 1,
+        "config": {
+          "dropout": 0.105,
+          "weight_decay": 2.1e-05,
+          "lr": 0.001,
+          "step_epochs": 2,
+          "gamma": 0.7,
+          "half_life": 14.0
+        },
+        "best_primary": 0.6015716,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.585502,
+            "gauc": 0.66105128,
+            "primary": 0.5966361
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.540389,
+            "gauc": 0.66634491,
+            "primary": 0.60085245
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.530667,
+            "gauc": 0.66756583,
+            "primary": 0.6015716
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.525075,
+            "gauc": 0.66747055,
+            "primary": 0.60151029
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 2,
+        "config": {
+          "dropout": 0.195,
+          "weight_decay": 4.2e-05,
+          "lr": 0.001,
+          "step_epochs": 2,
+          "gamma": 0.7,
+          "half_life": 14.0
+        },
+        "best_primary": 0.60161525,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.589947,
+            "gauc": 0.66070397,
+            "primary": 0.59594176
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.546322,
+            "gauc": 0.66499115,
+            "primary": 0.59965047
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.537318,
+            "gauc": 0.667495,
+            "primary": 0.60161525
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.529,
+            "gauc": 0.66682152,
+            "primary": 0.60138928
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 3,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 1.5e-05,
+          "lr": 0.0011,
+          "step_epochs": 2,
+          "gamma": 0.75,
+          "half_life": 14.0
+        },
+        "best_primary": 0.60205446,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.58006,
+            "gauc": 0.66067246,
+            "primary": 0.59622999
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.539914,
+            "gauc": 0.6650945,
+            "primary": 0.59995367
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.530279,
+            "gauc": 0.66680363,
+            "primary": 0.60113879
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.53171,
+            "gauc": 0.66808719,
+            "primary": 0.60205446
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 4,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 6e-05,
+          "lr": 0.0009000000000000001,
+          "step_epochs": 2,
+          "gamma": 0.6499999999999999,
+          "half_life": 14.0
+        },
+        "best_primary": 0.6018287,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.597334,
+            "gauc": 0.6588216,
+            "primary": 0.59482095
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.546611,
+            "gauc": 0.6654511,
+            "primary": 0.60001569
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.53659,
+            "gauc": 0.66606608,
+            "primary": 0.60048172
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.529314,
+            "gauc": 0.66767109,
+            "primary": 0.6018287
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 5,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "step_epochs": 2,
+          "gamma": 0.6299999999999999,
+          "half_life": 10.08
+        },
+        "best_primary": 0.60192972,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.586695,
+            "gauc": 0.65963093,
+            "primary": 0.59542423
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.542184,
+            "gauc": 0.66512481,
+            "primary": 0.59970754
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.532095,
+            "gauc": 0.66779639,
+            "primary": 0.6017348
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.530885,
+            "gauc": 0.66810512,
+            "primary": 0.60192972
+          }
+        ]
+      },
+      {
+        "stage": "refine",
+        "probe": 6,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "step_epochs": 3,
+          "gamma": 0.77,
+          "half_life": 18.0
+        },
+        "best_primary": 0.60186632,
+        "curve": [
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.586193,
+            "gauc": 0.6602435,
+            "primary": 0.59587661
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.538856,
+            "gauc": 0.66452293,
+            "primary": 0.59933787
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.532454,
+            "gauc": 0.66777995,
+            "primary": 0.60176545
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.527452,
+            "gauc": 0.66796674,
+            "primary": 0.60186632
+          }
+        ]
+      },
+      {
+        "stage": "final",
+        "probe": 0,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 1.5e-05,
+          "lr": 0.0011,
+          "step_epochs": 2,
+          "gamma": 0.75,
+          "half_life": 14.0
+        },
+        "best_primary": 0.60298777,
+        "curve": [
+          {
+            "checkpoint": 0.5,
+            "train_loss": 0.638427,
+            "gauc": 0.65231836,
+            "primary": 0.59066698
+          },
+          {
+            "checkpoint": 1.0,
+            "train_loss": 0.572893,
+            "gauc": 0.66177119,
+            "primary": 0.59700168
+          },
+          {
+            "checkpoint": 1.5,
+            "train_loss": 0.550229,
+            "gauc": 0.6636339,
+            "primary": 0.5988205
+          },
+          {
+            "checkpoint": 2.0,
+            "train_loss": 0.536207,
+            "gauc": 0.66503758,
+            "primary": 0.59984135
+          },
+          {
+            "checkpoint": 2.5,
+            "train_loss": 0.531769,
+            "gauc": 0.66741185,
+            "primary": 0.60156065
+          },
+          {
+            "checkpoint": 3.0,
+            "train_loss": 0.532791,
+            "gauc": 0.66781472,
+            "primary": 0.60181556
+          },
+          {
+            "checkpoint": 3.5,
+            "train_loss": 0.530231,
+            "gauc": 0.66786303,
+            "primary": 0.60202286
+          },
+          {
+            "checkpoint": 4.0,
+            "train_loss": 0.527065,
+            "gauc": 0.66780923,
+            "primary": 0.60198592
+          },
+          {
+            "checkpoint": 4.5,
+            "train_loss": 0.52849,
+            "gauc": 0.66800588,
+            "primary": 0.60228094
+          },
+          {
+            "checkpoint": 5.0,
+            "train_loss": 0.527933,
+            "gauc": 0.66814043,
+            "primary": 0.60247754
+          },
+          {
+            "checkpoint": 5.5,
+            "train_loss": 0.520715,
+            "gauc": 0.66845803,
+            "primary": 0.6024512
+          },
+          {
+            "checkpoint": 6.0,
+            "train_loss": 0.525141,
+            "gauc": 0.66899816,
+            "primary": 0.60291681
+          },
+          {
+            "checkpoint": 6.5,
+            "train_loss": 0.523495,
+            "gauc": 0.66850325,
+            "primary": 0.60253414
+          },
+          {
+            "checkpoint": 7.0,
+            "train_loss": 0.527154,
+            "gauc": 0.66923336,
+            "primary": 0.60298777
+          },
+          {
+            "checkpoint": 7.5,
+            "train_loss": 0.523683,
+            "gauc": 0.66869253,
+            "primary": 0.60254066
+          },
+          {
+            "checkpoint": 8.0,
+            "train_loss": 0.519964,
+            "gauc": 0.66835121,
+            "primary": 0.60233996
+          },
+          {
+            "checkpoint": 8.5,
+            "train_loss": 0.524623,
+            "gauc": 0.66786501,
+            "primary": 0.60201621
+          },
+          {
+            "checkpoint": 9.0,
+            "train_loss": 0.516711,
+            "gauc": 0.66878375,
+            "primary": 0.60258179
+          },
+          {
+            "checkpoint": 9.5,
+            "train_loss": 0.522458,
+            "gauc": 0.66886073,
+            "primary": 0.60276912
+          },
+          {
+            "checkpoint": 10.0,
+            "train_loss": 0.521829,
+            "gauc": 0.6690878,
+            "primary": 0.60283413
+          },
+          {
+            "checkpoint": 10.5,
+            "train_loss": 0.521543,
+            "gauc": 0.66895734,
+            "primary": 0.60281348
+          },
+          {
+            "checkpoint": 11.0,
+            "train_loss": 0.52528,
+            "gauc": 0.66865423,
+            "primary": 0.60254554
+          },
+          {
+            "checkpoint": 11.5,
+            "train_loss": 0.515292,
+            "gauc": 0.6688282,
+            "primary": 0.60255244
+          },
+          {
+            "checkpoint": 12.0,
+            "train_loss": 0.519747,
+            "gauc": 0.66873464,
+            "primary": 0.60251659
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14385,
+      "out": 1667,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11315,
+      "out": 15125,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 314,
+      "out": 852,
+      "calls": 1
+    }
+  },
+  "tokens_total": 43658,
+  "wall_s": 467.6,
+  "self_critique": "Overall assessment\n\nThe run found a small improvement\u20140.602988 versus roughly 0.6018 baseline, about +0.0012\u2014but the evidence is too thin to call the search converged or the gain robust.\n\nWhat the harness/policy did suboptimally\n\n- Stopped too early. \u201cConverged\u201d after only one successful improvement, one proposal failure, and one rejected ensemble is not well supported.\n- Bundled too many changes in node_001: architecture, BCE/BPR mixing, dropout, AdamW, step decay, and recency weighting. This prevents attribution and makes subsequent tuning inefficient.\n- Overstated the hypothesis. The predicted +0.0029 improvement was more than twice the realized gain.\n- Continued from a failed node. node_003 is recorded as descending from node_002 even though it uses node_001\u2019s model. Failed nodes should not become executable parents.\n- Jumped to ensembling prematurely. The gain from node_001 had not first been reproduced across seeds. A three-seed ensemble is expensive and can degrade rank metrics if averaging/calibration is inappropriate.\n- Lacked uncertainty reporting. A baseline sigma is shown, but there is no comparable multi-seed variance or paired confidence interval for node_001. A +0.0012 gain may be noise.\n- Logged node_002 only as \u201cproposal failed,\u201d leaving no actionable diagnosis.\n- Did not investigate why the ensemble fell to baseline: individual seed scores, aggregation method, checkpoint selection, and prediction alignment should have been recorded.\n\nWhat I would change in the scaffold\n\n- Require valid executable ancestry; on proposal failure, retry from the last accepted node.\n- Separate compound proposals into staged ablations, changing one major factor at a time.\n- Require two or three seed reproductions before accepting a small gain as established.\n- Use paired evaluation and confidence intervals, not only point estimates.\n- Record full failure diagnostics and all individual ensemble-member metrics.\n- Add a minimum evidence rule for convergence: several local perturbations with no improvement, not merely a failed proposal and a rejected ensemble.\n- Calibrate expected effect sizes from prior observed deltas rather than optimistic literature-based estimates.\n- Preserve exact configs and checkpoints so accepted nodes can be reproduced independently.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 exactly across three independent seeds without ensembling. Compare each seed and the mean against a similarly seeded baseline using paired evaluation. If the gain survives, ablate the node_001 package in this order:\n\n1. Recency weighting.\n2. BCE/BPR mixing coefficient around 0.5.\n3. DCN-lite versus baseline FM.\n4. Dropout/AdamW settings.\n5. Step-decay schedule.\n\nThen locally tune only the components shown to matter. Do not retry ensembling until individual models consistently exceed baseline; if ensembling is revisited, compare score averaging, rank averaging, and validation-optimized weights while reporting every member\u2019s standalone score."
+}

@@ -1,7 +1,7 @@
 # mle-agent — agent working notes
 
 TikTok TechJam 2026 Track 2: autonomous ML research agent on KuaiRand.
-Deadline: Mon 1 Sep 12:00 noon SGT (Devpost). Team repo: yxshrk/jitai_ml_agent,
+Deadline: TUESDAY 1 Sep 12:00 noon SGT (1 Sep 2026 is a Tuesday — verified) (Devpost). Team repo: yxshrk/jitai_ml_agent,
 push to branch `mle-agent` (git push origin master:mle-agent). NO Claude
 attribution in commits.
 
@@ -40,7 +40,7 @@ present, or ask). Sync helper copies with rsync (NOT git), excluding
   this file current.
 
 ## State (Sun 30 Aug pm)
-Pure DESIGNATED: 0.60558 run_bigclock_07 (coral) — FULLY UNSEEDED, beats seeded
+Pure DESIGNATED: 0.605575 (+0.00398 vs published baseline; say "best observed validation checkpoint at rule convergence", never "converged optimum"; "no executable seed", never "fully unseeded") run_bigclock_07 (coral) — FULLY UNSEEDED, beats seeded
 0.60513; recipe in SUBMISSION_RECIPE.md; test CSV built + validated (predict_test_bc07). 1K: 0.63874 agent-designated
 (run_desig_1k_01, 10-member). 27K bonus demo: 0.67263. Test CSVs built (labels never
 read). Remaining: finish fleet -> POST-WAVE VALIDATION ROUND (user-ordered, before freeze):

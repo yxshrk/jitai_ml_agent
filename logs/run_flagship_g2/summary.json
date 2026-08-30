@@ -1,0 +1,207 @@
+{
+  "run_dir": "logs/run_flagship_g2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6702335029651985,
+    "ndcg5": 0.5375165825216754,
+    "primary": 0.603875042743437,
+    "selected_config": {
+      "duration_regime_heads": true,
+      "threshold_ms": 18000,
+      "regime_l2": 0.001
+    },
+    "history": [
+      {
+        "stage": "regime_shrinkage_probe",
+        "probe_id": 0,
+        "config": {
+          "duration_regime_heads": true,
+          "threshold_ms": 18000,
+          "regime_l2": 0.001
+        },
+        "primary": 0.596899,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.571083,
+            "val_gauc": 0.659171,
+            "val_primary": 0.595522
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546567,
+            "val_gauc": 0.660156,
+            "val_primary": 0.596651
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.528734,
+            "val_gauc": 0.660611,
+            "val_primary": 0.596899
+          }
+        ]
+      },
+      {
+        "stage": "regime_shrinkage_probe",
+        "probe_id": 1,
+        "config": {
+          "duration_regime_heads": true,
+          "threshold_ms": 18000,
+          "regime_l2": 0.01
+        },
+        "primary": 0.596897,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.571099,
+            "val_gauc": 0.659198,
+            "val_primary": 0.595531
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546648,
+            "val_gauc": 0.660196,
+            "val_primary": 0.596684
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.528816,
+            "val_gauc": 0.660653,
+            "val_primary": 0.596897
+          }
+        ]
+      },
+      {
+        "stage": "regime_shrinkage_probe",
+        "probe_id": 2,
+        "config": {
+          "duration_regime_heads": true,
+          "threshold_ms": 18000,
+          "regime_l2": 0.1
+        },
+        "primary": 0.596811,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.571301,
+            "val_gauc": 0.659166,
+            "val_primary": 0.595512
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54707,
+            "val_gauc": 0.660006,
+            "val_primary": 0.59655
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.529261,
+            "val_gauc": 0.660487,
+            "val_primary": 0.596811
+          }
+        ]
+      },
+      {
+        "stage": "final",
+        "config": {
+          "duration_regime_heads": true,
+          "threshold_ms": 18000,
+          "regime_l2": 0.001,
+          "zero_initialized_residual_heads": true
+        },
+        "winning_probe_primary": 0.596899,
+        "best_primary": 0.603875,
+        "curve": [
+          {
+            "epoch": 1,
+            "fraction": 0.5,
+            "train_loss": 0.564762,
+            "val_gauc": 0.664865,
+            "val_primary": 0.59964
+          },
+          {
+            "epoch": 1,
+            "fraction": 1.0,
+            "train_loss": 0.550731,
+            "val_gauc": 0.668266,
+            "val_primary": 0.602305
+          },
+          {
+            "epoch": 2,
+            "fraction": 0.5,
+            "train_loss": 0.53911,
+            "val_gauc": 0.669872,
+            "val_primary": 0.603375
+          },
+          {
+            "epoch": 2,
+            "fraction": 1.0,
+            "train_loss": 0.542753,
+            "val_gauc": 0.670056,
+            "val_primary": 0.603809
+          },
+          {
+            "epoch": 3,
+            "fraction": 0.5,
+            "train_loss": 0.533321,
+            "val_gauc": 0.670234,
+            "val_primary": 0.603875
+          },
+          {
+            "epoch": 3,
+            "fraction": 1.0,
+            "train_loss": 0.534212,
+            "val_gauc": 0.669861,
+            "val_primary": 0.6034
+          },
+          {
+            "epoch": 4,
+            "fraction": 0.5,
+            "train_loss": 0.526918,
+            "val_gauc": 0.669814,
+            "val_primary": 0.60332
+          },
+          {
+            "epoch": 4,
+            "fraction": 1.0,
+            "train_loss": 0.53021,
+            "val_gauc": 0.669836,
+            "val_primary": 0.603271
+          },
+          {
+            "epoch": 5,
+            "fraction": 0.5,
+            "train_loss": 0.53109,
+            "val_gauc": 0.669641,
+            "val_primary": 0.60322
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 34284,
+      "out": 3700,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 26576,
+      "out": 21984,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 430,
+      "out": 852,
+      "calls": 1
+    }
+  },
+  "tokens_total": 87826,
+  "wall_s": 902.3,
+  "self_critique": "Overall assessment\n\nThe run found a modest improvement: 0.6018 to 0.603875 (+0.002075). Most of the gain came from node_001; node_002 added only about +0.0007, and node_003 produced no measurable improvement. The search converged quickly around one narrow \u201cearly peak means overfitting\u201d narrative.\n\nWhat the harness/policy did suboptimally\n\n- It accepted hypotheses whose stated effect sizes were not met. Node_001 promised at least +0.002 but delivered roughly +0.0014; node_002 promised +0.002 but delivered roughly +0.0007. Acceptance should distinguish \u201cdirectionally positive\u201d from \u201chypothesis confirmed.\u201d\n- It repeatedly inferred overfitting from validation peaking early without testing alternatives such as optimization instability, learning-rate schedule mismatch, or seed variance.\n- Node_001 and node_003 bundled multiple add-ons and validation-audited selection. This obscures attribution and risks adapting excessively to one validation split.\n- The reported sigma of 0.0001 appears optimistic relative to gains of 0.0007\u20130.0014 unless it came from genuine repeated-seed or repeated-split evaluation. The journal does not establish robustness.\n- The search stayed close to the same architecture and feature family. After node_002, node_003 largely retried the node_001 sweep rather than testing an orthogonal idea.\n- Stopping after one flat child was premature. Only three descendants were explored, so \u201cconverged\u201d more accurately means local search exhaustion than broad convergence.\n\nScaffold changes\n\n- Require multi-seed confirmation for improvements below roughly 0.001, reporting mean, standard deviation, and paired deltas.\n- Track hypothesis calibration: predicted gain, observed gain, and whether the proposed mechanism survived ablation.\n- Prefer one controlled change per node. Treat combinatorial sweeps as separate branches followed by a predeclared combination test.\n- Separate model selection validation from final confirmation, or cap the number of validation-audited choices.\n- Add diagnostic branches before committing to \u201coverfit\u201d: learning-rate/schedule probe, capacity probe, regularization probe, and training-seed variance.\n- Use a patience rule based on several diverse failed branches rather than one rejected child.\n\nWhat the next run should try first\n\nFirst, reproduce node_002 across multiple seeds and ablate its duration-regime residual heads. Compare node_001, node_002, and node_002 with each regime component removed using paired runs. This will determine whether the +0.0007 increment is real and whether the 18-second routing mechanism is responsible.\n\nIf confirmed, the first new experiment should replace the hard 18-second split with a low-capacity soft or monotonic duration gate. Hard routing fragments data and can overfit near the threshold; a regularized continuous gate preserves the apparent duration-regime signal while sharing statistical strength. Predeclare one comparison and avoid another broad add-on sweep."
+}

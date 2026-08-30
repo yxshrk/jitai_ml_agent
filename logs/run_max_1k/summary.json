@@ -1,0 +1,1921 @@
+{
+  "run_dir": "logs/run_max_1k",
+  "dataset": "1k",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6710172295570374,
+    "history": [
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6508805751800537,
+            "ndcg5": 0.5338912010192871,
+            "primary": 0.5923858880996704
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6508805751800537,
+        "ndcg5": 0.5338912010192871,
+        "primary": 0.5923858880996704,
+        "probe_id": 0,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6666050553321838,
+            "ndcg5": 0.5727694630622864,
+            "primary": 0.6196872591972351
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6666050553321838,
+        "ndcg5": 0.5727694630622864,
+        "primary": 0.6196872591972351,
+        "probe_id": 1,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.649341344833374,
+            "ndcg5": 0.5341660380363464,
+            "primary": 0.5917537212371826
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.649341344833374,
+        "ndcg5": 0.5341660380363464,
+        "primary": 0.5917537212371826,
+        "probe_id": 2,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6659544706344604,
+            "ndcg5": 0.5711042284965515,
+            "primary": 0.6185293197631836
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6659544706344604,
+        "ndcg5": 0.5711042284965515,
+        "primary": 0.6185293197631836,
+        "probe_id": 3,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6443533897399902,
+            "ndcg5": 0.5153770446777344,
+            "primary": 0.5798652172088623
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6443533897399902,
+        "ndcg5": 0.5153770446777344,
+        "primary": 0.5798652172088623,
+        "probe_id": 4,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6510526537895203,
+            "ndcg5": 0.5077083110809326,
+            "primary": 0.5793805122375488
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6510526537895203,
+        "ndcg5": 0.5077083110809326,
+        "primary": 0.5793805122375488,
+        "probe_id": 5,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6441076993942261,
+            "ndcg5": 0.5103155970573425,
+            "primary": 0.5772116184234619
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6441076993942261,
+        "ndcg5": 0.5103155970573425,
+        "primary": 0.5772116184234619,
+        "probe_id": 6,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6503552794456482,
+            "ndcg5": 0.5105931758880615,
+            "primary": 0.5804742574691772
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6503552794456482,
+        "ndcg5": 0.5105931758880615,
+        "primary": 0.5804742574691772,
+        "probe_id": 7,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6338648200035095,
+            "ndcg5": 0.48818933963775635,
+            "primary": 0.5610270500183105
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6338648200035095,
+        "ndcg5": 0.48818933963775635,
+        "primary": 0.5610270500183105,
+        "probe_id": 8,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6242009401321411,
+            "ndcg5": 0.4553719460964203,
+            "primary": 0.5397864580154419
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6242009401321411,
+        "ndcg5": 0.4553719460964203,
+        "primary": 0.5397864580154419,
+        "probe_id": 9,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6279146671295166,
+            "ndcg5": 0.4769226312637329,
+            "primary": 0.5524186491966248
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6279146671295166,
+        "ndcg5": 0.4769226312637329,
+        "primary": 0.5524186491966248,
+        "probe_id": 10,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6227999329566956,
+            "ndcg5": 0.4652000069618225,
+            "primary": 0.543999969959259
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6227999329566956,
+        "ndcg5": 0.4652000069618225,
+        "primary": 0.543999969959259,
+        "probe_id": 11,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6189887523651123,
+            "ndcg5": 0.48527592420578003,
+            "primary": 0.5521323680877686
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6189887523651123,
+        "ndcg5": 0.48527592420578003,
+        "primary": 0.5521323680877686,
+        "probe_id": 12,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6159958839416504,
+            "ndcg5": 0.4724211096763611,
+            "primary": 0.5442085266113281
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6159958839416504,
+        "ndcg5": 0.4724211096763611,
+        "primary": 0.5442085266113281,
+        "probe_id": 13,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.615293562412262,
+            "ndcg5": 0.47051119804382324,
+            "primary": 0.5429023504257202
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.615293562412262,
+        "ndcg5": 0.47051119804382324,
+        "primary": 0.5429023504257202,
+        "probe_id": 14,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6163616180419922,
+            "ndcg5": 0.47912222146987915,
+            "primary": 0.5477418899536133
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6163616180419922,
+        "ndcg5": 0.47912222146987915,
+        "primary": 0.5477418899536133,
+        "probe_id": 15,
+        "seed": 42,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6505921483039856,
+            "ndcg5": 0.5232359170913696,
+            "primary": 0.5869140625
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6505921483039856,
+        "ndcg5": 0.5232359170913696,
+        "primary": 0.5869140625,
+        "probe_id": 16,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6666185855865479,
+            "ndcg5": 0.5738619565963745,
+            "primary": 0.6202402710914612
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6666185855865479,
+        "ndcg5": 0.5738619565963745,
+        "primary": 0.6202402710914612,
+        "probe_id": 17,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6497467756271362,
+            "ndcg5": 0.5259336233139038,
+            "primary": 0.58784019947052
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6497467756271362,
+        "ndcg5": 0.5259336233139038,
+        "primary": 0.58784019947052,
+        "probe_id": 18,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.665542483329773,
+            "ndcg5": 0.5744212865829468,
+            "primary": 0.6199818849563599
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.665542483329773,
+        "ndcg5": 0.5744212865829468,
+        "primary": 0.6199818849563599,
+        "probe_id": 19,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6450490355491638,
+            "ndcg5": 0.5076261758804321,
+            "primary": 0.5763375759124756
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6450490355491638,
+        "ndcg5": 0.5076261758804321,
+        "primary": 0.5763375759124756,
+        "probe_id": 20,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6511309742927551,
+            "ndcg5": 0.5147785544395447,
+            "primary": 0.5829547643661499
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6511309742927551,
+        "ndcg5": 0.5147785544395447,
+        "primary": 0.5829547643661499,
+        "probe_id": 21,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6447542905807495,
+            "ndcg5": 0.5087775588035583,
+            "primary": 0.5767658948898315
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6447542905807495,
+        "ndcg5": 0.5087775588035583,
+        "primary": 0.5767658948898315,
+        "probe_id": 22,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6509506702423096,
+            "ndcg5": 0.517654299736023,
+            "primary": 0.5843024849891663
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6509506702423096,
+        "ndcg5": 0.517654299736023,
+        "primary": 0.5843024849891663,
+        "probe_id": 23,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6370589733123779,
+            "ndcg5": 0.4824061393737793,
+            "primary": 0.5597325563430786
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6370589733123779,
+        "ndcg5": 0.4824061393737793,
+        "primary": 0.5597325563430786,
+        "probe_id": 24,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6420112252235413,
+            "ndcg5": 0.4713733196258545,
+            "primary": 0.5566922426223755
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6420112252235413,
+        "ndcg5": 0.4713733196258545,
+        "primary": 0.5566922426223755,
+        "probe_id": 25,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6355740427970886,
+            "ndcg5": 0.4635445773601532,
+            "primary": 0.5495592951774597
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6355740427970886,
+        "ndcg5": 0.4635445773601532,
+        "primary": 0.5495592951774597,
+        "probe_id": 26,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6409091353416443,
+            "ndcg5": 0.48261964321136475,
+            "primary": 0.5617643594741821
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6409091353416443,
+        "ndcg5": 0.48261964321136475,
+        "primary": 0.5617643594741821,
+        "probe_id": 27,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6197049617767334,
+            "ndcg5": 0.48603036999702454,
+            "primary": 0.5528676509857178
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6197049617767334,
+        "ndcg5": 0.48603036999702454,
+        "primary": 0.5528676509857178,
+        "probe_id": 28,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6296452283859253,
+            "ndcg5": 0.4837196469306946,
+            "primary": 0.5566824674606323
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6296452283859253,
+        "ndcg5": 0.4837196469306946,
+        "primary": 0.5566824674606323,
+        "probe_id": 29,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6210435032844543,
+            "ndcg5": 0.48065733909606934,
+            "primary": 0.5508503913879395
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6210435032844543,
+        "ndcg5": 0.48065733909606934,
+        "primary": 0.5508503913879395,
+        "probe_id": 30,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6293171048164368,
+            "ndcg5": 0.4876822531223297,
+            "primary": 0.5584996938705444
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6293171048164368,
+        "ndcg5": 0.4876822531223297,
+        "primary": 0.5584996938705444,
+        "probe_id": 31,
+        "seed": 1051,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6510735154151917,
+            "ndcg5": 0.5328333973884583,
+            "primary": 0.591953456401825
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6510735154151917,
+        "ndcg5": 0.5328333973884583,
+        "primary": 0.591953456401825,
+        "probe_id": 32,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6672449707984924,
+            "ndcg5": 0.5720465183258057,
+            "primary": 0.6196457147598267
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6672449707984924,
+        "ndcg5": 0.5720465183258057,
+        "primary": 0.6196457147598267,
+        "probe_id": 33,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6499668955802917,
+            "ndcg5": 0.5314515233039856,
+            "primary": 0.5907092094421387
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6499668955802917,
+        "ndcg5": 0.5314515233039856,
+        "primary": 0.5907092094421387,
+        "probe_id": 34,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.666569709777832,
+            "ndcg5": 0.5698306560516357,
+            "primary": 0.6182001829147339
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.666569709777832,
+        "ndcg5": 0.5698306560516357,
+        "primary": 0.6182001829147339,
+        "probe_id": 35,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6456255912780762,
+            "ndcg5": 0.5026639699935913,
+            "primary": 0.5741447806358337
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6456255912780762,
+        "ndcg5": 0.5026639699935913,
+        "primary": 0.5741447806358337,
+        "probe_id": 36,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6520414352416992,
+            "ndcg5": 0.5119103789329529,
+            "primary": 0.5819759368896484
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6520414352416992,
+        "ndcg5": 0.5119103789329529,
+        "primary": 0.5819759368896484,
+        "probe_id": 37,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6454498767852783,
+            "ndcg5": 0.5056847333908081,
+            "primary": 0.5755673050880432
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6454498767852783,
+        "ndcg5": 0.5056847333908081,
+        "primary": 0.5755673050880432,
+        "probe_id": 38,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6516236662864685,
+            "ndcg5": 0.5129047632217407,
+            "primary": 0.5822641849517822
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6516236662864685,
+        "ndcg5": 0.5129047632217407,
+        "primary": 0.5822641849517822,
+        "probe_id": 39,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6322875022888184,
+            "ndcg5": 0.4794285297393799,
+            "primary": 0.5558580160140991
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6322875022888184,
+        "ndcg5": 0.4794285297393799,
+        "primary": 0.5558580160140991,
+        "probe_id": 40,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6198254227638245,
+            "ndcg5": 0.45845115184783936,
+            "primary": 0.5391383171081543
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6198254227638245,
+        "ndcg5": 0.45845115184783936,
+        "primary": 0.5391383171081543,
+        "probe_id": 41,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6270477175712585,
+            "ndcg5": 0.4733023941516876,
+            "primary": 0.5501750707626343
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6270477175712585,
+        "ndcg5": 0.4733023941516876,
+        "primary": 0.5501750707626343,
+        "probe_id": 42,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6255748867988586,
+            "ndcg5": 0.48653656244277954,
+            "primary": 0.5560557246208191
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6255748867988586,
+        "ndcg5": 0.48653656244277954,
+        "primary": 0.5560557246208191,
+        "probe_id": 43,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6137006878852844,
+            "ndcg5": 0.4815622568130493,
+            "primary": 0.5476315021514893
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6137006878852844,
+        "ndcg5": 0.4815622568130493,
+        "primary": 0.5476315021514893,
+        "probe_id": 44,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6170350909233093,
+            "ndcg5": 0.4802927076816559,
+            "primary": 0.5486639142036438
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 4,
+        "gauc": 0.6170350909233093,
+        "ndcg5": 0.4802927076816559,
+        "primary": 0.5486639142036438,
+        "probe_id": 45,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6050906181335449,
+            "ndcg5": 0.4797418713569641,
+            "primary": 0.5424162149429321
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6050906181335449,
+        "ndcg5": 0.4797418713569641,
+        "primary": 0.5424162149429321,
+        "probe_id": 46,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 4.0,
+            "gauc": 0.6196168661117554,
+            "ndcg5": 0.48584508895874023,
+            "primary": 0.5527309775352478
+          }
+        ],
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 4,
+        "gauc": 0.6196168661117554,
+        "ndcg5": 0.48584508895874023,
+        "primary": 0.5527309775352478,
+        "probe_id": 47,
+        "seed": 2060,
+        "stage": "matrix_probe"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6649153828620911,
+            "ndcg5": 0.574261486530304,
+            "primary": 0.6195884346961975
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 6,
+        "gauc": 0.6649153828620911,
+        "ndcg5": 0.574261486530304,
+        "primary": 0.6195884346961975,
+        "rank": 0,
+        "seed": 50063,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6651979684829712,
+            "ndcg5": 0.5659778118133545,
+            "primary": 0.6155878901481628
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 6,
+        "gauc": 0.6651979684829712,
+        "ndcg5": 0.5659778118133545,
+        "primary": 0.6155878901481628,
+        "rank": 0,
+        "seed": 57982,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6641285419464111,
+            "ndcg5": 0.568818211555481,
+            "primary": 0.616473376750946
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 6,
+        "gauc": 0.6641285419464111,
+        "ndcg5": 0.568818211555481,
+        "primary": 0.616473376750946,
+        "rank": 1,
+        "seed": 52066,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6636885404586792,
+            "ndcg5": 0.5676339268684387,
+            "primary": 0.6156612634658813
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "epochs": 6,
+        "gauc": 0.6636885404586792,
+        "ndcg5": 0.5676339268684387,
+        "primary": 0.6156612634658813,
+        "rank": 1,
+        "seed": 59985,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6421249508857727,
+            "ndcg5": 0.5101854205131531,
+            "primary": 0.5761551856994629
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 6,
+        "gauc": 0.6421249508857727,
+        "ndcg5": 0.5101854205131531,
+        "primary": 0.5761551856994629,
+        "rank": 2,
+        "seed": 54069,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6410884857177734,
+            "ndcg5": 0.515518069267273,
+            "primary": 0.5783032774925232
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "epochs": 6,
+        "gauc": 0.6410884857177734,
+        "ndcg5": 0.515518069267273,
+        "primary": 0.5783032774925232,
+        "rank": 2,
+        "seed": 61988,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6416846513748169,
+            "ndcg5": 0.5165513157844543,
+            "primary": 0.579118013381958
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 6,
+        "gauc": 0.6416846513748169,
+        "ndcg5": 0.5165513157844543,
+        "primary": 0.579118013381958,
+        "rank": 3,
+        "seed": 56072,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 6.0,
+            "gauc": 0.6393462419509888,
+            "ndcg5": 0.5125400424003601,
+            "primary": 0.575943112373352
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "epochs": 6,
+        "gauc": 0.6393462419509888,
+        "ndcg5": 0.5125400424003601,
+        "primary": 0.575943112373352,
+        "rank": 3,
+        "seed": 63991,
+        "stage": "refinement"
+      },
+      {
+        "checkpoints": [
+          {
+            "epoch": 0.5,
+            "gauc": 0.6710172295570374,
+            "ndcg5": 0.5921692252159119,
+            "primary": 0.6315932273864746
+          },
+          {
+            "epoch": 1.0,
+            "gauc": 0.6702844500541687,
+            "ndcg5": 0.5914523005485535,
+            "primary": 0.6308683753013611
+          },
+          {
+            "epoch": 1.5,
+            "gauc": 0.6651951670646667,
+            "ndcg5": 0.5677582025527954,
+            "primary": 0.6164766550064087
+          },
+          {
+            "epoch": 2.0,
+            "gauc": 0.6596313118934631,
+            "ndcg5": 0.551219642162323,
+            "primary": 0.6054254770278931
+          },
+          {
+            "epoch": 2.5,
+            "gauc": 0.6562272906303406,
+            "ndcg5": 0.5406227111816406,
+            "primary": 0.598425030708313
+          },
+          {
+            "epoch": 3.0,
+            "gauc": 0.65384441614151,
+            "ndcg5": 0.5331566333770752,
+            "primary": 0.5935004949569702
+          },
+          {
+            "epoch": 3.5,
+            "gauc": 0.6519436240196228,
+            "ndcg5": 0.5306506752967834,
+            "primary": 0.5912971496582031
+          },
+          {
+            "epoch": 4.0,
+            "gauc": 0.6506896018981934,
+            "ndcg5": 0.5272052884101868,
+            "primary": 0.5889474153518677
+          },
+          {
+            "epoch": 4.5,
+            "gauc": 0.6499947309494019,
+            "ndcg5": 0.5250962972640991,
+            "primary": 0.5875455141067505
+          },
+          {
+            "epoch": 5.0,
+            "gauc": 0.6493618488311768,
+            "ndcg5": 0.5235956311225891,
+            "primary": 0.5864787101745605
+          },
+          {
+            "epoch": 5.5,
+            "gauc": 0.6490241289138794,
+            "ndcg5": 0.5239263772964478,
+            "primary": 0.5864752531051636
+          },
+          {
+            "epoch": 6.0,
+            "gauc": 0.648770272731781,
+            "ndcg5": 0.5234110355377197,
+            "primary": 0.5860906839370728
+          },
+          {
+            "epoch": 6.5,
+            "gauc": 0.648587167263031,
+            "ndcg5": 0.523281455039978,
+            "primary": 0.5859342813491821
+          },
+          {
+            "epoch": 7.0,
+            "gauc": 0.6484132409095764,
+            "ndcg5": 0.5229975581169128,
+            "primary": 0.5857053995132446
+          },
+          {
+            "epoch": 7.5,
+            "gauc": 0.6483330130577087,
+            "ndcg5": 0.5225151181221008,
+            "primary": 0.5854240655899048
+          },
+          {
+            "epoch": 8.0,
+            "gauc": 0.6482633948326111,
+            "ndcg5": 0.5221238732337952,
+            "primary": 0.5851936340332031
+          }
+        ],
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "epochs": 8,
+        "gauc": 0.6710172295570374,
+        "ndcg5": 0.5921692252159119,
+        "primary": 0.6315932273864746,
+        "seed": 900043,
+        "stage": "final"
+      }
+    ],
+    "matrix_summary": [
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.6198577483495077,
+        "repeats": 3,
+        "std_primary": 0.0002710156467237422
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.6189037958780924,
+        "repeats": 3,
+        "std_primary": 0.0007740757119565094
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5904178023338318,
+        "repeats": 3,
+        "std_primary": 0.0024838000336460365
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5901010433832804,
+        "repeats": 3,
+        "std_primary": 0.0016545518267083394
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5823469758033752,
+        "repeats": 3,
+        "std_primary": 0.0015639633904562112
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5814370711644491,
+        "repeats": 3,
+        "std_primary": 0.001508111793391175
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5767825245857239,
+        "repeats": 3,
+        "std_primary": 0.0023564568229837153
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5765149394671122,
+        "repeats": 3,
+        "std_primary": 0.0006943464814260567
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5588725407918295,
+        "repeats": 3,
+        "std_primary": 0.002196125102002211
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5539400180180868,
+        "repeats": 3,
+        "std_primary": 0.007404977809154746
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5529908537864685,
+        "repeats": 3,
+        "std_primary": 0.004395697747286257
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5508771737416586,
+        "repeats": 3,
+        "std_primary": 0.002314583949428506
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5507176717122396,
+        "repeats": 3,
+        "std_primary": 0.001228763116474788
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.549851636091868,
+        "repeats": 3,
+        "std_primary": 0.005161253887755719
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.12,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "regularization": "mild",
+          "schedule": "none",
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5453896522521973,
+        "repeats": 3,
+        "std_primary": 0.0038664226237678802
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.3,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "regularization": "strong",
+          "schedule": "step",
+          "weight_decay": 0.001,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5452056725819906,
+        "repeats": 3,
+        "std_primary": 0.008126540474618802
+      }
+    ],
+    "ndcg5": 0.5921692252159119,
+    "primary": 0.6315932273864746,
+    "winner": {
+      "architecture": "fm",
+      "dropout": 0.3,
+      "loss": "logloss",
+      "lr": 0.00168,
+      "regularization": "strong",
+      "schedule": "step",
+      "weight_decay": 0.001,
+      "weighting": "uniform"
+    }
+  },
+  "sigma": 0.0015,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 25913,
+      "out": 4448,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 37583,
+      "out": 31518,
+      "calls": 4
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 5834,
+      "out": 8472,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3578,
+      "out": 1459,
+      "calls": 2
+    }
+  },
+  "tokens_total": 118805,
+  "wall_s": 9050.1,
+  "self_critique": "Overall assessment\n\nThe run found one strong improvement: node_001 raised primary from 0.6211 to 0.6316. Everything afterward was either broken or non-informative. \u201cConverged\u201d is therefore misleading; the run stopped because the post-champion experiments failed, not because the local search space was exhausted.\n\nWhat the harness/policy did suboptimally\n\n- Node_001 changed several dimensions simultaneously: architecture, objective, recency weighting, and regularization. This found a better configuration but did not identify which changes mattered or whether interactions were real.\n- The policy asserted seed sensitivity without measuring it. No repeated node_001 runs or variance estimates were reported before committing budget to ensembles.\n- It moved directly to a complex cross-architecture ensemble. On a 1k dataset, implementation and validation-selection risk can easily outweigh the expected ~0.001 gain.\n- Node_002\u2019s collapse from 0.6316 to 0.5838 should have triggered a strict parent-reproduction and prediction-integrity gate. Instead, node_003 attempted another ensemble repair while still scoring only 0.5861.\n- Ensemble evaluation apparently lacked basic checks: exact winning config recovery, row/user ID alignment, score orientation, preprocessing parity, per-member metrics, and confirmation that a one-member \u201censemble\u201d reproduces its source model.\n- Node_004 repeated the ensemble direction despite the prior implementation failure, then produced no metric. This wasted the remaining branch rather than returning to the last verified node.\n- The unusable learning curves were repeatedly acknowledged but never repaired. That prevented informed decisions about epochs, early stopping, underfitting, and regularization.\n- Validation was used both to search a broad factorial space and to select ensemble composition/aggregation. With only 1k examples, node_001 may contain substantial selection optimism.\n- The stop policy treated failed and suspect descendants as evidence of convergence. They are evidence of tooling failure or an unproductive strategy, not evidence that node_001 is locally optimal.\n\nWhat I would change in the scaffold\n\n- Add a mandatory reproduction gate: before any derivative experiment, rerun the exact parent config and require agreement within a preset tolerance.\n- For ensembles, require:\n  1. each member\u2019s standalone metric,\n  2. a one-member aggregation equivalence test,\n  3. ID/order and split hashes,\n  4. prediction range/orientation checks,\n  5. exact preprocessing and checkpoint provenance.\n- Store resolved configs rather than reconstructed labels such as \u201cDCN-lite k=16.\u201d Include data split hash, feature schema, seed, checkpoint, epoch, objective, and weighting settings.\n- Repair epoch and learning-curve logging. Record train/validation objective and primary metric per epoch, selected epoch, and early-stopping reason.\n- Separate exploration from attribution: broad search may nominate a champion, but follow it with controlled ablations that change one factor at a time.\n- Estimate seed variance before claiming seed sensitivity or building an ensemble. Report mean, standard deviation, and paired differences on identical splits.\n- Add a failure policy: after one suspect implementation, spend at most one node debugging it; if parent reproduction still fails, abandon that path and branch from the last verified node.\n- Do not allow FAILED or SUSPECT_IMPLEMENTATION nodes to support scientific conclusions or convergence.\n- Reserve a final untouched holdout, or use repeated/nested cross-validation, to reduce validation-selection bias on this small dataset.\n\nWhat the next run should try first\n\n1. Reproduce node_001 exactly, including its split and resolved configuration.\n2. Run the exact node_001 configuration over 3\u20135 fixed seeds to quantify variance. Also rerun the baseline on the same seeds for paired comparisons.\n3. Decompose node_001 with controlled ablations around the winning cell:\n   - FM versus DCN-lite,\n   - logloss versus hybrid-BPR,\n   - uniform versus 7-day weighting,\n   - mild versus strong regularization.\n4. Once the important factor is known, run a small local search around it: learning rate, embedding/cross width, regularization, and stopping epoch.\n5. Only attempt an ensemble if multiple independently valid members remain competitive and the ensemble equivalence tests pass. Start with averaging two same-config seeds; do not introduce DeepFM or aggregation selection initially.\n\nThe highest-value immediate experiment is not another ensemble. It is a clean multi-seed reproduction and ablation of node_001 to determine whether 0.6316 is robust and which change produced it."
+}

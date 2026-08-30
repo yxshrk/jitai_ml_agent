@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_25",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6717668175697327,
+    "ndcg5": 0.5375950336456299,
+    "primary": 0.6046808958053589
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13672,
+      "out": 1713,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10681,
+      "out": 11461,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 322,
+      "out": 743,
+      "calls": 1
+    }
+  },
+  "tokens_total": 38592,
+  "wall_s": 436.1,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally\n- It declared convergence after only three scored nodes and one failed proposal. The gain from 0.6018 to 0.6047 is promising, but the search is too shallow to justify convergence.\n- node_003 descends from failed node_002 rather than the last valid checkpoint. This obscures lineage and risks accidental dependence on incomplete state.\n- The hypotheses bundle many changes together: recency weighting, DCN-lite, BCE/BPR mixing, regularization, scheduling, and then ensembling. This prevents attribution of the improvement.\n- The reported baseline sigma of 0.0001 appears inconsistent with initialization variance being large enough for a three-seed ensemble to add roughly 0.0017. Evaluation uncertainty and training-seed variance should be measured separately.\n- Acceptance appears based on point estimates. There is no indication that node_001 or node_003 was replicated or tested for statistical significance.\n- node_002 is recorded only as \u201cproposal failed.\u201d The missing failure category, error trace, and attempted configuration make the result unactionable.\n- Ensembling is an easy metric gain but increases training and inference cost. The harness did not compare it against a matched-compute single model or report efficiency.\n- Recency weighting can introduce temporal leakage or validation-distribution tuning. The journal does not show that timestamp boundaries and preprocessing were audited.\n\nScaffold changes\n- Maintain lineage only through runnable checkpoints; attach failed proposals to the last valid parent.\n- Separate proposal, implementation, execution, and evaluation failures, preserving exact configs and concise diagnostics.\n- Require repeated evaluations near the incumbent and report mean, standard deviation, confidence interval, and paired per-user differences.\n- Change one conceptual factor at a time, followed by explicit ablations for bundled winners.\n- Track training cost, inference cost, parameter count, and ensemble size alongside the primary metric.\n- Use a minimum search budget and a convergence rule based on exhausted neighborhoods or confidence-aware expected improvement, not a short sequence of acceptances.\n- Persist the dial sweep results rather than only the winning aggregate configuration.\n\nWhat the next run should try first\n1. Reproduce node_003 from the valid node_001 checkpoint across fresh seeds.\n2. Compare:\n   - each of the three constituent models,\n   - the three-seed ensemble,\n   - a matched-compute single model or longer-trained model.\n3. If the ensemble gain is stable, ablate recency weighting, DCN-lite interactions, and the BPR component individually.\n4. Tune the BCE/BPR mixing weight around 0.5 and inspect ranking metrics by user-activity and recency buckets.\n5. Verify temporal split integrity before further optimizing recency features.\n\nThe immediate priority is determining whether 0.604681 is a reproducible modeling gain or primarily seed averaging and validation noise."
+}

@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_chain_c2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.670939935054513,
+    "ndcg5": 0.5375360937568952,
+    "primary": 0.604238014405704
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14057,
+      "out": 3432,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10359,
+      "out": 9724,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3220,
+      "out": 957,
+      "calls": 2
+    }
+  },
+  "tokens_total": 41749,
+  "wall_s": 521.9,
+  "self_critique": "Run critique\n\n- The run converged prematurely after only one genuine improvement. The champion was a team-provided reference implementation, while the harness generated no successful model innovation.\n- Search was overly concentrated on seed ensembling. Expanding five seeds to seven produced no measurable gain and consumed budget despite an explicit diminishing-returns/timeout concern.\n- node_003 failed before producing a metric, indicating the proposal-generation/execution scaffold did not adequately validate code or feasibility before launching.\n- Recovery was poorly routed: node_004 branched from the failed node rather than returning to node_001, the active champion. Its large regression to 0.6025 suggests the \u201cdebug\u201d step materially changed the method instead of minimally repairing the failure.\n- Acceptance and convergence logic appear too sensitive to tiny differences. With baseline sigma reported as 0.0001, the harness should distinguish statistically credible gains from formatting/seed noise and show more metric precision when node_001 and node_002 both display 0.6042.\n- There was little hypothesis diversity: no controlled architecture, loss, regularization, feature, calibration, or blending ablations were attempted.\n\nScaffold changes\n\n- Always branch recovery and new search from the best valid node unless explicitly testing lineage-specific behavior.\n- Add preflight checks: syntax/import test, tiny-data smoke run, runtime estimate, and output-schema validation.\n- Track exact deltas, repeated-run uncertainty, runtime, and prediction correlation. Reject expensive ensemble expansions when members are highly correlated.\n- Require proposals to specify one controlled change, a mechanism, expected cost, and rollback path.\n- Separate \u201crepair\u201d from \u201cnew experiment\u201d; a repair must preserve the original hypothesis.\n- Use a patience rule across diverse experiment categories rather than declaring convergence after several seed-focused failures.\n\nNext run\n\nFirst cache validation predictions from node_000 and node_001 and test a small, predetermined convex-blend grid, using both raw-score and rank blending. The weaker FM may still add complementary signal, making this a cheap test with better upside than additional seeds. If prediction correlation is near one or blending does not help, retain node_001 and run controlled single-seed ablations of its loss weighting and regularization before committing compute to ensembles."
+}

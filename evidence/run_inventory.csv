@@ -1,0 +1,114 @@
+run,dataset,complete,stop_reason,iterations,journal_records,best_primary,tokens_total,wall_s
+run_20260828-011439-bffeac,pure,True,max_iters,2,2,0.663347,11257,64
+run_ab_compact,pure,True,converged,3,4,0.603354,12904,3554
+run_ab_full,pure,True,converged,3,4,0.601838,0,165
+run_ab_full2,pure,True,converged,3,4,0.601838,39607,1096
+run_bigclock_01,pure,True,converged,4,5,0.604247,72998,1264
+run_bigclock_02,pure,True,converged,3,4,0.602988,43658,467
+run_bigclock_03,pure,True,converged,3,4,0.604658,75562,795
+run_bigclock_04,pure,True,converged,3,8,0.605054,89884,964
+run_bigclock_05,pure,True,converged,3,4,0.601838,49372,679
+run_bigclock_06,pure,True,converged,3,4,0.603085,43987,1075
+run_bigclock_07,pure,True,converged,6,7,0.605575,115315,1019
+run_bigclock_r1,pure,True,converged,3,4,0.603179,56325,2959
+run_bigclock_r2,pure,False,(no summary — incomplete/aborted),0,0,,,
+run_bigclock_r3,pure,True,converged,3,4,0.604557,63588,2242
+run_bigclock_r4,pure,True,converged,6,7,0.605243,82536,2176
+run_chain_25a,pure,True,converged,4,5,0.604681,43526,549
+run_chain_25b,pure,True,converged,4,5,0.604431,43893,1136
+run_chain_c1,pure,True,converged,4,5,0.604238,42247,433
+run_chain_c2,pure,True,converged,4,5,0.604238,41749,521
+run_chain_l1,pure,True,converged,4,5,0.604238,39249,855
+run_clean_01,pure,True,converged,3,4,0.601838,34574,925
+run_clean_02,pure,True,converged,3,4,0.601838,34892,704
+run_clean_03,pure,True,converged,3,4,0.601838,40121,700
+run_clean_04,pure,True,converged,3,4,0.601838,29107,592
+run_clean_05,pure,True,converged,3,4,0.603157,39768,631
+run_deep_c1,pure,True,converged,3,4,0.601838,78755,836
+run_deep_c2,pure,True,converged,3,4,0.601838,5968,431
+run_deep_c3,pure,True,converged,3,4,0.60286,36053,461
+run_deep_l1,pure,True,converged,3,4,0.604153,56753,1396
+run_deep_l2,pure,True,converged,3,4,0.602732,45781,1373
+run_desig_1k,1k,True,converged,3,4,0.620817,65909,1249
+run_desig_1k_01,pure,True,converged,7,8,0.638735,101549,3763
+run_desig_full_01,pure,True,converged,3,4,0.601838,54404,862
+run_desig_full_02,pure,True,converged,3,4,0.601838,46442,815
+run_desig_full_03,pure,True,converged,3,4,0.601838,35709,572
+run_desig_full_04,pure,True,converged,3,4,0.602756,47487,639
+run_desig_full_05,pure,True,converged,3,4,0.601838,36644,810
+run_desig_seeded_01,pure,True,converged,4,5,0.604998,34576,908
+run_desig_seeded_02,pure,True,converged,4,5,0.604998,49498,1026
+run_desig_seeded_03,pure,True,converged,4,5,0.605126,38641,961
+run_desig_seeded_04,pure,True,converged,4,10,0.605126,51767,1519
+run_exp_anthropic,pure,True,converged,6,7,0.604766,190163,1845
+run_exp_clean,pure,False,(no summary — incomplete/aborted),2,3,0.601838,,
+run_final_f1,pure,False,(no summary — incomplete/aborted),1,2,0.604029,,
+run_final_f2,pure,False,(no summary — incomplete/aborted),0,1,0.601838,,
+run_final_f3,pure,False,(no summary — incomplete/aborted),2,3,0.604015,,
+run_final_f4,pure,False,(no summary — incomplete/aborted),1,2,0.604316,,
+run_flagship_g1,pure,True,converged,3,4,0.604625,46130,751
+run_flagship_g2,pure,True,converged,3,4,0.603875,87826,902
+run_max_1k,1k,True,converged,4,5,0.631593,118805,9050
+run_max_1k_c,pure,False,(no summary — incomplete/aborted),1,2,0.620476,,
+run_max_c1,pure,False,(no summary — incomplete/aborted),3,4,0.604356,,
+run_max_c2,pure,False,(no summary — incomplete/aborted),3,4,0.603877,,
+run_max_l1,pure,False,(no summary — incomplete/aborted),1,2,0.603024,,
+run_max_l2,pure,False,(no summary — incomplete/aborted),2,3,0.603955,,
+run_max_r1,pure,True,converged,3,4,0.603082,89819,3456
+run_max_r2,pure,True,converged,4,5,0.604257,122359,4279
+run_max_r3,pure,True,converged,3,4,0.603183,78105,2398
+run_max_r4,pure,True,converged,4,5,0.603939,126256,4568
+run_night_a,pure,False,(no summary — incomplete/aborted),0,1,0.601838,,
+run_night_a2,pure,True,converged,4,5,0.604998,46136,1010
+run_night_b3,pure,True,converged,4,5,0.604998,49455,1287
+run_night_c3,pure,True,converged,4,5,0.604998,50039,1192
+run_night_d3,pure,True,converged,4,5,0.604998,48638,1022
+run_night_e,pure,True,converged,4,5,0.604998,45174,843
+run_night_f,pure,True,converged,4,5,0.604998,46591,935
+run_night_g,pure,True,converged,4,5,0.604998,50355,986
+run_official_01,pure,True,converged,4,5,0.604998,46927,649
+run_official_02,pure,True,converged,4,5,0.604998,46246,529
+run_official_03,pure,True,converged,4,5,0.604998,45397,764
+run_official_04,pure,True,converged,4,5,0.604998,47873,802
+run_official_1k_01b,pure,False,(no summary — incomplete/aborted),0,0,,,
+run_official_1k_01c,pure,False,(no summary — incomplete/aborted),0,0,,,
+run_official_1k_01d,1k,True,converged,3,4,0.620817,60158,1277
+run_official_1k_02b,pure,False,(no summary — incomplete/aborted),0,0,,,
+run_official_1k_02c,pure,False,(no summary — incomplete/aborted),0,0,,,
+run_official_1k_02d,1k,True,converged,3,4,0.620817,44320,1165
+run_planner_01,pure,True,converged,3,5,0.601838,38132,628
+run_planner_02,pure,True,converged,3,5,0.601838,28034,563
+run_real_01,pure,True,converged,5,6,0.604158,27649,1408
+run_real_02,pure,True,converged,5,6,0.604036,30731,851
+run_real_03,pure,True,converged,3,4,0.603304,20000,696
+run_real_04,pure,True,converged,3,4,0.601838,19257,935
+run_real_05,pure,True,converged,3,4,0.603337,20125,770
+run_rehearsal,pure,True,converged,3,4,0.601838,31226,309
+run_rehearsal2,pure,True,converged,3,4,0.601838,39730,970
+run_rehearsal3,pure,True,converged,3,4,0.601838,54708,562
+run_rehearsal4,pure,True,converged,3,4,0.601838,20413,452
+run_rehearsal5,pure,True,converged,4,5,0.604998,37655,562
+run_unseeded_05,pure,True,converged,3,4,0.603006,32945,579
+run_unseeded_06,pure,True,converged,3,4,0.604238,57299,790
+run_unseeded_07,pure,True,converged,3,4,0.602811,40252,743
+run_unseeded_08,pure,True,converged,3,4,0.602811,52208,722
+run_unseeded_09,pure,True,converged,3,4,0.601838,35849,627
+run_unseeded_10,pure,True,converged,3,4,0.602936,34223,657
+run_unseeded_11,pure,True,converged,3,4,0.601838,37184,755
+run_unseeded_12,pure,True,converged,3,4,0.603694,36681,677
+run_unseeded_13,pure,True,converged,3,4,0.601838,47682,659
+run_unseeded_14,pure,True,converged,3,4,0.604044,67069,498
+run_unseeded_15,pure,True,converged,5,6,0.603992,88665,1226
+run_unseeded_16,pure,True,converged,3,4,0.601838,31917,515
+run_unseeded_17,pure,True,converged,3,4,0.601838,34945,427
+run_unseeded_18,pure,True,converged,3,4,0.601838,32584,626
+run_unseeded_19,pure,True,converged,3,4,0.603186,30850,314
+run_unseeded_20,pure,True,converged,3,4,0.601838,40514,659
+run_unseeded_21,pure,True,converged,3,4,0.602811,60411,391
+run_unseeded_22,pure,True,budget_exhausted,2,3,0.601838,8517,437
+run_unseeded_23,pure,True,converged,3,4,0.603512,48583,799
+run_unseeded_24,pure,True,converged,3,4,0.603041,39779,1059
+run_unseeded_25,pure,True,converged,3,4,0.604681,38592,436
+run_unseeded_26,pure,True,converged,3,4,0.602885,53974,410
+run_unseeded_27,pure,True,converged,3,4,0.601838,35251,676
+run_unseeded_28,pure,True,converged,3,4,0.601838,42568,464

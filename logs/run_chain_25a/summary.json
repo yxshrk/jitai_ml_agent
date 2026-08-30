@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_chain_25a",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6717668175697327,
+    "ndcg5": 0.5375950336456299,
+    "primary": 0.6046808958053589
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13425,
+      "out": 2287,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 12938,
+      "out": 10395,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3223,
+      "out": 1258,
+      "calls": 2
+    }
+  },
+  "tokens_total": 43526,
+  "wall_s": 549.1,
+  "self_critique": "Run critique\n\nWhat was suboptimal\n\n- The run declared convergence after very little effective exploration: one strong seed, one low-value ensemble expansion, one failed proposal, and one large auxiliary-loss change.\n- Node 002 reached 0.6048, nominally above the reported champion 0.604681, but was rejected. The journal should record the unrounded score, acceptance threshold, variance/confidence estimate, and rejection reason. Otherwise the decision is not auditable.\n- Expanding three nearly identical consecutive-seed models to five was expensive but added little diversity. Initialization variance was apparently not the main bottleneck.\n- After node_003 failed operationally, node_004 branched from that failed node rather than returning to node_001. A failed execution should trigger repair/retry or a clean branch from the champion, not become the conceptual parent of a new experiment.\n- The CWM auxiliary-loss experiment changed both objective and supervision semantics at once, with an aggressive weight of 0.3 and a claimed +0.002 gain unsupported by a staged ablation. Its large regression to 0.5961 suggests objective conflict, scaling issues, or poor duration-label alignment.\n- Search allocation was unbalanced: repeated seeds received an experiment, while no documented local search covered learning rate, regularization, embedding size, negative sampling, BCE/BPR weighting, calibration, or ensemble weighting.\n- The failure at node_003 is opaque. Missing error category and diagnostics make it impossible to distinguish a bad idea from a harness/infrastructure problem.\n\nWhat I would change in the scaffold\n\n- Always branch new scientific experiments from the current champion unless explicitly testing an interaction.\n- Separate \u201cFAILED\u201d from \u201cREJECTED\u201d; automatically retry deterministic infrastructure failures once and preserve the traceback.\n- Log full-precision metrics, runtime, seed variance, acceptance margin, and exact rejection rationale.\n- Require risky objective changes to proceed through a small weight sweep, including zero-weight control, rather than a single large setting.\n- Prefer diversity estimates before enlarging ensembles: measure prediction correlation and only add members with complementary errors.\n- Use a staged search budget: reproduce champion, run cheap local ablations, then attempt larger architectural or auxiliary-target changes.\n- Do not mark convergence after only two substantive alternatives unless budget exhaustion or a predefined stopping rule is documented.\n\nWhat the next run should try first\n\nStart from node_001 and perform a compact local sweep of the existing successful model, not another same-family seed expansion. First test the BCE/BPR mixing weight and regularization strength around the champion, using identical data splits and at least two seeds per setting. Then ensemble only the best complementary configurations with weights learned on an inner split or cross-validation predictions, rather than adding consecutive seeds and rank-averaging them uniformly.\n\nBefore further CWM work, run a diagnostic low-weight sweep such as 0.01, 0.03, and 0.1 while logging each loss scale and gradient norm. The 0.3 result should not be revisited until objective compatibility is established."
+}

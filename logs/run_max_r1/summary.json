@@ -1,0 +1,379 @@
+{
+  "run_dir": "logs/run_max_r1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6690517080075563,
+    "ndcg5": 0.5371131236038739,
+    "primary": 0.6030824158057151,
+    "history": [
+      {
+        "probe": "recency_weighted_member",
+        "seed": 42,
+        "half_life_days": 7.0,
+        "best_primary": 0.602069,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.638669,
+            "val_gauc": 0.650031,
+            "val_primary": 0.589279
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.550802,
+            "val_gauc": 0.660951,
+            "val_primary": 0.59686
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513294,
+            "val_gauc": 0.665558,
+            "val_primary": 0.600383
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.49971,
+            "val_gauc": 0.666787,
+            "val_primary": 0.601135
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493043,
+            "val_gauc": 0.665679,
+            "val_primary": 0.600426
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488274,
+            "val_gauc": 0.667827,
+            "val_primary": 0.602069
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484013,
+            "val_gauc": 0.667074,
+            "val_primary": 0.601226
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.479867,
+            "val_gauc": 0.666734,
+            "val_primary": 0.60105
+          }
+        ]
+      },
+      {
+        "probe": "recency_weighted_member",
+        "seed": 43,
+        "half_life_days": 7.0,
+        "best_primary": 0.602462,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.63803,
+            "val_gauc": 0.647509,
+            "val_primary": 0.587328
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.550123,
+            "val_gauc": 0.659889,
+            "val_primary": 0.596137
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513492,
+            "val_gauc": 0.665698,
+            "val_primary": 0.600367
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499781,
+            "val_gauc": 0.665917,
+            "val_primary": 0.600664
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492911,
+            "val_gauc": 0.666769,
+            "val_primary": 0.601156
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488082,
+            "val_gauc": 0.667218,
+            "val_primary": 0.601492
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48378,
+            "val_gauc": 0.668609,
+            "val_primary": 0.602462
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.479553,
+            "val_gauc": 0.666568,
+            "val_primary": 0.600847
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.475266,
+            "val_gauc": 0.666152,
+            "val_primary": 0.600439
+          }
+        ]
+      },
+      {
+        "probe": "recency_weighted_member",
+        "seed": 44,
+        "half_life_days": 7.0,
+        "best_primary": 0.60189,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637125,
+            "val_gauc": 0.650157,
+            "val_primary": 0.58967
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54613,
+            "val_gauc": 0.660306,
+            "val_primary": 0.596715
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511783,
+            "val_gauc": 0.664509,
+            "val_primary": 0.599521
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500023,
+            "val_gauc": 0.667129,
+            "val_primary": 0.601377
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494054,
+            "val_gauc": 0.666981,
+            "val_primary": 0.601455
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.48974,
+            "val_gauc": 0.666939,
+            "val_primary": 0.601376
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485872,
+            "val_gauc": 0.667526,
+            "val_primary": 0.60189
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482087,
+            "val_gauc": 0.666313,
+            "val_primary": 0.600917
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.47815,
+            "val_gauc": 0.665944,
+            "val_primary": 0.600445
+          }
+        ]
+      },
+      {
+        "probe": "recency_weighted_member",
+        "seed": 45,
+        "half_life_days": 7.0,
+        "best_primary": 0.601484,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637097,
+            "val_gauc": 0.652513,
+            "val_primary": 0.590935
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547367,
+            "val_gauc": 0.66172,
+            "val_primary": 0.597509
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512225,
+            "val_gauc": 0.66716,
+            "val_primary": 0.601331
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499524,
+            "val_gauc": 0.666192,
+            "val_primary": 0.600748
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493013,
+            "val_gauc": 0.667185,
+            "val_primary": 0.601484
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488176,
+            "val_gauc": 0.666996,
+            "val_primary": 0.601391
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483674,
+            "val_gauc": 0.667221,
+            "val_primary": 0.60123
+          }
+        ]
+      },
+      {
+        "probe": "recency_weighted_member",
+        "seed": 46,
+        "half_life_days": 7.0,
+        "best_primary": 0.601476,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.638956,
+            "val_gauc": 0.644549,
+            "val_primary": 0.585259
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.553495,
+            "val_gauc": 0.658687,
+            "val_primary": 0.595072
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.514672,
+            "val_gauc": 0.66579,
+            "val_primary": 0.600343
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499696,
+            "val_gauc": 0.666364,
+            "val_primary": 0.600979
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492396,
+            "val_gauc": 0.666217,
+            "val_primary": 0.600915
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487401,
+            "val_gauc": 0.667351,
+            "val_primary": 0.601476
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.482959,
+            "val_gauc": 0.666639,
+            "val_primary": 0.601
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.478652,
+            "val_gauc": 0.666561,
+            "val_primary": 0.600935
+          }
+        ]
+      },
+      {
+        "probe": "rank_ensemble_size",
+        "members": 1,
+        "seeds": [
+          42
+        ],
+        "half_life_days": 7.0,
+        "gauc": 0.668061,
+        "ndcg5": 0.536509,
+        "primary": 0.602285
+      },
+      {
+        "probe": "rank_ensemble_size",
+        "members": 2,
+        "seeds": [
+          42,
+          43
+        ],
+        "half_life_days": 7.0,
+        "gauc": 0.669052,
+        "ndcg5": 0.537113,
+        "primary": 0.603082
+      },
+      {
+        "probe": "rank_ensemble_size",
+        "members": 3,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "half_life_days": 7.0,
+        "gauc": 0.66914,
+        "ndcg5": 0.536862,
+        "primary": 0.603001
+      },
+      {
+        "probe": "rank_ensemble_size",
+        "members": 5,
+        "seeds": [
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "half_life_days": 7.0,
+        "gauc": 0.669074,
+        "ndcg5": 0.53705,
+        "primary": 0.603062
+      }
+    ],
+    "selected_ensemble_size": 2,
+    "half_life_days": 7.0,
+    "validation_boundary_ordinal": 738267,
+    "recency_weight_min": 0.6737819314002991,
+    "recency_weight_max": 2.2109086513519287,
+    "effective_sample_size": 1027338.75
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 44417,
+      "out": 5268,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 20230,
+      "out": 18518,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 404,
+      "out": 982,
+      "calls": 1
+    }
+  },
+  "tokens_total": 89819,
+  "wall_s": 3456.1,
+  "self_critique": "Overall\n\nThe run found a small improvement: 0.603082 versus 0.6018, about +0.00128 absolute. That is useful, but the journal does not establish why it improved, and \u201cconverged\u201d is premature after only three child experiments.\n\nWhat the harness/policy did suboptimally\n\n- It accepted node_003 even though its stated prediction was not met. The hypothesis promised at least +0.002; the observed gain was about +0.00128. Objective acceptance and hypothesis validation should be recorded separately.\n- Node_003 bundled two changes\u2014recency weighting and a multi-seed rank ensemble\u2014so the gain is not attributable. Node_002 already suggests the ensemble alone may provide roughly +0.0008, leaving uncertain incremental value from recency weighting.\n- Several drafts were \u201ckitchen sink\u201d proposals. Node_001 combined architecture, BPR hybridization, dropout, AdamW, decay, and recency weighting. A rejection yields little actionable information.\n- Claims were stronger than the evidence. \u201cTemporal-shift-driven overfit\u201d was inferred merely from validation peaking and declining; ordinary model overfitting is an equally plausible explanation.\n- The initialization-variance claim in node_002 is hard to reconcile with the reported baseline sigma of 0.0001 unless that sigma measures something else. Uncertainty definitions and paired-seed comparisons were not made explicit.\n- Acceptance behavior is opaque. Node_002 improved the rounded primary from 0.6018 to 0.6026 but was rejected, while node_003 was accepted at 0.6031. The journal should report the exact threshold, uncertainty, and statistical comparison behind each decision.\n- Stopping as \u201cconverged\u201d after one accepted branch and no ablations leaves obvious local experiments unexplored.\n\nWhat I would change in the scaffold\n\n- Require atomic experiments by default: one substantive intervention per node.\n- Separate:\n  1. objective improvement,\n  2. statistical confidence,\n  3. whether the numerical hypothesis was confirmed.\n- Record exact scores, seed-level scores, paired deltas, ensemble size, and the meaning of sigma.\n- Require causal ablations before attributing gains from bundled changes.\n- Calibrate predicted effect sizes from prior results rather than repeatedly claiming \u22650.002 gains in a regime where observed improvements are around 0.0005\u20130.0013.\n- Use a convergence rule based on exhausted high-value ablations or lack of improvement across a defined budget, not simply a short sequence of rejections.\n- Guard against validation overfitting from selecting epochs, seeds, ensemble size, and recency hyperparameters on the same split. Prefer a fixed protocol or nested/secondary validation slice.\n\nWhat the next run should try first\n\nA paired ablation of node_003:\n\n- Same FM configuration and exact same consecutive seeds.\n- Compare unweighted versus seven-day recency-weighted training.\n- Evaluate both single-model and fixed-size rank-ensemble outputs.\n\nThis 2\u00d72 comparison will isolate the gains from recency weighting, ensembling, and their interaction. If recency weighting has a reproducible positive paired delta, then sweep a small preregistered half-life set such as 3, 7, 14, and 30 days. If it does not, retain the ensemble-only result and investigate cheaper ensemble sizes, since node_002 indicates that variance reduction may account for much of the winning score."
+}

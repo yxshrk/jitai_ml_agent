@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_19",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6693113446235657,
+    "ndcg5": 0.5370612144470215,
+    "primary": 0.6031862497329712
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13075,
+      "out": 2400,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 4503,
+      "out": 9933,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 250,
+      "out": 689,
+      "calls": 1
+    }
+  },
+  "tokens_total": 30850,
+  "wall_s": 314.3,
+  "self_critique": "Run critique\n\nWhat was suboptimal:\n- Half of the attempted nodes failed at proposal generation, yet the run stopped as \u201cconverged\u201d after only two valid evaluations. This is insufficient evidence of search-space convergence.\n- node_002 was attached to failed node_001 rather than the last successful node, obscuring lineage and potentially losing baseline context.\n- The ensemble improved primary from 0.6018 to 0.603186 (+0.00139), below its stated hypothesis threshold of +0.002. It was reasonable to accept as the best result, but the hypothesis itself was not confirmed.\n- A five-seed ensemble adds roughly 5\u00d7 inference/training cost for a modest gain. No cost-adjusted comparison or cheaper 2-/3-seed ablation was recorded.\n- The reported baseline sigma=0.0001 makes the gain look meaningful, but it is unclear whether sigma covers training-seed variance, validation sampling variance, or repeated evaluations. The ensemble should be compared using paired seeds or repeated splits.\n- Only percentile-rank averaging was tested. There was no comparison with raw-score averaging, calibrated averaging, weighted blending, or a single model trained with stronger regularization.\n- The policy did not recover productively from proposal failures and terminated before exploring even basic neighboring variants.\n\nScaffold changes:\n- Validate proposal structure before creating a node; on generation failure, automatically retry with a simpler constrained template.\n- Always branch from the most recent successful node unless a failed node produced a usable artifact.\n- Separate \u201caccepted as incumbent\u201d from \u201chypothesis confirmed,\u201d and enforce claimed effect-size thresholds explicitly.\n- Require uncertainty, compute cost, and paired-comparison metadata for ensembles.\n- Do not declare convergence based on failed proposals. Require a minimum number of valid, diverse experiments and several consecutive non-improvements.\n- Add automatic ablations for ensemble size and aggregation method.\n\nWhat the next run should try first:\n1. Reproduce the baseline and ensemble over paired independent seeds, reporting mean, standard deviation, and per-seed deltas.\n2. Compare 2-, 3-, and 5-seed ensembles using raw-score averaging versus within-user percentile-rank averaging.\n3. Prefer the smallest ensemble retaining most of the +0.00139 gain; if a 3-seed version is close, use it as the new parent.\n4. If the gain is robust, test whether diversity can be increased cheaply through hyperparameter or regularization variation rather than merely adding identical FM initializations."
+}

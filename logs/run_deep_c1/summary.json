@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_deep_c1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 33630,
+      "out": 2927,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 19637,
+      "out": 18153,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3334,
+      "out": 1074,
+      "calls": 2
+    }
+  },
+  "tokens_total": 78755,
+  "wall_s": 836.4,
+  "self_critique": "The run converged prematurely. Only three heterogeneous children were tested, all directly from the baseline, and no promising result was refined. Most importantly, node_002 achieved the highest raw primary (0.6026 versus 0.6018) but was rejected without an archived uncertainty estimate or gate rationale. That makes the final \u201cbest\u201d and stop decision difficult to audit.\n\nPolicy/scaffold issues:\n- Node_001 bundled architecture, loss, optimizer, decay, dropout, recency weighting, and checkpointing. A rejection provides almost no actionable attribution.\n- Node_003 tested one arbitrary temporal half-life rather than a small sweep, and recency weighting may be poorly motivated unless the validation split truly reflects deployment-time drift.\n- The policy recognized overfitting but did not systematically tune the simplest relevant controls: checkpoint epoch, L2, factor dimension, learning rate, or dropout.\n- Seed variance was invoked but not measured with paired repeated runs. A three-seed ensemble should be compared against three independently trained single models under the same seeds, with bootstrap or repeated-seed uncertainty.\n- \u201cConverged\u201d is too strong after three one-shot proposals, especially when one rejected candidate had a materially higher point estimate.\n- Rejection records should include the exact reason: significance threshold, complexity penalty, latency, or reproducibility failure.\n\nI would change the scaffold to enforce mostly one-factor experiments, require paired seeds/common evaluation samples, report confidence intervals and acceptance margins, and reserve budget to refine the strongest rejected branch. Multi-component packages should only follow evidence for their individual components.\n\nThe next run should first reproduce node_002 under a rigorous paired protocol. Train several FM replicas, compare single-model and 3/5-seed rank-averaged ensembles across repeated seed groups, and quantify the gain and cost. In parallel or immediately afterward, run a compact local sweep around the FM champion focused on epochs 6\u20139 and modestly stronger regularization. This directly targets the observed post-epoch-8 overfit and is more likely to produce a robust, attributable improvement than another architecture package."
+}

@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_unseeded_28",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13922,
+      "out": 2400,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 4457,
+      "out": 17283,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3054,
+      "out": 1452,
+      "calls": 2
+    }
+  },
+  "tokens_total": 42568,
+  "wall_s": 464.1,
+  "self_critique": "Run critique\n\n- The run effectively tested only one valid alternative. Two of four nodes failed during proposal generation, yet the harness still declared convergence. That is premature and reflects orchestration failure more than search saturation.\n- node_002 was attached to failed node_001, creating ambiguous lineage. Failed/no-metric nodes should not become experimental parents; recovery should explicitly use the last valid ancestor.\n- node_002 improved the reported primary from 0.601838 to about 0.6022, a delta near +0.00036. With the stated sigma of 0.0001, this may be meaningful even though it missed the hypothesized +0.0025. The policy should separate \u201chypothesis confirmed\u201d from \u201ccandidate is the new incumbent.\u201d Rejecting the claim is reasonable; discarding the better checkpoint is not.\n- The +0.0025 target was poorly calibrated relative to observed score scale and noise. It encouraged an all-or-nothing decision instead of accumulating modest improvements.\n- \u201cStrong-regularization dial sweep\u201d bundled several choices around an already compound model and produced little diagnostic information. Atomic ablations would better identify whether early stopping, recency weighting, regularization, architecture, or the BCE/BPR mixture matters.\n- An unseeded run with sigma=0.0001 is not sufficiently justified. Variance should come from repeated seeded evaluations, not an assumed or single-run estimate.\n\nScaffold changes\n\n- Add proposal preflight validation and a deterministic fallback proposal so generation failures do not consume most of the budget.\n- Never branch from failed nodes; preserve explicit executable ancestry.\n- Track hypothesis verdict and incumbent promotion independently.\n- Require a minimum number of successful, diverse experiments before convergence.\n- Use replicated seeds and confidence intervals, retaining exact metrics rather than rounded values.\n- Generate one-factor experiments with realistic expected deltas and staged sweeps.\n\nNext run\n\nFirst reproduce node_000 and node_002 across 3\u20135 fixed seeds and evaluate checkpoints around epochs 2\u20133. If node_002\u2019s gain persists, promote it despite the failed +0.0025 claim. Then run an atomic sweep from the valid baseline: early-stopping/checkpoint epoch first, regularization strength second, and BCE/BPR mixing weight third. Fix the proposal-generation failures before attempting broader architectural changes."
+}

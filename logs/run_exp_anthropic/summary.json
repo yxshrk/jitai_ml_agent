@@ -1,0 +1,331 @@
+{
+  "run_dir": "logs/run_exp_anthropic",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 6,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6715602226565119,
+    "ndcg5": 0.5379723545421418,
+    "primary": 0.6047662885993268,
+    "history": [
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.15,
+          "wd": 0.0003,
+          "half_life": 3.5,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 3
+        },
+        "primary": 0.5944002168476817
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.25,
+          "wd": 0.003,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.595401250233631
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.35,
+          "wd": 0.001,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 3
+        },
+        "primary": 0.5953691770848485
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.25,
+          "wd": 0.001,
+          "half_life": 3.5,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 5
+        },
+        "primary": 0.5941828104244025
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.15,
+          "wd": 0.001,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 3
+        },
+        "primary": 0.5948163303076109
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.35,
+          "wd": 0.001,
+          "half_life": 14.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.5956095286640242
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.35,
+          "wd": 0.0001,
+          "half_life": 3.5,
+          "step_gamma": 0.7,
+          "lr": 0.0005,
+          "step_size": 3
+        },
+        "primary": 0.594607592416504
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.25,
+          "wd": 0.0001,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 3
+        },
+        "primary": 0.5944387965855008
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.15,
+          "wd": 0.003,
+          "half_life": 14.0,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 5
+        },
+        "primary": 0.5948923528668968
+      },
+      {
+        "stage": 1,
+        "config": {
+          "dropout": 0.35,
+          "wd": 0.0001,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.001,
+          "step_size": 3
+        },
+        "primary": 0.5942259100674823
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6032422796945216
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.35,
+          "wd": 0.0003,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6025289896814392
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.003,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6032311782899603
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.0003,
+          "half_life": 14.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.602979163442056
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.003,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6024948571172406
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.24999999999999997,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6030485755325766
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6032422796945216
+      },
+      {
+        "stage": 2,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 7.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6024312890200378
+      },
+      {
+        "stage": "final",
+        "seed": 42,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6034594954111191
+      },
+      {
+        "stage": "final",
+        "seed": 43,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.604295309203208
+      },
+      {
+        "stage": "final",
+        "seed": 44,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6041678486575064
+      },
+      {
+        "stage": "final",
+        "seed": 45,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.603348832982499
+      },
+      {
+        "stage": "final",
+        "seed": 46,
+        "config": {
+          "dropout": 0.44999999999999996,
+          "wd": 0.001,
+          "half_life": 28.0,
+          "step_gamma": 0.5,
+          "lr": 0.0005,
+          "step_size": 5
+        },
+        "primary": 0.6034932559950619
+      },
+      {
+        "stage": "ensemble",
+        "n_members": 5,
+        "primary": 0.6047662885993268
+      }
+    ],
+    "final_config": {
+      "dropout": 0.44999999999999996,
+      "wd": 0.001,
+      "half_life": 28.0,
+      "step_gamma": 0.5,
+      "lr": 0.0005,
+      "step_size": 5
+    },
+    "n_ensemble_members": 5
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "anthropic/claude-sonnet-5/selector": {
+      "in": 45645,
+      "out": 11303,
+      "calls": 3
+    },
+    "anthropic/claude-sonnet-5/proposer": {
+      "in": 55976,
+      "out": 67373,
+      "calls": 5
+    },
+    "anthropic/claude-sonnet-5/reflector": {
+      "in": 9141,
+      "out": 725,
+      "calls": 2
+    }
+  },
+  "tokens_total": 190163,
+  "wall_s": 1845.0,
+  "self_critique": "self-critique unavailable: anthropic returned no text (stop=max_tokens, blocks=['thinking'], out=1200)"
+}

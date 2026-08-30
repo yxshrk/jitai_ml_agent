@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_chain_c1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.670939935054513,
+    "ndcg5": 0.5375360937568952,
+    "primary": 0.604238014405704
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14075,
+      "out": 2529,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10285,
+      "out": 10687,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3248,
+      "out": 1423,
+      "calls": 2
+    }
+  },
+  "tokens_total": 42247,
+  "wall_s": 433.3,
+  "self_critique": "Overall assessment\n\nThe run found a real but modest improvement by importing the frozen reference stack, then did little effective search around it. Declaring convergence after only two valid challenger evaluations and one proposal failure was premature.\n\nWhat the harness/policy did suboptimally\n\n- Search depth and breadth were too small. After node_001, only one clean hypothesis was tested; node_003 failed, and node_004 was a relatively large objective change.\n- It continued from failed node_003 instead of branching directly from the best valid node_001. Failed nodes should not become experimental parents unless the failure itself produced a useful partial artifact.\n- The proposal-generation or execution pipeline was brittle. \u201cProposal failed\u201d without a categorized error, retry, or repaired proposal wastes scarce budget.\n- The learning-rate ensemble changed multiple members at once and predicted an implausibly precise +0.0008 without evidence from single-model LR sweeps or prediction-correlation analysis.\n- The CWM auxiliary loss was a high-risk leap with several coupled choices: censoring logic, auxiliary target, and weight 0.3. It should have been preceded by target-quality diagnostics and a small weight sweep.\n- No postmortem was recorded for either rejection. The run should distinguish optimization degradation from reduced ensemble diversity, calibration changes, or implementation errors.\n- Node_001 appears twice as an accepted child and as a seed, which makes lineage and experiment counting ambiguous.\n- \u201cConverged\u201d is unsupported. The best score came from a supplied reference implementation, not from iterative convergence of the search policy.\n\nWhat I would change in the scaffold\n\n- Always branch new experiments from the current best valid node unless explicitly testing a recovery.\n- Add compile/import and tiny-data smoke tests before spending a full evaluation. Automatically repair or regenerate one failed proposal.\n- Require one controlled change per experiment, with an expected effect range rather than a point estimate.\n- Persist per-member validation predictions, pairwise rank correlations, individual scores, and ensemble-size curves.\n- Use paired bootstrap or repeated-seed uncertainty for close differences. The 0.0002 loss at node_002 should be interpreted relative to run-to-run ensemble variance, not only a nominal sigma.\n- Separate exploration budgets: cheap ablations first, then objective changes only when diagnostics support them.\n- Define convergence using a minimum number of valid attempts and exhausted local neighborhoods, not merely several non-improvements.\n- Clean up node bookkeeping so imported seed, evaluated implementation, and parent node are represented once with explicit provenance.\n\nWhat the next run should try first\n\nStart from node_001 and test additional homogeneous seeds using exactly the champion configuration. Save all member predictions, then evaluate fixed ensemble sizes such as 5, 7, and 10 seeds using the same rank-averaging rule. This is the cleanest follow-up because LR diversification hurt, while additional same-distribution seeds may still reduce variance.\n\nNext, test a simple blend between node_001 and node_000 predictions over a small fixed grid. Although the baseline is weaker, it may contribute useful diversity; prediction correlation should determine whether this is worthwhile.\n\nOnly after those tests should the run revisit model or loss changes. If CWM is reconsidered, first validate censoring statistics and sweep much smaller auxiliary weights, such as 0.03, 0.1, and 0.2, one change at a time."
+}

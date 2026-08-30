@@ -3,10 +3,20 @@
 An autonomous ML research agent for the KuaiRand-Pure benchmark (rank each user's
 impressions by `long_view`; primary score = mean of GAUC and nDCG@5).
 
-**Headline result (validation):** official FM baseline **0.6016** → our agent,
-starting from that baseline with **no team-provided solution and zero manual
-interventions**, reached **0.60558** (+0.0040 primary; +0.0054 GAUC, +0.0026
-nDCG@5) in 6 iterations / 17 minutes — designated run `logs/run_bigclock_07`.
+**Headline result (validation point estimate):** `run_bigclock_07` — launched with
+**no executable solution, checkpoint, or champion configuration as a starting
+artifact** (human-authored contracts and measured method cards were available to
+it; see "human/agent boundary" below) — reproduced the FM baseline at 0.60182
+(mean of seeds 42-44; published 0.6016) and reached a best observed
+official-validation checkpoint of **0.605575**: **+0.00398 over the published
+baseline** (+0.00376 over our reproduced mean; +0.0054 GAUC, +0.0026 nDCG@5).
+The run stopped under the required three-consecutive-iterations convergence rule
+after **6 top-level agent decisions** in 17 minutes. Those decisions were
+hierarchical research actions: the two winning nodes internally executed 8+6-point
+hyperparameter sweeps, 7 seed-member fits, and 6 candidate ensemble designs, all
+recorded in probe logs — we report both the decision count and the internal work,
+and the validation set was used adaptively for those selections, so hidden-test
+performance is the decisive generalization test.
 Bonus: KuaiRand-1K **0.63874** (agent-designated, `logs/run_desig_1k_01`);
 KuaiRand-27K 0.67263 (out-of-protocol GPU scaling demo).
 
@@ -77,9 +87,15 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 - Train on train; validation used for tuning/selection only (organizer-endorsed).
 - The hidden-test window's **labels are never read**: the export writes features
   only and the predictors assert the archive contains no label-like arrays.
-- ~45 development runs are fully disclosed with journals; the submission is the
-  clearly designated best run, per the organizers' webinar guidance.
-- Zero manual interventions in all designated runs (machine-counted).
+- The COMPLETE development campaign is disclosed: 113 runs (including incomplete/
+  aborted ones), ~4.8M LLM tokens, ~30 aggregate run-hours — machine-inventoried by
+  `tools/audit_runs.py` (logs/RUNS_INVENTORY.md, evidence/run_inventory.csv). The
+  submission is the clearly designated best run, per the organizers' webinar guidance.
+- Human/agent boundary: humans built the harness and curated measured method-card
+  knowledge BETWEEN runs (all such changes visible in git history); once a run
+  launches, the agent proposes, writes, executes, evaluates, and terminates its
+  experiments without human action.
+- Zero mid-run human actions in the designated runs — by team attestation and the absence of intervention events in the journals (the harness journals events; it does not surveil the operator).
 
 ## Limitations & what we'd do with more time
 
