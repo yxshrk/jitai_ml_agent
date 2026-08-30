@@ -27,12 +27,14 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
 
 
 ## Advanced search mechanics (use inside fan-out nodes)
-- SUCCESSIVE HALVING (Hyperband/ASHA, Li et al. 2018): launch ~2-3x more candidates
-  than you can afford full-length; evaluate all at a short budget (1-2 epochs), kill
-  the bottom half, double the survivors' budget, repeat. Same wall-clock, ~3x wider
-  search than equal-length probes. Preferred over plain random search when the
-  candidate count exceeds ~16.
-- SNAPSHOT ENSEMBLING (Huang et al., ICLR 2017): with a cyclic or restarted LR,
+- SUCCESSIVE HALVING (Hyperband/ASHA, Li et al. 2018) is REQUIRED for any sweep of
+  more than 16 candidates: evaluate all at a short budget (1-2 epochs), kill the
+  bottom half, double the survivors' budget, repeat until <= 4 survive — then train
+  EVERY survivor at FULL fidelity and pick the winner from those full-length scores
+  only. Never commit a config on the basis of short-budget scores (measured failure:
+  a 208-probe sweep that skipped the full-fidelity final round finished at 0.6024,
+  losing to a 59-probe sweep that ranked at full length, 0.6043).
+- SNAPSHOT ENSEMBLING (Huang et al., ICLR 2017) — USE IT in every ensemble close: with a cyclic or restarted LR,
   save several checkpoints from ONE training and use them as extra ensemble members
   free of retraining cost. The ensemble-design sweep may mix seed-members and
   snapshot-members and let validation pick the blend.
