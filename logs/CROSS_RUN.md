@@ -1056,3 +1056,99 @@ Scaffold changes
 Next run
 
 First reproduce the k=16 baseline across at least 3–5 fixed seeds using one predetermined checkpoint rule. Then run a small paired sweep over FM rank and regularization, for example ranks 8/16/32 and nearby L2 values, holding data splits and seeds constant. This will establish whether the observed 1e-4-scale differences are meaningful and is more informative than another seed ensemble.
+
+## Run logs/run_unseeded_18
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Adding a 0.3-weight cumulative ordinal watch-ratio auxiliary loss | primary: 0.602105 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+The run converged prematurely. Only two nodes produced metrics, while two proposal-generation attempts failed. That is insufficient evidence of search-space convergence; it is primarily scaffold/policy failure.
+
+The ordinal auxiliary-loss experiment was weakly informative. Its observed gain was only about +0.0003 (0.6021 versus 0.6018), far below the hypothesized +0.0025 and likely within noise. Rejecting it was reasonable, but an unseeded run and a single baseline sigma estimate do not support a confident comparison.
+
+The lineage is also questionable: node_002 descends from failed node_001 while claiming an “otherwise identical” no-auxiliary comparison. Failed nodes should not be valid experimental parents unless their intended configuration was recovered and explicitly recorded.
+
+Scaffold changes
+
+1. Add proposal retries and a conservative fallback mutation so proposal failures do not consume half the budget.
+2. Do not declare convergence after such a small number of successful evaluations; require a minimum count of valid, diverse trials.
+3. Enforce executable lineage: every child must resolve to a concrete successful parent configuration.
+4. Seed runs and replicate close results. Use paired seeds or confidence intervals for deltas near 0.0003.
+5. Separate hypothesis success from metric acceptance: record that the auxiliary-loss hypothesis was falsified even though the raw metric increased slightly.
+6. Prefer controlled one-factor ablations and automatically verify that the control differs only in the intended parameter.
+
+Next run
+
+First, establish a seeded, multi-replicate baseline and rerun the auxiliary-loss comparison as a clean ablation. If retained, sweep smaller auxiliary weights such as 0, 0.03, 0.1, and 0.3 rather than testing only 0.3. Stop pursuing it unless the gain is repeatable. After that, spend the remaining budget on robust baseline-neighbor changes rather than another large stack modification.
+
+## Run logs/run_unseeded_20
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Adding a 0.3-weight cumulative ordinal watch-ratio auxiliary loss | primary: 0.595000 | verdict: rejected
+- node_003 | method: regularization-schedule | hypothesis: Because validation primary peaks at epoch 8 and | primary: 0.598539 | verdict: rejected
+self_critique:
+Run critique
+
+- The search stopped too early. Only two substantive alternatives were evaluated after the baseline, both rejected. That is insufficient evidence for “converged,” especially in an unseeded run.
+- node_001 failed at proposal time, yet node_002 was descended from it. Failed nodes should not become parents; the harness should automatically fall back to the last valid accepted node.
+- Both experiments bundled multiple changes:
+  - node_002 added an ordinal auxiliary objective to an already complex hybrid loss.
+  - node_003 simultaneously changed embedding dropout, embedding L2, dense weight decay, and LR decay.
+  These tests cannot identify which component helped or hurt.
+- The proposals were overconfident and weakly grounded. Predicted gains of 0.002–0.0025 were asserted without local evidence or calibration from prior trials.
+- The response to an epoch-8 validation peak was mismatched. The first intervention should have been checkpoint selection/early stopping or one mild regularizer, not an aggressive four-part regularization schedule.
+- The regressions were material: node_002 fell by 0.0068 and node_003 by 0.0033. The policy correctly rejected them, but did not use those outcomes to narrow the search.
+- The reported sigma of 0.0001 is not credible unless derived from repeated controlled runs. A single unseeded trajectory cannot establish that level of uncertainty.
+
+Scaffold changes
+
+- Disallow lineage through failed nodes and auto-rollback to the most recent valid checkpoint.
+- Require single-factor or staged ablations unless interactions are explicitly the hypothesis.
+- Add a proposal preflight that checks architectural continuity, loss scaling, validation leakage, and whether the intervention directly addresses the observed failure mode.
+- Require repeated seeds for the baseline and promising candidates; use paired comparisons and confidence intervals.
+- Separate checkpoint/early-stopping tuning from model changes.
+- Do not declare convergence after only two rejected experiments; require a minimum search budget across several independent hypothesis classes.
+- After a large regression, generate a smaller-dose ablation rather than abandoning the entire direction.
+
+What the next run should try first
+
+1. Reproduce the baseline FM across 3–5 fixed seeds and save per-epoch validation curves.
+2. Select the best validation checkpoint or tune patience around the observed epoch-8 peak, with no other model changes.
+3. If a model change is then needed, tune one conservative FM parameter at a time—embedding dimension, learning rate, or a small L2 value—rather than moving immediately to a hybrid DCN/loss stack.
+4. Only revisit duration-aware auxiliary supervision after testing a much smaller weight and verifying that its target construction and gradient scale are compatible with the primary objective.
+
+## Run logs/run_unseeded_22
+dataset: pure
+stop_reason: budget_exhausted
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+The run effectively stopped after the baseline. Node_000 achieved 0.601838, while both remaining attempts failed before producing metrics. Most importantly, node_002 was chained from failed node_001 rather than recovering from the last executable node. This spent the remaining budget debugging an invalid proposal instead of exploring the model space.
+
+Suboptimal harness/policy behavior:
+- No preflight validation caught the node_001 proposal failure before consuming a full evaluation slot.
+- Failure recovery was poor: subsequent work inherited from a failed node instead of reverting to node_000.
+- The policy overcommitted to one proposal path despite a very small budget.
+- No alternative model or controlled FM ablation was evaluated, so there is no evidence that the baseline is locally optimal.
+- The reported sigma of 0.0001 looks precise, but with no visible replications it should not be treated as strong evidence of stability.
+
+Scaffold changes:
+- Validate generated patches/configurations with syntax, import, schema, and minimal smoke tests before scheduling evaluation.
+- Permit only successful nodes as experiment parents; debug attempts should start from the last valid checkpoint.
+- On proposal failure, automatically revert and issue a smaller, safer mutation.
+- Reserve at least one evaluation for an independent fallback experiment.
+- Record explicit failure diagnostics and classify failures as generation, build, runtime, or evaluation errors.
+- Prefer one-variable-at-a-time proposals when the remaining budget is small.
+
+What the next run should try first:
+Start from node_000 and make one conservative, fully validated FM change—preferably a small sweep over latent rank and regularization while holding preprocessing and training fixed. If only one trial is available, choose a modest increase in FM capacity paired with stronger regularization. Smoke-test it first, then evaluate it directly against the baseline under the same split; use repeated seeds only if the evaluation is stochastic.

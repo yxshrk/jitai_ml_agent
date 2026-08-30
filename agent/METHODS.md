@@ -226,6 +226,16 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: running-elsewhere (C2 architecture ensemble; seed ensemble measured)
 - status_1k: untried (three frozen-default seeds measured individually; no 1K prediction ensemble measured)
 
+
+### package-dial-sweep: Literature package with internal dial search
+- mechanism: Implement the full capacity+regularization package (dcn-lite + bpr-hybrid + regularization-schedule + recency-weighting) as ONE node whose script first runs a coarse INTERNAL sweep to set the dials, then trains the final model with the winning dials. Sweep procedure: 6-10 short probe trainings (2-3 epochs each, optionally on a 50% row subsample) over dropout {0.2, 0.3}, weight decay {1e-4, 1e-3}, LR step-decay {none, halve-per-epoch}, selecting by validation primary; then one full training with the best dials, half-epoch checkpointing, validation-best snapshot. Budget the probes so total runtime stays inside the timeout.
+- treats: overfit | underfit
+- preconditions: Use the npz fast path; keep probes short; the final training must be full-length. The sweep is internal to the node — one iteration, one artifact.
+- citation: standard hyperparameter search practice (random/grid search, Bergstra & Bengio JMLR 2012); package composition per DCNv2/BPR training setups.
+- expected_gain / cost: package at tuned dials measured 0.6047 +/- 0.0003; untuned dials measured 0.595-0.602 — the sweep is what closes that gap / medium-high runtime (one node).
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
