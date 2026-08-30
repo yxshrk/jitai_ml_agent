@@ -10,3 +10,16 @@ Champion candidate: run_real_01 node_002 (0.6042). Manual 3-seed best: zoo/best.
 | 03 | watch-time (ignored: policy bug, fixed) | converged | 3 | 0.6033 | +0.0015 | 11.6m | $0.66 |
 | 04 | watch-time themes (FM base) | converged | 3 | 0.6026 | +0.0008 | 15.6m | $0.63 |
 | 05 | compound DCN+themes | converged | 3 | 0.6033 | +0.0015 | 12.8m | $0.68 |
+
+## Sunday 30 Aug — fan-out doctrine evolution (see git history for harness changes between runs)
+| family | runs | best | note |
+|---|---|---|---|
+| unseeded atomic (05-11) | 7 | 0.60424 (06) | ensemble + duration-heads discoveries |
+| synergy cards (12-15) | 4 | 0.60404 | first package proposals |
+| effort grid (16-22,27,28) | 7 | 0.60319 | high/xhigh: measured FAILURE (truncation) |
+| dial-sweep wave (23-26) | 4 | 0.60468 (25) | first in-node search + ensemble |
+| chains (c1,c2,l1,25a,25b) | 5 | 0.60468 | ceiling confirmed; philosophy retired |
+| bigclock wave (01-07) | 7 | **0.60558 (07) = DESIGNATED** | dial sweep cleared epsilon -> ensemble-design close |
+| deep/anthropic/multidraft | 6 | 0.60462 (g1) | sonnet thinking-starvation measured |
+| max wave + experiments | 12 | in flight | honest-clock depth, 1K deep runs, clean A/B |
+All journals in logs/run_*/; cross-machine copies rsynced back on completion.

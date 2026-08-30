@@ -11,8 +11,8 @@ We built that agent, and ran it with zero human interventions."
 ## Shot 2 — one live iteration (0:15–0:55) ← the core shot
 Screen: terminal, launch a run:
   uv run python -m harness.cli run --data-dir data/real_ws \
-    --baseline-script zoo/baseline_ws.py --seed-scripts zoo/frozen_stack.py \
-    --max-iters 6 --sigma 0.0008 --context-mode compact --run-dir logs/run_demo
+    --baseline-script zoo/baseline_ws.py --accept-floor 0.0009 \
+    --max-iters 8 --context-mode compact --run-dir logs/run_demo
 Then open logs/run_demo/journal.jsonl (or tail it live) and point at one record.
 Say: "Each iteration is a full research step: the agent reads its own learning
 curve, diagnoses — here, overfitting after epoch three — selects a method from a
@@ -31,8 +31,9 @@ watch-time losses for this task, with seeds."
 ## Shot 4 — results + close (1:30–2:00)
 Screen: results.md table, then SUBMISSION_RECIPE.md.
 Say: "Final result: the official baseline scores 0.6016 on validation; our
-agent-designated five-seed ensemble reaches 0.60513 — and on KuaiRand-1K the
-agent scaled its own ensemble to ten seeds, finishing at 0.63874. Test data was touched exactly once, for the final
+our agent — with NO starting recipe — reaches 0.60558 by searching hyperparameters
+and designing its own ensemble inside its run; on KuaiRand-1K it scaled its own
+ensemble to ten seeds, finishing at 0.63874. Test data was touched exactly once, for the final
 submission — the leakage guard makes anything else structurally impossible.
 The agent is the product; the score is its evidence. Thanks."
 

@@ -28,11 +28,19 @@
 | run_ab_compact | converged | 3 | 0.6034 | 59.2 | 12904 |
 | run_ab_full | converged | 3 | 0.6018 | 2.8 | 0 |
 | run_ab_full2 | converged | 3 | 0.6018 | 18.3 | 39607 |
+| run_bigclock_01 | converged | 4 | 0.6042 | 21.1 | 72998 |
+| run_bigclock_03 | converged | 3 | 0.6047 | 13.3 | 75562 |
+| run_bigclock_05 | converged | 3 | 0.6018 | 11.3 | 49372 |
+| run_bigclock_07 | converged | 6 | 0.6056 | 17.0 | 115315 |
+| run_chain_25b | converged | 4 | 0.6044 | 18.9 | 43893 |
+| run_chain_l1 | converged | 4 | 0.6042 | 14.3 | 39249 |
 | run_clean_01 | converged | 3 | 0.6018 | 15.4 | 34574 |
 | run_clean_02 | converged | 3 | 0.6018 | 11.7 | 34892 |
 | run_clean_03 | converged | 3 | 0.6018 | 11.7 | 40121 |
 | run_clean_04 | converged | 3 | 0.6018 | 9.9 | 29107 |
 | run_clean_05 | converged | 3 | 0.6032 | 10.5 | 39768 |
+| run_deep_l1 | converged | 3 | 0.6042 | 23.3 | 56753 |
+| run_deep_l2 | converged | 3 | 0.6027 | 22.9 | 45781 |
 | run_desig_1k | converged | 3 | 0.6208 | 20.8 | 65909 |
 | run_desig_1k_01 | converged | 7 | 0.6387 | 62.7 | 101549 |
 | run_desig_full_01 | converged | 3 | 0.6018 | 14.4 | 54404 |
@@ -69,6 +77,22 @@
 | run_rehearsal3 | converged | 3 | 0.6018 | 9.4 | 54708 |
 | run_rehearsal4 | converged | 3 | 0.6018 | 7.5 | 20413 |
 | run_rehearsal5 | converged | 4 | 0.605 | 9.4 | 37655 |
+| run_unseeded_05 | converged | 3 | 0.603 | 9.7 | 32945 |
+| run_unseeded_06 | converged | 3 | 0.6042 | 13.2 | 57299 |
+| run_unseeded_07 | converged | 3 | 0.6028 | 12.4 | 40252 |
+| run_unseeded_08 | converged | 3 | 0.6028 | 12.0 | 52208 |
+| run_unseeded_09 | converged | 3 | 0.6018 | 10.5 | 35849 |
+| run_unseeded_10 | converged | 3 | 0.6029 | 11.0 | 34223 |
+| run_unseeded_11 | converged | 3 | 0.6018 | 12.6 | 37184 |
+| run_unseeded_12 | converged | 3 | 0.6037 | 11.3 | 36681 |
+| run_unseeded_13 | converged | 3 | 0.6018 | 11.0 | 47682 |
+| run_unseeded_16 | converged | 3 | 0.6018 | 8.6 | 31917 |
+| run_unseeded_18 | converged | 3 | 0.6018 | 10.4 | 32584 |
+| run_unseeded_20 | converged | 3 | 0.6018 | 11.0 | 40514 |
+| run_unseeded_22 | budget_exhausted | 2 | 0.6018 | 7.3 | 8517 |
+| run_unseeded_23 | converged | 3 | 0.6035 | 13.3 | 48583 |
+| run_unseeded_24 | converged | 3 | 0.603 | 17.7 | 39779 |
+| run_unseeded_27 | converged | 3 | 0.6018 | 11.3 | 35251 |
 
 ## Lever status (from LEVERS.md)
 
