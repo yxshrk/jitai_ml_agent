@@ -1152,3 +1152,40 @@ Scaffold changes:
 
 What the next run should try first:
 Start from node_000 and make one conservative, fully validated FM change—preferably a small sweep over latent rank and regularization while holding preprocessing and training fixed. If only one trial is available, choose a modest increase in FM capacity paired with stronger regularization. Smoke-test it first, then evaluate it directly against the baseline under the same split; use repeated seeds only if the evaluation is stochastic.
+
+## Run logs/run_unseeded_23
+dataset: pure
+stop_reason: converged
+best_primary: 0.603512
+- node_001 | method: package-dial-sweep | hypothesis: Because the parent curve peaks at epoch 8 | primary: 0.601313 | verdict: rejected
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Adding a low-weight CWM-style censored watch-time auxiliary loss | primary: 0.603512 | verdict: accepted
+self_critique:
+Run assessment
+
+What was suboptimal
+- The search converged prematurely after only three substantive trials. A +0.0017 gain over baseline is promising, but insufficiently explored to justify convergence.
+- The run was unseeded, yet acceptance appears based on a single measurement and an extremely small reported baseline sigma (0.0001). That uncertainty estimate is not credible without repeated independent training runs.
+- node_001 bundled too many interventions—DCN-lite, BCE/BPR mixing, dropout, AdamW, LR halving, and recency weighting. Its rejection provides almost no causal information.
+- node_002 failed without a metric, but the policy then continued from that failed node. node_003’s description also refers to a “parent approach” that was not successfully established, making lineage and attribution unclear.
+- Proposal effect estimates (~0.003) were overly specific and apparently uncalibrated.
+- The accepted CWM-style auxiliary loss was not ablated against simpler alternatives, so it is unclear whether the gain came from censoring logic, duration information, extra supervision, or incidental implementation/training changes.
+- There is no evidence of repeated evaluation, confidence intervals, segment analysis, or checks for leakage through watch-time/duration features.
+
+Scaffold changes
+- Require atomic experiments: one primary change per node, with small follow-up sweeps.
+- Do not branch scientifically from failed nodes; repair/re-run them or branch from the last valid ancestor.
+- Record exact config diffs and ensure node descriptions match the actual executable parent.
+- Require multi-seed confirmation before accepting small gains, especially in unseeded runs.
+- Separate exploratory acceptance from confirmed-best status.
+- Add automatic ablations for auxiliary losses: zero weight, naive uncensored target, censor-aware target, and shuffled/blocked duration controls.
+- Use calibrated prediction ranges rather than unsupported point estimates.
+- Tighten failure handling so a no-metric trial produces a concrete diagnosis before search continues.
+
+What the next run should try first
+1. Reproduce baseline and node_003 under identical code and data splits across at least 3–5 seeds.
+2. If the gain persists, sweep only the CWM auxiliary weight and censoring formulation while holding the base model fixed.
+3. Compare against a simple duration-aware auxiliary loss without censoring to isolate the source of improvement.
+4. Audit feature timing and censoring definitions for leakage, then report performance by completion status, session length, item duration, and user activity.
+
+The strongest lead is the censor-aware watch-time auxiliary objective, but the immediate priority is validating and isolating its effect rather than adding another model package.

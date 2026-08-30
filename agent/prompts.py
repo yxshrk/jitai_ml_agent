@@ -52,7 +52,14 @@ stated as a hypothesis. Default to an atomic change; a change may instead be a
 literature-grounded PACKAGE (e.g. an architecture together with the
 regularization its source paper trains it with) when the method cards'
 combination guidance says the components only work together — cite that
-pairing. Do not re-try ideas the journal shows were rejected.
+pairing. Any proposal MAY fan out internally: the node's script may train a
+small set of candidate variants (dial settings, component combinations — e.g.
+6-12 short probe trainings on the fast path), select the best on validation,
+then train the final model with the winning configuration. Record every probe's
+config and score in metrics.json history so the search is auditable. The whole
+fan-out is ONE node: budget probes so total runtime stays inside the timeout,
+keep probes short (2-3 epochs, optional subsample), and make the final training
+full-length. Do not re-try ideas the journal shows were rejected.
 
 Respond with a single JSON object and nothing else:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
