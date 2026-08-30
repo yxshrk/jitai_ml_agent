@@ -10,12 +10,25 @@ def test_static_check_flags_forbidden_paths():
 def test_accept_and_convergence():
     assert R.accept(0.6015, 0.6040) == (True, pytest.approx(0.0025))
     assert R.accept(0.6015, 0.6030)[0] is False
-    c = R.Convergence(0.6015)
-    assert c.update(0.6020) is False and c.streak == 1          # sub-epsilon: non-improving
-    assert c.update(0.6040) is False and c.streak == 0          # > epsilon vs best: reset, best moves
-    assert c.best == 0.6040
-    assert c.update(0.6041) is False and c.update(None) is False
-    assert c.update(0.6039) is True                              # third consecutive non-improving
+    c = R.Convergence(0.6015)                                    # ADR-0012: on the champion's seed-mean, patience semantics
+    assert c.update(0.6027) is False and c.streak == 1           # +0.0012: not > eps -> non-improving, reference unchanged
+    assert c.update(0.6027) is False and c.streak == 2           # same champion again
+    assert c.update(0.6036) is True and c.streak == 0            # cumulative +0.0021 > eps: small accepted gains add up
+    assert c.best == pytest.approx(0.6036)
+    assert c.update(None) is False and c.update(0.6036) is False and not c.converged
+    assert c.update(0.6040) is False and c.converged             # third consecutive non-improving generation
+
+def test_pick_champion_and_confirm_stats():
+    from harness.loop import pick_champion, confirm_stats
+    res = [{'n': 5, 'metrics': {'primary': 0.6036}, 'accepted': False, 'seed_confirmation': {'delta_mean': 0.0006}},   # lucky seed, rejected
+           {'n': 6, 'metrics': {'primary': 0.6030}, 'accepted': True, 'seed_confirmation': {'delta_mean': 0.0012}},
+           {'n': 7, 'metrics': {'primary': 0.6031}, 'accepted': True, 'seed_confirmation': {'delta_mean': 0.0009}},
+           {'n': 8, 'metrics': None, 'accepted': False}]
+    assert pick_champion(res) == 6                               # accepted, best seed-mean gain — not the best single seed
+    assert pick_champion([res[0], res[3]]) is None
+    m1, m2, diff, se, t, ok = confirm_stats([0.60304, 0.60232, 0.60261], [0.60147, 0.60176, 0.60109])
+    assert diff == pytest.approx(0.00122, abs=1e-5) and ok and t > C.T_CRIT
+    assert confirm_stats([0.6020, 0.6021, 0.6019], [0.6015, 0.6018, 0.6011])[5] is False   # +0.0005 at t ~ 2: not enough
 
 @pytest.mark.skipif(not (C.WS_DATA / 'valid.csv').exists(), reason='workspace not built')
 def test_read_predictions_validates_alignment(tmp_path):

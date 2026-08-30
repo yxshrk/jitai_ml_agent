@@ -126,7 +126,9 @@ minutes, of which training is about one minute.
 ## 9. Memory across runs
 
 **What we did.** After every run, `distill.py` folds each node back into its card: a measured line (stack, seeds,
-verdict, diff size), the evidence reference, and a status of `alive` or `dead_under {stack, delta}`.
+verdict, diff size), the evidence reference, and a status aggregated over every stack it was measured on —
+`proven — accepted on [stack]` or `dead_under [stack ×N (best Δ)]` — with a one-line verdict the Selector reads in a
+status table at the top of its menu.
 
 **Why.** R&D-Agent's memory ablation (−9 %); and the observation that "dead" is contextual — a feature flat on a
 pointwise FM may matter under a pairwise loss (ADR-0004).
@@ -140,6 +142,42 @@ Every candidate carries the Selector's expected delta and its basis; the journal
 Selector's prompt now contains the measured calibration (predicted 0.006 / 0.004 / 0.003 → realised +0.0022 /
 +0.0005 / −0.0003). The expected-vs-realised curve over a run is evidence, for the Innovation criterion, that the
 agent reasons about effect sizes rather than guessing.
+
+## 11. One statistic for acceptance and convergence; scope judged from the diff
+
+**What we did (ADR-0012).** Acceptance, champion selection and the convergence rule all read the same number — the
+champion's seed-mean validation primary — with early-stopping semantics for ε (the reference moves only on a rise
+of more than 0.002; small accepted gains accumulate toward it). The Critic reviews the unified diff against the
+parent's *actual* stack; a change whose predictions are byte-identical to the parent's is a no-op, not a data point.
+
+**Why.** Rules changed at different times had diverged: in live_04 four seed-confirmed acceptances were logged as
+"no improvement" and a node rejected on seeds (t = 2.43) reset the streak with a lucky single seed; the Explorer's
+prompt still said the champion was BPR (true one run earlier), so the Critic sent a correct field-aware edit back
+twice until BPR was added — the wildcard's +0.0012 was mostly the BPR gain measured beside it (+0.0011), and two
+"experiments" on it produced identical predictions. A hill-climb with statistical acceptance needs three things:
+the proposal must be what it says it is, acceptance must be seed-robust, and the stopping rule must not fire while
+the climb is going up — or keep going because of noise.
+
+**Measured here.** Under the corrected rule live_04 converges at generation 3 with champion mean +0.0012 and would
+have resumed on generation 4's +0.0030 cumulative; the Archivist's card for the wildcard states expected Δ
+[0, 0.0001] with the attribution written out.
+
+## 12. The menu grows; the roles read everything
+
+**What we did (ADR-0013).** The exact journal — every node with its diff — is a cached block in every call; a
+foundations note (metric invariances, loss vs metric, noise, learning dynamics on this data) sits in the prefix;
+an Archivist turns every measured wildcard into a card written from its actual diff; a Librarian with web search
+adds untried cards from the literature when a generation is flat and the untried menu is short.
+
+**Why.** MLE-STAR and AIRA both find that the quality of the proposal distribution — what the search *can* think of —
+bounds the search; R&D-Agent's ablation puts memory at −9 %; and GPT-5.6's context is large enough that summarising
+the record away loses more than it saves once the cache serves it. Yash's instruction was explicit: do not
+summarise too much and lose key details.
+
+**Measured here.** The run block is ≈ 23 K tokens at 14 nodes and is served from cache after the first call of a
+generation; the Archivist produced three cards from live_04's wildcards for $0.45 (one `proven`, two `dead_under`
+the field-aware stack), each with the measurement and the honest expected range; the Librarian's cards enter as
+`untried` and are judged by measurement like every other card.
 
 ## What this is not
 

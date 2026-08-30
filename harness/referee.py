@@ -3,6 +3,7 @@
 Runs an experiment script in a subprocess with a timeout, validates its predictions against the valid split,
 scores them with the official evaluate.py, and applies the acceptance and convergence rules."""
 import csv, json, math, os, subprocess, sys, time
+import hashlib
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
@@ -87,6 +88,7 @@ class RunResult:
     history: list = field(default_factory=list)
     log_tail: str = ''
     out_dir: str = ''
+    pred_hash: Optional[str] = None     # md5 of predictions.csv: byte-identical to the parent's = a no-op node
     def to_dict(self): return asdict(self)
 
 def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra=None, timeout=None, extra_args=(), threads=None):
@@ -133,6 +135,7 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
         res.error = f'invalid predictions.csv: {e}'
         return res
     res.metrics = score(scores)
+    res.pred_hash = hashlib.md5((out_dir / 'predictions.csv').read_bytes()).hexdigest()
     mj = out_dir / 'metrics.json'
     if mj.exists():
         try:
@@ -143,20 +146,28 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
     return res
 
 def accept(champion_primary, new_primary):
-    """A node replaces the champion only if it beats it by at least EPS (2.5 sigma of seed noise)."""
+    """Single-seed screen, informational only: returns (delta >= EPS, delta). The decision that moves the champion
+    is the seed-mean test in loop._confirm_with_seeds (ADR-0010/0011); every positive delta goes there."""
     delta = new_primary - champion_primary
     return delta >= C.EPS, delta
 
 class Convergence:
-    """Official rule: converged when validation primary has not improved by more than EPS over the last
-    N consecutive iterations. Errored iterations count as non-improving."""
-    def __init__(self, best_primary):
-        self.best = best_primary; self.streak = 0
-    def update(self, primary):
-        if primary is not None and primary > self.best + C.EPS:
-            self.best, self.streak = primary, 0
-        else:
-            self.streak += 1
+    """The organizers' rule applied to the statistic acceptance trusts (ADR-0012): the champion's seed-mean
+    validation primary. Early-stopping semantics (min_delta = EPS, patience = N_CONVERGE): `best` is the reference
+    set at the last rise of more than EPS; a generation whose champion mean does not exceed best + EPS adds one to
+    the streak; N_CONVERGE consecutive such generations = converged. Small accepted gains therefore accumulate
+    toward EPS instead of each being 'no improvement', and a rejected node's lucky seed can never move `best`."""
+    def __init__(self, best, streak=0):
+        self.best, self.streak = best, streak
+    def update(self, champion_mean):
+        """Returns True iff this generation counts as an improvement (> EPS over the reference)."""
+        if champion_mean is not None and champion_mean > self.best + C.EPS:
+            self.best, self.streak = champion_mean, 0
+            return True
+        self.streak += 1
+        return False
+    @property
+    def converged(self):
         return self.streak >= C.N_CONVERGE
     @property
     def iters_left_before_convergence(self):

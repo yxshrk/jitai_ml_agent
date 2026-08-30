@@ -1,37 +1,44 @@
-# Harness architecture — the reference (as running in `live_02`)
+# Harness architecture — the reference (as of ADR-0013; runs `live_04` onward)
 
 **In one paragraph.** A deterministic Python loop (`harness/loop.py`) searches a graph of whole training scripts.
 Each script is a *node*; each node is scored by a code-only referee with the organizers' untouched `evaluate.py`.
-Six LLM roles (`harness/brain.py`, prompts in `harness/prompts.py`) each do exactly one thing inside a node's
-creation and never judge a score. Agent scripts run in a workspace that physically contains no test data. Every
-node and every generation is journaled in the format the judges asked for. Decisions and their reasons live in
-`kb/adr/`; the reasoning behind the design in `kb/APPROACH.md`.
+Nine LLM roles (`harness/brain.py`, prompts in `harness/prompts.py`) each do exactly one thing and never judge a
+score: seven inside a generation (Diagnostician, Selector, Explorer, Implementer, Critic, Fixer, Consolidator) and
+two that make the knowledge base evolve between generations and runs (Archivist, Librarian). Agent scripts run in
+a workspace that physically contains no test data. Every node and every generation is journaled in the format the
+judges asked for, and the *exact* journal — every diff included — is in every role's context. Decisions and their
+reasons live in `kb/adr/`; the reasoning behind the design in `kb/APPROACH.md`.
 
 ## 1. The loop across nodes — one generation = k branches from the champion
 
 ```mermaid
 flowchart TD
     N0["node_000 — reproduce the official FM baseline<br/>valid primary 0.6015 (published 0.6016 ± 0.0008)"] --> D
-    subgraph GEN["one generation (k = 3 branches, trained in parallel)"]
-        D["DIAGNOSTICIAN (LLM)<br/>champion's learning curve + last results → overfit / underfit / flat,<br/>which half of the metric moved, which component to target"] --> S
-        S["SELECTOR (LLM)<br/>k candidates from the method cards, all different target_components,<br/>each with hypothesis, calibrated expected Δ + basis, rejected alternative"] --> B1 & B2 & B3
-        B1["branch 1<br/>implement → firewall → critic → smoke → full run"]
-        B2["branch 2<br/>implement → firewall → critic → smoke → full run"]
-        B3["branch 3<br/>implement → firewall → critic → smoke → full run"]
-        B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>Δ > 0 → re-run with 2 more seeds (champion's cached)<br/>accept iff seed-mean gain ≥ 0.001 and ≥ 2.5 standard errors"]
-        REF --> J["JOURNAL (code)<br/>hypothesis · diff · metrics · curve · seeds · errors · recovery · tokens · time"]
-        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = best accepted node this generation<br/>official rule: single-seed best-so-far must gain > 0.002 within 3 generations"]
-        CH --> CONS["CONSOLIDATOR (LLM)<br/>reads the verdicts → next generation's slots:<br/>merge orthogonal winners · retest a parked idea · explore after a flat generation"]
+    subgraph GEN["one generation (k = 5 branches, built and trained in parallel)"]
+        D["DIAGNOSTICIAN (LLM)<br/>champion's learning curve + last results → overfit / underfit / flat,<br/>which half of the metric moved, which component to target"] --> S & X
+        S["SELECTOR (LLM)<br/>k candidates from the method cards in priority order, distinct components,<br/>each with hypothesis, calibrated expected Δ + basis, rejected alternative"]
+        X["EXPLORER (LLM, concurrent with the Selector)<br/>one WILDCARD not on the menu: a combination, an un-carded technique,<br/>or an idea grounded in a numbered data fact"]
+        S & X --> DV["diversify (code): wildcard first, distinct target_components, k slots"]
+        DV --> B1 & B2 & B3
+        B1["branch 1<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
+        B2["branch …"]
+        B3["branch 5<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
+        B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>md5 identical to the parent → NO-OP, rejected<br/>Δ > 0 → 2 more seeds in parallel (all seeds cached)<br/>accept iff seed-mean gain ≥ 0.0005 and ≥ 2.5 standard errors"]
+        REF --> J["JOURNAL (code)<br/>hypothesis · diff · metrics · curve · seeds · critic rounds · errors · recovery · tokens · time"]
+        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged when the champion's seed-mean has not risen > 0.002 in 3 generations"]
+        CH --> LIB["LIBRARIAN (LLM + web search), only after a flat generation<br/>when < k untried cards remain (≤ 2× per run): n new cards, validated by code"]
+        LIB --> CONS["CONSOLIDATOR (LLM)<br/>reads the verdicts → next generation's slots:<br/>merge orthogonal winners · retest a parked idea · explore after a flat generation"]
     end
     CONS -->|"streak < 3, nodes < 50, time and $ left"| D
-    CONS -->|"else"| END["FINAL DESIGNATION (code)<br/>top-3 by valid → re-rank by 3-seed mean → submit.py writes the test CSV<br/>(the only time test features are touched) → distill.py updates the cards"]
+    CONS -->|"else"| END["FINAL DESIGNATION (code)<br/>top-3 by valid → re-rank by 3-seed mean → submit.py writes the test CSV<br/>(the only time test features are touched)<br/>→ DISTILL + ARCHIVIST: measurements into the cards, wildcards become cards"]
 ```
 
 - The next generation branches from the **champion**; losers are not expanded — their ideas are *parked* and may be
   re-proposed on a later champion with a stated reason (ADR-0004).
-- A **merge** node has two parents (the graph is a DAG, ADR-0009). Errored branches and crashed generations count
-  as non-improving and never stop the run.
-- The exploration valve: after a non-improving generation, one slot is forced away from the champion's lineage.
+- A **merge** node has two parents (the graph is a DAG, ADR-0009). Errored branches, no-op branches and crashed
+  generations count as non-improving and never stop the run.
+- The Selector lists k candidates in priority order although it fills k − 1 slots: the last is a reserve used when
+  one of its own collides with the Explorer's component (otherwise a generation silently lost a branch).
 
 ## 2. Inside one branch — the role chain
 
@@ -43,68 +50,88 @@ sequenceDiagram
     participant C as Critic (LLM)
     participant R as referee (code)
     participant X as Fixer (LLM)
-    L->>I: candidate + parent script (+ second parent for a merge)
+    L->>I: candidate (hypothesis FIXED) + parent script + the parent's actual stack + same-component history
     I-->>L: whole script, edited not rewritten, + change_summary
     L->>F: scan for forbidden paths; count changed lines
     F-->>L: forbidden path → back to Implementer · > 200 changed lines → back to Implementer (once)
-    L->>C: script + candidate
-    C-->>L: ok | revise (instructions → Implementer, ≤ 2 rounds) | veto (leakage / test access → dropped)
+    L->>C: candidate + UNIFIED DIFF + parent docstring + parent stack + full script
+    C-->>L: ok | revise (code changes only, ≤ 2 rounds) | veto (leakage / test access → dropped)
     L->>R: smoke run (SMOKE_EPOCHS=1, 120 s)
     R-->>L: fail → Fixer once → smoke again → fail → node abandoned
     L->>X: error + log tail + script
     X-->>L: patched script + note
-    L->>R: full run (30 min timeout, cwd = workspace/, single-threaded BLAS per branch)
-    R-->>L: predictions.csv validated (header, count, row_id, alignment, finite) → metrics + learning curve
+    L->>R: full run (30 min timeout, cwd = workspace/, BLAS threads pinned per branch)
+    R-->>L: predictions.csv validated (header, count, row_id, alignment, finite) → metrics + curve + md5
 ```
+
+The five chains run in parallel threads; every LLM call is tagged with its node so tokens are attributed per node.
+The Critic reviews code only: the hypothesis is fixed (it never argues that an idea is not worth testing — the
+referee measures that), and it judges scope from the diff against the parent's *actual* stack, so a card marked
+"proven" in an earlier run can no longer be smuggled into a candidate that did not ask for it (ADR-0012).
 
 ## 3. The roles
 
 | role | receives | returns | model / effort |
 |---|---|---|---|
 | Diagnostician | champion curve + metrics (GAUC, nDCG@5, ndcg5_disc) + last generation | ≤ 8 lines: dynamics, which metric half moved per node, next probe, overfitting risk | gpt-5.6-sol / medium |
-| Selector | diagnosis + cards + facts + journal + consolidator plan + parked ideas | exactly k candidates, distinct components, calibrated expected Δ with a cited basis, cheapest test, rejected alternative | gpt-5.6-sol / high |
-| Implementer | one candidate + parent script (+ critic instructions on a revise) | the whole script with only the necessary lines changed | gpt-5.6-sol / high |
-| Critic | script + candidate | ok / revise / veto — leakage, contract, scope, noise; terse on ok | gpt-5.6-sol / medium |
+| Selector | diagnosis + cards + facts + full journal + consolidator plan + parked ideas | k candidates in priority order, distinct components, calibrated expected Δ with a cited basis, cheapest test, rejected alternative | gpt-5.6-sol / xhigh |
+| Explorer | the same, plus the list of card ids | one off-menu candidate, same schema, flagged WILDCARD | gpt-5.6-sol / xhigh |
+| Implementer | one candidate + parent script + parent stack + same-component history (+ critic instructions on a revise) | the whole script with only the necessary lines changed | gpt-5.6-sol / xhigh |
+| Critic | candidate + unified diff + parent docstring/stack + script | ok / revise / veto — leakage, contract, scope; terse on ok | gpt-5.6-sol / medium |
 | Fixer | failing script + error + log tail | minimal patch + note | gpt-5.6-sol / medium |
 | Consolidator | all verdicts of the generation | plan of ≤ k slots: merge / retest / explore | gpt-5.6-sol / medium |
+| Archivist | a measured wildcard: record + diff + run journal + card schema | a new card (or `duplicate_of` an existing one) | gpt-5.6-sol / medium |
+| Librarian | menu with statuses + run journal + web search | n new `untried` cards with sources | gpt-5.6-sol / high + `web_search` |
 
-**Context discipline.** The provider `instructions` are a single stable prefix — task spec, scoring, script contract,
-measured data facts, all method cards (~12 K tokens) — byte-identical for every role, so the prompt cache serves it
-on every call (live_01: 236 K of 370 K input tokens cached). The role text and the dynamic state (champion, curve,
-one journal line per node, plan) go in the user message. Never a growing transcript.
+**Context discipline — nothing summarised, everything cached.** The provider `instructions` are two blocks:
+(1) the *stable prefix* — task spec, scoring, **foundations** (the task-specific mathematics, ADR-0013), script
+contract, measured data facts, the card status table and all cards (≈ 16 K tokens), byte-identical for every role
+and generation; (2) the *run block* — `Journal.digest()`, the exact record of every node so far including its diff,
+frozen at the start of the generation (≈ 23 K tokens at 14 nodes). Both are served by the prompt cache after the
+first call of a generation (live_02: 682 K of 866 K input tokens cached). The role text and the per-call state go in
+the user message. Never a growing transcript. The rules the roles read are generated from `config.py`
+(`rules_text()`), so the text cannot drift from the code (ADR-0012).
 
-## 4. Evaluation and champion selection — all code (`referee.py`, `loop.py`)
+## 4. Evaluation, champion, convergence — all code (`referee.py`, `loop.py`)
 
 1. **Score.** `predictions.csv` is validated against `workspace/data/valid.csv` (header; one row per valid row in
-   order; `row_id` 0..N−1; `user_id`/`video_id` identical; finite) and scored with the official `evaluate.py`.
-   `ndcg5_disc` (nDCG@5 among users with mixed labels, 1.6× more sensitive) is added as a diagnostic. The script's
-   own `metrics.json` is used only for the learning curve.
+   order; `row_id` 0..N−1; `user_id`/`video_id` identical; finite) and scored with the official `evaluate.py`;
+   `ndcg5_disc` (nDCG@5 among users with mixed labels) is added as a diagnostic; the file's md5 is kept.
 2. **Delta.** `Δ = node − champion`, the same champion for all branches of a generation.
-3. **Acceptance (ADR-0010).** `Δ > 0` → the node is re-run with 2 more seeds (the champion's are cached).
-   Accepted iff the difference of seed means ≥ 0.001 **and** ≥ 2.5 standard errors. `Δ ≤ 0` or errored → rejected
-   without seeds. Measured reason: the best of k single-seed branches is biased upward — +0.0022 on one seed was
-   +0.0017 on three; in live_02 generation 2, three branches at +0.0005/+0.0006/+0.0005 were +0.0000/+0.0001/+0.0002.
-4. **Champion.** The accepted node with the highest primary this generation, if it beats the current champion; it
-   parents the next generation. Rejected ideas are parked.
-5. **Convergence — the organizers' rule, literally.** Per generation: if the best *single-seed* primary exceeds
-   best-so-far + 0.002, best-so-far moves and the streak resets; otherwise streak + 1; 3 → converged. Also stops at
-   50 nodes (or 50 generations with `--iteration-unit generation`), 6 h, or the dollar budget.
-6. **Final designation.** Top-3 nodes by validation primary re-ranked by 3-seed mean; the winner is submitted
+3. **No-op.** Predictions byte-identical to the parent's → the change did nothing; rejected without seeds and
+   labelled NO-OP for the Diagnostician and Consolidator (live_04 had two such nodes scored as experiments).
+4. **Acceptance (ADR-0010/0011).** `Δ > 0` → the node is re-run with 2 more seeds (every seed of every node is
+   cached once, `state.seed_cache`). Accepted iff the difference of seed means ≥ 0.0005 **and** ≥ 2.5 standard errors
+   (sample SD, floor 0.0002; two-sample, because seeds are not paired across different scripts). Measured reason:
+   the best of k single-seed branches is biased upward — +0.0022 on one seed was +0.0017 on three; +0.0005/+0.0006/
+   +0.0005 were +0.0000/+0.0001/+0.0002.
+5. **Champion (ADR-0012).** The accepted node with the largest seed-mean gain this generation; it parents the next
+   generation. A rejected node's lucky single seed cannot block it. Rejected ideas are parked.
+6. **Convergence (ADR-0012).** The organizers' rule on the champion's seed-mean with early-stopping semantics:
+   the reference `best` moves only when the champion's mean exceeds it by more than ε = 0.002; a generation that
+   does not adds one to the streak; three → converged. Small accepted gains accumulate toward ε; the literal
+   single-seed best is reported alongside. Also stops at 50 nodes (or 50 generations with
+   `--iteration-unit generation`), 6 h of running time, or the dollar budget.
+7. **Final designation.** Top-3 nodes by validation primary re-ranked by 3-seed mean; the winner is submitted
    (`submit.py`: one run on `private/test_features.csv`, validated by the organizers' `submit.py --check`; no test
    metric is ever computed).
 
-## 5. Memory across runs (`distill.py`)
+## 5. Memory across runs and the evolving menu (`distill.py`, `librarian.py`, ADR-0004/0013)
 
-After a run, every node that used a card is folded back into it: a `## Measured` line (stack it ran on, single-seed
-and seed-mean Δ, verdict, diff size), the `run:node` reference in `evidence`, and `status` = `alive` or
-`dead_under {run, stack, delta}`. The next run's Selector reads the cards, so a method dead on one stack can be
-argued for a retest only when the stack changes (ADR-0004).
+When a run ends: **distill** folds every card-node into its card — a `## Measured` line (stack, single-seed and
+seed-mean Δ, t, verdict, diff size, NO-OP), the `run:node` reference, and a `status` aggregated over all stacks
+(`proven — accepted on [stack]` · `dead_under [stack ×N (best Δ)]` · `untried`) with a one-line verdict; the
+**Archivist** turns every measured wildcard into a new card written from its actual diff (code fixes status,
+evidence and the measurement; the validator gates it). The **Librarian** adds web-searched cards after flat
+generations and on demand. The next run's Selector opens with the status table, so a method dead on one stack can
+be argued for a retest only when the stack changes, and yesterday's wildcard is today's menu item.
 
 ## 6. Counting, budgets, metering
 
 Nodes and generations are both counted (ADR-0006: `--iteration-unit node|generation` decides what the 50 cap
-counts). Every LLM call records input, cached, output and reasoning tokens, seconds and response id, attributed to a
-node or a generation. `--budget-usd` stops the run on estimated spend. Wall-clock is recorded per node and per run.
+counts). Every LLM call records input, cached, output and reasoning tokens, web searches, seconds and response id,
+attributed to a node or a generation. `--budget-usd` stops the run on estimated spend. Wall-clock is recorded per
+node and per run and survives resumes.
 
 ## 7. The firewall (ADR-0005)
 
@@ -112,29 +139,34 @@ Agent scripts run with `cwd = workspace/` and `--data-dir workspace/data`: train
 label), the two side tables — never test rows, never the leaky statistic file. Test features live in `private/` and
 are read once by `submit.py`. A static scan rejects any script mentioning the raw data directory, the second log
 file, the random log, `private/`, `test_features`, the statistic file, or `../` — comments and docstrings included.
+Web content reaches the harness only as cards written by the Librarian: every idea still passes the firewall, the
+Critic and the referee.
 
 ## 8. What is journaled (deliverable 3)
 
-`runs/<run_id>/journal.jsonl`: per node — hypothesis, card, `target_component`, parent(s), diff path and size,
-expected vs realised Δ, metrics, learning curve, `single_seed_accept`, `seed_confirmation` {seeds, means, Δ, SE, t},
-`failure_stage` / `error` / `recovery`, critic rounds, duration, tokens, `intervention`; per generation — diagnosis,
-plan, improved, streak, champion, tokens, cost, every LLM call. `summary.json`: stop reason, counts, champion,
-designated node with the final ranking, usage, wall-clock, iteration unit. `journal.md` renders it for humans.
+`runs/<run_id>/journal.jsonl`: per node — hypothesis, card, `target_component`, `wildcard`, parent(s), diff path
+and size, expected vs realised Δ, metrics, learning curve, `pred_hash` / `identical_to_parent`,
+`single_seed_accept`, `seed_confirmation` {seeds, means, Δ, SE, t}, `failure_stage` / `error` / `recovery`, critic
+rounds, duration, tokens, `intervention`; per generation — diagnosis, plan, improved, streak, champion, best,
+tokens, cost, every LLM call; events (librarian, crashes). `summary.json`: stop reason, counts, champion and its
+seed-mean, best single seed, designated node with the final ranking, usage, wall-clock, iteration unit.
+`journal.md` renders it for humans; `Journal.digest()` renders it for the roles.
 
 ## 9. File map
 
 | path | role |
 |---|---|
-| `harness/config.py` | paths, ε, N, confirmation parameters, caps, forbidden patterns |
+| `harness/config.py` | paths, ε, N, confirmation parameters, caps, forbidden patterns, `rules_text()` |
 | `harness/data_access.py` | builds `workspace/` and `private/` from the raw download (split sizes asserted) |
-| `harness/referee.py` | run a script, validate, score, accept, converge |
-| `harness/journal.py` | JSONL journal, diffs, markdown |
-| `harness/prompts.py` | stable prefix, role prompts, user messages |
-| `harness/brain.py` | `Brain` interface, `FakeBrain`, `OpenAIBrain` (GPT-5.6), `AnthropicBrain` |
+| `harness/referee.py` | run a script, validate, score, hash, single-seed screen, `Convergence` |
+| `harness/journal.py` | JSONL journal, diffs, `digest()` for the roles, markdown for humans |
+| `harness/prompts.py` | stable prefix, run block, role prompts, user messages |
+| `harness/brain.py` | `Brain` interface, `FakeBrain`, `OpenAIBrain` (GPT-5.6, web search), `AnthropicBrain` (kept, not exercised in the reported runs) |
 | `harness/loop.py` | generations, branches, recovery, seed confirmation, champion, convergence, designation |
-| `harness/distill.py` | cross-run memory into the cards |
+| `harness/distill.py` | measurements into the cards; the Archivist |
+| `harness/librarian.py` | the Librarian (web-searched cards) |
 | `harness/submit.py` | final test CSV + official check |
-| `harness/cli.py` | `run` / `submit` / `distill` / `report` |
+| `harness/cli.py` | `run` / `submit` / `distill` / `librarian` / `report` |
 | `harness/seeds/node_000_fm.py` | the baseline under the script contract |
 | `workspace/CONTRACT.md` | the interface every node obeys |
-| `kb/` | spec, data facts, method cards, literature, ADRs, this document, `APPROACH.md` |
+| `kb/` | spec (+ foundations), data facts, method cards, literature, ADRs, this document, `APPROACH.md` |

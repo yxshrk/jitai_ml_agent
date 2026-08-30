@@ -13,7 +13,7 @@ expected_delta_basis: organizers' lead #1; aligns the objective with the scored 
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
-status: alive — accepted on [official FM]
+status: proven — accepted on [official FM]
 evidence: [live_01:node_001, live_02:node_001, live_03:node_001]
 ---
 ## Claim

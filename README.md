@@ -24,22 +24,30 @@ organizers' `evaluate.py`. Official FM baseline: **0.6016 valid / 0.5946 hidden 
    (`kb/methods`) — one per technique from the literature (`kb/literature`), each with checkable preconditions
    against the facts, an honest expected gain calibrated to the 0.002 noise floor, and an implementation recipe
    written against the baseline script.
-2. **Generations of parallel branches.** Each generation, a *Diagnostician* reads the champion's learning curve,
-   a *Selector* picks k = 3 candidates from the cards (each targeting one pipeline component, all different), an
-   *Implementer* edits the champion's script for each, a *Critic* checks for leakage and contract violations, and
-   the three scripts train in parallel. A *Consolidator* then plans merges of orthogonal winners, retests of parked
+2. **Generations of parallel branches.** Each generation, a *Diagnostician* reads the champion's learning curve;
+   a *Selector* picks candidates from the cards (each targeting one pipeline component, all different) while an
+   *Explorer* proposes one wildcard that is not on the menu; an *Implementer* edits the champion's script for
+   each, a *Critic* reviews the diff against the parent's actual stack for leakage, contract and scope, and the
+   k = 5 scripts train in parallel. A *Consolidator* then plans merges of orthogonal winners, retests of parked
    ideas, or exploration after a flat generation.
 3. **Code decides.** A referee validates every prediction file, scores it with the untouched official
-   `evaluate.py`, and accepts a node only if its improvement holds up over **three seeds** (selecting the best of
-   three single-seed branches is biased upward — measured: +0.0022 on one seed was +0.0017 over three). The
-   official convergence rule (ε = 0.002 over N = 3) stops the run. The final submission is chosen among the top
-   nodes by seed-mean, never by a single lucky seed.
+   `evaluate.py`, detects no-op changes (predictions byte-identical to the parent), and accepts a node only if its
+   improvement holds up over **three seeds** (seed-mean gain ≥ 0.0005 at ≥ 2.5 standard errors — selecting the best
+   of five single-seed branches is biased upward; measured: +0.0022 on one seed was +0.0017 over three). The
+   champion is the accepted node with the best seed-mean gain; the official convergence rule (ε = 0.002 over
+   N = 3) is applied to the champion's seed-mean. The final submission is chosen among the top nodes by seed-mean,
+   never by a single lucky seed.
+3b. **The knowledge base evolves.** Every role reads the *exact* run journal — every node's hypothesis, diff,
+   curve, seeds and critic notes — from a cached prompt block, plus a foundations note with the task-specific
+   mathematics. When a run ends, measurements are folded into the cards and an *Archivist* turns every wildcard
+   into a new card written from its actual diff; a *Librarian* with web search adds untried cards from the
+   literature after flat generations. The next run starts from a larger, measured menu.
 4. **Structural safety.** Agent scripts run in a workspace that physically contains no test rows; test features
    live in a private directory touched once by `harness/submit.py`; a static firewall rejects scripts naming the
    raw data. Every iteration is journaled with its hypothesis, code diff, metrics, learning curve, errors and
    recovery, tokens and wall-clock.
 
-Design decisions and their reasons: `kb/adr/` (ten records). The reference: `kb/ARCHITECTURE.md`.
+Design decisions and their reasons: `kb/adr/` (thirteen records). The reference: `kb/ARCHITECTURE.md`.
 Why this shape and not a pipeline of stage-agents: `kb/literature/agent-design-notes.md` (AIDE, MLE-STAR,
 R&D-Agent, ML-Master, AIRA, AI-Scientist-v2 compared).
 
@@ -70,10 +78,10 @@ echo 'OPENAI_API_KEY=sk-...' > .env          # never committed (.gitignore)
 ```bash
 # 1. the official baseline through the harness contract (valid primary 0.6015 at seed 0; published 0.6016 ± 0.0008)
 .venv/bin/python -c "from harness import referee as R; print(R.run_script('harness/seeds/node_000_fm.py', 'runs/_check/000', seed=0).metrics)"
-# 2. tests (6 unit + 1 end-to-end generation with a scripted brain, ~1 min)
+# 2. tests (9 unit + 1 end-to-end generation with a scripted brain, ~2 min)
 .venv/bin/python -m pytest tests -q
 # 3. an autonomous run (GPT-5.6 via the OpenAI API; ~$1.5–2 per generation)
-.venv/bin/python -u -m harness.cli run --run-id my_run --k 3 --budget-usd 30
+.venv/bin/python -u -m harness.cli run --run-id my_run --k 5 --budget-usd 30   # distills + archives the cards when it ends
 # 4. the submission for the designated node (writes the CSV and runs the organizers' --check)
 .venv/bin/python -m harness.cli submit --run-id my_run --node <designated> --out submission.csv
 ```
@@ -85,8 +93,8 @@ Manual interventions: recorded per node (`intervention` flag) — none in the re
 
 | path | what |
 |---|---|
-| `harness/` | the loop (`loop.py`), roles (`brain.py`, `prompts.py`), referee, journal, submission, CLI |
-| `kb/spec/` | frozen task, rules, scoring, and corrections to the source doc |
+| `harness/` | the loop (`loop.py`), roles (`brain.py`, `prompts.py`), referee, journal, distill/Archivist, Librarian, submission, CLI |
+| `kb/spec/` | frozen task, rules, scoring, foundations (task-specific mathematics), corrections to the source doc |
 | `kb/data/` | EDA script, report, and the interpreted facts the agent reads |
 | `kb/methods/` | method cards (the agent's menu) + validator |
 | `kb/literature/` | reading guide, agent-design survey, paper fetcher (`fetch.sh`) |
@@ -103,8 +111,9 @@ Manual interventions: recorded per node (`intervention` flag) — none in the re
   would protect the validation set further as runs get longer.
 - The organizers' definition of "iteration" (loop turn vs training run) is ambiguous; both counts are journaled
   and the cap is switchable (`--iteration-unit`).
-- Method cards were written by hand from the literature; a Librarian agent extending them from papers and web
-  search is the natural next step for the "draws on published methods" criterion.
+- The Librarian (web search) and the Archivist have run on live_04's journal; their cards enter as `untried` and
+  are judged by measurement like every other card. `AnthropicBrain` is kept as an alternative backend but has
+  not been exercised in the reported runs.
 
 ## Team
 

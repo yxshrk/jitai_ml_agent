@@ -27,6 +27,10 @@ class Journal:
     def node_path(self, n): return self.run_dir / 'nodes' / f'{n:03d}.py'
     def out_dir(self, n, tag=''): return self.run_dir / 'outputs' / (f'{n:03d}{tag}')
 
+    @staticmethod
+    def diff_text(parent_code, code, name_a="parent", name_b="candidate"):
+        return "\n".join(difflib.unified_diff(parent_code.splitlines(), code.splitlines(), name_a, name_b, lineterm="", n=2))
+
     def write_diff(self, n, parent_n, parent_code, code):
         patch = ''.join(difflib.unified_diff(parent_code.splitlines(True), code.splitlines(True),
                                              fromfile=f'node_{parent_n:03d}.py', tofile=f'node_{n:03d}.py'))
@@ -48,6 +52,8 @@ class Journal:
             m = r.get('metrics') or {}
             if r.get('error'):
                 tail = f"ERROR at {r.get('failure_stage')}: {str(r['error'])[:90]} (recovery: {r.get('recovery')})"
+            elif r.get('identical_to_parent'):
+                tail = f"NO-OP: predictions byte-identical to the parent's (primary {(r.get('metrics') or {}).get('primary', 0):.4f}) → rejected"
             else:
                 d = r.get('realized_delta'); c = r.get('seed_confirmation') or {}; e = r.get('expected_delta')
                 tail = (f"primary {m.get('primary', 0):.4f} GAUC {m.get('gauc', 0):.4f} nDCG@5 {m.get('ndcg5', 0):.4f}"
@@ -57,6 +63,65 @@ class Journal:
             out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] {r.get('method') or ''}: "
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")
         return out
+
+    def digest(self, max_diff_lines=250):
+        """The exact run record for the LLM roles (nothing summarised): per generation the diagnosis and the
+        consolidator's plan; per node the hypothesis, expected vs realised delta, change summary, critic rounds,
+        metrics, learning curve, seed confirmation, failure + recovery, and the diff itself."""
+        out = [f'# Run journal — {self.run_dir.name} (exact record of every node; diffs are against the parent script)']
+        for r in self.records():
+            a = r.get('action')
+            if a == 'event':
+                out.append(f"- event: {r.get('note')}"); continue
+            if a == 'generation':
+                plan = r.get('plan') or {}
+                out.append(f"\n--- generation {r.get('generation')} closed: {'IMPROVED' if r.get('improved') else 'no improvement'}; "
+                           f"streak {r.get('streak')}; champion node_{(r.get('champion') or 0):03d}; best-so-far {r.get('best', 0):.4f}; "
+                           f"{r.get('duration_s')} s; ${r.get('cost_usd')}")
+                if r.get('diagnosis'):
+                    out.append(f"diagnosis given to this generation:\n{r['diagnosis']}")
+                if plan:
+                    out.append(f"consolidator after this generation: {plan.get('note', '')}\nplan: {json.dumps(plan.get('plan', []), default=str)}")
+                continue
+            parent = r.get('parent'); parent = f"node_{parent:03d}" if isinstance(parent, int) else 'root'
+            mp = r.get('merge_parents')
+            out.append(f"\n## node_{r['n']:03d} <- {parent}{' + node_%03d (merge)' % mp[1] if mp else ''} "
+                       f"[{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] card: {r.get('method') or '-'}")
+            out.append(f"- hypothesis: {r.get('hypothesis')}")
+            e = r.get('expected_delta')
+            if isinstance(e, (int, float)):
+                out.append(f"- expected Δ {e:+.4f} (basis: {r.get('expected_delta_basis')}); rejected alternative: {r.get('rejected_alternative')}")
+            if r.get('change_summary'):
+                out.append(f"- change summary: {r['change_summary']}")
+            if r.get('critic'):
+                out.append('- critic rounds: ' + json.dumps(r['critic'], default=str)[:1500])
+            m = r.get('metrics') or {}
+            if m:
+                d = r.get('realized_delta'); c = r.get('seed_confirmation')
+                line = (f"- result: primary {m.get('primary', 0):.4f} (GAUC {m.get('gauc', 0):.4f}, nDCG@5 {m.get('ndcg5', 0):.4f}, "
+                        f"nDCG@5 on mixed-label users {m.get('ndcg5_disc', 0):.4f})")
+                if r.get('identical_to_parent'):
+                    line += "; NO-OP — predictions byte-identical to the parent's, rejected without seeds"
+                elif d is not None:
+                    line += f"; Δ {d:+.4f} vs the champion; " + ('ACCEPTED' if r.get('accepted') else 'rejected')
+                out.append(line)
+                if c:
+                    out.append('- seed confirmation: ' + json.dumps(c, default=str))
+                h = r.get('history') or []
+                if h:
+                    best = max(h, key=lambda x: x.get('val_primary', 0))
+                    out.append(f"- curve: {len(h)} epochs, best epoch {best.get('epoch')} (train loss there {best.get('train_loss', 0):.4f}); "
+                               'valid primary by epoch: ' + ' '.join(f"{x.get('val_primary', 0):.4f}" for x in h[:40]))
+                out.append(f"- runtime {r.get('duration_s', 0):.0f} s; tokens {r.get('tokens_in')}/{r.get('tokens_out')}")
+            else:
+                out.append(f"- FAILED at {r.get('failure_stage')}: {str(r.get('error'))[:400]}; recovery: {r.get('recovery')}")
+            dp = r.get('diff_path')
+            if dp and (self.run_dir / dp).exists():
+                lines = (self.run_dir / dp).read_text().splitlines()
+                shown = lines[:max_diff_lines]
+                out.append(f"- diff ({r.get('diff_lines')} changed lines" + (f", first {max_diff_lines} shown" if len(lines) > max_diff_lines else '') + '):')
+                out.append('```diff\n' + '\n'.join(shown) + '\n```')
+        return '\n'.join(out)
 
     def render_md(self, summary=None):
         L = [f'# Run journal \u2014 {self.run_dir.name}', '']

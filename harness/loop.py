@@ -15,11 +15,35 @@ from .brain import Usage, ParseError
 from .data_access import build as build_workspace
 from .journal import Journal, diff_lines
 
+def pick_champion(results):
+    """The accepted node with the largest seed-mean gain (falls back to the single-seed delta), or None.
+    A rejected node with the best single seed must not block an accepted one (ADR-0012)."""
+    acc = [r for r in results if r.get('metrics') and r.get('accepted')]
+    if not acc:
+        return None
+    def gain(r):
+        c = r.get('seed_confirmation') or {}
+        return c.get('delta_mean', r.get('realized_delta') or 0.0)
+    return max(acc, key=lambda r: (gain(r), r['metrics']['primary']))['n']
+
+def confirm_stats(v_node, v_ch):
+    """Two-sample test on seed means with sample SDs floored at STD_FLOOR (n = 3 is small): returns
+    (mean_node, mean_champion, diff, se, t, accepted). Seeds are not paired across different scripts (they consume the
+    RNG differently), so a paired test would be wrong."""
+    m_node, m_ch = statistics.mean(v_node), statistics.mean(v_ch)
+    sd_node = max(statistics.stdev(v_node) if len(v_node) > 1 else C.STD_FLOOR, C.STD_FLOOR)
+    sd_ch = max(statistics.stdev(v_ch) if len(v_ch) > 1 else C.STD_FLOOR, C.STD_FLOOR)
+    se = (sd_node ** 2 / len(v_node) + sd_ch ** 2 / len(v_ch)) ** 0.5
+    diff = m_node - m_ch; t = diff / se if se else float('inf')
+    return m_node, m_ch, diff, se, t, (diff >= C.MIN_EFFECT and t >= C.T_CRIT)
+
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
-                 iteration_unit='node', wildcard=True):
+                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
+        self.librarian_max = 2 if librarian else 0     # ADR-0013: web-searched cards after flat generations, at most twice a run
+        self.auto_distill = auto_distill               # ADR-0013: fold the journal into the cards when the run ends
         self.max_nodes, self.max_generations = max_nodes, max_generations or max_nodes
         self.wall_clock_s, self.parallel, self.confirm_seeds = wall_clock_s, parallel, confirm_seeds
         self.final_reseed = final_reseed
@@ -31,16 +55,33 @@ class Loop:
         self.state = json.loads(self.state_path.read_text()) if self.state_path.exists() else {
             'run_id': run_id, 'n_next': 0, 'generation': 0, 'champion': None, 'best': None, 'streak': 0,
             'nodes': {}, 'plan': None, 'parked': [], 'start': time.time(), 'interventions': 0, 'stop_reason': None,
-            'usage': Usage().snapshot(), 'champion_seeds': {}}
+            'usage': Usage().snapshot(), 'seed_cache': {}, 'best_single': None, 'librarian_calls': 0, 'elapsed_before': 0.0}
+        # one seed cache keyed 'node:seed', never cleared (ADR-0012); older states kept two that were thrown away
+        sc = self.state.setdefault('seed_cache', {})
+        for k_ in ('champion_seeds', 'final_seeds'):
+            sc.update({k2: v for k2, v in (self.state.pop(k_, {}) or {}).items() if v is not None})
+        if self.state_path.exists():   # resumed: the wall clock counts running time, not the calendar
+            self.state['elapsed_before'] = self.state.get('elapsed_before', 0.0) + max(0.0, self.state.get('last_save', self.state['start']) - self.state['start'])
+            self.state['start'] = time.time()
         self.threads = max(1, (os.cpu_count() or 2) // max(1, k)) if parallel else (os.cpu_count() or 2)
 
     # ---------------- helpers ----------------
     def log(self, msg): self._log(f'[{self.run_id}] {msg}')
-    def save(self): self.state_path.write_text(json.dumps(self.state, indent=1, default=str))
+    def save(self):
+        self.state['last_save'] = time.time(); self.state_path.write_text(json.dumps(self.state, indent=1, default=str))
     def node(self, n): return self.state['nodes'][str(n)]
     @property
     def champion(self): return self.node(self.state['champion'])
-    def elapsed(self): return time.time() - self.state['start']
+    def elapsed(self): return time.time() - self.state['start'] + self.state.get('elapsed_before', 0.0)
+    def stack_of(self, n):
+        """Accepted method chain from node 0 to n, e.g. 'official FM + loss-bpr-pairwise-within-user' — what is actually in a script."""
+        from .distill import _stack
+        return _stack(self.state['nodes'], n)
+    def champion_mean(self):
+        """Seed-mean validation primary of the champion (its single seed plus every cached confirmation seed)."""
+        n = self.state['champion']; vals = [self.node(n)['metrics']['primary']]
+        vals += [v for k_, v in self.state['seed_cache'].items() if k_.startswith(f'{n}:') and v is not None]
+        return statistics.mean(vals)
     def code_of(self, n): return self.j.node_path(n).read_text()
 
     def ctx(self, **extra):
@@ -49,7 +90,8 @@ class Loop:
              'max_generations': self.max_generations, 'max_nodes': self.max_nodes, 'nodes_used': self.state['n_next'],
              'champion': ch, 'best': self.state['best'], 'streak': self.state['streak'],
              'journal_lines': self.j.compact_lines(), 'plan': self.state.get('plan'), 'parked': self.state.get('parked', []),
-             'last_generation': self.state.get('last_generation', []), 'parent_code': self.code_of(ch['n'])}
+             'last_generation': self.state.get('last_generation', []), 'parent_code': self.code_of(ch['n']),
+             'champion_stack': self.stack_of(ch['n'])}
         d.update(extra); return d
 
     def _brain(self, fn, *args, what='', attempts=2):
@@ -85,7 +127,7 @@ class Loop:
         if not res.ok:
             raise RuntimeError(f'baseline reproduction failed: {res.error}\n{res.log_tail}')
         rec['accepted'] = True; rec['realized_delta'] = None
-        self.state['champion'] = n; self.state['best'] = res.metrics['primary']
+        self.state['champion'] = n; self.state['best'] = res.metrics['primary']; self.state['best_single'] = res.metrics['primary']
         self.j.append(rec); self.save()
         self.log(f"node_{n:03d}: valid primary {res.metrics['primary']:.4f} (published {C.BASELINE_VALID_PRIMARY})")
 
@@ -107,6 +149,7 @@ class Loop:
                'log_tail': (res.log_tail[-800:] if res and not res.ok else ''),
                'duration_s': res.duration_s if res else 0.0, 'tokens_in': tokens[0], 'tokens_out': tokens[1],
                'critic': critic, 'recovery': recovery, 'intervention': False,
+               'pred_hash': res.pred_hash if res else None, 'identical_to_parent': False,
                'realized_delta': None, 'accepted': False, 'seed_confirmation': None}
         self.state['nodes'][str(n)] = {k: v for k, v in rec.items() if k not in ('log_tail',)}
         return rec
@@ -116,6 +159,8 @@ class Loop:
         g = self.state['generation'] + 1; self.state['generation'] = g
         t_gen = time.time(); snap = self.brain.usage.snapshot()
         self.log(f'=== generation {g}: champion node_{self.champion["n"]:03d} ({self.champion["metrics"]["primary"]:.4f}), streak {self.state["streak"]} ===')
+        # the exact journal so far, frozen for this generation: every role reads it from the cached prompt prefix (ADR-0013)
+        self.brain.set_context_block(P.run_block(g, self.j.digest()))
 
         # 1. diagnose + select
         diagnosis, err = self._brain(self.brain.diagnose, self.ctx(), what='diagnose')
@@ -193,8 +238,11 @@ class Loop:
 
         # 5. referee + journal (confirmation seeds for every positive delta are prefetched in parallel)
         champ_p = self.champion['metrics']['primary']
+        def noop(nd):   # byte-identical predictions to the parent: the change did nothing (ADR-0012)
+            ph = self.node(nd['parent']).get('pred_hash')
+            return bool(ph) and nd['res'] is not None and nd['res'].ok and nd['res'].pred_hash == ph
         if self.confirm_seeds:
-            self._prefetch_seeds([nd['n'] for nd in nodes if nd['res'] is not None and nd['res'].ok and nd['res'].metrics['primary'] > champ_p])
+            self._prefetch_seeds([nd['n'] for nd in nodes if nd['res'] is not None and nd['res'].ok and nd['res'].metrics['primary'] > champ_p and not noop(nd)])
         results = []
         for nd in nodes:
             rec = self._record(nd['n'], g, nd['parent'], nd['sel'], nd['res'], nd['diff'], tuple(nd['tokens']),
@@ -202,30 +250,35 @@ class Loop:
             if nd['res'] is not None and nd['res'].ok:
                 single_ok, delta = R.accept(self.champion['metrics']['primary'], nd['res'].metrics['primary'])
                 rec['realized_delta'] = round(delta, 5); rec['single_seed_accept'] = single_ok
-                accepted = single_ok
-                if delta > 0 and self.confirm_seeds:   # the best of k branches on one seed is biased upward: confirm with more seeds
-                    accepted, conf = self._confirm_with_seeds(nd['n']); rec['seed_confirmation'] = conf
+                if noop(nd):
+                    rec['identical_to_parent'] = True; accepted = False
+                else:
+                    accepted = single_ok
+                    if delta > 0 and self.confirm_seeds:   # the best of k branches on one seed is biased upward: confirm with more seeds
+                        accepted, conf = self._confirm_with_seeds(nd['n']); rec['seed_confirmation'] = conf
                 rec['accepted'] = accepted
             else:
                 rec['error'] = rec['error'] or nd['error']
-            self.state['nodes'][str(nd['n'])].update({k: rec.get(k) for k in ('realized_delta', 'accepted', 'seed_confirmation', 'single_seed_accept', 'error')})
+            self.state['nodes'][str(nd['n'])].update({k: rec.get(k) for k in ('realized_delta', 'accepted', 'seed_confirmation', 'single_seed_accept', 'error', 'identical_to_parent')})
             self.j.append(rec); results.append(self._result_view(rec))
             self.log(f"node_{nd['n']:03d} [{rec['target_component']}] " + (
-                f"primary {rec['metrics']['primary']:.4f} (Δ{rec['realized_delta']:+.4f}) {'ACCEPTED' if rec['accepted'] else 'rejected'}"
+                (f"primary {rec['metrics']['primary']:.4f} NO-OP (predictions identical to node_{nd['parent']:03d}) rejected" if rec['identical_to_parent'] else
+                 f"primary {rec['metrics']['primary']:.4f} (Δ{rec['realized_delta']:+.4f}) {'ACCEPTED' if rec['accepted'] else 'rejected'}")
                 if rec['metrics'] else f"ERROR at {rec['failure_stage']}: {rec['error']}"))
         return self._close_generation(g, results, diagnosis, snap, t_gen)
 
     def _close_generation(self, g, results, diagnosis, snap, t_gen):
         # champion + convergence are decided per generation, in code
         ok = [r for r in results if r.get('metrics')]
-        gen_best = max(ok, key=lambda r: r['metrics']['primary']) if ok else None
-        improved = False
-        if gen_best and gen_best['accepted'] and gen_best['metrics']['primary'] > self.champion['metrics']['primary']:
-            self.state['champion'] = gen_best['n']; self.state['champion_seeds'] = {}
-        if gen_best and gen_best['metrics']['primary'] > self.state['best'] + C.EPS:
-            self.state['best'] = gen_best['metrics']['primary']; self.state['streak'] = 0; improved = True
-        else:
-            self.state['streak'] += 1
+        new_champion = pick_champion(results)                       # best seed-mean gain among the accepted nodes (ADR-0012)
+        if new_champion is not None:
+            self.state['champion'] = new_champion
+        if ok:                                                      # the literal single-seed best, reported alongside
+            self.state['best_single'] = max(self.state.get('best_single') or 0.0, max(r['metrics']['primary'] for r in ok))
+        conv = R.Convergence(self.state['best'], self.state['streak'])
+        improved = conv.update(self.champion_mean())                 # organizers' rule on the champion's seed-mean
+        self.state['best'], self.state['streak'] = conv.best, conv.streak
+        self._maybe_librarian(g, improved, results)
         # parked ideas: rejected-but-plausible nodes stay available for a justified retest (ADR-0004)
         for r in results:
             if r.get('metrics') and not r['accepted']:
@@ -249,6 +302,19 @@ class Loop:
                  f"streak {self.state['streak']} | tokens {tin}/{tout} | {time.time() - t_gen:.0f}s")
         return improved
 
+    def _maybe_librarian(self, g, improved, results):
+        """After a flat generation, when fewer than k untried cards remain, ask the Librarian (web search) for two
+        new cards; at most librarian_max times per run (ADR-0013)."""
+        if improved or self.state.get('librarian_calls', 0) >= self.librarian_max or len(P.untried_cards()) >= self.k:
+            return
+        from .librarian import run_librarian
+        self.state['librarian_calls'] = self.state.get('librarian_calls', 0) + 1
+        try:
+            made = run_librarian(self.brain, n=2, log=self.log, extra='\n'.join(self.j.compact_lines()[-len(results) - 1:]))
+        except Exception as e:      # noqa: BLE001 — the menu simply stays as it is
+            self.log(f'  librarian failed: {type(e).__name__}: {str(e)[:200]}'); made = []
+        self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'librarian (web search) added cards: {made or "none"}'})
+
     # ---------------- pieces ----------------
     def _history_for(self, sel, limit=8):
         """Journal lines of earlier nodes with the same target_component or method — what the Implementer should learn from."""
@@ -265,7 +331,7 @@ class Loop:
 
     def _prefetch_seeds(self, node_ids):
         """Run all missing confirmation seeds (nodes + champion) in parallel; _confirm_with_seeds then reads the cache."""
-        cache = self.state['champion_seeds']; jobs = []
+        cache = self.state['seed_cache']; jobs = []
         for m in list(node_ids) + [self.state['champion']]:
             for i in range(1, C.CONFIRM_SEEDS + 1):
                 sd = self.seed + i
@@ -306,7 +372,8 @@ class Loop:
         """Implementer -> static firewall -> Critic; up to two 'revise' rounds; veto ends the candidate."""
         critic_log = []
         for round_ in range(3):
-            out, err = self._brain(self.brain.implement, self.ctx(history_for_implementer=hist), sel, parent_code, extra, what='implement')
+            ictx = self.ctx(history_for_implementer=hist, parent_stack=self.stack_of(sel.get('parent_n', self.state['champion'])))
+            out, err = self._brain(self.brain.implement, ictx, sel, parent_code, extra, what='implement')
             if out is None:
                 return None, critic_log, err
             code = out['code']; sel['change_summary'] = out.get('change_summary')
@@ -322,7 +389,9 @@ class Loop:
                                               f'lines this hypothesis needs (typically 5-80). Do not touch the docstring, imports, comments or output code.')
                 self.log(f'  diff too large ({n_diff} lines); sending back to the implementer')
                 continue
-            verdict, err = self._brain(self.brain.critique, self.ctx(), code, sel, what='critique')
+            diff_text = self.j.diff_text(parent_code, code, f"node_{sel.get('parent_n', self.state['champion']):03d} (parent)", 'candidate')
+            cctx = self.ctx(parent_stack=self.stack_of(sel.get('parent_n', self.state['champion'])), parent_doc=parent_code[:1200])
+            verdict, err = self._brain(self.brain.critique, cctx, code, sel, diff_text, what='critique')
             verdict = verdict or {'verdict': 'ok', 'reasons': [f'critic unavailable: {err}'], 'instructions': ''}
             critic_log.append({'round': round_, **verdict})
             if verdict['verdict'] == 'ok':
@@ -368,7 +437,7 @@ class Loop:
         improvement >= MIN_EFFECT and >= T_CRIT standard errors. Selecting the best of k single-seed branches is
         biased upward (winner's curse) — measured in live_01: +0.0022 on one seed was +0.0017 over three."""
         seeds = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
-        cache = self.state['champion_seeds']
+        cache = self.state['seed_cache']
         def vals_for(m):
             vals = [self.node(m)['metrics']['primary']]
             for sd in seeds:
@@ -380,12 +449,7 @@ class Loop:
                     vals.append(cache[key])
             return vals
         v_node, v_ch = vals_for(n), vals_for(self.state['champion'])
-        m_node, m_ch = statistics.mean(v_node), statistics.mean(v_ch)
-        sd_node = max(statistics.pstdev(v_node) if len(v_node) > 1 else C.STD_FLOOR, C.STD_FLOOR)
-        sd_ch = max(statistics.pstdev(v_ch) if len(v_ch) > 1 else C.STD_FLOOR, C.STD_FLOOR)
-        se = (sd_node ** 2 / len(v_node) + sd_ch ** 2 / len(v_ch)) ** 0.5
-        diff = m_node - m_ch; t = diff / se if se else float('inf')
-        accepted = diff >= C.MIN_EFFECT and t >= C.T_CRIT
+        m_node, m_ch, diff, se, t, accepted = confirm_stats(v_node, v_ch)
         self.log(f"node_{n:03d}: seed confirmation — node {[round(v, 5) for v in v_node]} mean {m_node:.5f} vs champion "
                  f"{[round(v, 5) for v in v_ch]} mean {m_ch:.5f}: diff {diff:+.5f}, t {t:.1f} -> {'ACCEPTED' if accepted else 'rejected'}")
         return accepted, {'node_seeds': v_node, 'champion_seeds': v_ch, 'delta_mean': round(diff, 5), 'se': round(se, 5),
@@ -403,7 +467,7 @@ class Loop:
         self.start()
         while True:
             if self.state['streak'] >= C.N_CONVERGE:
-                self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without > {C.EPS} improvement'; break
+                self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without > {C.EPS} rise of the champion seed-mean (ADR-0012)'; break
             if self.iteration_unit == 'node' and self.state['n_next'] + self.k > self.max_nodes:
                 self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting nodes)'; break
             if self.iteration_unit == 'generation' and self.state['generation'] >= self.max_nodes:
@@ -422,14 +486,21 @@ class Loop:
                 self.log('generation crashed:\n' + tb)
                 self.j.append({'n': None, 'generation': self.state['generation'], 'action': 'event', 'note': 'generation crashed: ' + tb[-1500:]})
                 self.state['streak'] += 1; self.save()
-        return self.finish()
+        summary = self.finish()
+        if self.auto_distill:
+            try:
+                from .distill import distill, archive
+                self.log('distilling the journal into the cards'); distill(self.run_id, log=self.log); archive(self.run_id, self.brain, log=self.log)
+            except Exception as e:   # noqa: BLE001
+                self.log(f'distill/archive failed: {type(e).__name__}: {str(e)[:200]}')
+        return summary
 
     def designate_final(self, top_k=3, extra_seeds=(1, 2)):
         """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the mean over
         extra seeds so a lucky single seed cannot be the submission. Ties go to the higher single-seed score."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
-        cache = self.state.setdefault('final_seeds', {})
+        cache = self.state['seed_cache']
         ranking = []
         for v in top:
             vals = [v['metrics']['primary']]
@@ -443,7 +514,7 @@ class Loop:
                     if cache[key] is not None:
                         vals.append(cache[key])
             ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'seeds': vals,
-                            'mean': statistics.mean(vals), 'std': statistics.pstdev(vals) if len(vals) > 1 else None})
+                            'mean': statistics.mean(vals), 'std': statistics.stdev(vals) if len(vals) > 1 else None})
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
         self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
         return ranking
@@ -459,6 +530,8 @@ class Loop:
                    'top3_valid': [{'n': v['n'], 'primary': v['metrics']['primary']} for v in top],
                    'designated': self.state.get('designated'), 'final_ranking': ranking,
                    'usage': self.brain.usage.snapshot(), 'wall_clock_s': round(self.elapsed(), 1),
+                   'champion_seed_mean': round(self.champion_mean(), 5), 'best_single_seed': self.state.get('best_single'),
+                   'convergence_rule': 'ADR-0012: champion seed-mean must rise > eps within N generations',
                    'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
                    'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))

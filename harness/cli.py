@@ -21,11 +21,15 @@ def main():
     r.add_argument('--seed', type=int, default=C.DEFAULT_SEED)
     r.add_argument('--no-parallel', action='store_true')
     r.add_argument('--no-confirm', action='store_true', help='skip the multi-seed confirmation of positive deltas (not recommended)')
+    r.add_argument('--no-librarian', action='store_true', help='never call the web-searching Librarian during the run (ADR-0013)')
+    r.add_argument('--no-distill', action='store_true', help='do not fold the journal into the cards when the run ends')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
     s.add_argument('--out', default='submission.csv')
-    d = sub.add_parser('distill', help='fold a run journal back into the method cards (cross-run memory)')
-    d.add_argument('--run-id', required=True)
+    d = sub.add_parser('distill', help='fold a run journal back into the method cards (cross-run memory) and archive its wildcards as new cards')
+    d.add_argument('--run-id', required=True); d.add_argument('--no-archive', action='store_true', help='measurements only; no Archivist calls')
+    lb = sub.add_parser('librarian', help='add n web-searched cards to the menu (ADR-0013)')
+    lb.add_argument('--run-id', default=None, help='run whose journal the Librarian should read'); lb.add_argument('--n', type=int, default=2)
     p = sub.add_parser('report', help='print a run summary')
     p.add_argument('--run-id', required=True)
     a = ap.parse_args()
@@ -47,14 +51,21 @@ def main():
             brain = AnthropicBrain(models={r: a.model for r in AnthropicBrain.DEFAULT_MODELS} if a.model else None, budget_usd=a.budget_usd)
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
                     parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
-                    iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard)
+                    iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         from .submit import make_submission
         print(json.dumps(make_submission(a.run_id, a.node, a.out), indent=1))
     elif a.cmd == 'distill':
-        from .distill import distill
+        from .distill import distill, archive
         distill(a.run_id)
+        if not a.no_archive:
+            from .brain import OpenAIBrain
+            print('archived as cards:', archive(a.run_id, OpenAIBrain()))
+    elif a.cmd == 'librarian':
+        from .brain import OpenAIBrain
+        from .librarian import run_librarian
+        print('new cards:', run_librarian(OpenAIBrain(), n=a.n, run_id=a.run_id))
     elif a.cmd == 'report':
         print((C.RUNS / a.run_id / 'journal.md').read_text())
 

@@ -59,11 +59,14 @@ class Brain:
     def diagnose(self, ctx) -> str: raise NotImplementedError
     def select(self, ctx, k) -> list: raise NotImplementedError
     def implement(self, ctx, selection, parent_code, extra_parent_code=None) -> dict: raise NotImplementedError
-    def critique(self, ctx, code, selection) -> dict: raise NotImplementedError
+    def critique(self, ctx, code, selection, diff_text='') -> dict: raise NotImplementedError
     def fix(self, ctx, code, error, log_tail) -> dict: raise NotImplementedError
     def consolidate(self, ctx, results) -> dict: raise NotImplementedError
     def explore(self, ctx): return None          # wildcard slot; backends may override
+    def archive(self, ctx, rec, diff_text, card_ids, example, stack): return None   # wildcard -> card; LLM backends override
+    def librarian(self, ctx, example): return []    # web-searched new cards; LLM backends override
     def set_tag(self, tag): pass
+    def set_context_block(self, text): pass       # the generation-stable run journal block
 
 class FakeBrain(Brain):
     """Scripted brain: `generations` is a list (one per generation) of lists of (selection, code) pairs.
@@ -78,23 +81,27 @@ class FakeBrain(Brain):
             if s['hypothesis'] == selection['hypothesis']:
                 return {'code': code, 'change_summary': s['hypothesis']}
         return {'code': parent_code, 'change_summary': 'no scripted code; parent returned'}
-    def critique(self, ctx, code, selection): return {'verdict': 'ok', 'reasons': [], 'instructions': ''}
+    def critique(self, ctx, code, selection, diff_text=''): return {'verdict': 'ok', 'reasons': [], 'instructions': ''}
     def fix(self, ctx, code, error, log_tail): return {'code': ctx['parent_code'], 'note': 'fake fixer: reverted to the parent script'}
     def consolidate(self, ctx, results): return {'note': 'fake consolidator', 'plan': []}
 
 class LLMBrain(Brain):
     """Shared role logic (prompt -> call -> parse -> validate, one format-reminder retry). Backends implement _call."""
     DEFAULT_EFFORT = {'diagnose': 'medium', 'select': 'xhigh', 'implement': 'xhigh', 'critique': 'medium',
-                      'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh'}
+                      'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh', 'archive': 'medium', 'librarian': 'high'}
     MAX_TOKENS = {'diagnose': 3000, 'select': 8000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000,
-                  'explore': 8000}
+                  'explore': 8000, 'archive': 8000, 'librarian': 20000}
+    ROLE_TOOLS = {'librarian': [{'type': 'web_search'}]}     # provider-side tools per role (OpenAI Responses API)
 
     def __init__(self, models=None, efforts=None, budget_usd=None, log=print):
         super().__init__()
         self._lock = threading.Lock(); self._tl = threading.local()   # calls may run from parallel branches
         self.models = dict(self.DEFAULT_MODELS, **(models or {}))
         self.efforts = dict(self.DEFAULT_EFFORT, **(efforts or {}))
-        self.budget_usd = budget_usd; self.log = log
+        self.budget_usd = budget_usd; self.log = log; self._block = ''
+
+    def set_context_block(self, text):
+        self._block = text or ''
 
     def set_tag(self, tag):
         """Tag subsequent calls from this thread (the loop uses the node id) so tokens can be attributed per node."""
@@ -156,18 +163,43 @@ class LLMBrain(Brain):
             return s
         return self._with_retry('explore', P.user_explore(ctx), parse)
 
+    def archive(self, ctx, rec, diff_text, card_ids, example, stack):
+        def parse(t):
+            h = parse_header(t)
+            if h.get('duplicate_of'):
+                return {'id': h.get('id'), 'duplicate_of': h['duplicate_of'], 'card': None}
+            blocks = re.findall(r'```card\n(.*?)\n```', t, re.S)
+            if not blocks:
+                raise ParseError('expected one ```card ... ``` block with the full card text')
+            if not h.get('id'):
+                raise ParseError('header must carry "id"')
+            return {'id': str(h['id']).strip(), 'duplicate_of': None, 'card': blocks[0].strip() + '\n', 'family': h.get('family')}
+        return self._with_retry('archive', P.user_archive(ctx, rec, diff_text, card_ids, example, stack), parse)
+
+    def librarian(self, ctx, example):
+        def parse(t):
+            h = parse_header(t); cards = h.get('cards')
+            if not isinstance(cards, list) or not cards:
+                raise ParseError('"cards" must be a non-empty list')
+            blocks = re.findall(r'```card\n(.*?)\n```', t, re.S)
+            if len(blocks) < len(cards):
+                raise ParseError(f'{len(cards)} cards announced but {len(blocks)} ```card``` blocks given')
+            return [{'id': str(c.get('id', '')).strip(), 'source_url': c.get('source_url'), 'why_now': c.get('why_now'),
+                     'card': b.strip() + '\n'} for c, b in zip(cards, blocks)]
+        return self._with_retry('librarian', P.user_librarian(ctx, example), parse)
+
     def implement(self, ctx, selection, parent_code, extra_parent_code=None):
         def parse(t):
             return {'code': parse_code(t), 'change_summary': str(parse_header(t).get('change_summary', ''))}
         return self._with_retry('implement', P.user_implement(ctx, selection, parent_code, extra_parent_code), parse)
 
-    def critique(self, ctx, code, selection):
+    def critique(self, ctx, code, selection, diff_text=''):
         def parse(t):
             h = parse_header(t)
             if h.get('verdict') not in ('ok', 'revise', 'veto'):
                 raise ParseError('verdict must be ok | revise | veto')
             return {'verdict': h['verdict'], 'reasons': h.get('reasons', []), 'instructions': h.get('instructions', '')}
-        return self._with_retry('critique', P.user_critique(ctx, code, selection), parse)
+        return self._with_retry('critique', P.user_critique(ctx, code, selection, diff_text), parse)
 
     def fix(self, ctx, code, error, log_tail):
         def parse(t):
@@ -200,15 +232,26 @@ class OpenAIBrain(LLMBrain):
         self._check_budget()
         model = self.models[role]; t0 = time.time()
         text_in = P.user_message(role, user_text) + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')
-        r = self.client.responses.create(model=model, instructions=P.system_text(role), input=text_in,
-                                         reasoning={'effort': self.efforts[role]}, max_output_tokens=self.MAX_TOKENS[role])
+        kw = dict(model=model, instructions=P.system_text(role, self._block), input=text_in,
+                  reasoning={'effort': self.efforts[role]}, max_output_tokens=self.MAX_TOKENS[role])
+        tools = self.ROLE_TOOLS.get(role)
+        if tools:
+            kw['tools'] = tools
+        try:
+            r = self.client.responses.create(**kw)
+        except Exception as e:   # noqa: BLE001 — older tool name on some deployments
+            if tools and 'web_search' in str(e):
+                kw['tools'] = [{'type': 'web_search_preview'}]; r = self.client.responses.create(**kw)
+            else:
+                raise
+        searches = sum(1 for it in (getattr(r, 'output', None) or []) if getattr(it, 'type', '') == 'web_search_call')
         u = r.usage
         cached = getattr(getattr(u, 'input_tokens_details', None), 'cached_tokens', 0) or 0
         reasoning = getattr(getattr(u, 'output_tokens_details', None), 'reasoning_tokens', 0) or 0
         self._record(model, u.input_tokens - cached, u.output_tokens, cached, 0,
                      {'role': role, 'model': r.model, 'tokens_in': u.input_tokens, 'tokens_out': u.output_tokens,
                       'cached': cached, 'reasoning_tokens': reasoning, 'seconds': round(time.time() - t0, 1),
-                      'status': r.status, 'response_id': r.id})
+                      'status': r.status, 'response_id': r.id, 'web_searches': searches})
         if r.status != 'completed':
             why = getattr(getattr(r, 'incomplete_details', None), 'reason', r.status)
             raise ParseError(f'{role}: response {r.status} ({why}); max_output_tokens={self.MAX_TOKENS[role]}')
@@ -235,7 +278,7 @@ class AnthropicBrain(LLMBrain):
         if self.use_fallbacks and model.startswith('claude-opus-5'):
             extra_body['fallbacks'] = 'default'; extra_headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'
         try:
-            with self.client.messages.stream(model=model, max_tokens=self.MAX_TOKENS[role], system=P.system_blocks(role),
+            with self.client.messages.stream(model=model, max_tokens=self.MAX_TOKENS[role], system=P.system_blocks(role, self._block),
                                              messages=messages, extra_body=extra_body, extra_headers=extra_headers) as s:
                 msg = s.get_final_message()
         except self.anthropic.BadRequestError as e:

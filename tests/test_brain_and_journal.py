@@ -45,3 +45,31 @@ def test_journal_roundtrip(tmp_path):
     assert changed == 2 and (tmp_path / 'run' / path).exists()
     md = j.render_md({'stop_reason': 'test'})
     assert 'n=1' in md and 'ERROR' in md
+
+
+def test_distill_summarize_aggregates_stacks():
+    from harness.distill import summarize
+    card = ("---\nid: x-y\nstatus: untried\nevidence: []\n---\n## Claim\nc\n## Measured\n(none yet)\n"
+            "- r1:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005 — rejected; 10 changed lines\n"
+            "- r2:node_004 on [official FM + BPR]: primary 0.6031, single-seed Δ +0.0002, seed-mean Δ +0.0001 (t 0.4) — rejected; 5 changed lines\n")
+    out = summarize(card)
+    assert 'status: dead_under [official FM x1 (best Δ +0.0005); official FM + BPR x1 (best Δ +0.0001)]' in out
+    assert '_Verdict:_ never accepted in 2 measurements on 2 stack(s)' in out and '(none yet)' not in out
+    acc = card.replace('seed-mean Δ +0.0001 (t 0.4) — rejected', 'seed-mean Δ +0.0016 (t 8.2) — ACCEPTED')
+    assert 'status: proven — accepted on [official FM + BPR]' in summarize(acc)
+
+def test_seed_cache_migration(tmp_path, monkeypatch):
+    import json, pytest
+    from harness import config as C
+    from harness.loop import Loop
+    from harness.brain import FakeBrain
+    monkeypatch.setattr(C, 'RUNS', tmp_path)
+    d = tmp_path / 'r'; d.mkdir(); (d / 'nodes').mkdir()
+    (d / 'state.json').write_text(json.dumps({'run_id': 'r', 'n_next': 1, 'generation': 0, 'champion': 0, 'best': 0.6, 'streak': 0,
+        'nodes': {'0': {'n': 0, 'metrics': {'primary': 0.6}, 'parent': None, 'action': 'reproduce_baseline', 'accepted': True}},
+        'plan': None, 'parked': [], 'start': 1.0, 'last_save': 101.0, 'interventions': 0, 'stop_reason': None,
+        'usage': {}, 'champion_seeds': {'0:1': 0.61, '0:2': None}, 'final_seeds': {'3:1': 0.62}}))
+    lp = Loop('r', FakeBrain([[]]), k=2)
+    assert lp.state['seed_cache'] == {'0:1': 0.61, '3:1': 0.62} and 'champion_seeds' not in lp.state
+    assert 99 <= lp.elapsed() < 110                             # resumed: 100 s of earlier running time, not the calendar gap
+    assert lp.champion_mean() == pytest.approx((0.6 + 0.61) / 2)

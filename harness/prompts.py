@@ -52,7 +52,7 @@ def menu():
         f = _front_fields(p.read_text())
         st = f.get('status', 'untried').replace('official FM', 'FM').replace('loss-bpr-pairwise-within-user', 'BPR')
         rows.append(f"| {f.get('id', p.stem)} | {f.get('target_component', '?')} | {st[:140]} | {f.get('expected_delta', '?')} |")
-    legend = ("Status legend: `alive` = accepted on the listed stack (build on it); `dead_under [stack xN (best Δ)]` = measured N "
+    legend = ("Status legend: `proven` = seed-confirmed in some run on the listed stack — NOT necessarily in the current champion (see Champion stack); `dead_under [stack xN (best Δ)]` = measured N "
               "times on that stack and never accepted (best Δ = best seed-mean delta seen) — do not re-propose it on that stack; "
               "a retest needs a stack not listed AND a stated reason (ADR-0004); `untried` = never measured. In stacks, FM = the "
               "official FM baseline and BPR = loss-bpr-pairwise-within-user. Each card's `## Measured` section has the per-node "
@@ -60,10 +60,12 @@ def menu():
     return '## Card status at a glance\n' + '\n'.join(rows) + '\n\n' + legend + '\n\n## Cards\n\n' + '\n\n'.join(p.read_text() for p in cards)
 
 COMMON_PREAMBLE = """You are one role inside an autonomous ML-research harness for the KuaiRand-Pure within-user
-ranking task. The harness (deterministic code) runs the loop, scores every script with the official evaluate.py,
-applies the acceptance rule (a node must beat the champion by >= 0.002 on validation primary) and the convergence
-rule. You perform exactly one role per call and answer in the required format. The facts below were measured on
-this dataset; treat them as ground truth. There is no test data anywhere you can see; never look for it.
+ranking task. The harness (deterministic code) runs the loop, scores every script with the official evaluate.py and
+applies these rules — """ + C.rules_text() + """
+You perform exactly one role per call and answer in the required format. The facts below were measured on this
+dataset; treat them as ground truth. A card's status says what was measured in SOME run on SOME stack; what the
+current champion script actually contains is stated as 'Champion stack' in the context — never assume a method is
+in a script because its card is proven. There is no test data anywhere you can see; never look for it.
 All code must follow the script contract. Only numpy and the standard library are available."""
 
 ROLE_SYSTEM = {
@@ -82,7 +84,8 @@ prefer the cheaper implementation when expected gains tie; in generation 1 at le
 ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
 state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the card's range unless the
-diagnosis gives specific evidence for more. Seed noise is 0.0008; the acceptance floor is 0.002; the entire
+diagnosis gives specific evidence for more. Seed-to-seed SD is ~0.0003; acceptance needs a seed-mean gain of at least
+MIN_EFFECT at T_CRIT standard errors, so real +0.0006 effects pass and single-seed +0.0005 flukes do not; the entire
 remaining headroom is ~0.25.
 Output exactly one fenced block:
 ```json
@@ -99,7 +102,8 @@ research that no card covers (name the paper or idea), or (c) an unconventional 
 fact — the tab x duration structure, the repeated (user, video) pairs, the 18-second threshold, the volume collapse
 after 04-12, the closed catalogue. Constraints: one target_component; implementable in numpy in under 120 changed
 lines starting from the champion; not a hyper-parameter tweak; not something the journal already measured. Prefer
-mechanisms orthogonal to a within-user pairwise loss, since that is the champion. Be bold on the idea, honest on
+mechanisms orthogonal to what the champion stack already contains (see 'Champion stack' in the context; do not
+assume anything else is in it). Be bold on the idea, honest on
 expected_delta (lower third of what a card in that family would promise). Output exactly one fenced block with
 exactly these fields:
 ```json
@@ -132,9 +136,11 @@ play_time_ms, profile_stay_time, comment_stay_time, is_profile_enter) used as a 
 future data; the statistic file; history features not strictly earlier in time; any reference to test data or to
 paths outside --data-dir. (2) CONTRACT — outputs, SMOKE_EPOCHS caps EVERY training phase, determinism,
 predictions.csv row order and row_id logic untouched, runtime risk (pure-Python loops over a million rows inside
-the epoch loop, quadratic pair construction). (3) SCOPE — the change implements the stated hypothesis and nothing
-else; if the diff is far larger than the hypothesis needs, say "revise" with the instruction to return the parent
-script with only the necessary edits. A minor over-reach that does not change the hypothesis (e.g. a coefficient
+the epoch loop, quadratic pair construction). (3) SCOPE — judge it from the UNIFIED DIFF you are given: the change
+implements the stated hypothesis and nothing else. The parent's stack is stated in the context: the candidate must
+not add, remove or swap a loss, sampler, feature, schedule or ensemble that the hypothesis does not name — whatever
+the cards mark as proven, and whatever the candidate's own text claims the parent contains. If the diff is far larger
+than the hypothesis needs, say "revise" with the instruction to return the parent script with only the necessary edits. A minor over-reach that does not change the hypothesis (e.g. a coefficient
 also applied to a second matrix) is a NOTE in reasons, not a revise.
 Be terse: if the verdict is ok, give at most two short reasons; spend words only on problems. Veto only for leakage
 or test access; everything else is revise (code changes only) or ok. Output exactly one fenced block:
@@ -154,6 +160,33 @@ Do NOT decide acceptance — the referee already did. Output exactly one fenced 
  {"type": "explore", "parent": 2, "card": "...", "hypothesis": "..."}]}```""",
 }
 
+ROLE_SYSTEM['archive'] = """Role: ARCHIVIST. Turn one measured wildcard node (an idea that was not on the menu) into a method card so later
+runs can select, retest or compose it. Write the card from the node's ACTUAL diff and measurement, not from what the idea hoped to do.
+Same schema as the menu cards: front matter id, family, target_component, source, applies_when, expected_delta, expected_delta_basis,
+cost, composes_with, conflicts_with, status, evidence; sections ## Claim, ## Mechanism, ## How to implement on node_000, ## Risks,
+## Measured. Rules: id = "<target_component>-<short-slug>" (lowercase, hyphens), not an existing id; expected_delta = [lo, hi] that
+brackets what was measured (seed-mean first), never above it, with lo >= 0 (a measured loss goes in ## Measured, not here); How to implement = the concrete edit from the diff (functions, shapes,
+lines), at most 12 lines; composes_with / conflicts_with only existing card ids; status: untried and evidence: [] (the harness fills
+them); ## Measured contains only "(none yet)"; at most 60 lines. Attribute honestly using the run journal in your instructions: if the
+diff also contains a mechanism a sibling node measured on the same parent (e.g. a loss change), say so in Risks and bracket
+expected_delta by the part this card's mechanism can claim. If the node is really an existing card (same mechanism), answer with
+duplicate_of and no card block. Output exactly: ```json {"id": "<id>", "duplicate_of": null, "family": "<family>"}``` followed by one
+```card ... ``` block holding the complete card text (front matter + body)."""
+
+ROLE_SYSTEM['librarian'] = """Role: LIBRARIAN. Extend the menu with PUBLISHED methods that fit this problem's measured facts and the evidence in
+the run journal (what is alive, what died on which stack, what nobody tried). Use web search to find concrete sources — papers,
+competition write-ups (KDD Cup, RecSys Challenge, Kaggle, WSDM Cup), open-source recommender libraries (RecBole, DeepCTR, LightFM,
+xLearn, TorchRec) — then check every candidate against Foundations (a user-constant term cannot move the metric) and the constraints
+(numpy only, one CPU, script under 30 min, no test access, no pretrained weights, edits of node_000). Propose exactly n cards, each a
+DIFFERENT mechanism from every existing card and from each other; preconditions checkable against numbered facts; expected_delta
+honest against the 0.0005-0.005 range the journal shows; How to implement = a concrete numpy edit of node_000 in at most 12 lines;
+source = citation with URL. Prefer methods a Selector would plausibly pick next generation over exotic ones. Same schema as the menu
+cards; status: untried; evidence: []; ## Measured "(none yet)"; at most 60 lines each. Output exactly: ```json {"cards": [{"id": "<id>",
+"source_url": "<url>", "why_now": "<one line tied to the journal evidence>"}]}``` followed by one ```card ... ``` block per card, in
+the same order."""
+
+ROLE_SYSTEM['select'] = ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('T_CRIT', str(C.T_CRIT))
+
 _STABLE = None
 def stable_prefix():
     """Built once per process so the cached prefix is byte-identical across calls."""
@@ -163,19 +196,39 @@ def stable_prefix():
             COMMON_PREAMBLE,
             '# Task specification\n' + _read(C.KB / 'spec' / 'task.md'),
             '# Scoring\n' + _read(C.KB / 'spec' / 'scoring.md'),
+            '# Foundations (task-specific mathematics)\n' + _read(C.KB / 'spec' / 'foundations.md'),
             '# Script contract\n' + _read(C.WORKSPACE / 'CONTRACT.md'),
             '# Measured data facts\n' + _read(C.KB / 'data' / 'facts.md'),
             '# Method menu\n' + menu(),
         ])
     return _STABLE
 
-def system_text(role):
-    """OpenAI `instructions`: the stable prefix ONLY, byte-identical for every role, so the provider's prompt cache
-    serves it on every call; the role text goes at the top of the user message (see user_message)."""
-    return stable_prefix()
+def refresh_menu():
+    """Forget the cached prefix so cards added by the Librarian/Archivist appear in the next call."""
+    global _STABLE
+    _STABLE = None
 
-def system_blocks(role):
-    return [{'type': 'text', 'text': stable_prefix(), 'cache_control': {'type': 'ephemeral'}}]
+def untried_cards():
+    return sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md'
+                  and _front_fields(p.read_text()).get('status', '').startswith('untried'))
+
+def run_block(generation, digest):
+    """The exact run journal, frozen at the start of a generation: identical for every call of that generation, so
+    it sits right after the stable prefix and the provider's cache serves it after the first call."""
+    return (f'# Run journal so far (frozen at the start of generation {generation}; every node, every diff, every '
+            f'measurement — read it before proposing; nothing here is summarised)\n\n{digest}')
+
+def system_text(role, block=''):
+    """OpenAI `instructions`: the stable prefix (byte-identical for every role and generation) followed by the
+    generation-stable run block; both are served by the provider's prompt cache after the first call. The role text
+    goes at the top of the user message (see user_message)."""
+    return stable_prefix() + ('\n\n' + block if block else '')
+
+def system_blocks(role, block=''):
+    out = [{'type': 'text', 'text': stable_prefix(), 'cache_control': {'type': 'ephemeral'}}]
+    if block:
+        out.append({'type': 'text', 'text': block, 'cache_control': {'type': 'ephemeral'}})
+    return out
 
 def user_message(role, text):
     return f"## Your role in this call\n{ROLE_SYSTEM[role]}\n\n## Context\n{text}"
@@ -188,13 +241,15 @@ def _state(ctx):
             f"nodes used {ctx['nodes_used']}/{ctx['max_nodes']}; k = {ctx['k']}.\n"
             f"Champion: node_{ch['n']:03d} — primary {ch['metrics']['primary']:.4f} "
             f"(GAUC {ch['metrics']['gauc']:.4f}, nDCG@5 {ch['metrics']['ndcg5']:.4f}); hypothesis: {ch.get('hypothesis')}\n"
+            f"Champion stack (accepted methods actually in its script): [{ctx.get('champion_stack', 'official FM')}]\n"
             f"Champion learning curve (epoch:valid primary): {curve}\n"
             f"Best-so-far {ctx['best']:.4f}; non-improving generation streak {ctx['streak']} "
             f"(converged at {C.N_CONVERGE}); baseline valid primary {C.BASELINE_VALID_PRIMARY}.\n"
-            f"Journal (one line per node):\n" + ('\n'.join(ctx['journal_lines']) or '(empty)'))
+            f"Journal index (one line per node; the full record with diffs is the '# Run journal' section of your instructions):\n"
+            + ('\n'.join(ctx['journal_lines']) or '(empty)'))
 
 def user_diagnose(ctx):
-    return _state(ctx) + '\n\nLast generation results:\n' + json.dumps(ctx.get('last_generation', []), indent=1, default=str)[:6000]
+    return _state(ctx) + '\n\nLast generation results:\n' + json.dumps(ctx.get('last_generation', []), indent=1, default=str)[:24000]
 
 def user_select(ctx):
     plan = ctx.get('plan') or {}
@@ -213,7 +268,9 @@ def user_explore(ctx):
 
 def user_implement(ctx, selection, parent_code, extra_parent_code=None):
     s = (f"Candidate to implement:\n{json.dumps(selection, indent=1, default=str)}\n\n"
-         f"Parent script (node_{selection.get('parent_n', ctx['champion']['n']):03d}):\n```python\n{parent_code}\n```\n")
+         f"Parent script node_{selection.get('parent_n', ctx['champion']['n']):03d}; its stack (everything it contains beyond the "
+         f"official FM): [{ctx.get('parent_stack', 'official FM')}]. Nothing else on the menu is in it, whatever a card's status says. "
+         f"Edit it for the candidate only.\n```python\n{parent_code}\n```\n")
     if extra_parent_code:
         s += f"\nSecond parent script for the merge:\n```python\n{extra_parent_code}\n```\n"
     if ctx.get('history_for_implementer'):
@@ -222,11 +279,34 @@ def user_implement(ctx, selection, parent_code, extra_parent_code=None):
         s += f"\nThe Critic asked for these changes to your previous version:\n{selection['critic_instructions']}\n"
     return s
 
-def user_critique(ctx, code, selection):
-    return f"Candidate:\n{json.dumps(selection, indent=1, default=str)}\n\nScript:\n```python\n{code}\n```"
+def user_critique(ctx, code, selection, diff_text=''):
+    return (f"Candidate:\n{json.dumps(selection, indent=1, default=str)}\n\n"
+            f"Parent: node_{selection.get('parent_n', ctx['champion']['n']):03d}; parent stack (what it actually contains): "
+            f"[{ctx.get('parent_stack', ctx.get('champion_stack', 'official FM'))}]\nParent docstring:\n{ctx.get('parent_doc', '')[:1200]}\n\n"
+            f"Unified diff, parent -> candidate (judge SCOPE from this):\n```diff\n{diff_text[:20000]}\n```\n\n"
+            f"Full candidate script (for LEAKAGE and CONTRACT):\n```python\n{code}\n```")
 
 def user_fix(ctx, code, error, log_tail):
     return f"Error: {error}\n\nLog tail:\n{log_tail}\n\nScript:\n```python\n{code}\n```"
 
 def user_consolidate(ctx, results):
     return _state(ctx) + '\n\nThis generation:\n' + json.dumps(results, indent=1, default=str)[:12000] + f"\n\nk = {ctx['k']}."
+
+def user_archive(ctx, rec, diff_text, card_ids, example_card, stack):
+    keep = {k: rec.get(k) for k in ('n', 'hypothesis', 'target_component', 'method', 'expected_delta', 'expected_delta_basis',
+                                    'change_summary', 'critic', 'metrics', 'realized_delta', 'accepted', 'seed_confirmation',
+                                    'diff_lines', 'duration_s')}
+    h = rec.get('history') or []
+    curve = ' '.join(f"{x.get('val_primary', 0):.4f}" for x in h[:40])
+    return (f"Run {ctx.get('run_id')}: archive node_{rec['n']:03d}, measured on the stack [{stack}].\n"
+            f"Node record: {json.dumps(keep, default=str)}\nValid primary by epoch: {curve}\n\n"
+            f"Diff against the parent script:\n```diff\n{diff_text[:12000]}\n```\n\n"
+            f"Existing card ids (do not reuse; use for composes_with / conflicts_with): {', '.join(card_ids)}\n\n"
+            f"Example card (format to copy exactly):\n```card\n{example_card}\n```")
+
+def user_librarian(ctx, example_card):
+    return (f"Propose exactly n = {ctx['n']} new cards.\n"
+            f"Existing card ids: {', '.join(ctx['card_ids'])}\nStill untried: {', '.join(ctx.get('untried', [])) or '(none)'}\n"
+            f"Run journal: {'in the # Run journal section of your instructions' if ctx.get('has_digest') else '(no run yet)'}\n"
+            + (f"Latest results (after the frozen journal):\n{ctx['extra']}\n" if ctx.get('extra') else '') + "\n"
+            f"Example card (format to copy exactly):\n```card\n{example_card}\n```")

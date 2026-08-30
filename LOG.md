@@ -112,3 +112,37 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
 - Observation for the next iteration of the harness: the 0.001 minimum-effect floor rejected a t = 5.4 improvement
   (the ensemble); a floor of 0.0005 with the same t-test would have accepted it. The DCN cross head was planned for
   generation 6 but never ran — the only card family left untried after two runs.
+
+## 2026-08-30 (later) — live_03/live_04, the code review, ADR-0012 and ADR-0013
+- **Harness v3 (ADR-0011):** k = 5 with one Explorer wildcard slot; Selector/Implementer/Explorer at `xhigh`; minimum
+  effect 0.0005. `live_03` stopped after one generation: the Explorer had never been shown the output schema (four
+  failed calls) and the Critic vetoed a correct L2 script for "too small a gain" — the Critic is now confined to code
+  review and the hypothesis is fixed for the Implementer. Cards gained an aggregated status across stacks, a
+  verdict line and a status table at the top of the Selector's menu (commit 592dae9).
+- **`live_04`** (k = 5, wildcard, xhigh): generation 1 accepted four nodes — the wildcard "field-aware FM embeddings"
+  (+0.0016 single, +0.0012 seed-mean, t 5.2 → champion), BPR (+0.0011), history aggregates (+0.0010), L2 (+0.0009);
+  generation 2 (merges on the wildcard) flat; generation 3 flat except a rank-average ensemble at +0.0006, t 2.43
+  (missed the 2.5 bar; its single seed 0.6036 reset the streak under the old rule); **generation 4: node_015, a
+  5-seed rank-average ensemble of the two lineages, +0.0014 single / +0.0017 seed-mean (t 7.65), valid 0.6045 →
+  champion.** Selector and Explorer now run concurrently; the Selector lists k candidates with a reserve for a
+  collision with the wildcard's component (each live_04 generation had lost one branch to that).
+- **Code review relayed by Yash (ADR-0012)** — verified against the run artefacts and fixed: (1) convergence tracked
+  the single-seed best of *any* node while acceptance used seed-means: four accepted nodes logged "no improvement",
+  a rejected node's lucky seed logged "improved" → convergence now tracks the champion's seed-mean with
+  early-stopping semantics (`referee.Convergence`, unit-tested); (2) the Critic never saw the parent or the diff and
+  the Explorer prompt hard-coded "BPR is the champion" (true in live_02) → the correct field-aware edit was sent
+  back twice until BPR was added; node_001's +0.0012 is mostly BPR (node_002 alone: +0.0011); node_006 and node_008
+  produced predictions byte-identical to node_001 (md5 4ff8aa3e…) → Critic receives the unified diff + the parent's
+  actual stack, Implementer is told the stack, no-op detector by prediction hash; (3) champion = accepted node with
+  the best seed-mean gain, not the best single seed; (4) one seed cache never cleared (node_001's seeds had been
+  recomputed — timestamps 20:33 vs 20:39); (5) prompts still said "≥ 0.002 to beat the champion" → rule text
+  generated from `config.py`; (6) `stdev` not `pstdev`; (7) resume-safe wall clock, Diagnostician view uncut;
+  (8) tests for `Convergence`, `pick_champion`, `confirm_stats`, the seed-cache migration, `summarize`. The
+  paired-test suggestion was withdrawn by the reviewer (seeds are not paired across scripts) and not adopted.
+- **Evolving KB (ADR-0013):** `Journal.digest()` puts every node with its diff into a generation-stable cached
+  block (≈ 23 K tokens at 14 nodes); `kb/spec/foundations.md` (metric invariances, loss vs metric, noise, dynamics)
+  joins the prefix; the **Archivist** turns wildcards into cards — first result `model-field-aware-fm-embeddings`
+  with expected Δ [0, 0.0001] and the honest note that the bundled BPR explains the gain; the **Librarian** (OpenAI
+  `web_search`) adds untried cards after flat generations (≤ 2× per run) or via `cli librarian`; card status
+  `alive` → `proven — accepted on [stack]`, with the champion's actual stack stated in every call.
+
