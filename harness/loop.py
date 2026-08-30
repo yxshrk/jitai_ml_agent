@@ -360,6 +360,22 @@ class Loop:
             return "draft", self.champion, (
                 f"forced branch after stagnation: draft from {tier}, an untried menu tier"
             )
+        # Branch to the best runner-up lineage when the champion's last two
+        # children were both rejected and a near-champion alternative exists.
+        ordered = sorted(self.nodes.values(), key=lambda x: int(x.node_id.split("_")[1]))
+        recent = ordered[-2:]
+        if (len(recent) == 2
+                and all(x.status == "rejected" and x.parent == self.champion.node_id
+                        for x in recent)):
+            alts = [n for n in self.nodes.values()
+                    if n.status == "accepted" and n.node_id != self.champion.node_id
+                    and n.primary is not None
+                    and n.primary >= (self.champion.primary or 0) - 0.0015]
+            if alts:
+                alt = max(alts, key=lambda n: n.primary)
+                return "improve", alt, (
+                    f"branch: the champion's recent children were rejected; improve the "
+                    f"runner-up lineage {alt.node_id} (primary {alt.primary:.4f}) instead")
         return "improve", self.champion, None
 
     # ---------- acceptance ----------
