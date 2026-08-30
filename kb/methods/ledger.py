@@ -82,8 +82,8 @@ def build(methods_dir=METHODS):
                       'basis_class': _basis_class(fm, nodes, sf is not None),
                       'measured_max': max(deltas) if deltas else None, 'measured_max_ref': max(ref_deltas) if ref_deltas else None,
                       'accepted': any(n['accepted'] for n in nodes),
-                      'bound': bound, 'bound_source': sig[sf]['source'] if sf else None}
-        f = families.setdefault(fam, {'bound': None, 'bound_source': None, 'status': 'open', 'cards': [], 'screen_gains': [], 'measured': [], 'best_measured': None})
+                      'bound': bound, 'bound_kind': sig[sf].get('kind', 'unspecified') if sf else None, 'bound_source': sig[sf]['source'] if sf else None}
+        f = families.setdefault(fam, {'bound': None, 'bound_kind': None, 'bound_source': None, 'status': 'open', 'cards': [], 'screen_gains': [], 'measured': [], 'best_measured': None})
         f['cards'].append(cid)
         f['screen_gains'] += [dict(s, card=cid) for s in screens]
         f['measured'] += [dict(n, card=cid) for n in nodes]
@@ -96,6 +96,7 @@ def build(methods_dir=METHODS):
         if all(c['bound'] is not None for c in cs):        # every card in the family draws on a bounded signal
             f['bound'] = max(c['bound'] for c in cs)
             f['bound_source'] = '; '.join(sorted({c['bound_source'] for c in cs}))
+            f['bound_kind'] = 'oracle' if all(c['bound_kind'] == 'oracle' for c in cs) else 'mixed:' + ','.join(sorted({c['bound_kind'] for c in cs}))
         untried = [c for c in cs if c['status'].startswith('untried')]
         proven_open = [c for c in cs if c['accepted']]
         if f['bound'] is not None and f['bound'] <= CLOSED_BOUND and not proven_open:
