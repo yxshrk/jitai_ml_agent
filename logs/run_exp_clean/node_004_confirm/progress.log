@@ -202,3 +202,12 @@
 {"best_epoch": 5, "k": 12, "member": 75, "phase": "final_seed_member", "primary": 0.6004005928524933, "seed": 76717}
 {"best_epoch": 7, "k": 12, "member": 76, "phase": "final_seed_member", "primary": 0.6012536008514037, "seed": 77726}
 {"best_epoch": 4, "k": 12, "member": 77, "phase": "final_seed_member", "primary": 0.6010754334984332, "seed": 78735}
+{"best_epoch": 7, "k": 12, "member": 78, "phase": "final_seed_member", "primary": 0.6016988071045457, "seed": 79744}
+{"best_epoch": 6, "k": 12, "member": 79, "phase": "final_seed_member", "primary": 0.601655448118444, "seed": 80753}
+{"best_epoch": 8, "k": 12, "member": 80, "phase": "final_seed_member", "primary": 0.6010366694642826, "seed": 81762}
+{"best_epoch": 8, "k": 12, "member": 81, "phase": "final_seed_member", "primary": 0.6018547650101547, "seed": 82771}
+{"best_epoch": 7, "k": 12, "member": 82, "phase": "final_seed_member", "primary": 0.6010366772460829, "seed": 83780}
+{"best_epoch": 7, "k": 12, "member": 83, "phase": "final_seed_member", "primary": 0.6025551603942936, "seed": 84789}
+{"best_epoch": 6, "k": 12, "member": 84, "phase": "final_seed_member", "primary": 0.6014026137371107, "seed": 85798}
+{"best_epoch": 6, "k": 12, "member": 85, "phase": "final_seed_member", "primary": 0.6018675512536783, "seed": 86807}
+{"best_epoch": 7, "k": 12, "member": 86, "phase": "final_seed_member", "primary": 0.6015630275008109, "seed": 87816}

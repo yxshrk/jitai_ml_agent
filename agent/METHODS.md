@@ -481,6 +481,31 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
+
+### decayed-positive-sampling: Recency-decayed positive-count user sampling
+- mechanism: Sample WHICH user receives each BPR update proportionally to (sum over their positives of 2^(-days_ago/3))^0.5, then draw one observed pos + one neg from that user. Aligns training attention with positive-count-weighted GAUC and recency; changes gradient ALLOCATION, complementary to row recency weighting. Fixed dials (h=3d, alpha=0.5); no grid.
+- treats: metric-mismatch | data-shift
+- citation: idea salvaged from a public entry whose own scores are leakage-invalid (nigelyeap; the SAMPLER is train-only and clean); external review-ranked.
+- expected_gain / cost: 0..+0.0005 / low.
+- status_pure: untried
+- status_1k: untried
+
+### small-batch-diversity: Batch-size ensemble-diversity experiment
+- mechanism: Freeze the champion config; train 3 fixed seeds at each of {current, half, quarter} batch size; compare member quality, pairwise correlation, and midrank-ensemble payoff. Target: similar member quality with disagreement concentrated on correctable pairs (NOT maximum disagreement). One controlled experiment, not a search.
+- treats: flat-signal
+- citation: public entry (OrangeCat) ablation suggests smaller batches -> more optimizer steps, better sparse-ID learning, more useful seed diversity; our ensemble payoff is config-dependent (measured).
+- expected_gain / cost: 0..+0.0006 via ensemble / med.
+- status_pure: untried
+- status_1k: untried
+
+### relative-watch-component: Relative-advantage watch percentile diversity member
+- mechanism: Train-only target = 0.5*midrank_percentile(play_time_ms within video) + 0.5*midrank_percentile(play_time_ms within user x duration_bucket); train a compact model on the 5 IDs to predict it; use ONLY as a 5-10% rank-blend diversity member, never standalone. Distinct from measured-dead raw watch-time regression (relative target, blend-only role).
+- treats: flat-signal
+- citation: public entry (wecoai) uses this as a blend component; relative-percentile framing removes trivial duration scale.
+- expected_gain / cost: probably flat, upside +0.0005 / low-med.
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal

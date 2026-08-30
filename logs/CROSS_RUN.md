@@ -1495,3 +1495,54 @@ Next run:
 3. Tune early stopping/checkpoint epoch around the observed peak, roughly epochs 6–10.
 4. Perform a narrow regularization and learning-rate search around the winning setting; avoid the aggressive combined package from node_002.
 5. Only then explore additional architecture complexity.
+
+## Run logs/run_max_l2
+dataset: pure
+stop_reason: max_hours
+best_primary: 0.603955
+- node_001 | method: package-dial-sweep | hypothesis: Because the parent validation curve peaks around epoch | primary: 0.603955 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: Because validation peaks early and then falls, indicating | primary: 0.604809 | verdict: rejected
+- node_003 | method: recency-weighting | hypothesis: Because the early validation peak diagnoses overfit and | primary: 0.604088 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a small improvement over the FM baseline, from 0.6018 to 0.603955, but did not establish which intervention caused it or whether it is robust. The search was too bundled and too low-throughput for a max-hours run.
+
+What the harness/policy did suboptimally
+
+- Node_001 changed many factors simultaneously: architecture, loss, dropout, optimizer decay, learning-rate schedule, and recency weighting. This produced a better model but no causal information, making follow-up search inefficient.
+- The reported precision is inconsistent. Node_001 is summarized as 0.6040 while best_primary is 0.603955; hypotheses and acceptance gates should use unrounded values.
+- Node_002 reports 0.6048 but was rejected, and node_003 reports 0.6041 but was also rejected. The journal omits the decisive rejection criterion. Without seed-level scores, uncertainty, constraints, or gate diagnostics, these outcomes are not interpretable.
+- Claims about “overfit-driven seed variance” and expected gains were stronger than the evidence. A declining validation curve supports early overfitting, but does not itself demonstrate seed variance or justify precise +0.0008/+0.0022 predictions.
+- The baseline sigma of 0.0001 appears implausibly precise unless it came from enough independent paired runs. If it was estimated from very few seeds, acceptance decisions were overconfident.
+- Only three follow-ups were completed before max_hours. The policy spent substantial budget on a five-model ensemble and a floor search before establishing a cheap, reproducible single-model reference.
+- Selecting recency floors over the same validation set adds multiple-comparison overfitting. There was no stated holdout confirmation or correction.
+- Rank averaging was treated as automatically appropriate. It should be justified against the exact primary metric and compared with raw-score averaging and calibrated averaging.
+
+What I would change in the scaffold
+
+- Require every node to log exact primary score, per-seed scores, runtime, acceptance threshold, and explicit rejection reason.
+- Separate exploration from confirmation:
+  1. one-seed or short-budget screening;
+  2. paired-seed confirmation against the incumbent;
+  3. untouched holdout confirmation for the final choice.
+- Limit ordinary proposals to one major change at a time. Bundled packages should be followed immediately by leave-one-component-out ablations.
+- Use paired seeds and confidence intervals rather than relying on a baseline sigma estimate.
+- Make proposals budget-aware: estimated runtime and expected information gain should influence scheduling. Defer five-model ensembles until the single-model recipe is stable.
+- Store and compare best-checkpoint epoch, validation trajectory, prediction correlation, and effective sample size for weighting experiments.
+- Avoid precise gain forecasts unsupported by prior experiments; state a directional hypothesis and a minimum worthwhile effect instead.
+- Preserve full-precision metrics throughout gating and reporting.
+
+What the next run should try first
+
+First, resolve the acceptance inconsistency by reproducing node_001 exactly over at least three paired seeds and recording why the nominally higher node_002 and node_003 scores failed their gates.
+
+Then run a compact leave-one-out ablation of node_001, prioritizing:
+
+1. Remove recency weighting.
+2. Replace the hybrid loss with the baseline loss.
+3. Remove the DCN-lite component.
+4. Revert the aggressive step decay.
+5. Revert AdamW/dropout changes together only if they cannot be separated cheaply.
+
+Use short early-stopped screens, then confirm only the best one or two variants with paired seeds. If node_001 is reproducibly better, the first optimization should be checkpoint/regularization tuning around its early validation peak, not another large package or ensemble. Only revisit ensembling after measuring prediction diversity and comparing raw-score averaging against within-user rank averaging.
