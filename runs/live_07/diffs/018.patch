@@ -1,0 +1,126 @@
+--- node_009.py
++++ node_018.py
+@@ -8,12 +8,13 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++History Appends a fixed-level contrast between prior positive and negative content-attribute matches.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'content_affinity']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -100,29 +101,88 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    basic = read_rows(f'{a.data_dir}/video_features_basic.csv',
++                      ['video_id', 'author_id', 'tag', 'music_id', 'video_type'])
++    def clean_attr(v):
++        v = v.strip().strip("'\"")
++        return v if v and v.lower() not in ('nan', 'none', 'null', '-1') else 'UNK'
++    def first_tag(v):
++        v = v.strip().strip('[]')
++        if ',' in v:
++            v = v.split(',', 1)[0]
++        elif ' ' in v:
++            v = v.split(' ', 1)[0]
++        return clean_attr(v)
++    vid2author = {x[0]: x[1] for x in basic}
++    vid2attrs = {x[0]: (first_tag(x[2]), clean_attr(x[3]), clean_attr(x[4])) for x in basic}
++    tr = read_rows(f'{a.data_dir}/train.csv',
++                   ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++
++    def content_history(scored, ui, vi, keep_train=False):
++        n = len(tr)
++        times = np.fromiter((int(x[5]) for x in tr), dtype=np.int64, count=n)
++        users = np.fromiter((int(x[0]) for x in tr), dtype=np.int64, count=n)
++        order = np.lexsort((np.arange(n, dtype=np.int32), times, users))
++        scored_by_user = {}
++        for j, x in enumerate(scored):
++            scored_by_user.setdefault(int(x[ui]), []).append(j)
++        train_history = np.empty(n, dtype=np.int8) if keep_train else None
++        scored_history = np.zeros(len(scored), dtype=np.int8)
++        def level(video, positive, negative):
++            score = 0
++            for f, value in enumerate(vid2attrs.get(video, ('UNK', 'UNK', 'UNK'))):
++                if value != 'UNK':
++                    score += positive[f].get(value, 0) - negative[f].get(value, 0)
++            return max(-3, min(3, score))
++        p = 0
++        while p < n:
++            first = int(order[p]); user = users[first]; end = p + 1
++            while end < n and users[order[end]] == user:
++                end += 1
++            positive, negative = [{}, {}, {}], [{}, {}, {}]
++            k = p
++            while k < end:
++                first = int(order[k]); q = k + 1
++                while q < end and times[order[q]] == times[first]:
++                    q += 1
++                if keep_train:
++                    for z in range(k, q):
++                        j = int(order[z])
++                        train_history[j] = level(tr[j][1], positive, negative)
++                for z in range(k, q):
++                    j = int(order[z]); state = positive if tr[j][4] != '0' else negative
++                    for f, value in enumerate(vid2attrs.get(tr[j][1], ('UNK', 'UNK', 'UNK'))):
++                        if value != 'UNK':
++                            state[f][value] = state[f].get(value, 0) + 1
++                k = q
++            for j in scored_by_user.get(int(user), ()):
++                scored_history[j] = level(scored[j][vi], positive, negative)
++            p = end
++        return train_history, scored_history
++    Htr, Hva = content_history(va, 1, 2, True)
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, history):
++        return [user, video, vid2author.get(video, 'UNK'), tab,
++                str(int(np.searchsorted(edges, float(dur)))), str(int(history))]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    vocabs[-1] = {str(v): v + 3 for v in range(-3, 4)}
++    for x, h in zip(tr, Htr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], h)):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, histories):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], histories[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, 0, 1, 2, 3, Htr); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, 1, 2, 3, 4, Hva); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+@@ -183,7 +243,8 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        Xex = encode(ex, 1, 2, 3, 4)
++        _, Hex = content_history(ex, 1, 2)
++        Xex = encode(ex, 1, 2, 3, 4, Hex)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")

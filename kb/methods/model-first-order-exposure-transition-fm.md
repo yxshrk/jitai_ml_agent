@@ -14,8 +14,8 @@ expected_delta_basis: factorized transitions add genuinely new row-varying infor
 cost: ~40 changed lines; two video-sized embedding tables and one extra dot product, runtime ~1.2x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, history-same-author-run-features, regularization-embedding-dropout-l2]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)]
+evidence: [live_07:node_012]
 ---
 ## Claim
 Add an FPMC-style latent transition score between the user's immediately previous exposed video and the current
@@ -41,4 +41,5 @@ across different video pairs while the existing FM retains long-term user prefer
 - Computing a row's context from later or equal-time impressions would leak future exposure information.
 
 ## Measured
-(none yet)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)
+- live_07:node_012 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6036, single-seed Δ -0.0005 — rejected; 89 changed lines

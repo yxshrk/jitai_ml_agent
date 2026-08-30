@@ -12,8 +12,8 @@ expected_delta_basis: history-user-aggregates (a crude, unconditioned version of
 cost: ~110 lines (torch module with FM logit + attention branch, BPR training loop, history padding); runtime 3–6 min on CPU at 4 threads; library: torch 2.8 CPU (installed)
 composes_with: [loss-bpr-pairwise-within-user, features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average]
 conflicts_with: [model-lightgbm-lambdarank]
-status: untried
-evidence: []
+status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]
+evidence: [live_07:node_017]
 ---
 ## Claim
 Scoring a candidate against a candidate-weighted summary of the user's earlier long-views (attention keyed by
@@ -48,4 +48,5 @@ cancels, so the branch is forced to learn candidate-specific ordering.
 - Determinism on CPU is exact given the seed and fixed threads; MPS/CUDA are forbidden by the contract.
 
 ## Measured
-(none yet)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)
+- live_07:node_017 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 137 changed lines

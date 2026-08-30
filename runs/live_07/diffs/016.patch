@@ -1,0 +1,142 @@
+--- node_009.py
++++ node_016.py
+@@ -8,12 +8,15 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++Adds strictly prior video and author 24-hour exposure-count and previous-gap categorical fields.
+ """
+ import argparse, csv, json, os, time
++from collections import deque
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket',
++          'video_24h_count', 'video_previous_gap', 'author_24h_count', 'author_previous_gap']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -23,6 +26,67 @@
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
++
++def momentum_features(rows, vi, ti, vid2author, initial=None):
++    videos = [x[vi] for x in rows]
++    authors = [vid2author.get(video, 'UNK') for video in videos]
++    times = np.fromiter((int(x[ti]) for x in rows), dtype=np.int64, count=len(rows))
++    order = np.argsort(times, kind='stable')
++    features = np.empty((len(rows), 4), dtype=np.int8)
++    if initial is None:
++        video_recent, video_last, author_recent, author_last = {}, {}, {}, {}
++    else:
++        vr, vl, ar, al = initial
++        video_recent = {k: deque(v) for k, v in vr.items()}; video_last = vl.copy()
++        author_recent = {k: deque(v) for k, v in ar.items()}; author_last = al.copy()
++    window = 86_400_000
++    p = 0
++    while p < len(order):
++        now = int(times[order[p]]); q = p + 1
++        while q < len(order) and times[order[q]] == now:
++            q += 1
++        video_values, author_values = {}, {}
++        for oi0 in order[p:q]:
++            oi = int(oi0); video = videos[oi]; author = authors[oi]
++            vv = video_values.get(video)
++            if vv is None:
++                recent = video_recent.get(video)
++                if recent is None:
++                    recent = deque(); video_recent[video] = recent
++                while recent and now - recent[0] > window:
++                    recent.popleft()
++                gap = None if video not in video_last else now - video_last[video]
++                vv = (min(len(recent).bit_length(), 12),
++                      0 if gap is None else min(max(gap // 1000, 1).bit_length(), 20))
++                video_values[video] = vv
++            av = author_values.get(author)
++            if av is None:
++                recent = author_recent.get(author)
++                if recent is None:
++                    recent = deque(); author_recent[author] = recent
++                while recent and now - recent[0] > window:
++                    recent.popleft()
++                gap = None if author not in author_last else now - author_last[author]
++                av = (min(len(recent).bit_length(), 12),
++                      0 if gap is None else min(max(gap // 1000, 1).bit_length(), 20))
++                author_values[author] = av
++            features[oi] = (vv[0], vv[1], av[0], av[1])
++        for oi0 in order[p:q]:
++            oi = int(oi0); video = videos[oi]; author = authors[oi]
++            video_recent[video].append(now); video_last[video] = now
++            author_recent[author].append(now); author_last[author] = now
++        p = q
++    if len(order):
++        end = int(times[order[-1]])
++        for recent in video_recent.values():
++            while recent and end - recent[0] > window:
++                recent.popleft()
++        for recent in author_recent.values():
++            while recent and end - recent[0] > window:
++                recent.popleft()
++    state = ({k: tuple(v) for k, v in video_recent.items() if v}, video_last,
++             {k: tuple(v) for k, v in author_recent.items() if v}, author_last)
++    return features, state
+ 
+ def normalized_ranks(users, scores, tiebreak=None):
+     users = np.asarray(users); scores = np.asarray(scores)
+@@ -101,28 +165,30 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    Mtr, train_momentum_state = momentum_features(tr, 1, 5, vid2author)
++    Mva, _ = momentum_features(va, 2, 6, vid2author, train_momentum_state)
++
++    # ---- encode: 9 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, momentum):
++        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))] + list(momentum)
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], Mtr[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, momentum, ui, vi, ti, di):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], momentum[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, Mtr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, Mva, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+@@ -182,8 +248,9 @@
+                    'best_epoch': int(np.argmax([h['val_primary'] for h in history]) + 1), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        Xex = encode(ex, 1, 2, 3, 4)
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
++        Mex, _ = momentum_features(ex, 2, 5, vid2author, train_momentum_state)
++        Xex = encode(ex, Mex, 1, 2, 3, 4)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")

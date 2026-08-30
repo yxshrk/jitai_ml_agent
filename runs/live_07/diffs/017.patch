@@ -1,0 +1,228 @@
+--- node_009.py
++++ node_017.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++Attention Each member adds an 8-dimensional masked residual over the 20 latest strictly earlier positive attributes.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -40,46 +41,117 @@
+     ranks = [normalized_ranks(users, scores) for scores in predictions]
+     return normalized_ranks(users, np.mean(ranks, axis=0), ranks[0])
+ 
++def first_tag(value):
++    tag = value.strip().strip('[]').split(',')[0].strip().strip("'\"")
++    return tag or 'UNK'
++
++def positive_history_layout(rows, attrs, labels, ui, ti):
++    users = np.asarray([x[ui] for x in rows])
++    times = np.asarray([int(float(x[ti])) for x in rows], dtype=np.int64)
++    order = np.lexsort((np.arange(len(rows)), times, users))
++    sorted_users = users[order]
++    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1, len(order)]
++    history = [np.zeros((1, attrs.shape[1]), dtype=np.int32)]
++    hstart = np.empty(len(rows), dtype=np.int32); hend = np.empty(len(rows), dtype=np.int32)
++    totals = {}; cursor = 1
++    for lo, hi in zip(starts[:-1], starts[1:]):
++        ix = order[lo:hi]
++        positive = ix[labels[ix] > 0]
++        count = np.searchsorted(times[positive], times[ix], side='left')
++        hstart[ix] = cursor; hend[ix] = cursor + count
++        totals[str(users[ix[0]])] = (cursor, cursor + len(positive))
++        if len(positive):
++            history.append(attrs[positive])
++        cursor += len(positive)
++    return np.concatenate(history, axis=0), hstart, hend, totals
++
++def fixed_history(rows, ui, totals):
++    bounds = np.asarray([totals.get(str(x[ui]), (0, 0)) for x in rows], dtype=np.int32).reshape(-1, 2)
++    return bounds[:, 0], bounds[:, 1]
++
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
++    def __init__(self, dim, att_dim, history_attr, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
++        self.A = rng.normal(0, 0.03, (att_dim, 8)).astype(np.float32)
++        self.history_attr = history_attr
++        self.back = np.arange(20, 0, -1, dtype=np.int32)
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mA = np.zeros_like(self.A); self.vA = np.zeros_like(self.A)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def attention(self, attrs, hstart, hend):
++        idx = hend[:, None] - self.back
++        mask = idx >= hstart[:, None]
++        idx = np.maximum(idx, 0)
++        hattrs = self.history_attr[idx]
++        q = np.zeros((len(attrs), 8), dtype=np.float32)
++        k = np.zeros((len(attrs), 20, 8), dtype=np.float32)
++        for j in range(attrs.shape[1]):
++            q += self.A[attrs[:, j]]
++            k += self.A[hattrs[:, :, j]]
++        q *= np.float32(0.25); k *= np.float32(0.25)
++        scale = np.float32(1.0 / np.sqrt(8.0))
++        alog = (k * q[:, None, :]).sum(2) * scale
++        masked = np.where(mask, alog, np.float32(-1e9))
++        peak = masked.max(1, keepdims=True)
++        weight = np.exp(np.where(mask, alog - peak, np.float32(-80.0))).astype(np.float32)
++        weight *= mask
++        weight /= np.maximum(weight.sum(1, keepdims=True), np.float32(1.0))
++        return (weight * alog).sum(1), (attrs, hattrs, q, k, weight, alog)
++
++    def attention_grad(self, cache, grad, gA):
++        attrs, hattrs, q, k, weight, alog = cache
++        score = (weight * alog).sum(1)
++        dl = grad[:, None] * weight * (np.float32(1.0) + alog - score[:, None])
++        scale = np.float32(1.0 / np.sqrt(8.0))
++        gq = (dl[:, :, None] * k).sum(1) * scale
++        gk = dl[:, :, None] * q[:, None, :] * scale
++        ids = np.concatenate((attrs.reshape(-1), hattrs.reshape(-1)))
++        for j in range(8):
++            values = np.concatenate((np.repeat(gq[:, j] * np.float32(0.25), attrs.shape[1]),
++                                     np.repeat(gk[:, :, j].reshape(-1) * np.float32(0.25),
++                                               hattrs.shape[2])))
++            gA[:, j] += np.bincount(ids, weights=values, minlength=len(gA)).astype(np.float32)
++
++    def logits(self, X, attrs, hstart, hend):
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
+-
+-    def step(self, Xp, Xn):
++        att, cache = self.attention(attrs, hstart, hend)
++        return self.b + self.W[X].sum(1) + inter + att, E, S, cache
++
++    def step(self, Xp, Ap, hsp, hep, Xn, An, hsn, hen):
+         B = len(Xp)
+-        zp, Ep, Sp = self.logits(Xp)
+-        zn, En, Sn = self.logits(Xn)
++        zp, Ep, Sp, Cp = self.logits(Xp, Ap, hsp, hep)
++        zn, En, Sn, Cn = self.logits(Xn, An, hsn, hen)
+         d = zp - zn
+         g = (-sigmoid(-d) / B).astype(np.float32)                  # d(BPR loss)/d(score_pos-score_neg)
+-        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W); gA = np.zeros_like(self.A)
+         np.add.at(gW, Xp, g[:, None])
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        self.attention_grad(Cp, g, gA); self.attention_grad(Cn, -g, gA)
++        gV += self.l2 * self.V; gW += self.l2 * self.W; gA += self.l2 * self.A
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.A, gA, self.mA, self.vA)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+         return float(np.mean(np.logaddexp(0.0, -d)))
+ 
+-    def predict(self, X, bs=200_000):
+-        return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
++    def predict(self, X, attrs, hstart, hend, bs=20_000):
++        return np.concatenate([self.logits(X[i:i + bs], attrs[i:i + bs], hstart[i:i + bs],
++                                           hend[i:i + bs])[0]
++                               for i in range(0, len(X), bs)])
+ 
+ def write_predictions(path, rows, scores):
+     with open(path, 'w', newline='') as fh:
+@@ -100,8 +172,11 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    video_rows = read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id', 'tag'])
++    vid2author = {x[0]: x[1] for x in video_rows}
++    vid2tag = {x[0]: first_tag(x[2]) for x in video_rows}
++    tr = read_rows(f'{a.data_dir}/train.csv',
++                   ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+@@ -125,6 +200,20 @@
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
++    tag_vocab = {}
++    for x in tr:
++        tag = vid2tag.get(x[1], 'UNK')
++        if tag not in tag_vocab:
++            tag_vocab[tag] = len(tag_vocab)
++    tag_unk = len(tag_vocab); att_dim = dim + tag_unk + 1
++    def attention_attrs(rows, X, vi):
++        tags = np.fromiter((tag_vocab.get(vid2tag.get(x[vi], 'UNK'), tag_unk) + dim for x in rows),
++                           dtype=np.int32, count=len(rows))
++        return np.column_stack((X[:, 2], tags, X[:, 4], X[:, 3])).astype(np.int32)
++    Atr = attention_attrs(tr, Xtr, 1); Ava = attention_attrs(va, Xva, 2)
++    history_attr, hstr, hend, history_totals = positive_history_layout(tr, Atr, ytr, 0, 5)
++    hsv, hev = fixed_history(va, 1, history_totals)
++
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+     by_user = {}
+     for i, x in enumerate(tr):
+@@ -142,7 +231,7 @@
+     del by_user
+ 
+     # ---- train with early stopping on valid primary ----
+-    models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
++    models = [FM(dim, att_dim, history_attr, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+@@ -153,12 +242,14 @@
+                 continue
+             neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
+             idx = rngs[s].permutation(len(pair_pos))
+-            losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
+-                           for i in range(0, len(idx), a.batch)])
+-            member_scores = m.predict(Xva); member_r = evaluate(uva, yva, member_scores)
++            for i in range(0, len(idx), a.batch):
++                p = pair_pos[idx[i:i + a.batch]]; n = neg_idx[idx[i:i + a.batch]]
++                losses.append(m.step(Xtr[p], Atr[p], hstr[p], hend[p],
++                                     Xtr[n], Atr[n], hstr[n], hend[n]))
++            member_scores = m.predict(Xva, Ava, hsv, hev); member_r = evaluate(uva, yva, member_scores)
+             if member_r['primary'] > best[s] + 1e-5:
+                 best[s], bad[s] = member_r['primary'], 0
+-                best_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                best_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b), m.A.copy())
+                 best_preds[s] = member_scores.copy()
+             else:
+                 bad[s] += 1
+@@ -172,10 +263,10 @@
+         if not np.any(active):
+             break
+     for s, m in enumerate(models):
+-        m.V, m.W, m.b = best_state[s]
++        m.V, m.W, m.b, m.A = best_state[s]
+ 
+     # ---- outputs ----
+-    sva = average_ranks(uva, [m.predict(Xva) for m in models]); r = evaluate(uva, yva, sva)
++    sva = average_ranks(uva, [m.predict(Xva, Ava, hsv, hev) for m in models]); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -184,8 +275,10 @@
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+         Xex = encode(ex, 1, 2, 3, 4)
++        Aex = attention_attrs(ex, Xex, 2); hse, hee = fixed_history(ex, 1, history_totals)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
++                          average_ranks([x[1] for x in ex],
++                                        [m.predict(Xex, Aex, hse, hee) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

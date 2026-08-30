@@ -1,0 +1,28 @@
+--- node_009.py
++++ node_014.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++Pairing Antithetic cyclic offsets stratify each positive's same-user negative pool across the five members.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -144,14 +145,16 @@
+     # ---- train with early stopping on valid primary ----
+     models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
++    pair_rng = np.random.default_rng(a.seed + 5)
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+     for ep in range(1, epochs + 1):
++        pair_u = pair_rng.random(len(pair_pos))
+         losses = []
+         for s, m in enumerate(models):
+             if not active[s]:
+                 continue
+-            neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
++            neg_idx = neg_pool[neg_start + (((pair_u + s / 5.0) % 1.0) * neg_count).astype(np.int32)]
+             idx = rngs[s].permutation(len(pair_pos))
+             losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
+                            for i in range(0, len(idx), a.batch)])

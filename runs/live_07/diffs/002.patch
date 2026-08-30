@@ -1,0 +1,111 @@
+--- node_000.py
++++ node_002.py
+@@ -6,12 +6,14 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Adds strictly prior session position, recent-impression density, and previous-gap categorical fields.
+ """
+ import argparse, csv, json, os, time
++from collections import deque
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'session_pos', 'recent_10m', 'previous_gap']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -21,6 +23,38 @@
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
++
++def exposure_features(rows, ui, ti, initial=None):
++    users = np.fromiter((int(x[ui]) for x in rows), dtype=np.int64, count=len(rows))
++    times = np.fromiter((int(x[ti]) for x in rows), dtype=np.int64, count=len(rows))
++    order = np.lexsort((np.arange(len(rows), dtype=np.int64), times, users))
++    features = np.empty((len(rows), 3), dtype=np.int8)
++    state = {} if initial is None else initial.copy()
++    p = 0
++    while p < len(order):
++        oi = int(order[p]); user = int(users[oi])
++        last, pos, prior = state.get(user, (None, 0, ()))
++        recent = deque(prior)
++        while p < len(order) and users[order[p]] == user:
++            oi = int(order[p]); now = int(times[oi]); q = p + 1
++            while q < len(order) and users[order[q]] == user and times[order[q]] == now:
++                q += 1
++            gap = None if last is None else now - last
++            if gap is None or gap > 1_800_000:
++                pos = 0
++            while recent and now - recent[0] > 600_000:
++                recent.popleft()
++            pos_bucket = 0 if pos == 0 else 1 if pos <= 2 else 2 if pos <= 9 else 3 if pos <= 29 else 4
++            density_bucket = 0 if not recent else 1 if len(recent) <= 3 else 2 if len(recent) <= 10 else 3
++            gap_bucket = (5 if gap is None else 0 if gap < 30_000 else 1 if gap < 120_000 else
++                          2 if gap < 600_000 else 3 if gap <= 3_600_000 else 4)
++            features[order[p:q]] = (pos_bucket, density_bucket, gap_bucket)
++            pos += q - p
++            recent.extend([now] * (q - p))
++            last = now
++            p = q
++        state[user] = (last, pos, tuple(recent))
++    return features, state
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
+@@ -80,28 +114,30 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    Str, train_exposure_state = exposure_features(tr, 0, 5)
++    Sva, _ = exposure_features(va, 1, 6, train_exposure_state)
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 8 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, session):
++        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))] + list(session)
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], Str[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, session, ui, vi, ti, di):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], session[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, Str, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, Sva, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+@@ -131,8 +167,9 @@
+                    'best_epoch': int(np.argmax([h['val_primary'] for h in history]) + 1), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
++        Sex, _ = exposure_features(ex, 1, 5, train_exposure_state)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, Sex, 1, 2, 3, 4)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

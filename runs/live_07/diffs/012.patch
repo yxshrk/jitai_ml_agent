@@ -1,0 +1,182 @@
+--- node_009.py
++++ node_012.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++Transition Each member adds an equal-time-safe FPMC previous-video to current-video transition term.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -40,46 +41,84 @@
+     ranks = [normalized_ranks(users, scores) for scores in predictions]
+     return normalized_ranks(users, np.mean(ranks, axis=0), ranks[0])
+ 
++def exposure_context(rows, ui, vi, ti, video_vocab, initial=None):
++    users = np.asarray([x[ui] for x in rows])
++    videos = np.asarray([video_vocab.get(x[vi], len(video_vocab)) for x in rows], dtype=np.int32)
++    times = np.asarray([int(float(x[ti])) for x in rows], dtype=np.int64)
++    order = np.lexsort((np.arange(len(rows)), times, users))
++    sorted_users = users[order]; sorted_times = times[order]
++    starts = np.r_[0, np.flatnonzero((sorted_users[1:] != sorted_users[:-1]) |
++                                     (sorted_times[1:] != sorted_times[:-1])) + 1]
++    ends = np.r_[starts[1:], len(rows)]
++    group_users = sorted_users[starts]
++    same_user = group_users[1:] == group_users[:-1]
++    previous_group = np.full(len(starts), len(video_vocab), dtype=np.int32)
++    continued = np.flatnonzero(same_user) + 1
++    previous_group[continued] = videos[order[ends[continued - 1] - 1]]
++    first = np.r_[True, ~same_user]
++    if initial is not None:
++        previous_group[first] = [initial.get(str(u), len(video_vocab)) for u in group_users[first]]
++    previous = np.empty(len(rows), dtype=np.int32)
++    previous[order] = np.repeat(previous_group, ends - starts)
++    state = {} if initial is None else initial.copy()
++    last_groups = np.r_[np.flatnonzero(~same_user), len(starts) - 1]
++    state.update({str(group_users[g]): int(videos[order[ends[g] - 1]]) for g in last_groups})
++    return videos, previous, state
++
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
++    def __init__(self, dim, video_dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
++        self.P = rng.normal(0, 0.01, (video_dim, k)).astype(np.float32)
++        self.Q = rng.normal(0, 0.01, (video_dim, k)).astype(np.float32)
+         self.b = np.float32(0.0)
+-        self.lr, self.l2 = lr, l2
++        self.lr, self.l2, self.transition_l2 = lr, l2, 1e-5
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mP = np.zeros_like(self.P); self.vP = np.zeros_like(self.P)
++        self.mQ = np.zeros_like(self.Q); self.vQ = np.zeros_like(self.Q)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def logits(self, X, previous_video, current_video):
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
+-
+-    def step(self, Xp, Xn):
++        transition = (self.P[previous_video] * self.Q[current_video]).sum(1)
++        return self.b + self.W[X].sum(1) + inter + transition, E, S
++
++    def step(self, Xp, Xn, pp, cp, pn, cn):
+         B = len(Xp)
+-        zp, Ep, Sp = self.logits(Xp)
+-        zn, En, Sn = self.logits(Xn)
++        zp, Ep, Sp = self.logits(Xp, pp, cp)
++        zn, En, Sn = self.logits(Xn, pn, cn)
+         d = zp - zn
+         g = (-sigmoid(-d) / B).astype(np.float32)                  # d(BPR loss)/d(score_pos-score_neg)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        gP = np.zeros_like(self.P); gQ = np.zeros_like(self.Q)
+         np.add.at(gW, Xp, g[:, None])
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
++        np.add.at(gP, pp, g[:, None] * self.Q[cp])
++        np.add.at(gQ, cp, g[:, None] * self.P[pp])
++        np.add.at(gP, pn, -g[:, None] * self.Q[cn])
++        np.add.at(gQ, cn, -g[:, None] * self.P[pn])
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        gP += self.transition_l2 * self.P; gQ += self.transition_l2 * self.Q
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.P, gP, self.mP, self.vP), (self.Q, gQ, self.mQ, self.vQ)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+         return float(np.mean(np.logaddexp(0.0, -d)))
+ 
+-    def predict(self, X, bs=200_000):
+-        return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
++    def predict(self, X, previous_video, current_video, bs=200_000):
++        return np.concatenate([self.logits(X[i:i + bs], previous_video[i:i + bs],
++                                           current_video[i:i + bs])[0]
++                               for i in range(0, len(X), bs)])
+ 
+ def write_predictions(path, rows, scores):
+     with open(path, 'w', newline='') as fh:
+@@ -101,8 +140,10 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv',
++                   ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv',
++                   ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+@@ -123,6 +164,9 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    vtr, ptr, train_state = exposure_context(tr, 0, 1, 5, vocabs[1])
++    vva, pva, valid_state = exposure_context(va, 1, 2, 6, vocabs[1], train_state)
++    video_dim = len(vocabs[1]) + 1
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+@@ -142,7 +186,7 @@
+     del by_user
+ 
+     # ---- train with early stopping on valid primary ----
+-    models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
++    models = [FM(dim, video_dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+@@ -153,12 +197,14 @@
+                 continue
+             neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
+             idx = rngs[s].permutation(len(pair_pos))
+-            losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
++            losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]],
++                                  ptr[pair_pos[idx[i:i + a.batch]]], vtr[pair_pos[idx[i:i + a.batch]]],
++                                  ptr[neg_idx[idx[i:i + a.batch]]], vtr[neg_idx[idx[i:i + a.batch]]])
+                            for i in range(0, len(idx), a.batch)])
+-            member_scores = m.predict(Xva); member_r = evaluate(uva, yva, member_scores)
++            member_scores = m.predict(Xva, pva, vva); member_r = evaluate(uva, yva, member_scores)
+             if member_r['primary'] > best[s] + 1e-5:
+                 best[s], bad[s] = member_r['primary'], 0
+-                best_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                best_state[s] = (m.V.copy(), m.W.copy(), m.P.copy(), m.Q.copy(), np.float32(m.b))
+                 best_preds[s] = member_scores.copy()
+             else:
+                 bad[s] += 1
+@@ -172,20 +218,21 @@
+         if not np.any(active):
+             break
+     for s, m in enumerate(models):
+-        m.V, m.W, m.b = best_state[s]
++        m.V, m.W, m.P, m.Q, m.b = best_state[s]
+ 
+     # ---- outputs ----
+-    sva = average_ranks(uva, [m.predict(Xva) for m in models]); r = evaluate(uva, yva, sva)
++    sva = average_ranks(uva, [m.predict(Xva, pva, vva) for m in models]); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+                    'best_epoch': int(np.argmax([h['val_primary'] for h in history]) + 1), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
+         Xex = encode(ex, 1, 2, 3, 4)
++        vex, pex, _ = exposure_context(ex, 1, 2, 5, vocabs[1], valid_state)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
++                          average_ranks([x[1] for x in ex], [m.predict(Xex, pex, vex) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

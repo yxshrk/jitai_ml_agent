@@ -1,0 +1,98 @@
+--- node_013.py
++++ node_019.py
+@@ -9,6 +9,7 @@
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
+ Adds strictly prior session position, recent-impression density, and previous-gap categorical fields.
++Fusion substitutes session-model ranks only for duration >180s or tab-4 rows, retaining base ranks elsewhere.
+ """
+ import argparse, csv, json, os, time
+ from collections import deque
+@@ -74,6 +75,12 @@
+     ranks = [normalized_ranks(users, scores) for scores in predictions]
+     return normalized_ranks(users, np.mean(ranks, axis=0), ranks[0])
+ 
++def gated_ranks(users, base_predictions, session_predictions, mask):
++    base_rank = average_ranks(users, base_predictions)
++    session_rank = average_ranks(users, session_predictions)
++    fused = base_rank + np.asarray(mask, dtype=np.float64) * (session_rank - base_rank)
++    return normalized_ranks(users, fused, base_rank)
++
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+@@ -159,6 +166,8 @@
+         return X
+     Xtr = encode(tr, Str, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, Sva, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr_base = Xtr[:, :5]; Xva_base = Xva[:, :5]; base_dim = int(sum(dims[:5]))
++    target_va = np.fromiter((float(x[4]) > 180_000 or x[3] == '4' for x in va), dtype=bool, count=len(va))
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+@@ -180,8 +189,12 @@
+     # ---- train with early stopping on valid primary ----
+     models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
++    base_models = [FM(base_dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
++    base_rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
++    base_best = np.full(5, -1.0); base_best_state = [None] * 5; base_best_preds = [None] * 5
++    base_bad = np.zeros(5, dtype=np.int32); base_active = np.ones(5, dtype=bool)
+     for ep in range(1, epochs + 1):
+         losses = []
+         for s, m in enumerate(models):
+@@ -200,18 +213,37 @@
+                 bad[s] += 1
+                 if bad[s] >= a.patience:
+                     active[s] = False
+-        r = evaluate(uva, yva, average_ranks(uva, best_preds))
++        for s, m in enumerate(base_models):
++            if not base_active[s]:
++                continue
++            neg_idx = neg_pool[neg_start + (base_rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
++            idx = base_rngs[s].permutation(len(pair_pos))
++            losses.extend([m.step(Xtr_base[pair_pos[idx[i:i + a.batch]]], Xtr_base[neg_idx[idx[i:i + a.batch]]])
++                           for i in range(0, len(idx), a.batch)])
++            member_scores = m.predict(Xva_base); member_r = evaluate(uva, yva, member_scores)
++            if member_r['primary'] > base_best[s] + 1e-5:
++                base_best[s], base_bad[s] = member_r['primary'], 0
++                base_best_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                base_best_preds[s] = member_scores.copy()
++            else:
++                base_bad[s] += 1
++                if base_bad[s] >= a.patience:
++                    base_active[s] = False
++        r = evaluate(uva, yva, gated_ranks(uva, base_best_preds, best_preds, target_va))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+-        if not np.any(active):
++        if not np.any(active) and not np.any(base_active):
+             break
+     for s, m in enumerate(models):
+         m.V, m.W, m.b = best_state[s]
++    for s, m in enumerate(base_models):
++        m.V, m.W, m.b = base_best_state[s]
+ 
+     # ---- outputs ----
+-    sva = average_ranks(uva, [m.predict(Xva) for m in models]); r = evaluate(uva, yva, sva)
++    sva = gated_ranks(uva, [m.predict(Xva_base) for m in base_models],
++                      [m.predict(Xva) for m in models], target_va); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -221,8 +253,10 @@
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
+         Sex, _ = exposure_features(ex, 1, 5, train_exposure_state)
+         Xex = encode(ex, Sex, 1, 2, 3, 4)
++        target_ex = np.fromiter((float(x[4]) > 180_000 or x[3] == '4' for x in ex), dtype=bool, count=len(ex))
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
++                          gated_ranks([x[1] for x in ex], [m.predict(Xex[:, :5]) for m in base_models],
++                                      [m.predict(Xex) for m in models], target_ex))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

@@ -12,8 +12,8 @@ expected_delta_basis: trees over engineered features usually beat factorization 
 cost: ~120 lines (feature builder + lightgbm.train with a callback that scores valid every 25 rounds); runtime 1–3 min at 4 threads (100 trees on 200 K × 20 measured at 0.5 s); library: lightgbm 4.6 (installed; linked to torch's libomp, see README setup)
 composes_with: [features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average, loss-bpr-pairwise-within-user, history-user-aggregates]
 conflicts_with: [model-din-history-attention]
-status: untried
-evidence: []
+status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022)]
+evidence: [live_07:node_007]
 ---
 ## Claim
 A gradient-boosted tree ranker (LightGBM, lambdarank objective, query = user) over engineered row features can
@@ -49,4 +49,5 @@ through per-user target statistics and, in the blend, the BPR FM's rank.
 - Determinism: bagging + multithreading is reproducible only with deterministic = True and fixed num_threads.
 
 ## Measured
-(none yet)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022)
+- live_07:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6008, single-seed Δ -0.0022 — rejected; 144 changed lines

@@ -1,0 +1,11 @@
+--- node_009.py
++++ node_024.py
+@@ -38,7 +38,7 @@
+ 
+ def average_ranks(users, predictions):
+     ranks = [normalized_ranks(users, scores) for scores in predictions]
+-    return normalized_ranks(users, np.mean(ranks, axis=0), ranks[0])
++    return normalized_ranks(users, np.mean(np.sort(ranks, axis=0)[1:-1], axis=0), ranks[0])
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""

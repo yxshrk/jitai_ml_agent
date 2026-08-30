@@ -1,0 +1,121 @@
+--- node_009.py
++++ node_011.py
+@@ -8,12 +8,15 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++History Appends equal-time-safe tag, music and video-type overlap counts from the five latest same-session exposures.
+ """
+ import argparse, csv, json, os, time
++from collections import deque
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket',
++          'session_tag_overlap', 'session_music_overlap', 'session_type_overlap']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -100,29 +103,76 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    basic = read_rows(f'{a.data_dir}/video_features_basic.csv',
++                      ['video_id', 'author_id', 'tag', 'music_id', 'video_type'])
++    def clean_attr(v):
++        v = v.strip().strip("'\"")
++        return v if v and v.lower() not in ('nan', 'none', 'null', '-1') else 'UNK'
++    def tag_set(v):
++        tokens = v.replace('[', ' ').replace(']', ' ').replace("'", '').replace('"', '').replace(',', ' ').split()
++        return frozenset(x for x in (clean_attr(t) for t in tokens) if x != 'UNK')
++    vid2author = {x[0]: x[1] for x in basic}
++    vid2attrs = {x[0]: (tag_set(x[2]), clean_attr(x[3]), clean_attr(x[4])) for x in basic}
++    empty_attrs = (frozenset(), 'UNK', 'UNK')
++    tr = read_rows(f'{a.data_dir}/train.csv',
++                   ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv',
++                   ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++
++    def overlap_buckets(current, recent):
++        tag = sum(bool(current[0] & old[0]) for old in recent)
++        music = sum(current[1] != 'UNK' and current[1] == old[1] for old in recent)
++        kind = sum(current[2] != 'UNK' and current[2] == old[2] for old in recent)
++        return min(tag, 3), min(music, 3), min(kind, 3)
++    def build_exposure_history(rows, ui, vi, timei, seed_state=None):
++        n = len(rows)
++        times = np.fromiter((int(x[timei]) for x in rows), dtype=np.int64, count=n)
++        users = np.fromiter((int(x[ui]) for x in rows), dtype=np.int64, count=n)
++        order = np.lexsort((np.arange(n, dtype=np.int32), times, users))
++        history = np.empty((n, 3), dtype=np.uint8)
++        state = {} if seed_state is None else {
++            u: (tm, deque(q, maxlen=5)) for u, (tm, q) in seed_state.items()
++        }
++        p = 0
++        while p < n:
++            i = int(order[p]); q = p + 1
++            while q < n and users[order[q]] == users[i] and times[order[q]] == times[i]:
++                q += 1
++            user, tm = rows[i][ui], int(times[i])
++            previous = state.get(user)
++            recent = deque(maxlen=5) if previous is None or tm - previous[0] > 1_800_000 else previous[1]
++            for k in range(p, q):
++                j = int(order[k])
++                history[j] = overlap_buckets(vid2attrs.get(rows[j][vi], empty_attrs), recent)
++            recent = deque(recent, maxlen=5)
++            for k in range(p, q):
++                recent.append(vid2attrs.get(rows[int(order[k])][vi], empty_attrs))
++            state[user] = (tm, recent)
++            p = q
++        return history, state
++    Htr, train_exposure_state = build_exposure_history(tr, 0, 1, 5)
++    Hva, _ = build_exposure_history(va, 1, 2, 6, train_exposure_state)
++
++    # ---- encode: 8 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    def raw(user, video, tab, dur, history):
++        return [user, video, vid2author.get(video, 'UNK'), tab,
++                str(int(np.searchsorted(edges, float(dur))))] + [str(int(v)) for v in history]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for x, h in zip(tr, Htr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], h)):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, histories):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], histories[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+-    Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    Xtr = encode(tr, 0, 1, 2, 3, Htr); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xva = encode(va, 1, 2, 3, 4, Hva); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- precompute positive rows and per-user negative pools for BPR ----
+@@ -182,8 +232,9 @@
+                    'best_epoch': int(np.argmax([h['val_primary'] for h in history]) + 1), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        Xex = encode(ex, 1, 2, 3, 4)
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
++        Hex, _ = build_exposure_history(ex, 1, 2, 5, train_exposure_state)
++        Xex = encode(ex, 1, 2, 3, 4, Hex)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           average_ranks([x[1] for x in ex], [m.predict(Xex) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")

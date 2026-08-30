@@ -1,0 +1,106 @@
+--- node_013.py
++++ node_020.py
+@@ -9,6 +9,7 @@
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
+ Adds strictly prior session position, recent-impression density, and previous-gap categorical fields.
++Adds a 0.1-weight session-monotonic pair loss for long-duration or tab-4 impressions.
+ """
+ import argparse, csv, json, os, time
+ from collections import deque
+@@ -58,6 +59,30 @@
+         state[user] = (last, pos, tuple(recent))
+     return features, state
+ 
++def monotonic_session_pairs(rows, session):
++    users = np.fromiter((int(x[0]) for x in rows), dtype=np.int64, count=len(rows))
++    times = np.fromiter((int(x[5]) for x in rows), dtype=np.int64, count=len(rows))
++    tabs = np.fromiter((int(x[2]) for x in rows), dtype=np.int16, count=len(rows))
++    durations = np.fromiter((float(x[3]) for x in rows), dtype=np.float64, count=len(rows))
++    order = np.lexsort((np.arange(len(rows), dtype=np.int64), times, users))
++    sorted_users = users[order]; sorted_times = times[order]
++    new_session = np.ones(len(order), dtype=bool)
++    new_session[1:] = ((sorted_users[1:] != sorted_users[:-1]) |
++                       (sorted_times[1:] - sorted_times[:-1] > 1_800_000))
++    session_id = np.cumsum(new_session) - 1
++    target = (durations > 180_000.0) | (tabs == 4)
++    target_pos = np.flatnonzero(target[order])
++    first_target = np.full(int(session_id[-1]) + 1, len(order), dtype=np.int64)
++    np.minimum.at(first_target, session_id[target_pos], target_pos)
++    first_pos = first_target[session_id]
++    have_first = first_pos < len(order)
++    first_pos = np.minimum(first_pos, len(order) - 1)
++    early = order[first_pos]; late = order
++    keep = (have_first & target[late] & (sorted_times > sorted_times[first_pos]) &
++            (session[early, 0] < session[late, 0]) &
++            (session[early, 1] < session[late, 1]))
++    return early[keep].astype(np.int32), late[keep].astype(np.int32)
++
+ def normalized_ranks(users, scores, tiebreak=None):
+     users = np.asarray(users); scores = np.asarray(scores)
+     tie = np.arange(len(scores)) if tiebreak is None else np.asarray(tiebreak)
+@@ -92,7 +117,7 @@
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+         return self.b + self.W[X].sum(1) + inter, E, S
+ 
+-    def step(self, Xp, Xn):
++    def step(self, Xp, Xn, Xe=None, Xl=None, aux_weight=0.1):
+         B = len(Xp)
+         zp, Ep, Sp = self.logits(Xp)
+         zn, En, Sn = self.logits(Xn)
+@@ -103,6 +128,17 @@
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
++        aux_loss = 0.0
++        if Xe is not None and len(Xe):
++            ze, Ee, Se = self.logits(Xe)
++            zl, El, Sl = self.logits(Xl)
++            da = ze - zl
++            ga = (-aux_weight * sigmoid(-da) / len(Xe)).astype(np.float32)
++            np.add.at(gW, Xe, ga[:, None])
++            np.add.at(gW, Xl, -ga[:, None])
++            np.add.at(gV, Xe, ga[:, None, None] * (Se[:, None, :] - Ee))
++            np.add.at(gV, Xl, -ga[:, None, None] * (Sl[:, None, :] - El))
++            aux_loss = aux_weight * float(np.mean(np.logaddexp(0.0, -da)))
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+@@ -110,7 +146,7 @@
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        return float(np.mean(np.logaddexp(0.0, -d)))
++        return float(np.mean(np.logaddexp(0.0, -d))) + aux_loss
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -176,10 +212,12 @@
+     neg_start = np.asarray(neg_start, dtype=np.int32)
+     neg_count = np.asarray(neg_count, dtype=np.int32)
+     del by_user
++    aux_early, aux_late = monotonic_session_pairs(tr, Str)
+ 
+     # ---- train with early stopping on valid primary ----
+     models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
++    aux_rngs = [np.random.default_rng(a.seed + 10_000 + s) for s in range(5)]
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+     for ep in range(1, epochs + 1):
+@@ -189,8 +227,13 @@
+                 continue
+             neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
+             idx = rngs[s].permutation(len(pair_pos))
+-            losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
+-                           for i in range(0, len(idx), a.batch)])
++            aux_idx = aux_rngs[s].permutation(len(aux_early))
++            steps = (len(idx) + a.batch - 1) // a.batch
++            aux_cut = np.linspace(0, len(aux_idx), steps + 1, dtype=np.int32)
++            for j, i in enumerate(range(0, len(idx), a.batch)):
++                q = aux_idx[aux_cut[j]:aux_cut[j + 1]]
++                losses.append(m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]],
++                                     Xtr[aux_early[q]], Xtr[aux_late[q]], aux_weight=0.1))
+             member_scores = m.predict(Xva); member_r = evaluate(uva, yva, member_scores)
+             if member_r['primary'] > best[s] + 1e-5:
+                 best[s], bad[s] = member_r['primary'], 0

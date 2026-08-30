@@ -1,0 +1,44 @@
+--- node_009.py
++++ node_015.py
+@@ -129,21 +129,31 @@
+     by_user = {}
+     for i, x in enumerate(tr):
+         by_user.setdefault(x[0], ([], []))[int(ytr[i])].append(i)
+-    pair_pos, neg_pool, neg_start, neg_count = [], [], [], []
++    pair_pos, neg_pool, neg_start, neg_count, neg_offset = [], [], [], [], []
+     for neg, pos in by_user.values():
+         if pos and neg:
+             start = len(neg_pool)
+             neg_pool.extend(neg); pair_pos.extend(pos)
+             neg_start.extend([start] * len(pos)); neg_count.extend([len(neg)] * len(pos))
++            neg_offset.extend(range(len(pos)))
+     pair_pos = np.asarray(pair_pos, dtype=np.int32)
+     neg_pool = np.asarray(neg_pool, dtype=np.int32)
+     neg_start = np.asarray(neg_start, dtype=np.int32)
+     neg_count = np.asarray(neg_count, dtype=np.int32)
++    neg_offset = np.asarray(neg_offset, dtype=np.int32)
++    pool_starts, pool_first = np.unique(neg_start, return_index=True)
++    pool_counts = neg_count[pool_first]
+     del by_user
+ 
+     # ---- train with early stopping on valid primary ----
+     models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
++    cyclic_neg_pools = []
++    for rng in rngs:
++        pool = neg_pool.copy()
++        for start, count in zip(pool_starts, pool_counts):
++            rng.shuffle(pool[start:start + count])
++        cyclic_neg_pools.append(pool)
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+     for ep in range(1, epochs + 1):
+@@ -151,7 +161,7 @@
+         for s, m in enumerate(models):
+             if not active[s]:
+                 continue
+-            neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
++            neg_idx = cyclic_neg_pools[s][neg_start + (neg_offset + ep - 1) % neg_count]
+             idx = rngs[s].permutation(len(pair_pos))
+             losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
+                            for i in range(0, len(idx), a.batch)])

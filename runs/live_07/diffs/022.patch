@@ -1,0 +1,102 @@
+--- node_009.py
++++ node_022.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ This node keeps those model settings but replaces pointwise logloss with same-user positive-negative BPR.
+ Ensemble Five independently seeded BPR models combined by normalized within-user rank averaging.
++Adds a 0.1-weight ApproxNDCG pass over sampled eight-row mixed-label user lists.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -77,6 +78,39 @@
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+         return float(np.mean(np.logaddexp(0.0, -d)))
++
++    def score_step(self, X, g, E=None, S=None):
++        if E is None:
++            _, E, S = self.logits(X)
++        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        np.add.at(gW, X, g[:, None])
++        np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
++        self.t += 1
++        b1, b2, eps = 0.9, 0.999, 1e-8
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++            M *= b1; M += (1 - b1) * G
++            Vv *= b2; Vv += (1 - b2) * (G * G)
++            P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
++
++    def ndcg_step(self, X, y, weight=0.1, tau=1.0):
++        flat = X.reshape(-1, X.shape[-1])
++        z, E, S = self.logits(flat)
++        z = z.reshape(len(X), X.shape[1])
++        prob = sigmoid((z[:, None, :] - z[:, :, None]) / tau)
++        rank = 1.0 + prob.sum(2) - 0.5
++        logr = np.log1p(rank)
++        discount = np.log(2.0) / logr
++        gate = sigmoid(5.5 - rank)
++        d_discount = -np.log(2.0) / ((1.0 + rank) * logr * logr)
++        d_gate = -gate * (1.0 - gate)
++        npos = np.minimum(y.sum(1).astype(np.int32), 5)
++        ideal = np.r_[0.0, np.cumsum(1.0 / np.log2(np.arange(2, 7)))][npos]
++        approx = (y * discount * gate).sum(1) / ideal
++        h = (-weight / len(X)) * y * (d_discount * gate + discount * d_gate) / ideal[:, None]
++        q = prob * (1.0 - prob) / tau
++        g = (h[:, :, None] * q).sum(1) - h * q.sum(2)
++        self.score_step(flat, g.reshape(-1).astype(np.float32), E, S)
++        return weight * float(np.mean(1.0 - approx))
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -130,8 +164,14 @@
+     for i, x in enumerate(tr):
+         by_user.setdefault(x[0], ([], []))[int(ytr[i])].append(i)
+     pair_pos, neg_pool, neg_start, neg_count = [], [], [], []
++    aux_pool, aux_start, aux_count = [], [], []
++    aux_pos_start, aux_pos_count, aux_neg_start, aux_neg_count = [], [], [], []
+     for neg, pos in by_user.values():
+         if pos and neg:
++            aux_start.append(len(aux_pool)); aux_count.append(len(neg) + len(pos))
++            aux_pos_start.append(len(pair_pos)); aux_pos_count.append(len(pos))
++            aux_neg_start.append(len(neg_pool)); aux_neg_count.append(len(neg))
++            aux_pool.extend(neg); aux_pool.extend(pos)
+             start = len(neg_pool)
+             neg_pool.extend(neg); pair_pos.extend(pos)
+             neg_start.extend([start] * len(pos)); neg_count.extend([len(neg)] * len(pos))
+@@ -139,11 +179,16 @@
+     neg_pool = np.asarray(neg_pool, dtype=np.int32)
+     neg_start = np.asarray(neg_start, dtype=np.int32)
+     neg_count = np.asarray(neg_count, dtype=np.int32)
++    aux_pool = np.asarray(aux_pool, dtype=np.int32)
++    aux_start = np.asarray(aux_start, dtype=np.int32); aux_count = np.asarray(aux_count, dtype=np.int32)
++    aux_pos_start = np.asarray(aux_pos_start, dtype=np.int32); aux_pos_count = np.asarray(aux_pos_count, dtype=np.int32)
++    aux_neg_start = np.asarray(aux_neg_start, dtype=np.int32); aux_neg_count = np.asarray(aux_neg_count, dtype=np.int32)
+     del by_user
+ 
+     # ---- train with early stopping on valid primary ----
+     models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
++    aux_rngs = [np.random.default_rng(a.seed + 10_000 + s) for s in range(5)]
+     best = np.full(5, -1.0); best_state = [None] * 5; best_preds = [None] * 5
+     bad = np.zeros(5, dtype=np.int32); active = np.ones(5, dtype=bool); history = []
+     for ep in range(1, epochs + 1):
+@@ -153,8 +198,17 @@
+                 continue
+             neg_idx = neg_pool[neg_start + (rngs[s].random(len(pair_pos)) * neg_count).astype(np.int32)]
+             idx = rngs[s].permutation(len(pair_pos))
+-            losses.extend([m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
+-                           for i in range(0, len(idx), a.batch)])
++            bpr_losses = [m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
++                          for i in range(0, len(idx), a.batch)]
++            aux_idx = np.empty((len(aux_start), 8), dtype=np.int32)
++            aux_idx[:, 0] = pair_pos[aux_pos_start + (aux_rngs[s].random(len(aux_start)) * aux_pos_count).astype(np.int32)]
++            aux_idx[:, 1] = neg_pool[aux_neg_start + (aux_rngs[s].random(len(aux_start)) * aux_neg_count).astype(np.int32)]
++            aux_idx[:, 2:] = aux_pool[aux_start[:, None] +
++                                      (aux_rngs[s].random((len(aux_start), 6)) * aux_count[:, None]).astype(np.int32)]
++            list_batch = max(1, a.batch // 8)
++            aux_losses = [m.ndcg_step(Xtr[aux_idx[i:i + list_batch]], ytr[aux_idx[i:i + list_batch]])
++                          for i in range(0, len(aux_idx), list_batch)]
++            losses.extend([x + float(np.mean(aux_losses)) for x in bpr_losses])
+             member_scores = m.predict(Xva); member_r = evaluate(uva, yva, member_scores)
+             if member_r['primary'] > best[s] + 1e-5:
+                 best[s], bad[s] = member_r['primary'], 0
