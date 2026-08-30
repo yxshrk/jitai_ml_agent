@@ -71,3 +71,12 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   `--iteration-unit node|generation` decides what the 50 cap counts (ADR-0006 updated). Prompts refined
   (calibration guidance for the Selector, runtime/vectorisation guidance for the Implementer, stricter contract
   checks and "veto only for leakage" for the Critic). `kb/ARCHITECTURE.md` written as the reference.
+- **Method cards (KB layer 2):** schema in `kb/methods/README.md`; 13 cards written from the literature + facts
+  (loss: BPR pairwise, listwise softmax, LambdaRank pairs, censored watch-time; features: duration-unknown flag,
+  fine duration + tab cross; data-weighting: recency; aux-targets: is_click; history: user aggregates; model: DCN
+  cross head; regularization: embedding dropout/L2; training-schedule: lr decay + half-epoch checkpoints;
+  ensembling: seed average). Each has checkable `applies_when` (cites numbered facts), an honest `expected_delta`
+  calibrated to the 0.002 floor, a `how_to` written against `node_000_fm.py`, and `composes_with` for merges.
+  `kb/methods/validate.py` checks fields, target components, cross-references and length: 13 cards, 0 problems.
+  Paper text extracted to `kb/literature/text/` (`extract_text.py`, pypdf; ignored by git). Stable prompt prefix
+  is now ~11.8 K tokens (served from cache on every call).
