@@ -26,3 +26,10 @@ when blended — the theoretically expected sign and an honestly noise-class siz
 Consistent with the campaign's sub-floor ceiling cluster; quantifies what
 validation-tuned blend selection would inflate. Not designated; the designated
 submission remains run_bigclock_07's converged checkpoint.
+
+## Member-count sweep for the final-submission recipe (31 Aug, coral, logs/mcsweep)
+12 polish_best members (seeds 42-53), rank-average prefix ensembles on validation:
+k=3 0.60501 | k=5 0.60476 | k=7 0.60502 | k=9 0.60491 | k=12 0.60493.
+Spread ±0.0003 = seed-noise scale -> member count is FLAT on Pure (contrast 1K).
+VERDICT: keep the predeclared 5-seed recipe; choosing k=7 post hoc would be
+validation-noise cherry-picking.

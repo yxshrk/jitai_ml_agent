@@ -65,8 +65,8 @@ FLEET (watchdog /tmp/fleet_watchdog.sh, relaunch via run_in_background after any
 - laptop: run_novel_l1 — CLEAN, 0.60524 (temporal-pair-kernel discovery), in ensemble
   close (node_005 jitter members ~0.6037-0.6046). If close > 0.60558 => designate (clean!).
 - coral: run_clean_c1 — CLEAN, no seeds, enriched 44-card METHODS.md (new cards below).
-  Also logs/mcsweep member-count sweep (12 polish members; ensembles k=3/5/7/9/12) to
-  re-verify final-submission member count (5 was never swept on Pure; 1K peaked high).
+  mcsweep DONE: member count FLAT on Pure (k=3..12 all 0.6048-0.6050, ±0.0003 = noise);
+  verdict = keep predeclared 5-seed recipe (evidence/blend_audit.md).
 - ruby: run_combo_r1 — SEEDED experiment (seed_pairkernel + frozen_stack): tests whether
   mechanisms compose; likely NOT the designation per policy above; keep for the report.
   Also run_omega_1k 0.64975 (needs >0.6524; unlikely).
