@@ -57,3 +57,14 @@ them. We predict this difference largely evaporates on hidden test.
 Metric-aligned losses before capacity; moderate depth from day 1; regime-check
 before transferring verdicts between datasets; paired-seed confirmation from the
 start; contention/disk monitoring on the fleet from day 1.
+
+## Addendum: omega post-mortem (the "everything run" result)
+omega_1 (0.60398, 4 iters): matrix opener cleared eps; then gauge-BCE measured
++0.0002 (vs +0.0026 on novel_r1's pointwise-heavy parent — MECHANISM OVERLAP: a
+BPR+strong-reg package has little user-baseline waste left to remove); a gated
+rescue-checked ensemble close measured +0.0003 and was honestly refused.
+omega_2 (0.60335): weak sweep draw (adaptive-stop suspected), gauge-BCE +0.0013
+on the weak base. CONCLUSION: improvements do not add — they overlap; total run
+quality is set by (a) opener draw and (b) member-structure luck at the close, not
+by the count of known-good mechanisms applied. The omegas are the cleanest
+demonstration that the ~0.6045 single-model wall is mechanism-saturated.
