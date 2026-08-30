@@ -41,3 +41,11 @@ an exact aggregate tie (5.3% of rows). Under 200 random tie resolutions primary 
 VERDICT: artifact is tie-stable; no row-order dependence. (Suggested by ChatGPT Pro
 playbook §6.1; aggregation-swap suggestions §6.2+ rejected — would change the
 designated artifact.)
+
+## omega_1k session-features triple audit — COMPLETE (31 Aug morning)
+1. Independent tie-aware re-evaluation: 0.668921 EXACT match (tools/audit_1k_result.py).
+2. Fresh-seed replication (seeds 7/99, full node re-run): 0.67664 / 0.67621 — both above original.
+3. Within-hour row-shuffle retrain: 0.66517 — ~80% of the +0.019 gain is order-invariant;
+   worst-case order-agnostic floor still +0.013 over the prior 0.6524 designation.
+VERDICT: session-feature gain is real and robust. 1K re-designation to run_omega_1k
+node_005 (0.66892) SUPPORTED — Rohan confirms in the morning. 1k_push run may raise it further.
