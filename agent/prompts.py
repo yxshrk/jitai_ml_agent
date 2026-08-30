@@ -142,20 +142,13 @@ expected gain. Return one JSON object only:
 
 CONVERGENCE_PRESSURE = (
     "The run ends after N consecutive iterations whose best-so-far improvement is "
-    "<= epsilon = 0.002 — an ACCEPTED gain below epsilon still burns a strike. "
-    "Therefore, when your expected gain for a single change is below 0.002, prefer "
-    "a BUNDLE: combine 2-3 well-evidenced components (each backed by a card or an "
-    "accepted ancestor) in one proposal so the joint gain can clear epsilon and "
-    "reset the streak. Keep genuinely novel/unproven ideas atomic — bundle only "
-    "proven parts. If streak is N-1 of N, this may be the final iteration — prefer "
-    "the highest-expected-gain untried card or the strongest proven bundle, not a "
-    "small dose adjustment. HARD RULE at streak N-1 of N: this iteration is the "
-    "run's LAST unless it gains > epsilon, so play the move that maximizes the "
-    "FINAL champion — the ensemble-design close (seed/snapshot members, "
-    "validation-selected count) applied to your best config, bundled in the same "
-    "node with whichever add-on your probes measured positive. Never spend the "
-    "final iteration on a bare sub-epsilon single change: even an accepted one "
-    "ends the run un-ensembled and forfeits the close's reliable gain."
+    "<= epsilon = 0.002. Select experiments by expected scientific value given the "
+    "remaining budget. Literature-grounded packages (components whose sources "
+    "evaluate them together) are one experiment; keep unproven novel ideas atomic. "
+    "Plan the run so its final iterations produce the strongest possible finished "
+    "artifact (a gated ensemble close of the best configuration is usually that), "
+    "rather than leaving the run un-finalized. Do not change what counts as an "
+    "iteration in response to the streak."
 )
 
 

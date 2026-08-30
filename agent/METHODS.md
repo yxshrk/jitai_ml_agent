@@ -146,8 +146,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
   weak model).
 - Practical rule: one NOVEL mechanism per node stays the norm, but a node may bundle a
   novel mechanism with the PROVEN regularization-schedule package (and/or an accepted
-  ancestor's components) when the literature setup does so — cite the pairing. A bundle
-  whose joint expected gain clears epsilon = 0.002 also resets the convergence streak.
+  ancestor's components) when the literature setup does so — cite the pairing. 
 
 
 ### bpr-hybrid: Within-user BPR + pointwise hybrid

@@ -36,7 +36,7 @@ Each iteration is one research decision, executed as deeply as needed:
 5. Repeat until the official convergence rule fires (ε=0.002 / N=3, 50-iteration
    cap, 6h ceiling — implemented verbatim, failures counted conservatively).
 
-The designated run's arc: dial-search over a regularized DCN package (accepted
+The designated run's arc: a deterministic two-stage (8-coarse + 6-refinement) sweep over a regularized DCN package (accepted
 0.60424, clearing ε) → ensemble-design sweep in which the agent trained 7 seed
 members and validation-selected a 3-member per-user rank average → 0.605575 (the 5- and
 7-member designs scored within 0.0004 — disclosed), stopping under the rule. The dials it found are non-obvious (dropout 0.18, weight decay 9e-5,
