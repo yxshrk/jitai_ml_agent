@@ -232,7 +232,7 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   fresh-seed mean **0.6044** = the plateau), session features retested on BPR accepted (+0.0009, z 3.1),
   LightGBM lambdarank on BPR −0.0022, BPR + L2 +0.0001 (z 0.3), a Rocchio wildcard **vetoed by the Critic for leakage**
   (global bin thresholds computed from scores that had seen the row's label). Generations 3–5 flat: the session
-  features on the seed blend +0.0002 (z 1.0), DIN-style attention −0.0005, node_019 (the session model's rank
+  features on the seed blend +0.0002 (z 1.0), DIN-style attention −0.0001, node_019 (the session model's rank
   substituted only for dur>180s / tab-4 rows) +0.0005 at z 1.94 — just under the adaptive bar — and eleven others.
 - **Designation question.** `designate_final` ranked node_019 (fresh-seed mean 0.6049, rejected) above the champion
   node_009 (0.6044) because the gap exceeds one SE — the ADR-0012 rule as written. Both sessions now recommend the
