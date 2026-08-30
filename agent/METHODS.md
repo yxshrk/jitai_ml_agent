@@ -466,10 +466,10 @@ Proposer invocation pattern: generate a node that execs `zoo/ensemble_node.py` a
 - status_pure: measured-dead (0.5974 primary alone; 0.6034 best blend)
 - status_1k: untried
 
-## Backlog (NOT selectable — kept for the record, demoted after critical review)
-Demotion reasons: top-tail-rider mis-models our slates (validation has ~5 impressions/user, so nDCG@5 is full-slate ordering, not top-of-many); full-slate-gauc-loss contradicts the measured "additional negatives hurt" evidence.
+## Lower-confidence cards (selectable; screen at ONE seed before investing)
+Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5 impressions/user, so nDCG@5 is full-slate ordering, not top-of-many); full-slate-gauc-loss contradicts the measured "additional negatives hurt" evidence.
 
-#### [backlog] top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
+### top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
 - mechanism: After a half-epoch warm-up, per user take the top-M (M<=8) scoring negatives, form a smooth softmax-tail score t_u (tau=0.25), and add softplus(0.25 + t_u - s_pos) averaged over that user's positives, ramping weight 0->0.10 taken from BPR. Targets exactly what nDCG@5 punishes: observed negatives entering the top of the slate.
 - treats: metric-mismatch
 - citation: partial-AUC / top-K hard-negative theory (smooth pool variant); distinct from the measured-dead from-scratch hard-negative and listwise-softmax attempts (warm-up + smooth tail + small rider weight).
@@ -477,7 +477,7 @@ Demotion reasons: top-tail-rider mis-models our slates (validation has ~5 impres
 - status_pure: untried
 - status_1k: untried
 
-#### [backlog] full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
+### full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
 - mechanism: Replace sampled BPR with ALL observed pos-neg pairs per user slate, weight sqrt(w_p*w_n), normalize per user, aggregate users weighted by positive count (exactly GAUC's weighting). ~42 impressions/user makes full enumeration cheap. Keep the pointwise term at current weight.
 - treats: metric-mismatch
 - citation: AUC-consistent pairwise surrogates (Gao & Zhou). CAVEAT: our measured evidence that adding sampled negatives HURT argues against a big gain — treat as a probe, screen at 1 seed first.
