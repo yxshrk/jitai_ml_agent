@@ -127,7 +127,7 @@ def encode(rows, history_length):
 
 
 class SequenceDeepFM(nn.Module):
-    def __init__(self, field_dimensions, author_padding, embedding_dim, hidden_dim):
+    def __init__(self, field_dimensions, author_padding, embedding_dim, hidden_dim, dropout):
         super().__init__()
         self.embeddings = nn.ModuleList(
             [
@@ -141,7 +141,7 @@ class SequenceDeepFM(nn.Module):
         )
         input_dimension = embedding_dim * (len(field_dimensions) + 1)
         self.deep = nn.Sequential(
-            nn.Linear(input_dimension, hidden_dim), nn.ReLU(), nn.Dropout(0.1), nn.Linear(hidden_dim, 1)
+            nn.Linear(input_dimension, hidden_dim), nn.ReLU(), nn.Dropout(dropout), nn.Linear(hidden_dim, 1)
         )
         self.bias = nn.Parameter(torch.zeros(()))
         # PyTorch's default unit-variance embedding initialization makes the FM
@@ -203,7 +203,9 @@ def run(args):
     encoded, field_dimensions, author_padding = encode(rows, args.history_length)
     train_x, train_history, train_y, _ = encoded["train"]
     valid_x, valid_history, valid_y, valid_users = encoded["valid"]
-    model = SequenceDeepFM(field_dimensions, author_padding, args.embedding_dim, args.hidden_dim).to(device)
+    model = SequenceDeepFM(
+        field_dimensions, author_padding, args.embedding_dim, args.hidden_dim, args.dropout
+    ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
     best_state = None
@@ -276,6 +278,7 @@ def parse_args():
     parser.add_argument("--history_length", type=int, default=8)
     parser.add_argument("--embedding_dim", type=int, default=16)
     parser.add_argument("--hidden_dim", type=int, default=64)
+    parser.add_argument("--dropout", type=float, default=0.1)
     parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--weight_decay", type=float, default=1e-6)
     parser.add_argument("--epochs", type=int, default=10)
