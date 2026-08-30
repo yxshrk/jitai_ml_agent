@@ -54,3 +54,18 @@ def test_adaptive_falls_back_to_the_champion(tmp_path, monkeypatch):
     monkeypatch.setattr(lp, '_ensure_seeds', lambda m, seeds: [lp.state['seed_cache'].setdefault(f'{m}:{sd}', 0.6040) for sd in seeds])
     lp.designate_final()
     assert lp.state['designated'] == 9                                        # two poor extra seeds: the leader loses its lead
+
+
+def test_strict_pool_is_every_accepted_node_ranked_by_fresh_mean(tmp_path, monkeypatch):
+    lp = _loop(tmp_path, monkeypatch, 'strict')
+    lp.state['nodes']['4'] = {'n': 4, 'metrics': {'primary': 0.6035}, 'parent': 0, 'action': 'improve', 'accepted': True}   # low seed-0 …
+    lp.state['seed_cache'].update({'4:1': 0.60470, '4:2': 0.60480, '4:3': 0.60460})                                       # … best fresh mean
+    ranking = lp.designate_final()
+    assert lp.state['designated'] == 4 and ranking[0]['n'] == 4                     # accepted, outranks the champion on fresh seeds
+    assert all(r['n'] != 19 or r.get('excluded') for r in ranking)                  # the rejected leader stays excluded
+    lp = _loop(tmp_path, monkeypatch, 'adaptive')
+    lp.state['nodes']['4'] = {'n': 4, 'metrics': {'primary': 0.6035}, 'parent': 0, 'action': 'improve', 'accepted': True}
+    lp.state['seed_cache'].update({'4:1': 0.60470, '4:2': 0.60480, '4:3': 0.60460})
+    monkeypatch.setattr(lp, '_ensure_seeds', lambda m, seeds: [lp.state['seed_cache'].setdefault(f'{m}:{sd}', 0.6040) for sd in seeds])
+    lp.designate_final()
+    assert lp.state['designated'] == 4                                              # adaptive: the unaccepted leader fails, node_004 wins

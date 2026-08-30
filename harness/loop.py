@@ -906,9 +906,15 @@ class Loop:
         Tie-break (both modes): within one standard error of the best mean, an accepted node is preferred (live_04's
         designation had picked a rejected near-no-op variant of the champion on a 0.0000045 gap)."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
-        top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
-        if self.state.get('champion') is not None and all(v['n'] != self.state['champion'] for v in top):
-            top.append(self.node(self.state['champion']))          # the confirmed champion is always a candidate
+        # the pool: every ACCEPTED node (few, each with fresh seeds) plus the champion — so an accepted node with a modest
+        # seed-0 but the best fresh-seed mean can be designated; in adaptive mode also the top_k unaccepted by seed-0 valid
+        pool = {v['n']: v for v in nodes if v.get('accepted')}
+        if self.state.get('champion') is not None:
+            pool[self.state['champion']] = self.node(self.state['champion'])
+        if self.designation == 'adaptive':
+            for v in sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]:
+                pool.setdefault(v['n'], v)
+        top = sorted(pool.values(), key=lambda v: -v['metrics']['primary'])
         ranking = []
         for v in top:
             if self.final_reseed and len(self.fresh_seeds(v['n'])) < 2:
