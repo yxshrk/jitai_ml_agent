@@ -13,7 +13,8 @@ def _loop(tmp_path, monkeypatch, designation):
                          '19': {'n': 19, 'metrics': {'primary': 0.6046}, 'parent': 9, 'action': 'deepen', 'accepted': False},
                          '13': {'n': 13, 'metrics': {'primary': 0.6046}, 'parent': 9, 'action': 'retest', 'accepted': False}}
     lp.state['champion'] = 9; lp.state['generation'] = 5
-    lp.state['seed_cache'] = {'9:1': 0.60408, '9:2': 0.60457, '9:3': 0.60445,          # live_07's numbers
+    lp.state['seed_cache'] = {'0:1': 0.60176, '0:2': 0.60109, '0:3': 0.60150,          # live_07's numbers (baseline seeds from generation 1)
+                              '9:1': 0.60408, '9:2': 0.60457, '9:3': 0.60445,
                               '19:1': 0.60459, '19:2': 0.60486, '19:3': 0.60512,
                               '13:1': 0.60457, '13:2': 0.60469, '13:3': 0.60458}
     (tmp_path / 'r').mkdir(exist_ok=True)
@@ -37,7 +38,7 @@ def test_adaptive_designates_only_after_more_seeds_and_z(tmp_path, monkeypatch):
     def fake_seeds(m, seeds, extra={19: {4: 0.60500, 5: 0.60480}, 13: {4: 0.60440, 5: 0.60450}}):
         for sd in seeds:
             if f'{m}:{sd}' not in lp.state['seed_cache']:
-                lp.state['seed_cache'][f'{m}:{sd}'] = extra[m][sd]; ran.append((m, sd))
+                lp.state['seed_cache'][f'{m}:{sd}'] = extra.get(m, {}).get(sd, 0.6015); ran.append((m, sd))
     monkeypatch.setattr(lp, '_ensure_seeds', fake_seeds)
     ranking = lp.designate_final()
     assert (19, 4) in ran and (19, 5) in ran                                 # the leader got its two extra seeds …
