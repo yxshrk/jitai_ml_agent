@@ -80,3 +80,6 @@ seed 46 epoch 5.5 complete
 seed 46 epoch 6.0 complete
 wrote and validated /Users/rohan/Documents/progwork/techjam2026/mle-agent/evidence/test_submission_1k.csv: 4,132,081 rows; members=[42, 43, 44, 45, 46]
 EXIT_0
+seed 42 epoch 0.5 complete
+seed 42 epoch 1.0 complete
+EXIT10_0
