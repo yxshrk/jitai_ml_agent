@@ -1,0 +1,126 @@
+{
+  "run_dir": "logs/run_planner_02",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3329,
+      "out": 1441,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11456,
+      "out": 2400,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 4398,
+      "out": 5010,
+      "calls": 1
+    }
+  },
+  "tokens_total": 28034,
+  "wall_s": 563.0,
+  "self_critique": "Run critique\n\n- The policy stopped far too early: only one substantive alternative was evaluated. Two proposal-generation failures out of four nodes indicate scaffold fragility, not search convergence.\n- The ensemble scored 0.6027 versus 0.601838, an observed gain of about 0.00086. Rejecting it because the hypothesis predicted at least +0.002 confuses hypothesis calibration with model selection. Given the reported sigma of 0.0001, this gain may be meaningful and should at least have triggered replication. If ensemble complexity is penalized, that criterion should be explicit.\n- node_002 was attached to failed node_001 rather than the last valid node. Failed proposals should not become parents or disrupt lineage.\n- The baseline sigma looks implausibly precise unless estimated from repeated training and validation resampling. A single validation split plus seed variation does not establish generalization uncertainty.\n- The search was too narrow: no FM rank, regularization, learning-rate, epoch/early-stopping, feature-processing, or loss/objective exploration was recorded.\n\nScaffold changes\n\n- Validate proposals before creating nodes: require a complete executable config, valid parent, and bounded resource request. On generation failure, retry with a simpler template rather than consuming a search branch.\n- Separate predicted effect size from acceptance. Accept based on measured improvement, uncertainty, compute/model-size constraints, and replication\u2014not whether the proposal\u2019s numerical forecast was accurate.\n- Preserve any improved result as a candidate even if it misses its forecast.\n- Require a minimum number of valid experiments before declaring convergence.\n- Add automatic replication when a result exceeds estimated noise, and report mean, standard deviation, and per-seed scores.\n\nWhat the next run should try first\n\nRe-run the k=16 FM and three-seed rank ensemble across matched seeds to verify the +0.00086 gain. In parallel, run a small controlled sweep around the baseline\u2014FM rank (for example 8/16/32), regularization, and learning rate\u2014using identical splits and at least three seeds. Select by replicated mean primary score, then test whether ensembling the best two diverse configurations improves beyond simple same-model seed averaging.",
+  "exploration_plan": {
+    "initial_draft_slots": 6,
+    "family_priorities": [
+      "flat-signal",
+      "metric-mismatch",
+      "data-shift",
+      "underfit",
+      "overfit"
+    ],
+    "rationale": "Seed variance is very low (sigma=0.000077), so the 0.002 floor dominates both acceptance and convergence. Because three sub-epsilon iterations can stop exploration quickly, use all six initial slots for breadth. Prioritize plateau and metric diagnostics first; the stable calibration provides less evidence for variance-driven overfit or underfit interventions.",
+    "n": 0.5,
+    "action": "plan",
+    "planned_draft_count": 6,
+    "raw_plan": {
+      "initial_draft_slots": 6,
+      "family_priorities": [
+        "flat-signal",
+        "metric-mismatch",
+        "data-shift",
+        "underfit",
+        "overfit"
+      ],
+      "rationale": "Seed variance is very low (sigma=0.000077), so the 0.002 floor dominates both acceptance and convergence. Because three sub-epsilon iterations can stop exploration quickly, use all six initial slots for breadth. Prioritize plateau and metric diagnostics first; the stable calibration provides less evidence for variance-driven overfit or underfit interventions."
+    },
+    "context_mode": "compact",
+    "knowledge_mode": "full",
+    "tokens_in": 326,
+    "tokens_out": 379,
+    "usd_total": 43.2516
+  }
+}

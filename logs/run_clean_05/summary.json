@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_clean_05",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6692976152188629,
+    "ndcg5": 0.5370163762009391,
+    "primary": 0.603156995709901
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14019,
+      "out": 2441,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 9584,
+      "out": 12557,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 382,
+      "out": 785,
+      "calls": 1
+    }
+  },
+  "tokens_total": 39768,
+  "wall_s": 631.6,
+  "self_critique": "The run found a small improvement, but converged prematurely after only three follow-ups.\n\nWhat was suboptimal\n\n- Node_001 changed several factors simultaneously: MLP dropout, embedding L2, AdamW decay, and LR decay. This obscures which change produced the +0.0014 gain and makes subsequent tuning inefficient.\n- Node_003 had the highest displayed score (0.6034) yet was rejected while best_primary remained 0.603157. This may be correct under a significance or complexity gate, but the journal does not record the rejection margin, uncertainty, or criterion. That makes the decision unauditable.\n- Stopping after two rejected children is too aggressive, especially when one nominally exceeded the incumbent. The search did not exhaust obvious local ablations or parameter sweeps.\n- The BPR experiment bundled a new objective with complete-user batching and a relatively large fixed mixing weight. Its failure does not establish that pairwise supervision is unhelpful.\n- Claimed gains of +0.002 to +0.005 were not well calibrated to the observed effect sizes. There was no explicit multi-seed or paired uncertainty estimate for each candidate; the baseline sigma alone is insufficient.\n- Recency was tested at one half-life and one floor. A single setting cannot adequately evaluate the hypothesis.\n\nScaffold changes\n\n- Require one-factor ablations after a bundled winner. Independently test dropout, embedding regularization, dense weight decay, and LR decay.\n- Record full-precision score, delta, acceptance threshold, variance/confidence interval, and exact rejection reason for every node.\n- Use cheap single-seed screening followed by paired multi-seed confirmation for candidates near or above the incumbent.\n- Do not declare convergence merely after two rejections. Require exhaustion of a small local neighborhood or a defined budget/patience rule.\n- Separate objective changes from batching changes. For pairwise losses, sweep small weights such as 0.05, 0.1, and 0.2 before 0.3.\n- Preserve secondary metrics and segment-level results so small aggregate changes can be diagnosed.\n\nWhat the next run should try first\n\nFirst, rerun node_003 against node_001 over multiple matched seeds. Its nominal score is the strongest result in the journal, so resolving whether the gain is real has highest value. If confirmed, sweep recency half-lives around 3, 7, 14, and 28 days and tune or remove the stale-row floor.\n\nIn parallel, ablate node_001\u2019s four regularizers one at a time. This should identify the actual source of improvement and provide a cleaner incumbent before revisiting a lower-weight BCE+BPR hybrid."
+}

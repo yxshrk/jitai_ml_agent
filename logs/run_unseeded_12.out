@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_12",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6700373888015747,
+    "ndcg5": 0.5373505353927612,
+    "primary": 0.603693962097168
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 12243,
+      "out": 1977,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10761,
+      "out": 10454,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 332,
+      "out": 914,
+      "calls": 1
+    }
+  },
+  "tokens_total": 36681,
+  "wall_s": 677.6,
+  "self_critique": "Run critique\n\nWhat was suboptimal\n\n- The run stopped too early. Only three attempted descendants were explored, one of which failed, so \u201cconverged\u201d is not well supported.\n- The accepted best result is poorly attributed. Node_003 compares a hybrid BCE+BPR DCN-lite stack with an ordinal auxiliary loss against an FM baseline, while its direct parent has no metric. The gain may come from the architecture, base losses, regularization, auxiliary loss, or debugging changes\u2014not specifically the claimed 0.3-weight ordinal objective.\n- Node_003 missed its stated effect target: 0.603694 is about +0.0019 over the 0.6018 baseline, below the hypothesized +0.0025. It can still be accepted as the best model, but the hypothesis itself should be marked only partially supported.\n- Acceptance semantics are unclear. Node_001 improved the point estimate by roughly +0.0008 but was rejected, while node_003 was accepted. The journal should record confidence intervals, seed variance, and the exact rejection rule.\n- An unseeded run is especially weak for gains of this size. The baseline\u2019s reported sigma of 0.0001 does not substitute for matched multi-seed comparisons across candidates.\n- The ensemble experiment bundled several ideas\u2014checkpoint selection, filtering, invariance checks, and rank averaging\u2014so its rejection provides little actionable evidence about which component failed.\n\nWhat I would change in the scaffold\n\n- Require every accepted result to have a valid, measured parent and preserve exact code/config lineage after failures.\n- Separate \u201cbeats incumbent\u201d from \u201cconfirms hypothesis.\u201d Record predicted gain, observed gain, uncertainty, and hypothesis verdict independently.\n- Use matched seeds and paired evaluation for small deltas; report mean, standard deviation, and confidence interval rather than one point estimate.\n- Enforce one major intervention per node, or require explicit ablations when multiple changes are bundled.\n- Do not declare convergence after one failed branch and one improvement. Require a minimum exploration budget plus unsuccessful local follow-ups around the incumbent.\n- Archive complete configs, checkpoint-selection rules, and whether validation was reused for member filtering or weight tuning.\n\nWhat the next run should try first\n\nFirst, replicate node_003 across several fixed matched seeds and isolate the auxiliary loss:\n\n1. Hybrid DCN-lite BCE+BPR stack without the ordinal auxiliary.\n2. The same stack with auxiliary weights 0.1, 0.3, and 0.5.\n3. Optionally, BCE-only and BCE+BPR controls to quantify each loss contribution.\n\nKeep architecture, regularization, training budget, checkpointing, and evaluation identical. If the 0.3 auxiliary consistently improves the no-aux control, then tune its formulation or weight. Only after establishing that should the harness revisit ensembling, preferably as a simple seed ensemble of the validated node_003 configuration rather than the previous multi-component committee scheme."
+}

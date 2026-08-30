@@ -1,0 +1,15 @@
+{"cell": 0, "config": {"architecture": "fm", "loss": "logloss", "weighting": "uniform", "regularization": "mild"}, "primary": 0.588943}
+{"cell": 1, "config": {"architecture": "fm", "loss": "logloss", "weighting": "uniform", "regularization": "strong"}, "primary": 0.577284}
+{"cell": 2, "config": {"architecture": "fm", "loss": "logloss", "weighting": "recency-7d", "regularization": "mild"}, "primary": 0.586974}
+{"cell": 3, "config": {"architecture": "fm", "loss": "bpr-hybrid", "weighting": "uniform", "regularization": "mild"}, "primary": 0.594017}
+{"cell": 4, "config": {"architecture": "fm", "loss": "bpr-hybrid", "weighting": "recency-7d", "regularization": "strong"}, "primary": 0.593316}
+{"cell": 5, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "uniform", "regularization": "mild"}, "primary": 0.599032}
+{"cell": 6, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "uniform", "regularization": "strong"}, "primary": 0.594789}
+{"cell": 7, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "recency-7d", "regularization": "mild"}, "primary": 0.598777}
+{"cell": 8, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "recency-7d", "regularization": "strong"}, "primary": 0.594485}
+{"cell": 9, "config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "weighting": "uniform", "regularization": "mild"}, "primary": 0.596552}
+{"cell": 10, "config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "weighting": "uniform", "regularization": "strong"}, "primary": 0.597129}
+{"cell": 11, "config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "weighting": "recency-7d", "regularization": "mild"}, "primary": 0.595724}
+{"cell": 12, "config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "weighting": "recency-7d", "regularization": "strong"}, "primary": 0.597208}
+{"refinement": 1, "cell": 5, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "uniform", "regularization": "mild"}, "primary": 0.600392}
+{"refinement": 2, "cell": 7, "config": {"architecture": "dcn-lite", "loss": "logloss", "weighting": "recency-7d", "regularization": "mild"}, "primary": 0.600581}

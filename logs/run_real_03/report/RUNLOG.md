@@ -1,0 +1,8 @@
+# Run log (per iteration)
+
+| n | action | hypothesis | change | primary | accepted | error / recovery |
+|---|---|---|---|---|---|---|
+| 0 | reproduce_baseline | reproduce official FM baseline and calibrate seed noise | baseline seeds [42]: primaries [0.6018], mean 0.6018, sigma 0.0008 | 0.6018 | yes | - |
+| 1 | draft | Adding an equal-weight within-user BPR loss to the FM's pointwise log-loss will improve validation primary by at least 0.002 by directly optimizing positive-versus-negative ordering within users. | Adding an equal-weight within-user BPR loss to the FM's pointwise log-loss will improve validation primary by at least 0.002 by directly optimizing positive-versus-negative ordering within users. | 0.5984 | no | - |
+| 2 | draft | Adding a one-layer DCN-lite residual head with a 128-unit MLP to the baseline FM will improve validation primary by at least 0.002 by learning higher-order interactions among the same five fields. | Adding a one-layer DCN-lite residual head with a 128-unit MLP to the baseline FM will improve validation primary by at least 0.002 by learning higher-order interactions among the same five fields. (delta +0.0015) | 0.6033 | yes | - |
+| 3 | draft | Adding hour-of-day and day-of-week categorical fields to the parent DCN-lite model will improve validation primary by at least 0.002 by capturing time-dependent variation in within-user viewing preferences. | Adding hour-of-day and day-of-week categorical fields to the parent DCN-lite model will improve validation primary by at least 0.002 by capturing time-dependent variation in within-user viewing preferences. | 0.6033 | no | - |

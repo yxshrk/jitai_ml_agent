@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_unseeded_16",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13393,
+      "out": 2400,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 4517,
+      "out": 7332,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3006,
+      "out": 1269,
+      "calls": 2
+    }
+  },
+  "tokens_total": 31917,
+  "wall_s": 515.3,
+  "self_critique": "Run critique\n\n- The harness declared \u201cconverged\u201d far too early. Only one challenger produced a metric; two proposal-generation failures are infrastructure failures, not evidence that the search space is exhausted.\n- The accepted baseline appears effectively single-run and unseeded. Reporting sigma=0.0001 without multiple controlled repeats gives an unjustified impression of precision.\n- Node_002 tested an ensemble before establishing per-seed variance. Its 0.6017 result is only about 0.00014 below baseline and likely indistinguishable from noise.\n- Selecting each ensemble member at its own peak validation GAUC and then evaluating the ensemble on that same validation set introduces checkpoint-selection bias. Checkpoints should be selected by a fixed rule or on a separate selection split.\n- The failed node lineage is awkward: node_002 descends from failed node_001 rather than directly from the last valid node. Failed proposals should not become experimental ancestors.\n- The policy spent most of the run on proposal failures and a low-information ensemble experiment rather than controlled model or optimization changes.\n\nScaffold changes\n\n- Validate and dry-run generated proposals before creating nodes; automatically repair or replace malformed proposals.\n- Keep failed infrastructure nodes out of scientific lineage and budget accounting.\n- Require a minimum number of valid experiments before allowing convergence.\n- Use fixed seeds, paired comparisons, and repeated baseline measurements. Report mean, spread, and full-precision deltas.\n- Separate checkpoint selection from final validation scoring.\n- Maintain fallback experiment templates\u2014rank, regularization, learning rate, optimizer, and early-stopping sweeps\u2014so generation failures do not halt exploration.\n\nNext run\n\nFirst reproduce the k=16 baseline across at least 3\u20135 fixed seeds using one predetermined checkpoint rule. Then run a small paired sweep over FM rank and regularization, for example ranks 8/16/32 and nearby L2 values, holding data splits and seeds constant. This will establish whether the observed 1e-4-scale differences are meaningful and is more informative than another seed ensemble."
+}

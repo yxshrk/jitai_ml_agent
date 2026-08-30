@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_desig_full_05",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11134,
+      "out": 2025,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10519,
+      "out": 8523,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3148,
+      "out": 1295,
+      "calls": 2
+    }
+  },
+  "tokens_total": 36644,
+  "wall_s": 810.9,
+  "self_critique": "Run critique\n\nThe harness converged prematurely. It evaluated only two substantive alternatives after the baseline, neither of which was a well-calibrated local improvement. That is insufficient evidence that the search space is exhausted.\n\nPolicy issues:\n- node_001 failed at proposal generation, yet node_002 was attached to that failed node rather than cleanly branching from the best accepted node. Failed proposals should be retried or discarded, not retained as ancestry.\n- The hypotheses demanded gains of +0.0020 to +0.0025 despite a reported baseline sigma of 0.0001. Those targets are unnecessarily large and encourage coarse changes rather than credible incremental tuning.\n- The CWM auxiliary loss introduced a new objective with an arbitrary 0.3 weight and uncertain alignment with the primary metric. It needed either stronger evidence or a small weight sweep.\n- Reducing embedding dimension from 16 directly to 8 was a blunt response to overfitting. The result suggests useful capacity was removed; regularization strength, dropout, or training duration would have been more targeted.\n- The journal is inconsistent about model identity: \u201cbaseline FM\u201d versus \u201cregularized DCN-lite hybrid BCE/BPR.\u201d Model and inherited configuration should be recorded unambiguously.\n- There is no evidence of repeated seeds or confirmation runs. Differences of 0.0003\u20130.0009 should be interpreted using empirical run-to-run variance, not only a single reported sigma.\n\nScaffold changes:\n- Enforce valid proposal generation and always branch experiments from the best accepted runnable node.\n- Require each proposal to specify the exact inherited configuration, changed parameters, mechanism, and smallest useful ablation.\n- Prefer local, one-factor changes before adding auxiliary objectives.\n- Add automatic baseline replication and promotion only after multi-seed confirmation.\n- Do not declare convergence after two rejected experiments; require a minimum exploration budget across optimization, regularization, architecture, and loss categories.\n- Use diagnostic evidence quantitatively: train/validation curves, best epoch, gap at stopping, and per-component loss behavior.\n\nNext run:\nFirst preserve k=16 and target the observed late-epoch overfit with stronger embedding/model regularization\u2014e.g. a small 2\u20134\u00d7 L2 increase or modest embedding dropout around 0.05\u20130.10\u2014while keeping the loss and optimizer fixed. Test a narrow sweep and replicate the best setting. If that fails, try k=12 rather than the coarse k=8 reduction. Revisit the censored watch-ratio loss only afterward, with much smaller weights and an explicit ablation showing that its target is aligned with validation primary."
+}

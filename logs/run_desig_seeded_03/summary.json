@@ -1,0 +1,90 @@
+{
+  "run_dir": "logs/run_desig_seeded_03",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "config": {
+      "member_args": "",
+      "member_epochs": 8,
+      "member_script": "/Users/rohan/Documents/progwork/techjam2026/mle-agent/zoo/polish_stack.py",
+      "n_members": 5,
+      "seed": 42
+    },
+    "gauc": 0.6723752988228431,
+    "history": [
+      {
+        "member": 1,
+        "seed": 42,
+        "stage": "member",
+        "val_gauc": 0.6718589667058308,
+        "val_ndcg5": 0.5381377428316085,
+        "val_primary": 0.6049983547687197
+      },
+      {
+        "member": 2,
+        "seed": 43,
+        "stage": "member",
+        "val_gauc": 0.671203573814482,
+        "val_ndcg5": 0.5372971401956615,
+        "val_primary": 0.6042503570050718
+      },
+      {
+        "member": 3,
+        "seed": 44,
+        "stage": "member",
+        "val_gauc": 0.6715768507800319,
+        "val_ndcg5": 0.5378831482379925,
+        "val_primary": 0.6047299995090123
+      },
+      {
+        "member": 4,
+        "seed": 45,
+        "stage": "member",
+        "val_gauc": 0.6713346145496834,
+        "val_ndcg5": 0.5371960431552525,
+        "val_primary": 0.604265328852468
+      },
+      {
+        "member": 5,
+        "seed": 46,
+        "stage": "member",
+        "val_gauc": 0.672408924957797,
+        "val_ndcg5": 0.5380835893190161,
+        "val_primary": 0.6052462571384065
+      },
+      {
+        "members": 5,
+        "stage": "ensemble",
+        "val_gauc": 0.6723752988228431,
+        "val_ndcg5": 0.5378772342126493,
+        "val_primary": 0.6051262665177461
+      }
+    ],
+    "ndcg5": 0.5378772342126493,
+    "primary": 0.6051262665177461
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11222,
+      "out": 1726,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 9683,
+      "out": 11612,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3261,
+      "out": 1137,
+      "calls": 2
+    }
+  },
+  "tokens_total": 38641,
+  "wall_s": 961.3,
+  "self_critique": "Overall assessment\n\nThe run found a modest improvement over baseline (+0.0033 primary) entirely by importing the team-provided reference. Subsequent search did not improve it, and \u201cconverged\u201d is not well supported by only two completed modification trials.\n\nHarness/policy issues\n\n- It accepted node_001 twice\u2014as a candidate and again as the seed\u2014without adding information. This inflated the apparent search history.\n- A failed proposal at node_002 was allowed to become an ancestor of node_003. Failed nodes should not define lineage; recovery should branch from the last valid node.\n- The policy stopped too early. EMA and one embedding-width change are a very narrow sample of the search space.\n- The reported baseline sigma of 0.0001 was not matched by uncertainty estimates for the winning reference or later trials. A +0.0033 gain cannot be interpreted confidently without repeated seeds or paired evaluation.\n- The hypotheses promised precise gains (\u201cat least 0.002,\u201d \u201capproximately 0.0022\u201d) without empirical basis. This encourages brittle proposal scoring rather than informative experiments.\n- The run reacted to an early validation peak with EMA and capacity reduction, but did not test the most direct intervention: best-checkpoint selection or early stopping.\n- There was no decomposition of the reference improvement. It remains unclear whether the gain came from architecture, hybrid loss, ensembling, checkpointing, or implementation details.\n\nScaffold changes\n\n- Require every accepted incumbent to have repeated-seed statistics or a paired bootstrap confidence interval.\n- Deduplicate identical artifacts and distinguish \u201cimported seed\u201d from an evaluated search proposal.\n- On proposal-generation failure, retry or branch from the last valid incumbent.\n- Use an experiment ladder: reproduce incumbent, inspect curves, run cheap ablations, then make architectural changes.\n- Prefer falsifiable hypotheses with expected direction and diagnostic value, not unsupported exact gain claims.\n- Track best epoch, final epoch, calibration/loss components, and per-field or frequency-bucket metrics so overfitting diagnoses can be validated.\n- Set convergence based on a search budget and confidence bounds, not two rejected trials.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 across several seeds while saving every epoch, then evaluate best-validation checkpoint selection or explicit early stopping at the observed epoch-3 peak. This is the lowest-risk, most directly motivated test. If the improvement survives variance estimation, next test learning-rate/weight-decay adjustments and checkpoint or seed ensembling before further reducing embedding capacity."
+}

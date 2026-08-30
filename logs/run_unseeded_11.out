@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_unseeded_11",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11329,
+      "out": 1978,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10663,
+      "out": 8837,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3136,
+      "out": 1241,
+      "calls": 2
+    }
+  },
+  "tokens_total": 37184,
+  "wall_s": 755.1,
+  "self_critique": "The run was too shallow and declared convergence prematurely. It produced only one valid accepted model and two numerically better but statistically unconvincing results.\n\nWhat was suboptimal\n\n- The run was unseeded despite differences being only 0.0003\u20130.0005. At that scale, single-run scores cannot reliably distinguish improvements from initialization noise.\n- Node 001\u2019s ensemble hypothesis was reasonable, but it changed both seeds and ensembling while using a fixed epoch. That makes attribution unclear, and three adjacent seeds do not establish robustness. Its 0.6021 score was above baseline but below the acceptance margin.\n- Node 002 failed without a preserved proposal or actionable failure diagnosis. This wasted a scarce iteration.\n- Node 003 was incoherent with its ancestry: it descended from a failed node and referred to an \u201cestablished regularized DCN-lite\u201d even though the accepted parent was an FM. Recovery should have returned to the last executable accepted node.\n- Node 003 also bundled architecture, BCE/BPR training, and an auxiliary ordinal watch-ratio loss. That is too many changes for one experiment, and its claimed +0.0025 gain was unsupported. The observed gain was only about +0.0005.\n- The policy explored only ensemble variance reduction and one large, poorly grounded objective/model jump. It did not perform basic local search around the FM: epoch, regularization, embedding dimension, learning rate, negative sampling, or loss blend.\n- \u201cConverged\u201d is not a convincing stop reason after three descendants, one of which failed. This looks more like exhausted or low-confidence exploration.\n\nScaffold changes\n\n- Seed every run and evaluate baseline/candidates on the same 3\u20135 seeds. Use paired mean delta and uncertainty for acceptance.\n- Separate screening from confirmation: cheap single-seed trials first, then multi-seed confirmation for promising candidates.\n- Require each proposal to state the exact parent implementation, one primary intervention, controlled variables, expected mechanism, and acceptance test.\n- After a failed node, branch from the last valid ancestor unless the failure is explicitly repaired.\n- Add consistency checks that reject proposals referring to models or losses not present in the parent.\n- Preserve failure traces and automatically generate the smallest repair rather than a new unrelated experiment.\n- Do not declare convergence until a predefined local neighborhood has been tested or the experiment budget is genuinely exhausted.\n- Record full-precision scores and actual deltas; rounded values obscure decisions at this noise level.\n\nWhat the next run should try first\n\nFirst establish a seeded FM baseline distribution, then run a paired local sweep of training horizon and regularization using identical seeds. Validation reportedly peaks near epoch 8, so test nearby fixed horizons such as 6, 8, 10, and 12 epochs with a small L2/dropout sweep. Confirm the best setting across at least five shared seeds.\n\nOnly after that, test seed ensembling as a deployment-time variance reduction step, comparing raw probability averaging and per-user rank averaging. The watch-ratio/DCN-lite experiment should wait until the simpler FM neighborhood is characterized and should then be decomposed into separate architecture, loss, and auxiliary-target experiments."
+}

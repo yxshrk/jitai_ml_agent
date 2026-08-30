@@ -1,0 +1,21 @@
+{
+  "run_dir": "/Users/rohan/Documents/progwork/techjam2026/mle-agent/logs/run_20260828-011439-bffeac",
+  "stop_reason": "max_iters",
+  "iterations": 2,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6223255377101531,
+    "ndcg5": 0.704367922619479,
+    "primary": 0.663346730164816
+  },
+  "sigma": 0.0024698018113409694,
+  "tokens": {
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 5967,
+      "out": 5290,
+      "calls": 2
+    }
+  },
+  "tokens_total": 11257,
+  "wall_s": 64.9
+}

@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_clean_03",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 14877,
+      "out": 2394,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 8193,
+      "out": 12504,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 917,
+      "out": 1236,
+      "calls": 2
+    }
+  },
+  "tokens_total": 40121,
+  "wall_s": 700.4,
+  "self_critique": "Overall assessment\n\nThe run was too quick to declare convergence. It tested only three children of the baseline, all motivated by the same \u201cmild overfitting\u201d narrative, and did not follow up the only candidate with a meaningfully higher point estimate.\n\nWhat the harness/policy did suboptimally\n\n- node_001 scored roughly 0.6027 versus the 0.601838 baseline, an apparent gain of about 0.00086, yet was rejected without recording the exact score, uncertainty, acceptance threshold, or paired-seed evidence. Even if the gain was not statistically decisive, this should have been marked promising and replicated rather than discarded.\n- node_001 bundled four changes: latent dropout, accessed-row embedding L2, dense weight decay, and learning-rate decay. The result cannot identify which component helped or hurt.\n- \u201cConverged\u201d is not justified after three independent trials. There was no local search around node_001, no repeated seeds, and no alternative model-capacity or optimization hypotheses.\n- The journal repeatedly asserted temporal-shift overfitting from an epoch-8 validation peak. A peak followed by decline supports ordinary overfitting, but does not by itself establish temporal shift.\n- The 7-day half-life in node_003 was arbitrary and apparently unvalidated. Recency weighting can also reduce effective sample size.\n- The hybrid BPR trial changed both objective alignment and optimization behavior at once. Its failure does not rule out ranking-aware training; negative sampling, BCE/BPR mixing weight, and user weighting are critical.\n- Predictions of gains were overly precise relative to the tiny effect sizes and limited uncertainty estimates.\n\nWhat I would change in the scaffold\n\n- Record full-precision metrics, seed, best epoch, run-to-run variance, and the exact acceptance rule for every node.\n- Use paired multi-seed confirmation for gains near the noise floor. Maintain \u201cpromising/inconclusive\u201d separately from accepted and rejected.\n- Permit branching from a promising rejected node rather than forcing every experiment back to the accepted baseline.\n- Enforce mostly atomic interventions. Bundles should be followed immediately by ablations.\n- Add a minimum exploration budget before convergence, such as several distinct hypothesis families plus replication of the best point estimate.\n- Base diagnoses on logged evidence: train/validation curves, temporal slices, user/activity slices, calibration, and ranking metrics.\n- Use staged search: cheap single-seed screening, then paired-seed confirmation and local tuning.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 against node_000 over multiple paired seeds. Its point estimate is the strongest lead and is close to its predicted improvement. If the gain persists, ablate the bundle in this order:\n\n1. Learning-rate decay alone.\n2. Weight decay/L2 alone, with sparse and dense regularization separated.\n3. Latent-path dropout alone, testing a small range around 5%.\n4. The best pairwise combination.\n\nKeep identical initialization, data order where possible, epoch budget, and checkpoint selection. Also compare simple early stopping at or near the observed epoch-8 peak; it may capture most of the benefit without added regularization. Only after resolving node_001 should the run broaden into capacity/rank tuning or carefully tuned ranking objectives."
+}

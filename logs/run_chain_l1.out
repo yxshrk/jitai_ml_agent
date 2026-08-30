@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_chain_l1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.670939935054513,
+    "ndcg5": 0.5375360937568952,
+    "primary": 0.604238014405704
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 10878,
+      "out": 2345,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11892,
+      "out": 9538,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3250,
+      "out": 1346,
+      "calls": 2
+    }
+  },
+  "tokens_total": 39249,
+  "wall_s": 855.1,
+  "self_critique": "Overall assessment\n\nThe run found a modest gain over baseline (+0.00244), but the subsequent search was too narrow and internally inconsistent to justify \u201cconverged.\u201d Most evidence points to insufficient reproducibility checks and a likely ensemble implementation/configuration issue rather than exhaustion of useful ideas.\n\nWhat the harness/policy did suboptimally\n\n- It duplicated node_001 as both an accepted child and a seed without adding evidence or exploration.\n- It explored only seed ensembles after importing the reference implementation. No architectural, feature, loss, regularization, or training-schedule ablations were attempted.\n- Acceptance logic did not match the preregistered claim for node_002. The hypothesis promised retention within 0.001; the observed drop was 0.00084, so that claim technically succeeded even though the candidate should not replace the best model.\n- The policy treated tiny score differences as decisive without reporting repeated-run uncertainty. The baseline sigma of 0.0001 is unexplained and no comparable uncertainty is given for later nodes.\n- Node_004 descended from a failed node rather than the best verified artifact. Its large drop (-0.0043 versus node_001) contradicts the expected benefit of a five-seed ensemble and should have triggered pipeline debugging, not convergence.\n- \u201cProposal failed\u201d consumed a node with no metric, suggesting weak preflight validation.\n- The ensemble descriptions are ambiguous: node_002 refers to a \u201cfive-member parent,\u201d while node_001 appears to be a single imported implementation. The journal does not establish exactly which checkpoints or predictions were used.\n- Validation-only optimization risks overfitting the split, especially when chasing deltas around 0.001.\n\nWhat I would change in the scaffold\n\n- Separate hypothesis outcome from model promotion: mark node_002 \u201chypothesis supported, not promoted.\u201d\n- Require artifact hashes, exact configs, seeds, checkpoint IDs, prediction hashes, and parent lineage for every run.\n- Add ensemble invariance tests:\n  - one-member ensemble must equal the source model;\n  - repeated identical predictions must leave the metric unchanged;\n  - member ordering must not matter;\n  - rank averaging must be tested against score averaging.\n- Re-run the incumbent across several seeds or deterministic repeats and use paired bootstrap confidence intervals before accepting sub-0.001 changes.\n- Add preflight execution checks so malformed proposals fail before consuming a search node.\n- Enforce breadth: after one unsuccessful idea family, try a different intervention rather than another near-duplicate.\n- Reserve \u201cconverged\u201d for a run with reproducible incumbents, multiple tested idea families, and no unresolved regressions.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 exactly and audit the ensemble path. Evaluate the saved node_001 predictions directly, then pass the same predictions through a one-member and duplicated-member ensemble. All three scores should be identical. If not, fix ranking, user grouping, checkpoint loading, or evaluation alignment.\n\nOnce validated, measure individual scores and prediction correlations for each seed, then build ensembles incrementally using only fixed saved predictions. If diversity is low or weaker members consistently reduce the score, stop spending fits on seed averaging and move to a genuinely different model or feature/loss ablation."
+}

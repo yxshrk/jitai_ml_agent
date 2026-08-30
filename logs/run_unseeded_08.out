@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_08",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6688071971167646,
+    "ndcg5": 0.5368147462892245,
+    "primary": 0.6028109717029946
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 26514,
+      "out": 4614,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 12426,
+      "out": 7361,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 332,
+      "out": 961,
+      "calls": 1
+    }
+  },
+  "tokens_total": 52208,
+  "wall_s": 722.9,
+  "self_critique": "Run assessment\n\nThe only real improvement came from variance reduction: rank-averaging three unchanged FM runs raised primary from 0.6018 to 0.602811. That gain is plausible but small and cost 3\u00d7 training. The run did not establish whether it is robust across seed sets or merely favorable validation noise.\n\nWhat was suboptimal\n\n- The harness declared convergence after only one successful follow-up, one badly overpacked rejection, and one proposal failure. A failed node should trigger repair or fallback, not contribute to convergence.\n- node_002 changed four things simultaneously: heavy dropout, embedding L2, AdamW decay, and rapid LR decay. The large regression is unsurprising and provides almost no diagnostic information.\n- The regularization settings were overly aggressive, especially 0.30 embedding dropout plus halving the LR every epoch. This tested a destructive corner rather than a useful neighborhood around the baseline.\n- The claimed effect sizes were too precise without prior evidence. Predictions such as \u201c+0.0025\u201d were not calibrated to observed run-to-run variance.\n- The ensemble gain was not validated with repeated ensemble compositions or uncertainty estimates. The baseline sigma alone is insufficient.\n- Compute efficiency was not considered explicitly. A +0.001 gain at 3\u00d7 cost may be worthwhile, but the run should report the accuracy/compute tradeoff.\n- There was no ablation, hyperparameter locality, model-capacity exploration, or checkpoint-averaging test despite the observation that performance peaks near epoch 8.\n\nScaffold changes\n\n- Require single-factor or tightly scoped experiments unless explicitly running a factorial design.\n- After a failed proposal, automatically repair it or substitute a known-valid conservative experiment.\n- Do not stop for convergence until several independent local directions have been tested.\n- Use paired seeds and report mean, spread, and confidence around deltas.\n- Cache per-seed/per-checkpoint predictions so ensemble variants can be evaluated without retraining.\n- Track runtime and inference cost alongside primary score.\n- Generate hypotheses as ranges, not unjustifiably precise point gains.\n- Separate exploration branches: mild regularization, capacity, optimizer schedule, and ensembling.\n\nWhat the next run should try first\n\nReuse the three trained seeds and test rank-averaging neighboring checkpoints around each seed\u2019s peak, such as epochs 7\u20139, both within seed and across seeds. This directly targets the observed checkpoint variance and may improve stability with little or no retraining.\n\nIf saved checkpoints are unavailable, run one conservative ablation at a time, starting with mild embedding regularization only\u2014e.g. dropout around 0.05\u20130.10 or a small accessed-row L2 term\u2014while keeping the optimizer and LR schedule unchanged. Then test five-seed ensembling only if the marginal gain over three seeds justifies the added cost."
+}

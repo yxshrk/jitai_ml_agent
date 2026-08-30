@@ -1,0 +1,101 @@
+{
+  "run_dir": "logs/run_unseeded_13",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 12327,
+      "out": 2308,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 13829,
+      "out": 9652,
+      "calls": 2
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 2680,
+      "out": 2465,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3186,
+      "out": 1235,
+      "calls": 2
+    }
+  },
+  "tokens_total": 47682,
+  "wall_s": 659.0,
+  "self_critique": "Overall assessment\n\nThe run converged prematurely after exploring essentially one idea family. The only measured non-baseline result reached 0.6026 versus 0.601838, yet was rejected without a recorded reason. That ambiguity is the most important issue: either a potentially meaningful improvement was discarded, or the reported metric was not acceptance-valid.\n\nWhat the harness/policy did suboptimally\n\n- It spent most of the run repairing ensemble plumbing rather than testing distinct modeling hypotheses.\n- node_001 failed on a rank-transform invariant that should have been covered by a cheap unit test before training or evaluation.\n- node_002 improved the displayed primary by roughly 0.0008, substantially larger than the baseline\u2019s reported sigma of 0.0001, but the journal does not state why it was rejected. Rejection criteria, secondary metrics, and reproducibility results must be logged.\n- Continuing from failed node_001 was reasonable for debugging, but after node_002 the policy should have either validated the apparent gain or branched to an orthogonal approach\u2014not declared convergence.\n- node_003\u2019s \u201cproposal failed\u201d suggests brittle proposal generation/parsing. A single malformed proposal should trigger repair or a safe fallback, not consume the remaining exploration path.\n- The ensemble selected checkpoints and filtered members using the same validation primary used for final comparison. This can introduce validation-selection bias, especially when targeting gains below 0.001.\n- An \u201cunseeded\u201d run is poorly matched to claims about four-seed robustness and tiny deltas.\n\nScaffold changes\n\n- Add preflight tests for rank direction, exact ties, duplicate-member invariance, user grouping, missing users, and equivalence of a one-member ensemble to its source predictions.\n- Log explicit rejection reasons: acceptance threshold, uncertainty estimate, secondary regressions, invariant failures, and any mismatch between provisional and official scoring.\n- Require deterministic seeds and persist member checkpoints and prediction hashes.\n- Separate candidate selection from final evaluation, or preregister fixed checkpoints/epochs to reduce validation overfitting.\n- Reserve budget across multiple hypothesis families instead of allowing implementation debugging to consume nearly the whole run.\n- Add automatic proposal repair/fallback when generation fails.\n- Treat \u201cconverged\u201d as requiring either several valid, diverse negative experiments or a verified winning candidate\u2014not one baseline, one infrastructure failure, and one unexplained rejection.\n\nWhat the next run should try first\n\nFirst, reproduce node_002 exactly with fixed seeds and a clean acceptance audit. Evaluate the single champion, raw-score mean, and corrected per-user rank mean on identical saved predictions. Report uncertainty and every acceptance criterion. If the approximately +0.0008 gain repeats without secondary regressions, accept it; if it disappears, attribute the original result to seed or validation-selection noise.\n\nAfter that, test one orthogonal, low-risk baseline change rather than another elaborate ensemble\u2014such as a small regularization or latent-dimension sweep with fixed checkpoint selection. This will provide more information than further optimizing a fragile rank-ensemble pipeline."
+}

@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_24",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6691708264650069,
+    "ndcg5": 0.5369111918631845,
+    "primary": 0.6030410091640956
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13556,
+      "out": 1813,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10572,
+      "out": 12767,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 359,
+      "out": 712,
+      "calls": 1
+    }
+  },
+  "tokens_total": 39779,
+  "wall_s": 1059.6,
+  "self_critique": "The run found a small improvement, but the search process was inefficient and the evidence is weaker than the drafts imply.\n\nWhat was suboptimal\n\n- Node 001 bundled architecture, loss, optimizer, dropout, LR schedule, recency weighting, and checkpoint timing into one package. The +0.00124 gain over baseline cannot be attributed to any component.\n- The proposal predicted roughly +0.0029, but the accepted gain was only about +0.0012. Node 003 repeated the same unsupported estimate instead of updating expectations from observed results.\n- An \u201cinternal sweep\u201d plus validation-selected checkpointing risks overfitting the validation set, especially for such a small gain. No untouched holdout or repeated-seed confirmation is reported.\n- Node 002 failed operationally. The harness then created node 003 as a child of the failed node rather than cleanly rebasing the repair on the last accepted executable node.\n- Node 003\u2019s point estimate (0.6034) exceeded the recorded incumbent (0.603041) but was rejected. That may be statistically correct, but the journal should record the rejection criterion, uncertainty, and paired delta explicitly; otherwise the decision is opaque.\n- Stopping as \u201cconverged\u201d after one accepted improvement, one proposal failure, and one rejected repair is premature. This is not enough exploration to establish a local optimum.\n- Recency weighting is not obviously justified for the \u201cpure\u201d dataset and may introduce a temporal prior without demonstrated temporal drift.\n\nScaffold changes\n\n- Require proposals to change one factor at a time, or use a small declared factorial design.\n- Separate model changes from training/checkpoint-selection changes.\n- Validate proposal executability before consuming a trial; automatically rebase failed proposals on the last accepted node.\n- Record incumbent delta, seed-wise scores, uncertainty, acceptance threshold, and rejection reason for every node.\n- Use repeated paired seeds for gains near 0.001 and reserve a final untouched evaluation split.\n- Calibrate predicted improvements from prior outcomes rather than repeating the original estimate.\n- Do not declare convergence until a minimum exploration budget and several distinct hypotheses have been tested.\n\nWhat the next run should try first\n\nReproduce node 001 across multiple paired seeds, then ablate the package against the baseline. Start with the cheapest and most plausible explanation for the gain: early stopping/half-epoch checkpointing plus dropout/AdamW, while keeping the FM architecture, loss, and data weighting fixed. If that holds, test DCN-lite, hybrid BCE/BPR, and recency weighting separately. Recency weighting should be last and should only be retained if temporal-stratified validation shows a consistent benefit."
+}

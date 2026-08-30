@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_desig_full_03",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11114,
+      "out": 1747,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10592,
+      "out": 7839,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3110,
+      "out": 1307,
+      "calls": 2
+    }
+  },
+  "tokens_total": 35709,
+  "wall_s": 572.1,
+  "self_critique": "Overall assessment\n\nThe run converged prematurely around an already strong baseline. Neither tested modification directly targeted the most plausible failure mode, and one proposal-generation failure wasted a substantial fraction of the search budget.\n\nWhat the harness/policy did suboptimally\n\n- It explored only two valid alternatives before declaring convergence. That is insufficient evidence that the local design space is exhausted.\n- node_001 failed without producing an executable experiment, yet node_002 was nominally descended from that failed node. Failed nodes should not become parents; proposal failures should be retried or repaired without consuming an experimental branch.\n- The policy overcommitted to a single interpretation of the learning curve: \u201ccapacity-driven overfit.\u201d A post-peak validation decline can also reflect insufficient regularization, learning-rate behavior, checkpoint selection, or ordinary validation noise.\n- EMA was poorly matched to the diagnosis. Averaging parameters across later overfit epochs can hurt unless EMA start time and decay are carefully chosen. The observed rejection was therefore not very informative.\n- Reducing k directly from 16 to 8 was a coarse capacity change. It confounds reduced overfitting with reduced representational power; intermediate dimensions or explicit regularization would have been more diagnostic.\n- Claimed gains of 0.0015\u20130.002 were not justified by prior evidence. The baseline sigma of 0.0001 also needs scrutiny: if it was not estimated from multiple independent seeds, acceptance and convergence decisions were overconfident.\n- The journal lacks seed-level results, best epoch, stopping epoch, runtime, and train/validation curves for each candidate. Without these, it is difficult to distinguish a real regression from noise or altered optimization dynamics.\n\nWhat I would change in the scaffold\n\n- Require every proposal to compile and pass a smoke test before it consumes a node.\n- Permit ancestry only from successful, metric-bearing nodes.\n- Retry malformed proposals automatically with the concrete error and configuration schema.\n- Separate screening from confirmation: run broad single-seed screens, then rerun promising candidates and the baseline over identical seeds.\n- Base acceptance on paired seed differences or confidence intervals, not a possibly synthetic single-run sigma.\n- Require hypotheses to specify one controlled change, expected mechanism, and diagnostic outcome.\n- Avoid convergence until several distinct intervention classes have been tested, such as regularization, optimization, capacity, and feature/model structure.\n- Record full curves and checkpoint behavior so the policy can tell whether a change improved the peak, delayed overfitting, or merely changed stopping dynamics.\n\nWhat the next run should try first\n\nFirst run a small embedding-regularization sweep while keeping k=16 and all other settings fixed. Increase L2/weight decay specifically on FM embeddings, for example baseline, 2\u00d7, 4\u00d7, and 8\u00d7 the current value. This directly tests the overfitting hypothesis without discarding capacity. Compare candidates using the same seeds and best-checkpoint rule.\n\nIf that fails, the next priorities should be:\n\n1. Test intermediate dimensions such as k=12 and possibly k=20, rather than only k=8.\n2. Sweep learning rate and/or introduce decay around the observed validation peak.\n3. Test embedding dropout if supported.\n4. Reassess early-stopping patience and checkpoint restoration, while ensuring selection is not leaking test information.\n5. Only revisit EMA with a defined warm start near the pre-overfit region and tuned decay.\n\nThe most important immediate improvement is not a more exotic model; it is a reliable, seed-paired local search around regularization and optimization, with proposal failures repaired rather than counted as exploration."
+}

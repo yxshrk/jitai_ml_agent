@@ -1,0 +1,126 @@
+{
+  "run_dir": "logs/run_planner_01",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3433,
+      "out": 1552,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11445,
+      "out": 1791,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10371,
+      "out": 9540,
+      "calls": 2
+    }
+  },
+  "tokens_total": 38132,
+  "wall_s": 628.1,
+  "self_critique": "Overall assessment\n\nThe run converged prematurely. It established a strong baseline, but only evaluated two substantive alternatives, neither as a clean, diagnostic experiment. There is not enough evidence to conclude the search space was exhausted.\n\nWhat the harness/policy did suboptimally\n\n- It allowed a failed proposal node to become the parent of node_002. Experiments should branch from the latest valid checkpoint or explicitly inherit from node_000 after proposal failure.\n- The ensemble test was underdiagnosed. A drop from 0.6018 to 0.5923 is far larger than the hypothesized variance reduction and suggests weak component seeds, inconsistent checkpointing, or an averaging/ranking implementation problem. Per-seed scores and pairwise prediction correlations should have been recorded before rejecting ensembling.\n- Node_003 changed too many factors simultaneously: embedding dropout, embedding L2, AdamW weight decay, and rapid LR decay. Its small regression cannot identify which intervention helped or hurt.\n- The regularization hypothesis was not well matched to the observation. If validation peaks before training ends, checkpoint selection or earlier stopping is the cheapest first intervention; aggressive compound regularization is not.\n- The baseline sigma of 0.0001 appears implausibly precise unless it came from repeated independent training runs. If it was only evaluator noise, it should not be used as a measure of training variance.\n- \u201cConverged\u201d after one failed proposal and two rejected experiments is too aggressive. The policy should require a minimum number of valid, orthogonal trials and at least one local hyperparameter sweep before stopping.\n\nWhat I would change in the scaffold\n\n- Never inherit from failed nodes; automatically rebase recovery experiments onto the nearest valid ancestor.\n- Require every experiment to vary one principal factor unless explicitly labeled as a factorial test.\n- Log per-seed validation scores, selected epochs, prediction correlations, and ensemble composition.\n- Separate evaluator uncertainty from seed-to-seed training variance.\n- Add sanity gates for ensembles: verify identical row order, score orientation, checkpoint policy, and that each member is competitive with baseline.\n- Use confidence-aware stopping based on valid experiment count and search coverage, not merely consecutive rejections.\n- Convert observed learning-curve behavior into targeted actions: first checkpoint/early-stopping tuning, then individual regularizers.\n\nWhat the next run should try first\n\nFirst, reproduce node_000 across three seeds while saving the best-validation checkpoint for each seed. Report each seed separately. If the seeds remain near 0.6018, ensemble only those verified checkpoints and compare raw-score averaging with rank averaging. If seed variance is large, retain the best seed/checkpoint rather than assuming ensembling will help.\n\nAfter that, run a small one-factor sweep around the baseline:\n\n1. Earlier checkpoint selection or reduced patience.\n2. Learning-rate schedule only.\n3. Weight decay only.\n4. Embedding dropout only, using modest values below 0.30.\n\nThe highest-priority experiment is checkpoint/early-stopping tuning because it directly addresses the reported validation peak without introducing confounded regularization changes.",
+  "exploration_plan": {
+    "initial_draft_slots": 6,
+    "family_priorities": [
+      "underfit",
+      "data-shift",
+      "overfit",
+      "flat-signal",
+      "metric-mismatch"
+    ],
+    "rationale": "Calibration is stable (sigma 0.000077) and matches the published baseline closely, while the effective acceptance and convergence bar is 0.002. Use the maximum initial breadth before the three-iteration stopping rule can trigger, prioritizing families capable of substantive gains; deprioritize metric-mismatch because calibration passed with little baseline discrepancy.",
+    "n": 0.5,
+    "action": "plan",
+    "planned_draft_count": 6,
+    "raw_plan": {
+      "initial_draft_slots": 6,
+      "family_priorities": [
+        "underfit",
+        "data-shift",
+        "overfit",
+        "flat-signal",
+        "metric-mismatch"
+      ],
+      "rationale": "Calibration is stable (sigma 0.000077) and matches the published baseline closely, while the effective acceptance and convergence bar is 0.002. Use the maximum initial breadth before the three-iteration stopping rule can trigger, prioritizing families capable of substantive gains; deprioritize metric-mismatch because calibration passed with little baseline discrepancy."
+    },
+    "context_mode": "compact",
+    "knowledge_mode": "full",
+    "tokens_in": 326,
+    "tokens_out": 463,
+    "usd_total": 43.2239
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "run_dir": "logs/run_clean_01",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 7283,
+      "out": 914,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 8444,
+      "out": 12618,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 1627,
+      "out": 1562,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 907,
+      "out": 1219,
+      "calls": 2
+    }
+  },
+  "tokens_total": 34574,
+  "wall_s": 925.9,
+  "self_critique": "Overall assessment\n\nThe run converged prematurely after very limited exploration. The baseline remained statistically best, but node_001\u2019s raw score of 0.6027 versus 0.6018 suggests a potentially useful direction that was discarded without enough replication or decomposition.\n\nWhat the harness/policy did suboptimally\n\n1. It bundled too many interventions in node_001.\nDropout, accessed-row L2, dense weight decay, and learning-rate decay were changed together. Even if the gain were real, the run could not identify its cause. After the rejection, the policy abandoned the entire direction rather than testing the most plausible components individually.\n\n2. It treated one noisy comparison as decisive.\nA raw improvement of roughly 0.0009 was rejected, yet the journal only reports \u201csigma=0.0001\u201d for the baseline and gives no confidence interval, seed variance, or explicit rejection criterion for node_001. The harness should expose why a numerically higher result is not accepted and replicate borderline candidates.\n\n3. The BPR proposal was too ambitious and weakly grounded.\nThe predicted +0.004 gain was unsupported. Adding pairwise sampling and a mixed objective introduced substantial runtime and implementation risk. The failed run consumed a large fraction of the search budget, and the debug attempt still changed both objective and training duration.\n\n4. The debug node was not a clean diagnostic.\nNode_003 established that the BPR variant underperformed, but it did not clearly separate effects from pair construction, BPR weight, epoch cap, or optimization schedule. Parenting it from a failed node also obscures comparison against the known-good baseline.\n\n5. \u201cConverged\u201d is not well justified.\nOnly one regularization bundle and one ranking-loss family were explored. No learning-rate tuning, embedding dimension sweep, early-stopping replication, or isolated regularizer test was completed.\n\nWhat I would change in the scaffold\n\n- Require atomic experiments by default: one meaningful change per node.\n- Log seed, selected epoch, best-versus-final validation score, runtime, uncertainty, and the exact acceptance test.\n- Automatically rerun candidates whose score is higher but statistically inconclusive.\n- Use checkpointed early stopping so validation peaks are retained without hard-coding an epoch from one run.\n- Add preflight runtime estimation and a small-data smoke test for expensive objectives such as BPR.\n- Make debug nodes reproduce the failed configuration at reduced scale before making additional modeling changes.\n- Calibrate improvement forecasts from prior observed variance rather than asserting large gains without evidence.\n- Avoid declaring convergence until at least a few independent, low-risk axes have been tested.\n\nWhat the next run should try first\n\nRevisit node_001 as a controlled ablation series, starting with smooth learning-rate decay plus checkpointed early stopping, while keeping all regularization unchanged. Run the baseline and candidate across multiple identical seeds. If the approximately +0.0009 gain persists, test embedding-interaction dropout and weight decay separately.\n\nDo not prioritize BPR next. Its completed result was materially worse (0.5986), and the initial implementation exceeded the runtime limit. Only return to pairwise loss after establishing efficient sampling and testing much smaller weights such as 0.05\u20130.1 in a smoke run."
+}

@@ -1,0 +1,40 @@
+{
+  "run_dir": "logs/run_desig_1k_01",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 7,
+  "best_node": "node_004",
+  "best_metrics": {
+    "gauc": 0.6688792435614334,
+    "ndcg5": 0.6085914984233399,
+    "primary": 0.6387353709923866
+  },
+  "sigma": 0.0015,
+  "tokens": {
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 3921,
+      "out": 3813,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 39243,
+      "out": 21078,
+      "calls": 6
+    },
+    "openai/gpt-5.6-sol/selector": {
+      "in": 22419,
+      "out": 2856,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 6635,
+      "out": 1584,
+      "calls": 3
+    }
+  },
+  "tokens_total": 101549,
+  "wall_s": 3763.4,
+  "self_critique": "The run found a real improvement, from 0.6208 to 0.6387, but the search policy was inefficient and overly concentrated on brute-force seed ensembling.\n\nWhat was suboptimal\n\n- Four of seven follow-up nodes were execution failures or severe runtime-related regressions. The harness spent too much budget discovering concurrency limits instead of testing modeling ideas.\n- Ensemble expansion was implemented by retraining the entire stack. Member predictions should have been cached so 5-, 10-, and 15-member ensembles could be evaluated incrementally at negligible cost.\n- Node_007\u2019s collapse to 0.4361 indicates a correctness or completeness problem, not an ordinary modeling rejection. Changing thread/process layout should not materially alter the metric. The scaffold apparently lacked checks for failed members, truncated training, empty predictions, seed duplication, and row-order misalignment.\n- The policy repeatedly proposed \u201cmore seeds\u201d with unsupported expected gains. After ten members, diminishing returns should have shifted exploration toward model diversity.\n- Node_005 changed dropout, embedding L2, AdamW decay, and LR scheduling simultaneously. This was highly confounded and too aggressive; the 0.0508 loss gives little information about which change was harmful.\n- Failed drafts were followed by nearly identical debug attempts, consuming nodes without generating new scientific evidence.\n- Repeated selection on one validation split risks overfitting the ensemble size and configuration to that split. Only the baseline reports an uncertainty estimate; gains should be checked across folds or repeated splits.\n\nScaffold changes\n\n- Cache each seed\u2019s validation/test predictions and metadata, then construct arbitrary ensemble prefixes and blends offline.\n- Launch members independently with fixed threading and resource limits rather than changing training semantics to meet timeout.\n- Add hard integrity checks: expected member count, unique seeds, successful completion, finite predictions, exact row IDs/order, prediction variance, and per-member validation scores.\n- Report prefix curves and marginal gain: 1, 2, 3, 5, 8, 10, 12, 15 members.\n- Treat a large metric collapse after an execution-only change as infrastructure failure, not a valid model result.\n- Make regularization and architecture experiments one-factor-at-a-time, with short screening runs before full ensembles.\n- Preserve a final untouched validation split or use repeated folds for close comparisons.\n\nWhat the next run should try first\n\nFirst, reproduce node_004 under identical deterministic settings while saving all ten member predictions and per-member metrics. Then train seeds 11\u201315 individually, cache them, and evaluate each incremental prefix offline. This will determine whether further same-model ensembling actually helps and diagnose node_007 without another all-or-nothing batch.\n\nIf the curve has plateaued, stop adding identical seeds. Use the remaining budget on a small set of complementary frozen-stack variants\u2014changing one parameter at a time, such as latent dimension, MLP width, or mild dropout\u2014and blend their rank predictions with node_004. Diversity across well-performing configurations is more likely to help than moving from 10 to 15 nearly identical initializations."
+}
+EXIT_0

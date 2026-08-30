@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_chain_25b",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6714630722999573,
+    "ndcg5": 0.5373982191085815,
+    "primary": 0.6044306755065918
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13503,
+      "out": 1643,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 12994,
+      "out": 11133,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3207,
+      "out": 1413,
+      "calls": 2
+    }
+  },
+  "tokens_total": 43893,
+  "wall_s": 1136.3,
+  "self_critique": "Overall assessment\n\nThe run found a real improvement over baseline, from 0.6018 to 0.604431, but nearly all value came from the disclosed seed script. The autonomous search added little evidence of effective hypothesis generation or iteration.\n\nWhat the harness/policy did suboptimally\n\n- It converged too early. After the seed, only two substantive ideas were evaluated: a larger same-model ensemble and a censor-aware auxiliary. That is insufficient to establish search exhaustion.\n- The five-member ensemble hypothesis was poorly calibrated. It predicted roughly +0.0014 but delivered less than +0.0001. The policy should have recognized diminishing returns from additional identical-config seeds.\n- Reporting is ambiguous: node_002 rounds to 0.6045, above the stated best of 0.604431, yet was rejected. Exact scores, uncertainty, runtime/cost, and the acceptance rule should be logged.\n- A failed proposal became a parent, and node_004 was labeled \u201cdebug\u201d despite being a new modeling experiment. Failed administrative nodes should not alter lineage; recovery should branch from the current champion.\n- The censor-aware auxiliary changed several conceptual elements at once and apparently received only one shot. Without weight sweeps or ablations, its rejection says little about whether the auxiliary was bad or merely misweighted.\n- Uncertainty was only reported for the baseline. Seed variance or paired-run uncertainty for the champion and challengers is needed to distinguish noise from improvement.\n- The duplicated node_001 seed/child entries obscure provenance and budget accounting.\n\nWhat I would change in the scaffold\n\n- Keep failed proposals outside the experiment DAG and always branch subsequent experiments from the best valid node.\n- Add proposal validation and automatic repair before consuming a node.\n- Log full-precision metrics, paired deltas, seed variance, compute cost, and explicit rejection reasons.\n- Use staged evaluation: cheap single-seed screening, then repeated seeds only for promising changes.\n- Require atomic hypotheses and small sweeps for sensitive coefficients such as auxiliary-loss weights.\n- Allocate budget explicitly between local optimization and diverse exploration rather than stopping after one failed idea in each category.\n- Calibrate predicted gains using prior observed deltas; large claims for seed-only ensembling should be penalized.\n\nWhat the next run should try first\n\nFirst test a validation-prediction blend of the node_001 champion with the baseline FM over a small weight grid. This is cheap and tests cross-model error diversity, which is more promising than adding further identical-config seeds. If predictions are unavailable, regenerate them once and retain them as artifacts.\n\nAfter that, run a compact one-factor-at-a-time sweep around node_001, prioritizing the BCE/BPR mixing weight and regularization strength. Only revisit the censor-aware objective as a low-weight auxiliary with several weights including zero, so its effect can be isolated."
+}

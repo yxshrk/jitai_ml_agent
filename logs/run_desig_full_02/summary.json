@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_desig_full_02",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 10828,
+      "out": 2010,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 18734,
+      "out": 10457,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3282,
+      "out": 1131,
+      "calls": 2
+    }
+  },
+  "tokens_total": 46442,
+  "wall_s": 815.7,
+  "self_critique": "The run converged prematurely. It explored only one substantive modeling direction\u2014overfitting around epoch 8\u2014and then spent two nodes on an ensemble implementation issue. That is not enough evidence that the baseline FM is locally optimal.\n\nHarness/policy weaknesses:\n- node_001 bundled embedding dropout, accessed-row L2, AdamW decay, and LR decay. Its failure is uninterpretable because four interventions changed at once, and \u201caggressive\u201d regularization was poorly matched to a small observed overfit gap.\n- node_002 reported the best score, 0.6028, but was marked SUSPECT_IMPLEMENTATION. The policy then spent another expensive five-seed run on a narrow checkpoint correction rather than first building a minimal equivalence test.\n- node_003 still scored 0.6027, above baseline, yet was rejected. The journal does not expose the rejection threshold, uncertainty, or whether ensemble cost is part of acceptance. This makes the decision hard to audit.\n- The baseline sigma of 0.0001 appears overconfident unless it came from repeated seeds. A single-seed baseline cannot support reliable judgments about gains of roughly 0.001.\n- Per-user rank averaging, checkpoint selection, and \u201cmeasured seed-ensemble implementation\u201d were not specified rigorously enough before the experiment. The suspect result was therefore avoidable.\n- Declaring convergence after four nodes, with only one clean non-baseline experiment, was too aggressive.\n\nScaffold changes:\n- Require one-factor-at-a-time ablations before allowing compound regularization recipes.\n- Establish a repeated-seed baseline and report mean, standard error, paired deltas, and compute cost.\n- Add deterministic unit checks for ensemble member loading, fixed versus validation-selected epochs, user grouping, rank direction, tie handling, and prediction coverage.\n- Separate scientific acceptance from implementation status and resource tradeoffs. A valid but expensive improvement should be recorded as such rather than simply rejected.\n- Make stopping require coverage of several independent hypothesis families, not just exhaustion of one branch.\n- Prefer cheap diagnostics before full retraining: evaluate saved checkpoints across epochs and test ensemble code on cached predictions.\n\nWhat the next run should try first:\n1. Reproduce node_000 over at least five fixed seeds, saving predictions for epochs around the peak, such as 6\u201310.\n2. Using cached predictions, cleanly compare:\n   - single-seed fixed epoch 8,\n   - best epoch per seed,\n   - raw-score averaging,\n   - per-user rank averaging.\n3. If the approximately +0.0009 ensemble gain remains statistically credible, retain it as a variance-reduction result and document its inference cost.\n4. Then return to single-model improvements with isolated, modest changes: tune latent dimension, learning rate, embedding L2, and dropout separately. Early stopping or checkpoint averaging should be tested before another compound regularization schedule.\n\nThe immediate priority is not another model idea; it is obtaining a trustworthy estimate of seed and checkpoint variance so that gains near 0.001 can be distinguished from noise."
+}

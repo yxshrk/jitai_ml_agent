@@ -1,0 +1,21 @@
+{
+  "run_dir": "logs/run_real_04",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454
+  },
+  "sigma": 0.0008,
+  "tokens": {
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11787,
+      "out": 7470,
+      "calls": 3
+    }
+  },
+  "tokens_total": 19257,
+  "wall_s": 935.9
+}

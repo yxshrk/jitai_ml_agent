@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/harness/cli.py", line 83, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/harness/cli.py", line 76, in main
+    summary = Loop(config, brain).run()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/harness/loop.py", line 631, in run
+    self.prepare_workspace()
+  File "/Users/rohan/Documents/progwork/techjam2026/mle-agent/harness/loop.py", line 144, in prepare_workspace
+    raise FileNotFoundError(source)
+FileNotFoundError: /Users/rohan/Documents/progwork/techjam2026/mle-agent/data/real_ws_1k/train.csv

@@ -1,0 +1,884 @@
+{
+  "run_dir": "logs/run_bigclock_01",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6708767530868377,
+    "ndcg5": 0.53761727122858,
+    "primary": 0.6042470121577088,
+    "winning_config": {
+      "dropout": 0.132,
+      "weight_decay": 3.8400000000000005e-05,
+      "lr": 0.001,
+      "decay": 0.755,
+      "half_life": 10.08
+    },
+    "ensemble_seeds": [
+      42
+    ],
+    "probes": [
+      {
+        "stage": "coarse",
+        "probe": 0,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "decay": 0.78,
+          "half_life": 14.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5954661318213454
+      },
+      {
+        "stage": "coarse",
+        "probe": 1,
+        "config": {
+          "dropout": 0.19,
+          "weight_decay": 9e-05,
+          "lr": 0.001,
+          "decay": 0.66,
+          "half_life": 7.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5932947233543868
+      },
+      {
+        "stage": "coarse",
+        "probe": 2,
+        "config": {
+          "dropout": 0.23,
+          "weight_decay": 0.0003,
+          "lr": 0.0009,
+          "decay": 0.57,
+          "half_life": 3.5
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5913950366511233
+      },
+      {
+        "stage": "coarse",
+        "probe": 3,
+        "config": {
+          "dropout": 0.27,
+          "weight_decay": 0.0007,
+          "lr": 0.0012,
+          "decay": 0.49,
+          "half_life": 7.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5932648957799036
+      },
+      {
+        "stage": "coarse",
+        "probe": 4,
+        "config": {
+          "dropout": 0.31,
+          "weight_decay": 0.0014,
+          "lr": 0.0011,
+          "decay": 0.61,
+          "half_life": 14.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5939082850536159
+      },
+      {
+        "stage": "coarse",
+        "probe": 5,
+        "config": {
+          "dropout": 0.35,
+          "weight_decay": 0.003,
+          "lr": 0.0008,
+          "decay": 0.72,
+          "half_life": 3.5
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5921352600104295
+      },
+      {
+        "stage": "coarse",
+        "probe": 6,
+        "config": {
+          "dropout": 0.4,
+          "weight_decay": 0.0003,
+          "lr": 0.0013,
+          "decay": 0.43,
+          "half_life": 7.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5932121230230762
+      },
+      {
+        "stage": "coarse",
+        "probe": 7,
+        "config": {
+          "dropout": 0.24,
+          "weight_decay": 0.003,
+          "lr": 0.0007,
+          "decay": 0.82,
+          "half_life": 14.0
+        },
+        "epochs": 2,
+        "row_fraction": 0.28,
+        "best_primary": 0.5941590242946112
+      },
+      {
+        "stage": "refine",
+        "probe": 0,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 3e-05,
+          "lr": 0.001,
+          "decay": 0.78,
+          "half_life": 14.0
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.6037650676723914
+      },
+      {
+        "stage": "refine",
+        "probe": 1,
+        "config": {
+          "dropout": 0.12,
+          "weight_decay": 2e-05,
+          "lr": 0.00092,
+          "decay": 0.8300000000000001,
+          "half_life": 14.0
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.6037823181342687
+      },
+      {
+        "stage": "refine",
+        "probe": 2,
+        "config": {
+          "dropout": 0.185,
+          "weight_decay": 5.1e-05,
+          "lr": 0.00108,
+          "decay": 0.73,
+          "half_life": 14.0
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.60357602036249
+      },
+      {
+        "stage": "refine",
+        "probe": 3,
+        "config": {
+          "dropout": 0.132,
+          "weight_decay": 3.8400000000000005e-05,
+          "lr": 0.001,
+          "decay": 0.755,
+          "half_life": 10.08
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.6040717186235627
+      },
+      {
+        "stage": "refine",
+        "probe": 4,
+        "config": {
+          "dropout": 0.16799999999999998,
+          "weight_decay": 2.3400000000000003e-05,
+          "lr": 0.00096,
+          "decay": 0.805,
+          "half_life": 18.0
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.6038440222443018
+      },
+      {
+        "stage": "refine",
+        "probe": 5,
+        "config": {
+          "dropout": 0.15,
+          "weight_decay": 6.45e-05,
+          "lr": 0.0010500000000000002,
+          "decay": 0.7050000000000001,
+          "half_life": 10.08
+        },
+        "epochs": 4,
+        "row_fraction": 1.0,
+        "best_primary": 0.6036796144521835
+      }
+    ],
+    "history": [
+      {
+        "stage": "coarse_00",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.300973,
+        "lr": 0.0006084,
+        "val_gauc": 0.654239,
+        "val_primary": 0.591548
+      },
+      {
+        "stage": "coarse_00",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.265406,
+        "lr": 0.00037015056000000006,
+        "val_gauc": 0.659302,
+        "val_primary": 0.595466
+      },
+      {
+        "stage": "coarse_01",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.29545,
+        "lr": 0.0004356,
+        "val_gauc": 0.650706,
+        "val_primary": 0.589196
+      },
+      {
+        "stage": "coarse_01",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.275432,
+        "lr": 0.00018974736000000004,
+        "val_gauc": 0.656246,
+        "val_primary": 0.593295
+      },
+      {
+        "stage": "coarse_02",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.304684,
+        "lr": 0.0002924099999999999,
+        "val_gauc": 0.64871,
+        "val_primary": 0.588069
+      },
+      {
+        "stage": "coarse_02",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.301688,
+        "lr": 9.500400899999995e-05,
+        "val_gauc": 0.653376,
+        "val_primary": 0.591395
+      },
+      {
+        "stage": "coarse_03",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.296227,
+        "lr": 0.00028812,
+        "val_gauc": 0.653942,
+        "val_primary": 0.591377
+      },
+      {
+        "stage": "coarse_03",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.280598,
+        "lr": 6.9177612e-05,
+        "val_gauc": 0.656575,
+        "val_primary": 0.593265
+      },
+      {
+        "stage": "coarse_04",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.302889,
+        "lr": 0.00040931,
+        "val_gauc": 0.65322,
+        "val_primary": 0.591261
+      },
+      {
+        "stage": "coarse_04",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.279939,
+        "lr": 0.00015230425100000002,
+        "val_gauc": 0.657007,
+        "val_primary": 0.593908
+      },
+      {
+        "stage": "coarse_05",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.307047,
+        "lr": 0.00041472,
+        "val_gauc": 0.649812,
+        "val_primary": 0.588708
+      },
+      {
+        "stage": "coarse_05",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.285076,
+        "lr": 0.00021499084799999997,
+        "val_gauc": 0.654528,
+        "val_primary": 0.592135
+      },
+      {
+        "stage": "coarse_06",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.302144,
+        "lr": 0.00024036999999999998,
+        "val_gauc": 0.653941,
+        "val_primary": 0.591464
+      },
+      {
+        "stage": "coarse_06",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.290746,
+        "lr": 4.444441299999999e-05,
+        "val_gauc": 0.656276,
+        "val_primary": 0.593212
+      },
+      {
+        "stage": "coarse_07",
+        "epoch": 1,
+        "half": 2,
+        "step": 40,
+        "train_loss": 0.311111,
+        "lr": 0.00047067999999999996,
+        "val_gauc": 0.650386,
+        "val_primary": 0.58915
+      },
+      {
+        "stage": "coarse_07",
+        "epoch": 2,
+        "half": 2,
+        "step": 80,
+        "train_loss": 0.286421,
+        "lr": 0.00031648523199999997,
+        "val_gauc": 0.657377,
+        "val_primary": 0.594159
+      },
+      {
+        "stage": "refine_00",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.253738,
+        "lr": 0.0006084,
+        "val_gauc": 0.667288,
+        "val_primary": 0.601205
+      },
+      {
+        "stage": "refine_00",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.255459,
+        "lr": 0.00037015056000000006,
+        "val_gauc": 0.669956,
+        "val_primary": 0.603426
+      },
+      {
+        "stage": "refine_00",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.251073,
+        "lr": 0.00022519960070400006,
+        "val_gauc": 0.670282,
+        "val_primary": 0.603765
+      },
+      {
+        "stage": "refine_00",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.252319,
+        "lr": 0.00013701143706831365,
+        "val_gauc": 0.669975,
+        "val_primary": 0.603536
+      },
+      {
+        "stage": "refine_01",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.264215,
+        "lr": 0.0006337880000000001,
+        "val_gauc": 0.666367,
+        "val_primary": 0.600949
+      },
+      {
+        "stage": "refine_01",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.255405,
+        "lr": 0.0004366165532000002,
+        "val_gauc": 0.66978,
+        "val_primary": 0.603372
+      },
+      {
+        "stage": "refine_01",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.254356,
+        "lr": 0.0003007851434994802,
+        "val_gauc": 0.669955,
+        "val_primary": 0.603524
+      },
+      {
+        "stage": "refine_01",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.245353,
+        "lr": 0.0002072108853567919,
+        "val_gauc": 0.670412,
+        "val_primary": 0.603782
+      },
+      {
+        "stage": "refine_02",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.25816,
+        "lr": 0.000575532,
+        "val_gauc": 0.668028,
+        "val_primary": 0.602288
+      },
+      {
+        "stage": "refine_02",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.254584,
+        "lr": 0.00030670100279999997,
+        "val_gauc": 0.670012,
+        "val_primary": 0.603402
+      },
+      {
+        "stage": "refine_02",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.248115,
+        "lr": 0.00016344096439211998,
+        "val_gauc": 0.670109,
+        "val_primary": 0.603576
+      },
+      {
+        "stage": "refine_02",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.24887,
+        "lr": 8.709768992456073e-05,
+        "val_gauc": 0.669568,
+        "val_primary": 0.603216
+      },
+      {
+        "stage": "refine_03",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.262631,
+        "lr": 0.000570025,
+        "val_gauc": 0.667906,
+        "val_primary": 0.601973
+      },
+      {
+        "stage": "refine_03",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.251883,
+        "lr": 0.000324928500625,
+        "val_gauc": 0.670315,
+        "val_primary": 0.603487
+      },
+      {
+        "stage": "refine_03",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.249367,
+        "lr": 0.00018521736856876565,
+        "val_gauc": 0.67074,
+        "val_primary": 0.603773
+      },
+      {
+        "stage": "refine_03",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.249541,
+        "lr": 0.00010557853051841064,
+        "val_gauc": 0.670938,
+        "val_primary": 0.604072
+      },
+      {
+        "stage": "refine_04",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.258684,
+        "lr": 0.0006221040000000001,
+        "val_gauc": 0.666705,
+        "val_primary": 0.601264
+      },
+      {
+        "stage": "refine_04",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.254406,
+        "lr": 0.0004031389446000001,
+        "val_gauc": 0.6707,
+        "val_primary": 0.60375
+      },
+      {
+        "stage": "refine_04",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.242865,
+        "lr": 0.0002612441145744151,
+        "val_gauc": 0.670536,
+        "val_primary": 0.603844
+      },
+      {
+        "stage": "refine_04",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.249653,
+        "lr": 0.00016929271734708538,
+        "val_gauc": 0.670424,
+        "val_primary": 0.603689
+      },
+      {
+        "stage": "refine_05",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.255689,
+        "lr": 0.0005218762500000002,
+        "val_gauc": 0.667551,
+        "val_primary": 0.601811
+      },
+      {
+        "stage": "refine_05",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.252251,
+        "lr": 0.00025938554315625017,
+        "val_gauc": 0.670197,
+        "val_primary": 0.603517
+      },
+      {
+        "stage": "refine_05",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.251263,
+        "lr": 0.00012892109958723526,
+        "val_gauc": 0.669971,
+        "val_primary": 0.603514
+      },
+      {
+        "stage": "refine_05",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.252485,
+        "lr": 6.407700952234562e-05,
+        "val_gauc": 0.670254,
+        "val_primary": 0.60368
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 1,
+        "half": 1,
+        "step": 70,
+        "train_loss": 0.261038,
+        "lr": 0.000755,
+        "val_gauc": 0.65814,
+        "val_primary": 0.594734
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 1,
+        "half": 2,
+        "step": 140,
+        "train_loss": 0.263613,
+        "lr": 0.000570025,
+        "val_gauc": 0.667182,
+        "val_primary": 0.601491
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 2,
+        "half": 1,
+        "step": 210,
+        "train_loss": 0.251047,
+        "lr": 0.000430368875,
+        "val_gauc": 0.668853,
+        "val_primary": 0.6026
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 2,
+        "half": 2,
+        "step": 280,
+        "train_loss": 0.256398,
+        "lr": 0.000324928500625,
+        "val_gauc": 0.668966,
+        "val_primary": 0.602934
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 3,
+        "half": 1,
+        "step": 350,
+        "train_loss": 0.252237,
+        "lr": 0.000245321017971875,
+        "val_gauc": 0.669877,
+        "val_primary": 0.603248
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 3,
+        "half": 2,
+        "step": 420,
+        "train_loss": 0.24646,
+        "lr": 0.00018521736856876565,
+        "val_gauc": 0.670606,
+        "val_primary": 0.604016
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 4,
+        "half": 1,
+        "step": 490,
+        "train_loss": 0.245846,
+        "lr": 0.00013983911326941807,
+        "val_gauc": 0.6702,
+        "val_primary": 0.60392
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 4,
+        "half": 2,
+        "step": 560,
+        "train_loss": 0.2445,
+        "lr": 0.00010557853051841064,
+        "val_gauc": 0.670621,
+        "val_primary": 0.604059
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 5,
+        "half": 1,
+        "step": 630,
+        "train_loss": 0.24623,
+        "lr": 7.971179054140004e-05,
+        "val_gauc": 0.670877,
+        "val_primary": 0.604247
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 5,
+        "half": 2,
+        "step": 700,
+        "train_loss": 0.250243,
+        "lr": 6.0182401858757026e-05,
+        "val_gauc": 0.670201,
+        "val_primary": 0.603751
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 6,
+        "half": 1,
+        "step": 770,
+        "train_loss": 0.246512,
+        "lr": 4.543771340336156e-05,
+        "val_gauc": 0.670222,
+        "val_primary": 0.603725
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 6,
+        "half": 2,
+        "step": 840,
+        "train_loss": 0.244447,
+        "lr": 3.4305473619537975e-05,
+        "val_gauc": 0.670256,
+        "val_primary": 0.60369
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 7,
+        "half": 1,
+        "step": 910,
+        "train_loss": 0.251506,
+        "lr": 2.590063258275117e-05,
+        "val_gauc": 0.670701,
+        "val_primary": 0.603986
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 7,
+        "half": 2,
+        "step": 980,
+        "train_loss": 0.250674,
+        "lr": 1.9554977599977135e-05,
+        "val_gauc": 0.670538,
+        "val_primary": 0.603861
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 8,
+        "half": 1,
+        "step": 1050,
+        "train_loss": 0.245457,
+        "lr": 1.4764008087982737e-05,
+        "val_gauc": 0.670426,
+        "val_primary": 0.603756
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 8,
+        "half": 2,
+        "step": 1120,
+        "train_loss": 0.241469,
+        "lr": 1.1146826106426967e-05,
+        "val_gauc": 0.67057,
+        "val_primary": 0.603879
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 9,
+        "half": 1,
+        "step": 1190,
+        "train_loss": 0.24996,
+        "lr": 8.41585371035236e-06,
+        "val_gauc": 0.670491,
+        "val_primary": 0.603779
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 9,
+        "half": 2,
+        "step": 1260,
+        "train_loss": 0.243306,
+        "lr": 6.353969551316032e-06,
+        "val_gauc": 0.670504,
+        "val_primary": 0.603823
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 10,
+        "half": 1,
+        "step": 1330,
+        "train_loss": 0.255064,
+        "lr": 4.797247011243604e-06,
+        "val_gauc": 0.670582,
+        "val_primary": 0.603868
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 10,
+        "half": 2,
+        "step": 1400,
+        "train_loss": 0.2422,
+        "lr": 3.621921493488921e-06,
+        "val_gauc": 0.670632,
+        "val_primary": 0.60387
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 11,
+        "half": 1,
+        "step": 1470,
+        "train_loss": 0.246488,
+        "lr": 2.7345507275841352e-06,
+        "val_gauc": 0.670624,
+        "val_primary": 0.603883
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 11,
+        "half": 2,
+        "step": 1540,
+        "train_loss": 0.243347,
+        "lr": 2.064585799326022e-06,
+        "val_gauc": 0.670599,
+        "val_primary": 0.603884
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 12,
+        "half": 1,
+        "step": 1610,
+        "train_loss": 0.242358,
+        "lr": 1.5587622784911467e-06,
+        "val_gauc": 0.670539,
+        "val_primary": 0.60383
+      },
+      {
+        "stage": "final_seed_42",
+        "epoch": 12,
+        "half": 2,
+        "step": 1680,
+        "train_loss": 0.248642,
+        "lr": 1.1768655202608158e-06,
+        "val_gauc": 0.670505,
+        "val_primary": 0.603826
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 22397,
+      "out": 2890,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 21976,
+      "out": 21074,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3443,
+      "out": 1218,
+      "calls": 2
+    }
+  },
+  "tokens_total": 72998,
+  "wall_s": 1264.5,
+  "self_critique": "Run assessment\n\nWhat the harness/policy did suboptimally\n\n- It declared convergence after very little evidence: one improvement, one failed proposal, one weaker retry, and one failed ensemble. That is insufficient to establish a local optimum.\n- Node_001 changed many things simultaneously\u2014architecture, BCE/BPR objective, dropout, AdamW decay, schedule, and recency weighting. The gain is real within this run, but its cause is unidentified and the search may have overfit validation.\n- Robustness was not established. Node_003\u2019s similar package scored 0.6024 versus 0.6042 for node_001, suggesting sensitivity to seed, exact settings, or search procedure. A single champion score should not be treated as stable.\n- The recovery lineage was poor: node_003 descended from failed node_002 rather than cleanly restarting from the last valid champion with a recorded, executable configuration.\n- The ensemble experiment was weakly motivated and apparently lacked useful diversity. Consecutive seeds of nearly identical models will have correlated errors; rank averaging can also hurt calibration-sensitive metrics. It should not have been prioritized before validating and understanding the single-model gain.\n- The reported baseline sigma of 0.0001 is not enough evidence unless it came from multiple full retrains. Comparisons should use paired seeds and report mean, standard deviation, and confidence intervals.\n- The journal does not preserve enough detail about node_002\u2019s failure or the exact difference between nodes 001 and 003, limiting diagnosis and reproducibility.\n\nWhat I would change in the scaffold\n\n- Require every proposal to specify an exact executable delta from a valid parent, fixed seeds, budget, and expected mechanism.\n- Separate exploration from confirmation: use validation for tuning, then confirm finalists over several paired seeds or on a held-out confirmation split.\n- Allow broad packages only as probes. After a successful package, automatically schedule component ablations and small local sweeps.\n- Never inherit from a failed/no-metric node unless it contains a valid recoverable artifact; otherwise roll back to the last successful parent.\n- Record failure class, traceback, configuration diff, best epoch, and metric trajectory.\n- Use stopping criteria based on exhausted targeted neighborhoods and uncertainty-aware improvement, not merely several unsuccessful children.\n- Gate ensembles on measured prediction diversity and compare raw averaging, logit averaging, and rank averaging.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 exactly with 3\u20135 paired seeds against node_000 and report mean lift and uncertainty. If the gain remains robust, run a compact ablation around node_001:\n\n1. DCN-lite only.\n2. BCE/BPR mixture only.\n3. Regularization/schedule changes only.\n4. Recency weighting only.\n5. Full node_001 package.\n\nThen perform a narrow local search around the best epoch, dropout, weight decay, and recency half-life while keeping architecture and objective fixed. Prioritize checkpoint averaging or early stopping before another seed ensemble. The immediate goal should be to determine whether 0.604247 is a reproducible modeling improvement or a validation/search outlier."
+}

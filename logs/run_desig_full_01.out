@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_desig_full_01",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 16389,
+      "out": 2478,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 17914,
+      "out": 13010,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3286,
+      "out": 1327,
+      "calls": 2
+    }
+  },
+  "tokens_total": 54404,
+  "wall_s": 862.6,
+  "self_critique": "Overall\n\nThe run was too shallow to justify \u201cconverged.\u201d It tested only three children, two of which bundled several changes, and then retained the baseline. Reporting best_primary=0.601838 is internally consistent with acceptance status, but the run found potentially useful signal in node_002 that was not adequately followed up.\n\nWhat the harness/policy did suboptimally\n\n- Premature convergence: three trials are insufficient, especially when node_002 improved raw primary from 0.6018 to 0.6024. That result warranted replication and ablation rather than termination.\n- Weak experimental isolation:\n  - node_001 simultaneously changed embedding dropout, row-wise L2, AdamW weight decay, and LR decay. Its failure reveals little about which intervention was harmful.\n  - node_002 added multiple temporal/session features and crosses together, so the source of its small gain is unknown.\n- Hypotheses used unjustifiably precise effect-size promises (\u201c+0.0025,\u201d \u201cat least +0.002,\u201d \u201capproximately +0.004\u201d). These estimates were not grounded in prior measurements and appear to have influenced binary accept/reject decisions unnecessarily.\n- Acceptance seems too rigid. A +0.0006 candidate should not be promoted automatically, but it should enter a \u201cpromising; replicate\u201d state rather than be discarded.\n- Uncertainty handling is unclear. Baseline sigma=0.0001 is implausibly precise unless it came from repeated full training runs or bootstrap analysis. Validation-row bootstrap uncertainty would not capture seed and checkpoint variance.\n- node_003 was a poor early allocation of compute. Five-seed ensembling tests variance reduction, not a better underlying model, and complicates fair comparison. The implementation concern should have been resolved with prediction-shape, ordering, per-user ranking, and leakage checks before scoring.\n- The overfitting diagnosis was repeatedly asserted from one learning curve, but the scaffold did not first test simpler responses such as checkpoint selection, mild regularization, or one-factor sweeps.\n\nWhat I would change in the scaffold\n\n- Add trial states: rejected, promising-needs-replication, accepted, and invalid/suspect.\n- Require paired multi-seed evaluation for gains near the noise floor, using identical splits and reporting mean, standard deviation, and per-seed deltas.\n- Separate hypothesis generation from expected gain; use directional predictions unless a calibrated prior supports a numeric target.\n- Enforce one conceptual change per trial. Permit bundles only after components have independently shown value.\n- Automatically trigger ablations or replications when a candidate beats the champion numerically but misses the promotion threshold.\n- Add minimum exploration requirements before convergence: several distinct hypothesis families and at least one follow-up on every promising result.\n- For ensembles, validate prediction alignment, ranking direction, user grouping, and absence of validation-tuned weights; compare both raw-score and rank averaging.\n- Track best observed, best valid single model, and best accepted model separately.\n\nWhat the next run should try first\n\nReplicate node_002 across at least three matched seeds, then ablate its feature groups:\n\n1. Session gap and session position only.\n2. Hour/position cross only.\n3. Weekday/gap cross only.\n4. Best individual group plus the next-best group.\n\nVerify strict causality and feature construction at sequence boundaries. If the mean paired gain remains positive and stable, promote the simplest variant. In parallel, run a small one-factor regularization sweep\u2014mild embedding dropout or weight decay, not the aggressive node_001 bundle\u2014with unchanged optimizer and LR schedule. Defer ensembling until a stronger single model is established and node_003\u2019s implementation issue is diagnosed."
+}

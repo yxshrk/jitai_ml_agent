@@ -1,0 +1,3 @@
+{"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.571871, "val_gauc": 0.666625, "val_primary": 0.601091}, "ess_fraction": 0.9002961771483547, "floor": 0.0, "half_life_days": 7.0, "metrics": {"gauc": 0.666624860339925, "ndcg5": 0.5355578271607299, "primary": 0.6010913437503274}, "seed": 1042, "stage": "matched_recency_probe"}
+{"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.5723, "val_gauc": 0.665805, "val_primary": 0.60034}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6658050896506406, "ndcg5": 0.5348749439725962, "primary": 0.6003400168116184}, "seed": 1042, "stage": "matched_recency_probe"}
+{"floor": 0.0, "member": 0, "primary": 0.6010609031115153, "seed": 42, "stage": "final"}

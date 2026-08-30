@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_10",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6690465561674325,
+    "ndcg5": 0.5368252304307854,
+    "primary": 0.6029358932991089
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 10938,
+      "out": 2163,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10276,
+      "out": 9533,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 326,
+      "out": 987,
+      "calls": 1
+    }
+  },
+  "tokens_total": 34223,
+  "wall_s": 657.2,
+  "self_critique": "Run critique\n\nThe only improvement came from variance reduction: five-seed rank averaging raised primary from 0.6018 to 0.602936, about +0.0011, well below the predicted +0.004 and at 5\u00d7 training cost. This is useful but not strong evidence of a better learner.\n\nThe policy was suboptimal in several ways:\n- It declared convergence after very little exploration: one failed proposal, one harmful complex change, and one expensive ensemble.\n- node_001 failed yet remained in the ancestry for node_002. Failed proposal-generation nodes should not become experimental parents.\n- node_002 changed too many factors at once: model class, BCE/BPR objective, and censored watch-time auxiliary loss. Its -0.0019 result cannot identify which component failed.\n- The censoring premise needed stronger validation. Treating completed plays as right-censored may be appropriate only under a clearly specified latent watch-intent model.\n- The ensemble gain was evaluated on the same validation surface used to notice epoch-8 overfitting and select the method. There was no independent replication or uncertainty estimate across ensemble seed groups.\n- The reported baseline sigma of 0.0001 appears inconsistent with initialization variance being large enough for ensembling to matter; the scaffold should distinguish metric/bootstrap noise from training-seed variance.\n- Compute efficiency was not considered in acceptance. A +0.0011 gain at 5\u00d7 cost may or may not be worthwhile.\n\nScaffold changes\n\nI would:\n- Prevent failed nodes from entering lineage and automatically retry malformed proposals.\n- Require one-factor experiments or explicit ablations for compound proposals.\n- Track training-seed variance separately from evaluation-set uncertainty.\n- Require replication of small gains using disjoint seed sets before acceptance.\n- Report gain per unit compute and maintain both unconstrained and compute-matched leaders.\n- Add ensemble diagnostics: individual-model scores, pairwise prediction correlation, ensemble size curves, and rank averaging versus probability/logit averaging.\n- Avoid convergence until a minimum set of orthogonal experiment families has been tested.\n\nNext run\n\nFirst, verify the ensemble result. Train a fresh pool of FM replicas with preregistered seeds and fixed epoch selection, then measure performance for ensemble sizes 1, 2, 3, and 5 using rank, probability, and logit averaging. Repeat with at least two disjoint seed groups. If the +0.001-level gain replicates, optimize diversity and determine whether three models recover most of the five-model benefit. If it does not replicate, return to the single FM and tune early stopping, regularization, and latent dimension one factor at a time."
+}

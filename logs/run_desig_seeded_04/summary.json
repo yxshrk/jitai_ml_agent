@@ -1,0 +1,90 @@
+{
+  "run_dir": "logs/run_desig_seeded_04",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "config": {
+      "member_args": "",
+      "member_epochs": 8,
+      "member_script": "/Users/rohan/Documents/progwork/techjam2026/mle-agent/zoo/frozen_stack.py",
+      "n_members": 5,
+      "seed": 42
+    },
+    "gauc": 0.6723752988228431,
+    "history": [
+      {
+        "member": 1,
+        "seed": 42,
+        "stage": "member",
+        "val_gauc": 0.6718589667058308,
+        "val_ndcg5": 0.5381377428316085,
+        "val_primary": 0.6049983547687197
+      },
+      {
+        "member": 2,
+        "seed": 43,
+        "stage": "member",
+        "val_gauc": 0.671203573814482,
+        "val_ndcg5": 0.5372971401956615,
+        "val_primary": 0.6042503570050718
+      },
+      {
+        "member": 3,
+        "seed": 44,
+        "stage": "member",
+        "val_gauc": 0.6715768507800319,
+        "val_ndcg5": 0.5378831482379925,
+        "val_primary": 0.6047299995090123
+      },
+      {
+        "member": 4,
+        "seed": 45,
+        "stage": "member",
+        "val_gauc": 0.6713346145496834,
+        "val_ndcg5": 0.5371960431552525,
+        "val_primary": 0.604265328852468
+      },
+      {
+        "member": 5,
+        "seed": 46,
+        "stage": "member",
+        "val_gauc": 0.672408924957797,
+        "val_ndcg5": 0.5380835893190161,
+        "val_primary": 0.6052462571384065
+      },
+      {
+        "members": 5,
+        "stage": "ensemble",
+        "val_gauc": 0.6723752988228431,
+        "val_ndcg5": 0.5378772342126493,
+        "val_primary": 0.6051262665177461
+      }
+    ],
+    "ndcg5": 0.5378772342126493,
+    "primary": 0.6051262665177461
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 16642,
+      "out": 2541,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15460,
+      "out": 12192,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3439,
+      "out": 1493,
+      "calls": 2
+    }
+  },
+  "tokens_total": 51767,
+  "wall_s": 1519.7,
+  "self_critique": "Overall assessment\n\nThe run found a modest but real improvement over the baseline (+0.0033) by adopting the provided frozen ensemble, then converged prematurely after only three narrow variants. It mostly validated that the reference stack was already locally strong; it did not conduct a broad or well-instrumented search around it.\n\nWhat was suboptimal\n\n- The search was too shallow. Declaring convergence after three rejected children is not persuasive, especially when all three were motivated by the same weak \u201cearly peak means overfitting\u201d diagnosis.\n- That diagnosis was not established. A validation peak followed by decline can reflect ordinary training dynamics, checkpoint noise, or seed variance. No train/validation gap, per-seed curves, member scores, or uncertainty analysis was reported.\n- Node_002 exposed an objective mismatch. It scored 0.6050, within the hypothesized 0.001 of the champion while cutting training and inference cost by 60%, so the experiment succeeded on its stated claim. Rejecting it solely because primary decreased discards a useful Pareto-optimal result. Either cost must be part of acceptance or cost-saving hypotheses should not be proposed.\n- Node_004 changed dropout, embedding L2, weight decay, and LR decay simultaneously. Its rejection provides little information about which changes helped or hurt. The aggressive 0.5-per-epoch decay was especially likely to confound the regularization test.\n- Node_003 averaged only two adjacent checkpoints. Those checkpoints are highly correlated, and equal weighting was arbitrary; this was a low-upside form of ensembling compared with adding independent seeds or model diversity.\n- The accepted seeded node duplicated node_001 rather than adding evidence. The journal also reports sigma=0.0001 without enough replication detail to justify that precision. Validation-example bootstrap uncertainty and across-seed variance should be recorded separately.\n- All decisions appear tied to one validation score, increasing the risk of adapting to validation noise.\n\nScaffold changes\n\n- Require each experiment to vary one factor unless explicitly labeled as a factorial test.\n- Record per-member primary, ensemble-size curves, pairwise prediction/rank correlation, checkpoint curves, training cost, and inference cost.\n- Use bootstrap confidence intervals on validation predictions and repeated training seeds where applicable; do not treat tiny score differences as decisive without uncertainty.\n- Separate \u201cmaximize primary\u201d from \u201cefficiency/Pareto\u201d tracks. Preserve node_002 as an efficiency champion even if it is not the primary champion.\n- Avoid duplicate nodes for imported seeds/reference implementations.\n- Do not stop after three closely related failures. Require coverage of several distinct axes: ensemble size, seed diversity, model diversity, optimization, and regularization.\n- Precommit evaluation rules where possible to limit validation overfitting.\n\nWhat the next run should try first\n\nExpand the unchanged champion with additional independent seeds. Train five new members using exactly the frozen recipe, then evaluate precommitted equal-weight rank ensembles at sizes 5 through 10, along with per-member scores and prediction correlations. This is the cleanest high-probability extension: node_002 showed that even two seeds retain nearly all of the current score, suggesting seed averaging is useful, while additional independent members may yield a small primary gain without altering a strong base learner.\n\nIf that saturates, the next experiment should add one genuinely diverse member family or feature interaction scheme and include it only if it improves the ensemble through complementary errors. Avoid another bundled regularization schedule until individual dropout, weight decay, and LR effects have been isolated."
+}

@@ -1,0 +1,142 @@
+{
+  "run_dir": "logs/run_desig_seeded_02",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "best_epoch": 3.5,
+    "delta_vs_baseline": 0.003398354768719636,
+    "field_level": 0,
+    "field_names": [
+      "user",
+      "video",
+      "author",
+      "tab",
+      "dur_bucket10"
+    ],
+    "gauc": 0.6718589667058308,
+    "history": [
+      {
+        "epoch": 0.5,
+        "train_loss": 0.6400611272880009,
+        "val_gauc": 0.6621754468821869,
+        "val_ndcg5": 0.5326010673703685,
+        "val_primary": 0.5973882571262776
+      },
+      {
+        "epoch": 1.0,
+        "train_loss": 0.547786215373448,
+        "val_gauc": 0.668073460432366,
+        "val_ndcg5": 0.5358245940272488,
+        "val_primary": 0.6019490272298074
+      },
+      {
+        "epoch": 1.5,
+        "train_loss": 0.5315526238509587,
+        "val_gauc": 0.6688147954822411,
+        "val_ndcg5": 0.5360536983448941,
+        "val_primary": 0.6024342469135676
+      },
+      {
+        "epoch": 2.0,
+        "train_loss": 0.5323427557945252,
+        "val_gauc": 0.6713211691282113,
+        "val_ndcg5": 0.5370027311215451,
+        "val_primary": 0.6041619501248782
+      },
+      {
+        "epoch": 2.5,
+        "train_loss": 0.5272791811398098,
+        "val_gauc": 0.6714001183499478,
+        "val_ndcg5": 0.5375772089032462,
+        "val_primary": 0.604488663626597
+      },
+      {
+        "epoch": 3.0,
+        "train_loss": 0.5265301465988159,
+        "val_gauc": 0.6712976494959186,
+        "val_ndcg5": 0.5377652056706764,
+        "val_primary": 0.6045314275832976
+      },
+      {
+        "epoch": 3.5,
+        "train_loss": 0.5248683861323765,
+        "val_gauc": 0.6718589667058308,
+        "val_ndcg5": 0.5381377428316085,
+        "val_primary": 0.6049983547687197
+      },
+      {
+        "epoch": 4.0,
+        "train_loss": 0.5252336442470551,
+        "val_gauc": 0.6718749232277327,
+        "val_ndcg5": 0.5379545481501457,
+        "val_primary": 0.6049147356889392
+      },
+      {
+        "epoch": 4.5,
+        "train_loss": 0.5241211150373731,
+        "val_gauc": 0.6719066797082252,
+        "val_ndcg5": 0.537963157627131,
+        "val_primary": 0.604934918667678
+      },
+      {
+        "epoch": 5.0,
+        "train_loss": 0.5248932600021362,
+        "val_gauc": 0.671703951867924,
+        "val_ndcg5": 0.5377936585161754,
+        "val_primary": 0.6047488051920498
+      },
+      {
+        "epoch": 5.5,
+        "train_loss": 0.5244314474718911,
+        "val_gauc": 0.6714130743323256,
+        "val_ndcg5": 0.5377595600213362,
+        "val_primary": 0.6045863171768309
+      },
+      {
+        "epoch": 6.0,
+        "train_loss": 0.5238627910614013,
+        "val_gauc": 0.671415165496211,
+        "val_ndcg5": 0.5378021450379221,
+        "val_primary": 0.6046086552670666
+      },
+      {
+        "epoch": 6.5,
+        "train_loss": 0.5234406249863761,
+        "val_gauc": 0.6715442361953039,
+        "val_ndcg5": 0.5378238192336396,
+        "val_primary": 0.6046840277144718
+      }
+    ],
+    "n_fields": 5,
+    "ndcg5": 0.5381377428316085,
+    "primary": 0.6049983547687197,
+    "regularized": true,
+    "runtime_s": 29.6,
+    "seed": 42,
+    "timed_out": false
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 23559,
+      "out": 3777,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11140,
+      "out": 6539,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3345,
+      "out": 1138,
+      "calls": 2
+    }
+  },
+  "tokens_total": 49498,
+  "wall_s": 1026.5,
+  "self_critique": "Run critique\n\nWhat was suboptimal\n\n- The search effectively stopped at the provided seed. Node_001 was imported and then recorded again as a seed, but only two substantive alternatives were evaluated before convergence. That is too little exploration to justify convergence.\n- Node_002 reportedly scored 0.6051 versus the champion\u2019s 0.6050 yet was rejected. This may be due to unrounded values, significance rules, cost, or a holdout criterion, but the journal does not expose the reason. Acceptance decisions must include full-precision deltas and the gating criterion.\n- The baseline sigma of 0.0001 was reported, but uncertainty was not established for the champion or challengers. A nominal improvement near 0.0001 cannot be interpreted reliably without repeated seeds or paired evaluation.\n- Node_002 jumped directly to a five-replica ensemble. That is expensive and confounds whether any benefit comes from seed averaging, checkpoint selection, or rank averaging.\n- Node_003 bundled dropout, embedding L2, AdamW decay, and aggressive LR decay. Its failure provides almost no information about which change hurt. The claimed +0.003 gain was also poorly calibrated relative to the observed narrow plateau.\n- Node_004 failed without an actionable error record or recovery attempt. A failed proposal should not consume the final branch silently.\n- The policy overfocused on overfitting around epochs 3.5\u20134 without first testing the simplest implication: earlier stopping or checkpoint averaging within the existing run.\n\nScaffold changes\n\n- Log full-precision metrics, delta from parent, runtime/cost, all acceptance thresholds, and an explicit rejection reason.\n- Require repeated-seed or paired-bootstrap uncertainty for deltas near the noise floor.\n- Do not count importing the supplied seed as a separate experimental success.\n- Prefer one-factor mutations; allow packages only after component ablations support them.\n- Add branch diversity requirements before declaring convergence: optimization, regularization, architecture/features, and inference/checkpointing should each receive at least one controlled test.\n- Capture traceback/configuration for failures and automatically retry once with the smallest safe correction.\n- Separate \u201cbest raw metric\u201d from \u201cpromoted champion\u201d when cost, robustness, or significance gates prevent acceptance.\n\nWhat the next run should try first\n\n1. Reproduce frozen_stack.py across 3\u20135 seeds and report mean, standard deviation, and paired per-user GAUC differences.\n2. On the same runs, compare the best single checkpoint against averaging predictions from nearby plateau checkpoints, such as epochs 3.0\u20134.5. This isolates checkpoint variance without training five extra ensemble members.\n3. Sweep only early stopping/checkpoint epoch and, if needed, LR decay strength. Avoid changing dropout, L2, optimizer decay, and schedule simultaneously.\n4. If seed averaging is consistently beneficial, test a two-member ensemble before five members and measure gain per unit of inference cost.\n5. Only after that, run single-factor regularization ablations around the champion, starting with modest dropout or weight decay rather than the aggressive package used in node_003."
+}

@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_unseeded_20",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13217,
+      "out": 1907,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10372,
+      "out": 10749,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3150,
+      "out": 1119,
+      "calls": 2
+    }
+  },
+  "tokens_total": 40514,
+  "wall_s": 659.2,
+  "self_critique": "Run critique\n\n- The search stopped too early. Only two substantive alternatives were evaluated after the baseline, both rejected. That is insufficient evidence for \u201cconverged,\u201d especially in an unseeded run.\n- node_001 failed at proposal time, yet node_002 was descended from it. Failed nodes should not become parents; the harness should automatically fall back to the last valid accepted node.\n- Both experiments bundled multiple changes:\n  - node_002 added an ordinal auxiliary objective to an already complex hybrid loss.\n  - node_003 simultaneously changed embedding dropout, embedding L2, dense weight decay, and LR decay.\n  These tests cannot identify which component helped or hurt.\n- The proposals were overconfident and weakly grounded. Predicted gains of 0.002\u20130.0025 were asserted without local evidence or calibration from prior trials.\n- The response to an epoch-8 validation peak was mismatched. The first intervention should have been checkpoint selection/early stopping or one mild regularizer, not an aggressive four-part regularization schedule.\n- The regressions were material: node_002 fell by 0.0068 and node_003 by 0.0033. The policy correctly rejected them, but did not use those outcomes to narrow the search.\n- The reported sigma of 0.0001 is not credible unless derived from repeated controlled runs. A single unseeded trajectory cannot establish that level of uncertainty.\n\nScaffold changes\n\n- Disallow lineage through failed nodes and auto-rollback to the most recent valid checkpoint.\n- Require single-factor or staged ablations unless interactions are explicitly the hypothesis.\n- Add a proposal preflight that checks architectural continuity, loss scaling, validation leakage, and whether the intervention directly addresses the observed failure mode.\n- Require repeated seeds for the baseline and promising candidates; use paired comparisons and confidence intervals.\n- Separate checkpoint/early-stopping tuning from model changes.\n- Do not declare convergence after only two rejected experiments; require a minimum search budget across several independent hypothesis classes.\n- After a large regression, generate a smaller-dose ablation rather than abandoning the entire direction.\n\nWhat the next run should try first\n\n1. Reproduce the baseline FM across 3\u20135 fixed seeds and save per-epoch validation curves.\n2. Select the best validation checkpoint or tune patience around the observed epoch-8 peak, with no other model changes.\n3. If a model change is then needed, tune one conservative FM parameter at a time\u2014embedding dimension, learning rate, or a small L2 value\u2014rather than moving immediately to a hybrid DCN/loss stack.\n4. Only revisit duration-aware auxiliary supervision after testing a much smaller weight and verifying that its target construction and gradient scale are compatible with the primary objective."
+}

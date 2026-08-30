@@ -1,0 +1,34 @@
+{
+  "run_dir": "logs/run_unseeded_05",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6693456172943115,
+    "ndcg5": 0.5366659164428711,
+    "primary": 0.6030057668685913
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11363,
+      "out": 1653,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10514,
+      "out": 8312,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 310,
+      "out": 793,
+      "calls": 1
+    }
+  },
+  "tokens_total": 32945,
+  "wall_s": 579.9,
+  "self_critique": "Run assessment\n\nThe run found a modest improvement, from 0.6018 to 0.603006 (+0.0012), but the evidence is too thin to call the result robust. Stopping as \u201cconverged\u201d after only two metric-bearing alternatives and one failed proposal was premature, especially for an unseeded run.\n\nHarness/policy issues\n\n- The search lineage is incoherent: node_003 is attached to failed node_002, yet it makes a large architecture change. Failed nodes should not serve as executable parents; recovery should branch from the last valid checkpoint, node_000.\n- A \u201cdebug\u201d action effectively became the most ambitious research proposal. Debugging should repair execution while preserving the intended hypothesis, not silently replace an FM with FinalMLP.\n- Node_001 improved the reported primary from 0.6018 to 0.6021 but was rejected. That may be correct under a significance threshold, but the journal should record the acceptance rule, paired deltas, variance, and why the gain was insufficient.\n- The EMA hypothesis claimed reduced checkpoint variance, but the run appears to report only one aggregate primary. It did not directly test variance reduction or show per-checkpoint/per-seed results.\n- The accepted gain is small and no uncertainty is reported for node_003. The baseline sigma of 0.0001 is insufficient unless measured under the same repeat protocol.\n- \u201cUnseeded\u201d undermines reproducibility and makes comparisons vulnerable to initialization and data-order noise.\n- The search was too shallow to justify convergence. There were no ablations establishing whether FinalMLP\u2019s gain came from feature selection, bilinear fusion, parameter count, or incidental training changes.\n\nScaffold changes\n\n- Require explicit seeds and paired repeated evaluations for baseline and candidates.\n- Log mean, standard deviation, individual runs, parameter count, runtime, and the exact acceptance threshold.\n- On proposal failure, retry a bounded repair or branch from the last valid accepted node; never inherit experimental state from a failed node.\n- Separate debug and research actions. If a repair changes the architecture or hypothesis materially, create a new draft node.\n- Require accepted architecture changes to pass a confirmation stage before updating the incumbent.\n- Do not declare convergence until a minimum exploration budget is exhausted and at least the incumbent has been replicated.\n- Add automatic component ablations for compound proposals.\n\nWhat the next run should try first\n\nFirst, reproduce node_003 against node_000 using identical data splits and at least 3\u20135 fixed, paired seeds. If the gain persists, ablate FinalMLP into: feature-selection only, bilinear-fusion only, and both, while matching parameter count where possible. Then tune only the winning component\u2019s width, regularization, and early-stopping schedule. EMA is lower priority unless checkpoint-level predictions are retained and its benefit can be evaluated across seeds."
+}

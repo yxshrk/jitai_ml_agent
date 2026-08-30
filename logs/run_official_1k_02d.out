@@ -1,0 +1,109 @@
+{
+  "run_dir": "logs/run_official_1k_02d",
+  "dataset": "1k",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "best_epoch": 0.5,
+    "config": {
+      "batch_size": 8192,
+      "bpr_weight": 0.5,
+      "decay_every": 1.0,
+      "decay_start_epoch": 0.0,
+      "dropout": 0.21,
+      "embedding_dropout": 0.1,
+      "epochs": 6,
+      "k": 24,
+      "lr": 0.00168,
+      "max_runtime": 350,
+      "patience_halves": 6,
+      "recency_half_life": 7.0,
+      "seed": 42,
+      "step_decay_factor": 0.5,
+      "subsample": null,
+      "weight_decay": 3.7e-05
+    },
+    "delta_vs_frozen_baseline": 0.016116845238512756,
+    "field_names": [
+      "user",
+      "video",
+      "author",
+      "tab",
+      "dur_bucket10"
+    ],
+    "gauc": 0.6590830452448295,
+    "history": [
+      {
+        "epoch": 0.5,
+        "lr": 0.00168,
+        "train_loss": 0.5025334994769791,
+        "val_gauc": 0.6590830452448295,
+        "val_ndcg5": 0.5825506452321959,
+        "val_primary": 0.6208168452385128
+      },
+      {
+        "epoch": 1.0,
+        "lr": 0.00168,
+        "train_loss": 0.4071379772667746,
+        "val_gauc": 0.6527134464626576,
+        "val_ndcg5": 0.5503255200299134,
+        "val_primary": 0.6015194832462856
+      },
+      {
+        "epoch": 1.5,
+        "lr": 0.00084,
+        "train_loss": 0.2873270125836616,
+        "val_gauc": 0.6479873663506766,
+        "val_ndcg5": 0.5235454827056513,
+        "val_primary": 0.585766424528164
+      },
+      {
+        "epoch": 2.0,
+        "lr": 0.00084,
+        "train_loss": 0.27187922230430406,
+        "val_gauc": 0.6459350836905516,
+        "val_ndcg5": 0.5025167487453223,
+        "val_primary": 0.574225916217937
+      },
+      {
+        "epoch": 2.5,
+        "lr": 0.00042,
+        "train_loss": 0.22660987296150725,
+        "val_gauc": 0.6418792570196393,
+        "val_ndcg5": 0.4961207046802477,
+        "val_primary": 0.5689999808499435
+      }
+    ],
+    "ndcg5": 0.5825506452321959,
+    "primary": 0.6208168452385128,
+    "runtime_s": 356.9,
+    "timed_out": true
+  },
+  "sigma": 0.0015,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 9867,
+      "out": 1201,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15106,
+      "out": 7112,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 3409,
+      "out": 3326,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3231,
+      "out": 1068,
+      "calls": 2
+    }
+  },
+  "tokens_total": 44320,
+  "wall_s": 1165.9,
+  "self_critique": "Run critique\n\nWhat was suboptimal\n- The run declared convergence after only one baseline and one successfully evaluated alternative. Two of four nodes produced no metric, so this was more an execution-limited run than a converged search.\n- The k=8 hypothesis was overly specific and weakly supported. A post-epoch-0.5 validation decline indicates training-time overfitting, but does not uniquely implicate embedding width. The result, 0.6149 versus 0.6208, strongly rejects this particular reduction.\n- The proposed gains (+0.002 to +0.003) were close to the reported sigma of 0.0015. Single evaluations cannot reliably distinguish gains of that size.\n- node_002 was attached to a failed/no-metric node rather than cleanly represented as a repaired execution of a hypothesis branching from node_000. This obscures lineage and failure accounting.\n- The censoring-boundary residual-head idea added architectural complexity before simpler controls\u2014checkpoint timing, weight decay, dropout, and intermediate dimensions\u2014were tested.\n- \u201cNo metric\u201d failures were not diagnosed or retried, yet apparently contributed to stopping.\n\nScaffold changes\n- Separate scientific rejection from infrastructure failure. A no-metric node should receive an automatic minimal repair/retry and should not count toward convergence.\n- Require a minimum number of valid trials or explored hypothesis classes before stopping.\n- Use repeated seeds or paired reruns when expected improvements are near validation noise; report uncertainty on deltas.\n- Avoid asserting precise expected gains without evidence. Record the diagnosis, intervention, and falsifiable outcome separately.\n- Preserve clean lineage: repaired runs should branch from the last valid parent and be labeled as retries.\n- Add lightweight sweeps around plausible settings rather than jumping from k=24 directly to k=8.\n- Log epoch-level train/validation metrics and checkpoint scores so \u201coverfitting\u201d can be distinguished from optimizer instability or noisy validation.\n\nWhat the next run should try first\n1. Reproduce the baseline across several seeds and verify that the epoch-0.5 peak is stable.\n2. Keep k=24 and directly regularize training: tune weight decay and embedding dropout, while retaining early checkpoint selection.\n3. Test intermediate embedding sizes, especially k=16, rather than retrying k=8.\n4. Tune evaluation/checkpoint cadence around the early peak; the best improvement may come from selecting a more precise early checkpoint rather than changing architecture.\n5. Only after these controls, retry the 18-second regime feature as a simple indicator or interaction before introducing a separate residual head.\n\nThe immediate best first experiment is a small, paired sweep of baseline k=24 with stronger embedding regularization and finer early checkpointing."
+}

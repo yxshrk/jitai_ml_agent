@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_bigclock_05",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 22742,
+      "out": 3003,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 10802,
+      "out": 8485,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3172,
+      "out": 1168,
+      "calls": 2
+    }
+  },
+  "tokens_total": 49372,
+  "wall_s": 679.6,
+  "self_critique": "Run critique\n\nThe run converged prematurely. It produced only three post-baseline attempts, one of which failed before evaluation, and explored essentially one idea: embedding regularization. That is too little evidence to declare convergence.\n\nPolicy/harness issues:\n- node_001 bundled four interventions\u2014dropout, accessed-row L2, AdamW decay, and rapid LR decay. Its failure is not attributable to any component, and the package was likely overaggressive.\n- node_003 isolated weight decay, which was better experimental practice, but it branched from a failed node rather than cleanly from the accepted baseline.\n- The metric/acceptance record is opaque or inconsistent: 0.5947 and 0.6021 were both rejected around a 0.601838 baseline. The journal should explicitly report optimization direction, paired delta, uncertainty, and rejection reason.\n- A proposal-generation failure consumed a substantial fraction of the tiny search budget without an automatic retry.\n- The policy did not test the direct implication of the stated diagnosis: if validation peaks before training ends, checkpoint timing/early stopping should be tested before adding several regularizers.\n\nScaffold changes:\n- Require a minimum number of valid, diverse experiments before allowing \u201cconverged.\u201d\n- Retry failed proposal/evaluation nodes automatically and branch retries from the last valid parent.\n- Enforce mostly single-factor experiments, followed by combinations only after individual gains.\n- Record baseline-relative delta, metric direction, seed, variance/confidence interval, and exact acceptance-test result.\n- Re-run the baseline across multiple seeds so changes near 0.0003 are not judged from noise.\n- Preserve distinct branches for optimization, capacity, and regularization rather than repeatedly pursuing one hypothesis.\n\nNext run:\n1. Reproduce the baseline over at least three seeds.\n2. First test best-validation checkpointing/earlier stopping, or a short patience sweep, with everything else fixed.\n3. Then run small one-factor sweeps: rank 8 versus 16, mild interaction dropout (for example 0.05\u20130.15), and weight decay separately.\n4. Only combine factors that show repeatable gains.\n\nThe strongest first hypothesis is that training duration or capacity, not a large regularization package, is causing the observed memorization."
+}

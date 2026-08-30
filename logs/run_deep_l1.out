@@ -1,0 +1,67 @@
+{
+  "run_dir": "logs/run_deep_l1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "config": {
+      "bpr_weight": 0.5,
+      "censored_watch_weight": 0.3,
+      "cross_layers": 2,
+      "embedding_dim": 16,
+      "logloss_weight": 0.5,
+      "model": "dcn_lite_censored_watch",
+      "recency_half_life_days": 7.0,
+      "seed": 42
+    },
+    "gauc": 0.6707191467285156,
+    "history": [
+      {
+        "epoch": 1,
+        "gauc": 0.6707191467285156,
+        "lr": 0.001,
+        "ndcg5": 0.5375860333442688,
+        "primary": 0.6041525602340698
+      },
+      {
+        "epoch": 2,
+        "gauc": 0.6559398174285889,
+        "lr": 0.0005,
+        "ndcg5": 0.5313265323638916,
+        "primary": 0.5936331748962402
+      },
+      {
+        "epoch": 3,
+        "gauc": 0.6464968323707581,
+        "lr": 0.0005,
+        "ndcg5": 0.5271870493888855,
+        "primary": 0.5868419408798218
+      }
+    ],
+    "ndcg5": 0.5375860333442688,
+    "primary": 0.6041525602340698
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 26054,
+      "out": 2883,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11331,
+      "out": 15521,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 333,
+      "out": 631,
+      "calls": 1
+    }
+  },
+  "tokens_total": 56753,
+  "wall_s": 1396.7,
+  "self_critique": "Overall, the run found a modest improvement, but convergence was declared too early and the causal evidence is weak.\n\nWhat was suboptimal:\n- Only three models produced metrics, with one intervening proposal failure. That is insufficient evidence for convergence.\n- Node_001 bundled architecture, loss mixing, dropout, weight decay, learning-rate decay, and recency weighting. The gain cannot be attributed to any specific change.\n- Node_003 was nominally descended from failed node_002 while referring to the \u201cknown-best\u201d model. The lineage should instead explicitly branch from node_001.\n- Node_003 predicted at least +0.003, but achieved about +0.00185 over node_001 and +0.00235 over baseline. The model improved, but the hypothesis\u2019s quantitative claim was not met.\n- Acceptance appears based on point estimates. Only the baseline reports sigma, so the significance and seed stability of the gains are unknown.\n- The watch-time auxiliary may introduce leakage or exploit dataset-specific censoring artifacts. No ablation or feature-availability audit was recorded.\n- No simpler controls were tested, such as matched extra supervision, duration prediction without censoring logic, or equivalent regularization.\n\nScaffold changes:\n- Require valid artifact lineage; failed nodes should not become implementation parents.\n- Separate \u201cmetric improved\u201d from \u201chypothesis confirmed.\u201d\n- Run repeated seeds for incumbent and challenger, then accept using paired uncertainty or a minimum robust effect threshold.\n- Prefer atomic proposals; if a package is tested, automatically schedule component ablations.\n- Do not declare convergence after so few successful trials. Require either budget exhaustion or several diverse, non-improving branches.\n- Record implementation failures by category and retry recoverable proposal-generation or execution failures.\n\nWhat the next run should try first:\n1. Reproduce node_003 and node_001 over multiple matched seeds.\n2. Audit the auxiliary targets for train/validation leakage and inference-time availability.\n3. Ablate the censored watch-time loss while holding all other settings fixed.\n4. Sweep only its loss weight around zero, including a plain watch-time auxiliary control.\n5. If the gain remains stable, test whether it survives without recency weighting and under temporal or user-disjoint validation.\n\nThe strongest immediate question is not how to add more complexity, but whether the reported +0.00185 over node_001 is reproducible and genuinely caused by the censored watch-time objective."
+}

@@ -1,0 +1,4 @@
+{"best_epoch": 1, "ess_ratio": 0.261337, "gauc": 0.645101, "half_life_days": 2.0, "ndcg5": 0.526317, "primary": 0.585709, "seed": 42, "validation_boundary": 738267}
+{"best_epoch": 1, "ess_ratio": 0.924915, "gauc": 0.649028, "half_life_days": 8.0, "ndcg5": 0.527525, "primary": 0.588277, "seed": 42, "validation_boundary": 738267}
+{"best_epoch": 1, "ess_ratio": 0.995968, "gauc": 0.650121, "half_life_days": 32.0, "ndcg5": 0.52793, "primary": 0.589026, "seed": 42, "validation_boundary": 738267}
+{"best_epoch": 1, "ess_ratio": 0.999761, "gauc": 0.649928, "half_life_days": 128.0, "ndcg5": 0.527924, "primary": 0.588926, "seed": 42, "validation_boundary": 738267}

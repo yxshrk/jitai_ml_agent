@@ -1,0 +1,653 @@
+{
+  "run_dir": "logs/run_deep_l2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6685831243846946,
+    "ndcg5": 0.5368816564134234,
+    "primary": 0.602732390399059,
+    "selected_cell": 7,
+    "selected_config": {
+      "architecture": "dcn-lite",
+      "loss": "logloss",
+      "weighting": "recency-7d",
+      "regularization": "mild"
+    },
+    "history": [
+      {
+        "stage": "matrix_probe",
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.645009,
+        "ndcg5": 0.526029,
+        "primary": 0.585519,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.641769,
+            "val_gauc": 0.624981,
+            "val_primary": 0.571644
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.593757,
+            "val_gauc": 0.645009,
+            "val_primary": 0.585519
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.63156,
+        "ndcg5": 0.521118,
+        "primary": 0.576339,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.653863,
+            "val_gauc": 0.62196,
+            "val_primary": 0.569582
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.632335,
+            "val_gauc": 0.63156,
+            "val_primary": 0.576339
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.648893,
+        "ndcg5": 0.52842,
+        "primary": 0.588657,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.644441,
+            "val_gauc": 0.627425,
+            "val_primary": 0.573407
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.595916,
+            "val_gauc": 0.648893,
+            "val_primary": 0.588657
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.654582,
+        "ndcg5": 0.529778,
+        "primary": 0.59218,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.63711,
+            "val_gauc": 0.650709,
+            "val_primary": 0.58945
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.574974,
+            "val_gauc": 0.654582,
+            "val_primary": 0.59218
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 4,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.657229,
+        "ndcg5": 0.530809,
+        "primary": 0.594019,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.652421,
+            "val_gauc": 0.654373,
+            "val_primary": 0.59193
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.62257,
+            "val_gauc": 0.657229,
+            "val_primary": 0.594019
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.662501,
+        "ndcg5": 0.533344,
+        "primary": 0.597923,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.535718,
+            "val_gauc": 0.652772,
+            "val_primary": 0.591066
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.501768,
+            "val_gauc": 0.662501,
+            "val_primary": 0.597923
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.657177,
+        "ndcg5": 0.531697,
+        "primary": 0.594437,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.576056,
+            "val_gauc": 0.649168,
+            "val_primary": 0.588758
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.515555,
+            "val_gauc": 0.657177,
+            "val_primary": 0.594437
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.663024,
+        "ndcg5": 0.533542,
+        "primary": 0.598283,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.507865,
+            "val_gauc": 0.653496,
+            "val_primary": 0.591796
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.524749,
+            "val_gauc": 0.663024,
+            "val_primary": 0.598283
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 8,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.65823,
+        "ndcg5": 0.532152,
+        "primary": 0.595191,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.561352,
+            "val_gauc": 0.65117,
+            "val_primary": 0.589974
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.498529,
+            "val_gauc": 0.65823,
+            "val_primary": 0.595191
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 9,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.658406,
+        "ndcg5": 0.532067,
+        "primary": 0.595237,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.537635,
+            "val_gauc": 0.658406,
+            "val_primary": 0.595237
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.481533,
+            "val_gauc": 0.653571,
+            "val_primary": 0.591249
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 10,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.660062,
+        "ndcg5": 0.532442,
+        "primary": 0.596252,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.544351,
+            "val_gauc": 0.660062,
+            "val_primary": 0.596252
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.510846,
+            "val_gauc": 0.658824,
+            "val_primary": 0.59533
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 11,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.6589,
+        "ndcg5": 0.532327,
+        "primary": 0.595614,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.524171,
+            "val_gauc": 0.6589,
+            "val_primary": 0.595614
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.47475,
+            "val_gauc": 0.648279,
+            "val_primary": 0.587691
+          }
+        ]
+      },
+      {
+        "stage": "matrix_probe",
+        "cell": 12,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "rows": 513500,
+        "epochs": 2,
+        "gauc": 0.660469,
+        "ndcg5": 0.53279,
+        "primary": 0.596629,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.537321,
+            "val_gauc": 0.659392,
+            "val_primary": 0.595793
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.540835,
+            "val_gauc": 0.660469,
+            "val_primary": 0.596629
+          }
+        ]
+      },
+      {
+        "stage": "refinement",
+        "probe_rank": 1,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "rows": 798778,
+        "epochs": 3,
+        "gauc": 0.666945,
+        "ndcg5": 0.535477,
+        "primary": 0.601211,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.383545,
+            "val_gauc": 0.661374,
+            "val_primary": 0.597081
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.459437,
+            "val_gauc": 0.666249,
+            "val_primary": 0.600702
+          },
+          {
+            "epoch": 3.0,
+            "train_loss": 0.536173,
+            "val_gauc": 0.666945,
+            "val_primary": 0.601211
+          }
+        ]
+      },
+      {
+        "stage": "refinement",
+        "probe_rank": 2,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "rows": 798778,
+        "epochs": 3,
+        "gauc": 0.666566,
+        "ndcg5": 0.535525,
+        "primary": 0.601045,
+        "curve": [
+          {
+            "epoch": 1.0,
+            "train_loss": 0.565771,
+            "val_gauc": 0.660471,
+            "val_primary": 0.596645
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.44476,
+            "val_gauc": 0.66558,
+            "val_primary": 0.600037
+          },
+          {
+            "epoch": 3.0,
+            "train_loss": 0.506865,
+            "val_gauc": 0.666566,
+            "val_primary": 0.601045
+          }
+        ]
+      },
+      {
+        "stage": "final",
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "rows": 1141112,
+        "epochs": 12,
+        "gauc": 0.668583,
+        "ndcg5": 0.536882,
+        "primary": 0.602732,
+        "curve": [
+          {
+            "epoch": 0.5,
+            "train_loss": 0.532902,
+            "val_gauc": 0.655793,
+            "val_primary": 0.593371
+          },
+          {
+            "epoch": 1.0,
+            "train_loss": 0.513987,
+            "val_gauc": 0.666342,
+            "val_primary": 0.600816
+          },
+          {
+            "epoch": 1.5,
+            "train_loss": 0.498778,
+            "val_gauc": 0.667632,
+            "val_primary": 0.601709
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.505021,
+            "val_gauc": 0.668378,
+            "val_primary": 0.60219
+          },
+          {
+            "epoch": 2.5,
+            "train_loss": 0.512169,
+            "val_gauc": 0.668854,
+            "val_primary": 0.602505
+          },
+          {
+            "epoch": 3.0,
+            "train_loss": 0.527118,
+            "val_gauc": 0.668583,
+            "val_primary": 0.602732
+          },
+          {
+            "epoch": 3.5,
+            "train_loss": 0.487729,
+            "val_gauc": 0.665871,
+            "val_primary": 0.600548
+          },
+          {
+            "epoch": 4.0,
+            "train_loss": 0.522845,
+            "val_gauc": 0.665483,
+            "val_primary": 0.600349
+          },
+          {
+            "epoch": 4.5,
+            "train_loss": 0.478248,
+            "val_gauc": 0.656025,
+            "val_primary": 0.593541
+          },
+          {
+            "epoch": 5.0,
+            "train_loss": 0.498183,
+            "val_gauc": 0.657281,
+            "val_primary": 0.59417
+          },
+          {
+            "epoch": 5.5,
+            "train_loss": 0.478805,
+            "val_gauc": 0.649525,
+            "val_primary": 0.588561
+          },
+          {
+            "epoch": 6.0,
+            "train_loss": 0.49081,
+            "val_gauc": 0.648299,
+            "val_primary": 0.587878
+          },
+          {
+            "epoch": 6.5,
+            "train_loss": 0.460318,
+            "val_gauc": 0.640475,
+            "val_primary": 0.581862
+          },
+          {
+            "epoch": 7.0,
+            "train_loss": 0.4946,
+            "val_gauc": 0.641132,
+            "val_primary": 0.582838
+          },
+          {
+            "epoch": 7.5,
+            "train_loss": 0.459677,
+            "val_gauc": 0.632957,
+            "val_primary": 0.577202
+          },
+          {
+            "epoch": 8.0,
+            "train_loss": 0.469354,
+            "val_gauc": 0.637681,
+            "val_primary": 0.580199
+          },
+          {
+            "epoch": 8.5,
+            "train_loss": 0.440278,
+            "val_gauc": 0.629644,
+            "val_primary": 0.574792
+          },
+          {
+            "epoch": 9.0,
+            "train_loss": 0.442567,
+            "val_gauc": 0.632599,
+            "val_primary": 0.576814
+          },
+          {
+            "epoch": 9.5,
+            "train_loss": 0.407965,
+            "val_gauc": 0.627876,
+            "val_primary": 0.573343
+          },
+          {
+            "epoch": 10.0,
+            "train_loss": 0.460298,
+            "val_gauc": 0.624818,
+            "val_primary": 0.571229
+          },
+          {
+            "epoch": 10.5,
+            "train_loss": 0.397924,
+            "val_gauc": 0.623072,
+            "val_primary": 0.570008
+          },
+          {
+            "epoch": 11.0,
+            "train_loss": 0.464626,
+            "val_gauc": 0.623103,
+            "val_primary": 0.570133
+          },
+          {
+            "epoch": 11.5,
+            "train_loss": 0.42068,
+            "val_gauc": 0.619808,
+            "val_primary": 0.567628
+          },
+          {
+            "epoch": 12.0,
+            "train_loss": 0.424197,
+            "val_gauc": 0.621149,
+            "val_primary": 0.568546
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 17390,
+      "out": 1862,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11298,
+      "out": 14131,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 345,
+      "out": 755,
+      "calls": 1
+    }
+  },
+  "tokens_total": 45781,
+  "wall_s": 1373.5,
+  "self_critique": "Run critique\n\nWhat was suboptimal:\n- The search was too shallow: only two metric-bearing experiments beyond baseline before declaring convergence.\n- node_001 failed at proposal generation, wasting a branch. node_002 was then attached to that failed node rather than the last valid checkpoint, weakening lineage and reproducibility.\n- node_002 bundled dropout, AdamW decay, embedding L2, and rapid LR decay. Its regression to 0.5982 cannot identify which component caused harm.\n- node_003 also changed four factors simultaneously. It found the best score, but the winning interaction/configuration was not isolated or validated.\n- The gain over baseline was only 0.000932 (0.6018 to 0.602732), below the stated 0.0025 hypothesis target. Accepting it as an incumbent is reasonable, but treating it as convincing progress without replication is not.\n- The reported baseline sigma of 0.0001 makes the gain appear significant, but the journal does not establish whether this came from repeated seeds or a reliable uncertainty estimate.\n- The observed epoch-8 peak strongly suggests early stopping is important, yet the run emphasized broad architecture/loss changes rather than first tuning checkpoint selection and nearby regularization.\n\nScaffold changes:\n- Reject malformed proposals before creating a node, and always branch experiments from the most recent valid parent.\n- Separate exploration from attribution: broad factorial screening may identify a region, but immediately follow it with single-factor ablations.\n- Record the exact winning arm from every sweep, per-epoch validation curves, checkpoint choice, seed, and all changed hyperparameters.\n- Require repeated seeds for small improvements and base acceptance/convergence on confidence intervals, not a single score.\n- Avoid \u201cregularization packages.\u201d Tune dropout, weight decay, embedding L2, LR schedule, and early stopping independently or with a structured design.\n- Do not declare convergence after one marginal improvement unless the local neighborhood has actually been tested.\n\nNext run:\n1. Re-run baseline and the exact node_003 winner over 3\u20135 matched seeds.\n2. If the gain persists, ablate FM/DCN-lite, logloss/hybrid BPR, recency weighting, and regularization one at a time around that winner.\n3. Tune early stopping/checkpoint epoch around the observed peak, roughly epochs 6\u201310.\n4. Perform a narrow regularization and learning-rate search around the winning setting; avoid the aggressive combined package from node_002.\n5. Only then explore additional architecture complexity."
+}

@@ -1,0 +1,234 @@
+{
+  "run_dir": "logs/run_bigclock_03",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6717520731295221,
+    "ndcg5": 0.5375642204926588,
+    "primary": 0.6046581468110905,
+    "history": [
+      {
+        "member": 1,
+        "seed": 42,
+        "best_primary": 0.6041896797475642,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.55536,
+            "train_bce": 0.55536,
+            "val_gauc": 0.649311,
+            "val_primary": 0.588475
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.51904,
+            "train_bce": 0.51903,
+            "val_gauc": 0.662385,
+            "val_primary": 0.597819
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.51026,
+            "train_bce": 0.51024,
+            "val_gauc": 0.66728,
+            "val_primary": 0.601637
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.50032,
+            "train_bce": 0.5003,
+            "val_gauc": 0.66895,
+            "val_primary": 0.602745
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.50445,
+            "train_bce": 0.50442,
+            "val_gauc": 0.670787,
+            "val_primary": 0.60419
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.49463,
+            "train_bce": 0.49461,
+            "val_gauc": 0.670369,
+            "val_primary": 0.603799
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.49515,
+            "train_bce": 0.49512,
+            "val_gauc": 0.669906,
+            "val_primary": 0.603371
+          }
+        ]
+      },
+      {
+        "member": 2,
+        "seed": 43,
+        "best_primary": 0.6039282512582946,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.54799,
+            "train_bce": 0.54798,
+            "val_gauc": 0.650423,
+            "val_primary": 0.589375
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.52325,
+            "train_bce": 0.52323,
+            "val_gauc": 0.663698,
+            "val_primary": 0.598682
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.50544,
+            "train_bce": 0.50542,
+            "val_gauc": 0.668609,
+            "val_primary": 0.602417
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.50421,
+            "train_bce": 0.50419,
+            "val_gauc": 0.669384,
+            "val_primary": 0.603218
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.4867,
+            "train_bce": 0.48667,
+            "val_gauc": 0.670027,
+            "val_primary": 0.603584
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.49499,
+            "train_bce": 0.49497,
+            "val_gauc": 0.670887,
+            "val_primary": 0.603928
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48866,
+            "train_bce": 0.48864,
+            "val_gauc": 0.670431,
+            "val_primary": 0.603844
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.49023,
+            "train_bce": 0.4902,
+            "val_gauc": 0.670394,
+            "val_primary": 0.603689
+          }
+        ]
+      },
+      {
+        "member": 3,
+        "seed": 44,
+        "best_primary": 0.6043637115498203,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.54089,
+            "train_bce": 0.54089,
+            "val_gauc": 0.652732,
+            "val_primary": 0.591056
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.5108,
+            "train_bce": 0.51079,
+            "val_gauc": 0.664666,
+            "val_primary": 0.599359
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.5078,
+            "train_bce": 0.50779,
+            "val_gauc": 0.667884,
+            "val_primary": 0.602205
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.49778,
+            "train_bce": 0.49776,
+            "val_gauc": 0.670036,
+            "val_primary": 0.603572
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.4926,
+            "train_bce": 0.49258,
+            "val_gauc": 0.6703,
+            "val_primary": 0.60363
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.50158,
+            "train_bce": 0.50156,
+            "val_gauc": 0.67112,
+            "val_primary": 0.604364
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.49931,
+            "train_bce": 0.49929,
+            "val_gauc": 0.670666,
+            "val_primary": 0.603855
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.48996,
+            "train_bce": 0.48993,
+            "val_gauc": 0.669409,
+            "val_primary": 0.603044
+          }
+        ]
+      }
+    ],
+    "duration_regime_heads": {
+      "threshold_ms": 18000,
+      "parameterization": "zero_initialized_residual_heads",
+      "shrinkage": 0.0003,
+      "short_train_count": 202540,
+      "long_train_count": 938572
+    },
+    "ensemble": {
+      "method": "within_user_rank_average",
+      "n_members": 3,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 37658,
+      "out": 4401,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 20041,
+      "out": 12304,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 399,
+      "out": 759,
+      "calls": 1
+    }
+  },
+  "tokens_total": 75562,
+  "wall_s": 795.5,
+  "self_critique": "The run found a real-looking gain, but converged prematurely after only four evaluations.\n\nWhat was suboptimal\n\n- The search was too shallow. It stopped immediately after one successful architectural change, without replicating or decomposing the +0.0019 gain from node_002 to node_003.\n- Changes were bundled. Node_001 simultaneously altered dropout, accessed-row L2, AdamW decay, and the LR schedule. Its rejection says little about which component helped or hurt.\n- Node_003 also combined routing, residual heads, and strong shrinkage. There is no ablation establishing whether the gain came from the duration split, extra capacity, regularization, or their interaction.\n- The stated uncertainty was not credible. A baseline sigma of 0.0001 is inconsistent with the apparent seed sensitivity that motivated a three-model ensemble. Acceptance decisions should use repeated seeds or bootstrap uncertainty on score differences.\n- The policy spent compute on an ensemble before testing cheaper single-model improvements. Ensembling raised 0.6018 to 0.6028, but the journal does not report member-level scores, variance, or whether averaging predictions rather than ranks would be better.\n- The overfitting diagnosis was plausible but weakly tested. The aggressive regularization package failed, yet the harness moved directly to a segmented architecture rather than testing early stopping, rank, or individual regularizers.\n- The claim that duration regimes reflect a \u201clabel-definition shift\u201d was not supported by slice metrics. Routing on an impression-known feature is valid only if it is available identically at inference and the split was chosen without validation-set overfitting.\n\nScaffold changes\n\n- Require one-change-at-a-time ablations before accepting a causal explanation.\n- After any material gain, automatically run at least three seeds and report mean, standard deviation, and paired deltas against the parent.\n- Separate model-search and ensemble-search stages; retain individual member predictions for blending comparisons.\n- Add slice reporting around routed features: sample count, target rate, per-regime score, and boundary sensitivity.\n- Replace \u201cconverged\u201d with a budget-aware criterion requiring replication plus at least one ablation and one local refinement of the incumbent.\n- Track train/validation curves and best epochs consistently, then let early stopping be a controlled hyperparameter rather than relying on narrative inspection.\n\nWhat the next run should try first\n\nStart by validating node_003 rather than introducing another idea:\n\n1. Train node_003 across multiple matched seeds and compare paired results with single-model node_000 and node_002\u2019s individual members.\n2. Ablate:\n   - routed heads without residualization,\n   - residual heads without duration routing,\n   - routing with weak/no shrinkage,\n   - a single duration feature or interaction in the base FM instead of separate heads.\n3. Sweep the duration boundary around 18 seconds and test a smooth gate or small number of predeclared bins. A sharp optimum exactly at the selected threshold would suggest validation tuning.\n4. If the gain survives, ensemble several node_003 replicas and compare raw-probability averaging, logit averaging, and rank averaging.\n\nThe highest-priority question is whether node_003\u2019s gain is stable and specifically attributable to duration-conditioned structure. Until that is established, 0.604658 should be treated as a promising validation result, not a confirmed improvement."
+}

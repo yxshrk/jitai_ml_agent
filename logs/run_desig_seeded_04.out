@@ -1,0 +1,185 @@
+{
+  "run_dir": "logs/run_desig_seeded_04",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "config": {
+      "member_args": "",
+      "member_epochs": 8,
+      "member_script": "/Users/rohan/Documents/progwork/techjam2026/mle-agent/zoo/frozen_stack.py",
+      "n_members": 5,
+      "seed": 42
+    },
+    "gauc": 0.6723752988228431,
+    "history": [
+      {
+        "member": 1,
+        "seed": 42,
+        "stage": "member",
+        "val_gauc": 0.6718589667058308,
+        "val_ndcg5": 0.5381377428316085,
+        "val_primary": 0.6049983547687197
+      },
+      {
+        "member": 2,
+        "seed": 43,
+        "stage": "member",
+        "val_gauc": 0.671203573814482,
+        "val_ndcg5": 0.5372971401956615,
+        "val_primary": 0.6042503570050718
+      },
+      {
+        "member": 3,
+        "seed": 44,
+        "stage": "member",
+        "val_gauc": 0.6715768507800319,
+        "val_ndcg5": 0.5378831482379925,
+        "val_primary": 0.6047299995090123
+      },
+      {
+        "member": 4,
+        "seed": 45,
+        "stage": "member",
+        "val_gauc": 0.6713346145496834,
+        "val_ndcg5": 0.5371960431552525,
+        "val_primary": 0.604265328852468
+      },
+      {
+        "member": 5,
+        "seed": 46,
+        "stage": "member",
+        "val_gauc": 0.672408924957797,
+        "val_ndcg5": 0.5380835893190161,
+        "val_primary": 0.6052462571384065
+      },
+      {
+        "members": 5,
+        "stage": "ensemble",
+        "val_gauc": 0.6723752988228431,
+        "val_ndcg5": 0.5378772342126493,
+        "val_primary": 0.6051262665177461
+      }
+    ],
+    "ndcg5": 0.5378772342126493,
+    "primary": 0.6051262665177461
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 11024,
+      "out": 1507,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15685,
+      "out": 7248,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 486,
+      "out": 245,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3397,
+      "out": 1308,
+      "calls": 2
+    }
+  },
+  "tokens_total": 40900,
+  "wall_s": 953.5,
+  "self_critique": "Run assessment\n\nThe run found a real improvement over the FM baseline: 0.6018 \u2192 0.6051 from the provided frozen ensemble. However, almost all value came from importing that reference implementation; the autonomous search did not improve it.\n\nWhat the harness/policy did suboptimally\n\n- Declared convergence too early. Only one substantive optimization attempt was evaluated after the seed, followed by an ensemble-cost experiment. That is insufficient evidence that 0.6051 is locally optimal.\n- Used an over-combined hypothesis in node_002. Dropout, embedding L2, AdamW decay, and aggressive LR decay were changed simultaneously. The small regression provides no information about which component helped or hurt.\n- Made an internally weak prediction for node_002. Rapid LR decay may reduce overfitting, but it does not necessarily \u201cdelay\u201d it; it can simply freeze an underfit model. The claimed +0.002 improvement was not justified by the observed seed variance or learning curves.\n- Optimized against a noisy distinction. Scores of 0.6050 and 0.6051 are too close to interpret without repeated runs or uncertainty estimates. The reported sigma=0.0001 appears overly precise unless derived from genuine replicate evaluations.\n- Mishandled the cost/quality objective. Node_004 apparently achieved its stated goal\u2014within 0.001 of the five-member ensemble while cutting training cost by 60%\u2014but was rejected because it did not exceed the best primary metric. Cost-aware experiments need Pareto acceptance rather than single-metric acceptance.\n- Continued through a failed node awkwardly. Node_004 inherited from failed node_003 while its hypothesis compared against node_001. Failed execution should trigger a preflight/debug retry against the last valid parent, not create a semantically ambiguous lineage.\n- Duplicated the reference candidate as both node_001 and a seed entry, adding bookkeeping noise without new evidence.\n- Explored seed averaging despite the stated low seed variance. If members differ by only ~0.001, architecture, feature, loss, or checkpoint diversity is a more promising ensemble axis than adjacent seeds.\n\nWhat I would change in the scaffold\n\n- Require atomic ablations: one regularization or optimization change per node, followed by combinations only when individual effects are known.\n- Add replicated evaluations for deltas near the noise floor and report mean, standard deviation, and confidence intervals.\n- Separate objectives into quality, training cost, inference cost, and robustness. Maintain a Pareto frontier rather than rejecting every cheaper near-equivalent model.\n- Add execution preflight checks and allow failed nodes to retry without consuming a full research branch.\n- Make parentage always point to the last successfully evaluated implementation.\n- Use learning-curve diagnostics to choose interventions: best epoch, train/validation gap, calibration, and per-component/member performance.\n- Set a minimum exploration budget before convergence, especially when no autonomous proposal has beaten the imported seed.\n- Distinguish \u201creference adoption\u201d from \u201cresearch improvement\u201d in the final accounting.\n\nWhat the next run should try first\n\nStart with controlled ablations around node_001. The first experiment should tune checkpoint selection or early stopping using the existing validation trajectory, because the journal explicitly says validation peaks early and declines. This is low-risk and directly targets the observed failure mode without confounding several regularizers.\n\nThen, in order:\n\n1. Sweep one LR schedule variable around the current setup, preserving all other settings.\n2. Test dropout alone at modest values such as 0.1 and 0.2.\n3. Test embedding regularization alone, with careful scaling by accessed rows.\n4. Measure multiple seeds for the best single model to establish actual score variance.\n5. Explore ensemble diversity across checkpoints or model variants rather than only consecutive seeds.\n6. Retain the two-member ensemble as a Pareto-efficient candidate if its 60% cost reduction is confirmed.\n\nThe key correction is to replace broad \u201cregularization packages\u201d with diagnostic, atomic experiments and to avoid treating a 0.0001 score difference as decisive."
+}
+{
+  "run_dir": "logs/run_desig_seeded_04",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "config": {
+      "member_args": "",
+      "member_epochs": 8,
+      "member_script": "/Users/rohan/Documents/progwork/techjam2026/mle-agent/zoo/frozen_stack.py",
+      "n_members": 5,
+      "seed": 42
+    },
+    "gauc": 0.6723752988228431,
+    "history": [
+      {
+        "member": 1,
+        "seed": 42,
+        "stage": "member",
+        "val_gauc": 0.6718589667058308,
+        "val_ndcg5": 0.5381377428316085,
+        "val_primary": 0.6049983547687197
+      },
+      {
+        "member": 2,
+        "seed": 43,
+        "stage": "member",
+        "val_gauc": 0.671203573814482,
+        "val_ndcg5": 0.5372971401956615,
+        "val_primary": 0.6042503570050718
+      },
+      {
+        "member": 3,
+        "seed": 44,
+        "stage": "member",
+        "val_gauc": 0.6715768507800319,
+        "val_ndcg5": 0.5378831482379925,
+        "val_primary": 0.6047299995090123
+      },
+      {
+        "member": 4,
+        "seed": 45,
+        "stage": "member",
+        "val_gauc": 0.6713346145496834,
+        "val_ndcg5": 0.5371960431552525,
+        "val_primary": 0.604265328852468
+      },
+      {
+        "member": 5,
+        "seed": 46,
+        "stage": "member",
+        "val_gauc": 0.672408924957797,
+        "val_ndcg5": 0.5380835893190161,
+        "val_primary": 0.6052462571384065
+      },
+      {
+        "members": 5,
+        "stage": "ensemble",
+        "val_gauc": 0.6723752988228431,
+        "val_ndcg5": 0.5378772342126493,
+        "val_primary": 0.6051262665177461
+      }
+    ],
+    "ndcg5": 0.5378772342126493,
+    "primary": 0.6051262665177461
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 16642,
+      "out": 2541,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15460,
+      "out": 12192,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3439,
+      "out": 1493,
+      "calls": 2
+    }
+  },
+  "tokens_total": 51767,
+  "wall_s": 1519.7,
+  "self_critique": "Overall assessment\n\nThe run found a modest but real improvement over the baseline (+0.0033) by adopting the provided frozen ensemble, then converged prematurely after only three narrow variants. It mostly validated that the reference stack was already locally strong; it did not conduct a broad or well-instrumented search around it.\n\nWhat was suboptimal\n\n- The search was too shallow. Declaring convergence after three rejected children is not persuasive, especially when all three were motivated by the same weak \u201cearly peak means overfitting\u201d diagnosis.\n- That diagnosis was not established. A validation peak followed by decline can reflect ordinary training dynamics, checkpoint noise, or seed variance. No train/validation gap, per-seed curves, member scores, or uncertainty analysis was reported.\n- Node_002 exposed an objective mismatch. It scored 0.6050, within the hypothesized 0.001 of the champion while cutting training and inference cost by 60%, so the experiment succeeded on its stated claim. Rejecting it solely because primary decreased discards a useful Pareto-optimal result. Either cost must be part of acceptance or cost-saving hypotheses should not be proposed.\n- Node_004 changed dropout, embedding L2, weight decay, and LR decay simultaneously. Its rejection provides little information about which changes helped or hurt. The aggressive 0.5-per-epoch decay was especially likely to confound the regularization test.\n- Node_003 averaged only two adjacent checkpoints. Those checkpoints are highly correlated, and equal weighting was arbitrary; this was a low-upside form of ensembling compared with adding independent seeds or model diversity.\n- The accepted seeded node duplicated node_001 rather than adding evidence. The journal also reports sigma=0.0001 without enough replication detail to justify that precision. Validation-example bootstrap uncertainty and across-seed variance should be recorded separately.\n- All decisions appear tied to one validation score, increasing the risk of adapting to validation noise.\n\nScaffold changes\n\n- Require each experiment to vary one factor unless explicitly labeled as a factorial test.\n- Record per-member primary, ensemble-size curves, pairwise prediction/rank correlation, checkpoint curves, training cost, and inference cost.\n- Use bootstrap confidence intervals on validation predictions and repeated training seeds where applicable; do not treat tiny score differences as decisive without uncertainty.\n- Separate \u201cmaximize primary\u201d from \u201cefficiency/Pareto\u201d tracks. Preserve node_002 as an efficiency champion even if it is not the primary champion.\n- Avoid duplicate nodes for imported seeds/reference implementations.\n- Do not stop after three closely related failures. Require coverage of several distinct axes: ensemble size, seed diversity, model diversity, optimization, and regularization.\n- Precommit evaluation rules where possible to limit validation overfitting.\n\nWhat the next run should try first\n\nExpand the unchanged champion with additional independent seeds. Train five new members using exactly the frozen recipe, then evaluate precommitted equal-weight rank ensembles at sizes 5 through 10, along with per-member scores and prediction correlations. This is the cleanest high-probability extension: node_002 showed that even two seeds retain nearly all of the current score, suggesting seed averaging is useful, while additional independent members may yield a small primary gain without altering a strong base learner.\n\nIf that saturates, the next experiment should add one genuinely diverse member family or feature interaction scheme and include it only if it improves the ensemble through complementary errors. Avoid another bundled regularization schedule until individual dropout, weight decay, and LR effects have been isolated."
+}

@@ -1,0 +1,1 @@
+{"gauc": 0.6487187208190197, "ndcg5": 0.5273912322704103, "primary": 0.588054976544715, "history": [{"epoch": 1, "train_loss": 0.5839, "val_gauc": 0.648719, "val_primary": 0.588055}], "config": {"recency_half_life_days": 7.0, "weight_normalization": "mean_one", "effective_sample_size": 1027338.75, "validation_boundary_ordinal": 738267.0}}

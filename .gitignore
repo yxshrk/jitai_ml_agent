@@ -1,3 +1,11 @@
+# Run evidence policy: journals, summaries, node code, metrics and probe logs of
+# EVERY run are tracked (judges must be able to audit all disclosed runs).
+# Heavy artifacts (workspaces, predictions, arrays) stay untracked.
+logs/run_*/workspace/
+logs/run_*/**/predictions.csv
+logs/run_*/**/*.npy
+logs/run_*/**/*.npz
+logs/run_*/**/scores.csv
 .venv/
 .uv-cache/
 __pycache__/
@@ -5,16 +13,7 @@ __pycache__/
 *.pyc
 .env
 data/real/
-logs/run_*
 # … but official/deliverable runs ARE tracked:
-!logs/run_official_*/
-logs/run_official_*/workspace/
-logs/run_official_*/nodes/
-logs/run_official_*/calib_*/
-logs/run_official_*/node_*/
-!logs/run_official_*/journal.jsonl
-!logs/run_official_*/summary.json
-!logs/run_official_*/report/**
 !logs/bonus_1k_*/metrics.json
 *.egg-info
 logs/spend.*
