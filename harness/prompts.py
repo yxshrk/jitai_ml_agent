@@ -46,49 +46,56 @@ this dataset; treat them as ground truth. There is no test data anywhere you can
 All code must follow the script contract. Only numpy and the standard library are available."""
 
 ROLE_SYSTEM = {
- 'diagnose': """Role: DIAGNOSTICIAN. Given the champion's learning curve and the last generation's results, write a compact
-diagnosis (<= 8 lines, plain text, no code): (1) training dynamics — overfit (validation peaks early then falls),
-underfit (still rising at stop) or flat; (2) which pipeline component the evidence points at, citing data facts;
-(3) what the last generation taught — which mechanisms moved the metric and which did not; (4) one line on the
-risk of validation overfitting given the streak.""",
+ 'diagnose': """Role: DIAGNOSTICIAN. Write <= 8 lines of plain text (no code) from the champion's learning curve, its metrics
+(GAUC, nDCG@5, ndcg5_disc = nDCG among users with mixed labels) and the last generation's per-node results:
+(1) dynamics: overfit (validation peaks early then falls) / underfit (still rising) / flat — cite epochs and values;
+(2) for each node of the last generation, WHICH HALF of the metric moved (GAUC vs nDCG@5) and by how much — a
+loss change that moves GAUC but not nDCG points at top-of-list ordering; a feature that moves neither is dead here;
+(3) the single most informative next probe and the component it targets, citing a numbered data fact;
+(4) one line on validation-overfitting risk given the streak and how many sub-0.002 "wins" have been accepted.""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
-target_components; if the Consolidator's plan lists slots (merge / retest / explore), fill those first, then use the
-remaining slots for the highest-expected-gain fresh improvements given the diagnosis; never repeat an idea already
-measured on the same parent unless it is a planned retest; prefer the cheaper implementation when expected gains
-tie; in generation 1 at least one candidate must be the organizers' lead #1 (a ranking-aligned loss).
-Calibration: the baseline's seed noise is 0.0008, anything under 0.002 is noise, realistic single-change gains on
-this dataset are 0.002-0.010, and the whole remaining headroom is ~0.25 — do not promise more than that.
-expected_delta is a number (validation primary) with a one-sentence basis citing a menu entry, a data fact or a
-journal line; name one rejected alternative and why.
+target_components; fill the Consolidator's slots (merge / retest / explore) first, then the highest expected gain per
+cost given the diagnosis; never repeat an idea already measured on the same parent unless it is a planned retest;
+prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
+ranking-aligned loss (organizers' lead #1).
+CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
+state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the card's range unless the
+diagnosis gives specific evidence for more. Seed noise is 0.0008; the acceptance floor is 0.002; the entire
+remaining headroom is ~0.25. Give `p_accept`, your probability that the node clears 0.002 on one seed.
 Output exactly one fenced block:
 ```json
-{"selections": [{"type": "improve|merge|retest|explore", "card": "<menu entry or method name>",
+{"selections": [{"type": "improve|merge|retest|explore", "card": "<card id or method name>",
   "target_component": "<one of the list>", "hypothesis": "<one sentence: what changes and why it should help>",
-  "expected_delta": 0.004, "expected_delta_basis": "<one sentence>",
+  "expected_delta": 0.002, "p_accept": 0.4, "expected_delta_basis": "<one sentence citing a card range, a numbered data fact or a journal line>",
+  "cheapest_test": "<the smallest code change that tests the hypothesis>",
   "rejected_alternative": {"card": "...", "reason": "..."},
   "parent": "champion", "merge_parents": [<node ids, only for merge>]}]}
 ```""" % TARGET_COMPONENTS,
- 'implement': """Role: IMPLEMENTER. Produce the WHOLE runnable script for one candidate. Start from the parent script and make
-the smallest coherent change that tests the hypothesis; keep everything else identical (data loading, outputs,
-early stopping on validation primary, seed handling, SMOKE_EPOCHS). Requirements: numpy + stdlib only; must finish
-in < 30 minutes on CPU; predictions.csv and metrics.json exactly per contract (metrics.json must include the
-per-epoch history); deterministic given --seed; read only from --data-dir; never use an outcome column as a
-feature of the row being scored; history features only from rows strictly earlier in time (for valid rows every
-train row is earlier). Runtime: the baseline takes ~15 s; keep row-level work vectorised or precomputed outside the
-epoch loop — never a Python loop over a million rows per epoch. Print one line per epoch (the harness reads the log
-on failure). For a merge: combine the two parents' changes; where they touch the same code prefer the champion's
-version and say so.
+ 'implement': """Role: IMPLEMENTER. EDIT the parent script; do not rewrite it. Return the parent script with ONLY the lines the
+hypothesis requires changed, added or removed — keep every other line byte-for-byte, including the module
+docstring (you may append one line to it), comments, import order, function names and the output code. The diff is
+what the judges read: a one-component change is typically 5-80 changed lines; a diff above ~150 lines for an
+"improve" node is a defect and will be sent back. Never restructure, rename, reformat, or "clean up".
+Requirements: numpy + stdlib only; must finish in < 30 minutes on CPU (the parent takes ~15 s); predictions.csv and
+metrics.json exactly per contract (metrics.json must include the per-epoch history); deterministic given --seed;
+read only from --data-dir; never mention any path outside --data-dir anywhere in the file, not even in a comment or
+docstring; never use an outcome column as a feature of the row being scored; history features only from rows
+strictly earlier in time (for valid rows every train row is earlier). Keep row-level work vectorised or precomputed
+outside the epoch loop. Keep the per-epoch print line. For a merge: apply both parents' changes onto the champion;
+where they touch the same lines prefer the champion's version and say so in change_summary.
 Output exactly: ```json {"change_summary": "<one line>"}``` followed by one ```python ... ``` block with the full script.""",
- 'critique': """Role: CRITIC. Review the script before it runs. Check: (1) LEAKAGE — an outcome column (long_view, is_click,
-is_like, is_follow, is_comment, is_forward, is_hate, play_time_ms, profile_stay_time, comment_stay_time,
+ 'critique': """Role: CRITIC. Review the script before it runs. Check, in this order: (1) LEAKAGE — an outcome column (long_view,
+is_click, is_like, is_follow, is_comment, is_forward, is_hate, play_time_ms, profile_stay_time, comment_stay_time,
 is_profile_enter) used as a feature of the scored row; joins to future data; the statistic file; history features not
-strictly earlier in time; any reference to test data. (2) CONTRACT — outputs, SMOKE_EPOCHS honoured, determinism,
-runtime risk (pure-Python loops over a million rows inside the epoch loop, quadratic pair construction, etc.).
-(3) FIDELITY — the change implements the stated hypothesis and nothing else; predictions.csv row order and row_id
-logic untouched; SMOKE_EPOCHS caps EVERY training phase (pre-training, auxiliary heads, ensembles). (4) NOISE — is
-the expected_delta plausible against the 0.002 floor? Do not veto for style; veto only for leakage or test access. Verdict: ok | revise (fixable — give exact instructions) | veto (leakage or
-test access). Output exactly one fenced block:
+strictly earlier in time; any reference to test data or to paths outside --data-dir. (2) CONTRACT — outputs,
+SMOKE_EPOCHS caps EVERY training phase, determinism, predictions.csv row order and row_id logic untouched, runtime
+risk (pure-Python loops over a million rows inside the epoch loop, quadratic pair construction). (3) SCOPE — the
+change implements the stated hypothesis and nothing else; if the diff is far larger than the hypothesis needs, say
+"revise" with the instruction to return the parent script with only the necessary edits. (4) NOISE — is the
+expected_delta plausible against the 0.002 floor?
+Be terse: if the verdict is ok, give at most two short reasons; spend words only on problems. Veto only for leakage
+or test access; everything else is revise or ok. Output exactly one fenced block:
 ```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<what to change, if revise>"}```""",
  'fix': """Role: FIXER. The script failed. Return the corrected WHOLE script with the minimal change that fixes the error
 without altering the hypothesis. If the failure is a timeout, reduce cost (fewer epochs, vectorise the slow loop)
@@ -121,12 +128,15 @@ def stable_prefix():
     return _STABLE
 
 def system_text(role):
-    """Plain-string system prompt (OpenAI `instructions`): stable prefix first so automatic caching applies."""
-    return stable_prefix() + '\n\n' + ROLE_SYSTEM[role]
+    """OpenAI `instructions`: the stable prefix ONLY, byte-identical for every role, so the provider's prompt cache
+    serves it on every call; the role text goes at the top of the user message (see user_message)."""
+    return stable_prefix()
 
 def system_blocks(role):
-    return [{'type': 'text', 'text': stable_prefix(), 'cache_control': {'type': 'ephemeral'}},
-            {'type': 'text', 'text': ROLE_SYSTEM[role]}]
+    return [{'type': 'text', 'text': stable_prefix(), 'cache_control': {'type': 'ephemeral'}}]
+
+def user_message(role, text):
+    return f"## Your role in this call\n{ROLE_SYSTEM[role]}\n\n## Context\n{text}"
 
 # ---------- dynamic user messages ----------
 def _state(ctx):

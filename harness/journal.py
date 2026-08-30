@@ -2,6 +2,10 @@
 import difflib, json, time
 from pathlib import Path
 
+def diff_lines(a, b):
+    """Number of changed lines between two scripts (what the judges would read)."""
+    return sum(1 for l in difflib.unified_diff(a.splitlines(), b.splitlines(), lineterm='') if l[:1] in '+-' and l[:3] not in ('+++', '---'))
+
 class Journal:
     def __init__(self, run_dir):
         self.run_dir = Path(run_dir)

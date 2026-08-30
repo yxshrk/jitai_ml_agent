@@ -1,0 +1,186 @@
+--- node_001.py
++++ node_005.py
+@@ -1,11 +1,11 @@
+-"""Within-user BPR candidate based on node_000.
++"""Within-user LambdaRank-weighted BPR candidate based on node_001.
+ 
+ Reads   data/train.csv, data/valid.csv, data/video_features_basic.csv
+ Writes  <out>/predictions.csv, <out>/metrics.json, and optionally
+         <out>/predictions_extra.csv.
+-Model   The parent 5-field factorization machine trained with within-user BPR:
+-        for every eligible positive row, sample one negative row from the same
+-        user each epoch and minimize -log(sigmoid(score_pos-score_neg)).
++Model   The parent 5-field factorization machine trained on within-user
++        positive-negative pairs. After one plain-BPR warm-up epoch, each
++        pair's gradient is weighted by its current nDCG@5 swap impact.
+ """
+ import argparse
+ import csv
+@@ -32,8 +32,29 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ 
++def within_user_ranks(user_codes, scores):
++    """Return one-based descending-score ranks within each encoded user."""
++    row_numbers = np.arange(len(scores), dtype=np.int64)
++    order = np.lexsort((row_numbers, -scores, user_codes))
++    sorted_users = user_codes[order]
++
++    positions = np.arange(len(order), dtype=np.int64)
++    is_start = np.empty(len(order), dtype=bool)
++    is_start[0] = True
++    is_start[1:] = sorted_users[1:] != sorted_users[:-1]
++
++    block_starts = np.maximum.accumulate(
++        np.where(is_start, positions, 0)
++    )
++    sorted_ranks = positions - block_starts + 1
++
++    ranks = np.empty(len(order), dtype=np.int32)
++    ranks[order] = sorted_ranks.astype(np.int32)
++    return ranks
++
++
+ class FM:
+-    """Factorization machine optimized with within-user BPR and Adam."""
++    """Factorization machine optimized with LambdaRank-weighted BPR."""
+ 
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+@@ -57,16 +78,19 @@
+         )
+         return self.b + self.W[X].sum(axis=1) + inter, E, S
+ 
+-    def step_pair(self, X_pos, X_neg):
+-        """Apply one Adam update for -mean(log sigmoid(s_pos-s_neg))."""
++    def step_pair(self, X_pos, X_neg, pair_weights):
++        """Apply one Adam update for weighted pairwise logistic loss."""
+         batch_size = len(X_pos)
+ 
+         z_pos, E_pos, S_pos = self.logits(X_pos)
+         z_neg, E_neg, S_neg = self.logits(X_neg)
+         difference = z_pos - z_neg
+ 
+-        # d[-log(sigmoid(d))]/dd = -sigmoid(-d)
+-        g = (-sigmoid(-difference) / batch_size).astype(np.float32)
++        # d[-log(sigmoid(d))]/dd = -sigmoid(-d). LambdaRank scales
++        # this derivative by the pair's absolute nDCG@5 swap impact.
++        g = (
++            -sigmoid(-difference) * pair_weights / batch_size
++        ).astype(np.float32)
+ 
+         gV = np.zeros_like(self.V)
+         gW = np.zeros_like(self.W)
+@@ -105,8 +129,8 @@
+             second_hat = second / (1.0 - beta2 ** self.t)
+             parameter -= self.lr * first_hat / (np.sqrt(second_hat) + eps)
+ 
+-        # The global intercept cancels exactly in every within-user difference.
+-        return float(np.mean(np.logaddexp(0.0, -difference)))
++        losses = np.logaddexp(0.0, -difference)
++        return float(np.mean(pair_weights * losses))
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([
+@@ -246,14 +270,30 @@
+     pair_negative_starts = negative_starts[pair_users]
+     pair_negative_counts = negative_counts[pair_users]
+ 
++    # IDCG@5 is fixed by each training user's positive count.
++    positive_counts = np.bincount(
++        train_user_codes[positive_indices],
++        minlength=number_of_users
++    ).astype(np.int64)
++    ideal_discounts_prefix = np.concatenate([
++        np.zeros(1, dtype=np.float32),
++        np.cumsum(
++            1.0 / np.log2(np.arange(1, 6, dtype=np.float32) + 1.0)
++        ).astype(np.float32)
++    ])
++    user_idcg5 = ideal_discounts_prefix[
++        np.minimum(positive_counts, 5)
++    ]
++
+     print(
+         f'loaded+encoded in {time.time() - start_time:.0f}s: '
+         f'train {len(train_rows):,} valid {len(valid_rows):,} '
+-        f'dim {total_dimension:,} BPR anchors {len(pair_positive_indices):,}',
++        f'dim {total_dimension:,} LambdaRank anchors '
++        f'{len(pair_positive_indices):,}',
+         flush=True
+     )
+ 
+-    # ---- train with within-user BPR and early stopping on valid primary ----
++    # ---- train with LambdaRank-weighted BPR and validation early stopping ----
+     model = FM(
+         total_dimension,
+         k=args.k,
+@@ -277,16 +317,58 @@
+             pair_negative_starts + sampled_offsets
+         ]
+ 
++        if epoch == 1:
++            # Warm up current rankings with the champion's plain BPR objective.
++            pair_weights = np.ones(
++                len(pair_positive_indices), dtype=np.float32
++            )
++        else:
++            # Rank all training impressions under the current model. The swap
++            # impact for a positive-negative pair is the absolute change in
++            # the user's nDCG@5 if their current positions were exchanged.
++            train_scores = model.predict(X_train)
++            train_ranks = within_user_ranks(
++                train_user_codes, train_scores
++            )
++
++            positive_ranks = train_ranks[pair_positive_indices]
++            negative_ranks = train_ranks[sampled_negative_indices]
++
++            positive_discount = np.where(
++                positive_ranks <= 5,
++                1.0 / np.log2(positive_ranks.astype(np.float32) + 1.0),
++                0.0
++            ).astype(np.float32)
++            negative_discount = np.where(
++                negative_ranks <= 5,
++                1.0 / np.log2(negative_ranks.astype(np.float32) + 1.0),
++                0.0
++            ).astype(np.float32)
++
++            pair_weights = (
++                np.abs(positive_discount - negative_discount)
++                / user_idcg5[pair_users]
++            ).astype(np.float32)
++
++            # Preserve a small gradient for pairs currently below the cutoff.
++            pair_weights = np.maximum(pair_weights, 0.05)
++
++            # Preserve the parent's average gradient scale while changing
++            # relative emphasis toward pairs with top-five swap impact.
++            pair_weights /= np.mean(pair_weights)
++
+         order = rng.permutation(len(pair_positive_indices))
+         epoch_positive = pair_positive_indices[order]
+         epoch_negative = sampled_negative_indices[order]
++        epoch_weights = pair_weights[order]
+ 
+         losses = []
+         for begin in range(0, len(epoch_positive), args.batch):
+             end = begin + args.batch
+             losses.append(model.step_pair(
+                 X_train[epoch_positive[begin:end]],
+-                X_train[epoch_negative[begin:end]]
++                X_train[epoch_negative[begin:end]],
++                epoch_weights[begin:end]
+             ))
+ 
+         valid_scores = model.predict(X_valid)
+@@ -302,7 +384,7 @@
+         })
+ 
+         print(
+-            f"epoch {epoch:2d} | BPR loss {mean_loss:.4f} | "
++            f"epoch {epoch:2d} | LambdaBPR loss {mean_loss:.4f} | "
+             f"valid GAUC {result['GAUC']:.4f} "
+             f"nDCG@5 {result['nDCG@5']:.4f} "
+             f"primary {result['primary']:.4f}",

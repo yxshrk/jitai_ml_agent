@@ -19,7 +19,8 @@ MAX_ITERS = 50                    # official cap
 WALL_CLOCK_S = 6 * 3600           # official backstop
 SMOKE_TIMEOUT_S = 120
 RUN_TIMEOUT_S = 1800
-DEFAULT_SEED = 0                  # same seed for every node in a run, so deltas are not seed noise
+DEFAULT_SEED = 0
+MAX_DIFF_LINES = 200            # an 'improve' node changing more lines than this is bounced back once (edit, don't rewrite)                  # same seed for every node in a run, so deltas are not seed noise
 
 # Static firewall (ADR-0005): an agent script containing any of these strings is rejected before it runs.
 FORBIDDEN_PATTERNS = ['KuaiRand-Pure', 'log_standard_4_22', 'log_standard_4_08', 'log_random',

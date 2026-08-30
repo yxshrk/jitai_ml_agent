@@ -1,0 +1,244 @@
+--- node_001.py
++++ node_004.py
+@@ -1,17 +1,18 @@
+-"""Within-user BPR candidate based on node_000.
++"""Within-user recency-weighted BPR candidate based on node_001.
+ 
+ Reads   data/train.csv, data/valid.csv, data/video_features_basic.csv
+ Writes  <out>/predictions.csv, <out>/metrics.json, and optionally
+         <out>/predictions_extra.csv.
+-Model   The parent 5-field factorization machine trained with within-user BPR:
+-        for every eligible positive row, sample one negative row from the same
+-        user each epoch and minimize -log(sigmoid(score_pos-score_neg)).
++Model   The parent 5-field factorization machine trained with within-user BPR.
++        Each sampled pair is weighted by the geometric mean of fixed seven-day
++        exponential recency weights for its positive and negative impressions.
+ """
+ import argparse
+ import csv
+ import json
+ import os
+ import time
++from datetime import date
+ 
+ import numpy as np
+ from evaluate import evaluate
+@@ -32,8 +33,43 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ 
++def parse_date(value):
++    """Parse compact YYYYMMDD dates."""
++    value = str(value)
++    return date(
++        int(value[0:4]),
++        int(value[4:6]),
++        int(value[6:8])
++    )
++
++
++def unique_within_user_rank_scores(users, raw_scores):
++    """Convert raw scores to unique scores preserving stable within-user order.
++
++    For each user, rows are stably sorted by descending raw score. Thus raw
++    ties retain input order, exactly matching evaluate.py's stable nDCG sort.
++    Distinct integer scores are then assigned within the user.
++    """
++    raw_scores = np.asarray(raw_scores)
++    if not np.all(np.isfinite(raw_scores)):
++        raise ValueError('Model produced NaN or infinite scores')
++
++    groups = {}
++    for index, user in enumerate(users):
++        groups.setdefault(user, []).append(index)
++
++    rank_scores = np.empty(len(raw_scores), dtype=np.int64)
++    for indices in groups.values():
++        ordered = sorted(indices, key=lambda i: -float(raw_scores[i]))
++        group_size = len(ordered)
++        for rank, index in enumerate(ordered):
++            rank_scores[index] = group_size - rank
++
++    return rank_scores
++
++
+ class FM:
+-    """Factorization machine optimized with within-user BPR and Adam."""
++    """Factorization machine optimized with recency-weighted BPR and Adam."""
+ 
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+@@ -57,16 +93,23 @@
+         )
+         return self.b + self.W[X].sum(axis=1) + inter, E, S
+ 
+-    def step_pair(self, X_pos, X_neg):
+-        """Apply one Adam update for -mean(log sigmoid(s_pos-s_neg))."""
+-        batch_size = len(X_pos)
++    def step_pair(self, X_pos, X_neg, pair_weights):
++        """Apply one Adam update for weighted -log sigmoid(s_pos-s_neg)."""
++        pair_weights = np.asarray(pair_weights, dtype=np.float32)
++        weight_sum = float(pair_weights.sum())
++        if weight_sum <= 0.0:
++            raise ValueError('Pair weights must have positive total weight')
+ 
+         z_pos, E_pos, S_pos = self.logits(X_pos)
+         z_neg, E_neg, S_neg = self.logits(X_neg)
+         difference = z_pos - z_neg
+ 
+-        # d[-log(sigmoid(d))]/dd = -sigmoid(-d)
+-        g = (-sigmoid(-difference) / batch_size).astype(np.float32)
++        # d[-log(sigmoid(d))]/dd = -sigmoid(-d). Normalizing by the
++        # batch's total pair weight recovers the parent's gradient exactly
++        # when all pair weights are one.
++        g = (
++            -sigmoid(-difference) * pair_weights / weight_sum
++        ).astype(np.float32)
+ 
+         gV = np.zeros_like(self.V)
+         gW = np.zeros_like(self.W)
+@@ -106,7 +149,8 @@
+             parameter -= self.lr * first_hat / (np.sqrt(second_hat) + eps)
+ 
+         # The global intercept cancels exactly in every within-user difference.
+-        return float(np.mean(np.logaddexp(0.0, -difference)))
++        losses = np.logaddexp(0.0, -difference)
++        return float(np.sum(pair_weights * losses) / weight_sum)
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([
+@@ -121,7 +165,7 @@
+         writer.writerow(['row_id', 'user_id', 'video_id', 'score'])
+         for row, score in zip(rows, scores):
+             writer.writerow([
+-                row[0], row[1], row[2], f'{float(score):.9g}'
++                row[0], row[1], row[2], str(int(score))
+             ])
+ 
+ 
+@@ -154,7 +198,10 @@
+     ))
+     train_rows = read_rows(
+         f'{args.data_dir}/train.csv',
+-        ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view']
++        [
++            'user_id', 'video_id', 'tab', 'duration_ms',
++            'long_view', 'date'
++        ]
+     )
+     valid_rows = read_rows(
+         f'{args.data_dir}/valid.csv',
+@@ -163,6 +210,21 @@
+             'duration_ms', 'long_view'
+         ]
+     )
++
++    # Fixed seven-day half-life measured backward from the last train date.
++    reference_date = date(2022, 4, 21)
++    unique_train_dates = {row[5] for row in train_rows}
++    date_to_weight = {}
++    for value in unique_train_dates:
++        age_days = max(0, (reference_date - parse_date(value)).days)
++        date_to_weight[value] = 0.5 ** (age_days / 7.0)
++
++    train_recency_weights = np.fromiter(
++        (date_to_weight[row[5]] for row in train_rows),
++        dtype=np.float32,
++        count=len(train_rows)
++    )
++    train_recency_weights /= train_recency_weights.mean()
+ 
+     # ---- encode exactly the parent's five categorical fields ----
+     duration_edges = np.quantile(
+@@ -249,11 +311,13 @@
+     print(
+         f'loaded+encoded in {time.time() - start_time:.0f}s: '
+         f'train {len(train_rows):,} valid {len(valid_rows):,} '
+-        f'dim {total_dimension:,} BPR anchors {len(pair_positive_indices):,}',
++        f'dim {total_dimension:,} BPR anchors {len(pair_positive_indices):,} '
++        f'recency range {train_recency_weights.min():.3f}-'
++        f'{train_recency_weights.max():.3f}',
+         flush=True
+     )
+ 
+-    # ---- train with within-user BPR and early stopping on valid primary ----
++    # ---- train with weighted within-user BPR and valid early stopping ----
+     model = FM(
+         total_dimension,
+         k=args.k,
+@@ -277,16 +341,25 @@
+             pair_negative_starts + sampled_offsets
+         ]
+ 
++        # A pair's recency is the geometric mean of its two impression
++        # weights, so neither side alone determines its temporal importance.
++        sampled_pair_weights = np.sqrt(
++            train_recency_weights[pair_positive_indices]
++            * train_recency_weights[sampled_negative_indices]
++        ).astype(np.float32)
++
+         order = rng.permutation(len(pair_positive_indices))
+         epoch_positive = pair_positive_indices[order]
+         epoch_negative = sampled_negative_indices[order]
++        epoch_pair_weights = sampled_pair_weights[order]
+ 
+         losses = []
+         for begin in range(0, len(epoch_positive), args.batch):
+             end = begin + args.batch
+             losses.append(model.step_pair(
+                 X_train[epoch_positive[begin:end]],
+-                X_train[epoch_negative[begin:end]]
++                X_train[epoch_negative[begin:end]],
++                epoch_pair_weights[begin:end]
+             ))
+ 
+         valid_scores = model.predict(X_valid)
+@@ -302,7 +375,7 @@
+         })
+ 
+         print(
+-            f"epoch {epoch:2d} | BPR loss {mean_loss:.4f} | "
++            f"epoch {epoch:2d} | weighted BPR loss {mean_loss:.4f} | "
+             f"valid GAUC {result['GAUC']:.4f} "
+             f"nDCG@5 {result['nDCG@5']:.4f} "
+             f"primary {result['primary']:.4f}",
+@@ -325,12 +398,18 @@
+     model.V, model.W, model.b = best_state
+ 
+     # ---- outputs ----
+-    valid_scores = model.predict(X_valid)
+-    result = evaluate(valid_users, y_valid, valid_scores)
++    # Raw scores are retained for official metric computation. Prediction
++    # files receive unique within-user rank scores to eliminate emitted ties.
++    valid_raw_scores = model.predict(X_valid)
++    result = evaluate(valid_users, y_valid, valid_raw_scores)
++    valid_rank_scores = unique_within_user_rank_scores(
++        valid_users,
++        valid_raw_scores
++    )
+     write_predictions(
+         f'{args.out_dir}/predictions.csv',
+         valid_rows,
+-        valid_scores
++        valid_rank_scores
+     )
+ 
+     best_epoch = history[int(np.argmax([
+@@ -357,10 +436,16 @@
+             ]
+         )
+         X_extra = encode(extra_rows, 1, 2, 3, 4)
++        extra_raw_scores = model.predict(X_extra)
++        extra_users = [row[1] for row in extra_rows]
++        extra_rank_scores = unique_within_user_rank_scores(
++            extra_users,
++            extra_raw_scores
++        )
+         write_predictions(
+             f'{args.out_dir}/predictions_extra.csv',
+             extra_rows,
+-            model.predict(X_extra)
++            extra_rank_scores
+         )
+ 
+     print(

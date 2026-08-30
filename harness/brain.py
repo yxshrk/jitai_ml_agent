@@ -166,7 +166,7 @@ class OpenAIBrain(LLMBrain):
     def _call(self, role, user_text, retry_note=None):
         self._check_budget()
         model = self.models[role]; t0 = time.time()
-        text_in = user_text + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')
+        text_in = P.user_message(role, user_text) + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')
         r = self.client.responses.create(model=model, instructions=P.system_text(role), input=text_in,
                                          reasoning={'effort': self.efforts[role]}, max_output_tokens=self.MAX_TOKENS[role])
         u = r.usage
@@ -196,7 +196,7 @@ class AnthropicBrain(LLMBrain):
     def _call(self, role, user_text, retry_note=None):
         self._check_budget()
         model = self.models[role]; t0 = time.time()
-        messages = [{'role': 'user', 'content': user_text + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')}]
+        messages = [{'role': 'user', 'content': P.user_message(role, user_text) + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')}]
         extra_body = {'thinking': {'type': 'adaptive'}, 'output_config': {'effort': self.efforts[role]}}
         extra_headers = {}
         if self.use_fallbacks and model.startswith('claude-opus-5'):

@@ -13,7 +13,7 @@ from pathlib import Path
 from . import config as C, referee as R, prompts as P
 from .brain import Usage, ParseError
 from .data_access import build as build_workspace
-from .journal import Journal
+from .journal import Journal, diff_lines
 
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
@@ -246,7 +246,14 @@ class Loop:
             hits = R.static_check(code)
             if hits:
                 critic_log.append({'round': round_, 'verdict': 'veto', 'reasons': [f'static firewall: {hits}']})
-                sel['critic_instructions'] = f'Remove every reference to {hits}; only --data-dir files may be read.'
+                sel['critic_instructions'] = f'Remove every reference to {hits} (also from comments and docstrings); only --data-dir files may be read.'
+                continue
+            n_diff = diff_lines(parent_code, code); limit = 400 if sel.get('type') == 'merge' else C.MAX_DIFF_LINES
+            if n_diff > limit and round_ < 2:
+                critic_log.append({'round': round_, 'verdict': 'revise', 'reasons': [f'diff too large: {n_diff} changed lines (limit {limit}) - the parent was rewritten instead of edited']})
+                sel['critic_instructions'] = (f'Your last version changed {n_diff} lines. Return the PARENT script byte-for-byte except for the '
+                                              f'lines this hypothesis needs (typically 5-80). Do not touch the docstring, imports, comments or output code.')
+                self.log(f'  diff too large ({n_diff} lines); sending back to the implementer')
                 continue
             verdict, err = self._brain(self.brain.critique, self.ctx(), code, sel, what='critique')
             verdict = verdict or {'verdict': 'ok', 'reasons': [f'critic unavailable: {err}'], 'instructions': ''}
