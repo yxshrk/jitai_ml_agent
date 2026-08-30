@@ -465,6 +465,23 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
+
+### hetero-objective-ensemble: Rank-blend of DIFFERENT-objective models
+- mechanism: Train 2-3 members that differ by OBJECTIVE, not just seed — e.g. (a) the champion package with its BPR-hybrid loss, (b) a gauge-fixed-bce variant, (c) a lambda-weighted pairwise variant — then per-user rank-average them (fixed simple weights like equal or 0.5/0.25/0.25; do NOT sweep weights on validation). Rationale: same-recipe seed members share errors (measured: our homogeneous closes averaged +0.0005 and failed 4/5 times); different objectives decorrelate errors so the blend genuinely cancels mistakes.
+- treats: flat-signal | overfit
+- citation: ensemble-diversity theory (Krogh & Vedelsby); observed working in a public Track 2 solution (github.com/Rpkw789/autorec-lab: BPR + multi-task + LambdaLoss rank ensemble, single 0.6042 -> ensemble 0.6060 valid); public solutions in-scope per the resource policy. Apply OUR ensemble gate (rescue/harm) before accepting.
+- expected_gain / cost: their +0.0018 over best single; ours unknown / med (2-3 full trainings).
+- status_pure: untried
+- status_1k: untried
+
+### lambda-weighted-pairs: nDCG-weighted pairwise loss (LambdaLoss-style)
+- mechanism: Keep the BPR-style pairwise structure but weight each within-user pair by the |nDCG@5 change| that swapping the pair would cause at current ranks (LambdaLoss/LambdaRank weighting) — pairs that can move the top-5 get large gradients, bottom pairs get little. Metric-aligned variant of pairwise training; distinct from the measured-dead LightGBM-LambdaRank (different model class) and from listwise-softmax.
+- treats: metric-mismatch
+- citation: LambdaLoss framework (Wang et al., CIKM 2018); component of the public autorec-lab ensemble above.
+- expected_gain / cost: unknown alone; their blend gives it 37.5% weight, suggesting standalone competence / low-med.
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
