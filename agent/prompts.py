@@ -77,10 +77,11 @@ PROPOSER_MODE = {
         "directive. Keep everything else identical to the parent."
     ),
     "improve": (
-        "Mode: IMPROVE. Apply exactly one atomic change to the parent script "
-        "(the current best node). Prefer the highest-expected-gain untried menu "
-        "item; use the journal to avoid rejected ideas. Emit the whole parent "
-        "file with the smallest coherent change needed to test the hypothesis; "
+        "Mode: IMPROVE. Apply one change to the parent script (the current best "
+        "node) — atomic by default, or a cited package / internal fan-out per "
+        "the task brief. Prefer the highest-expected-gain untried menu item; "
+        "use the journal to avoid rejected ideas. Emit the whole parent file "
+        "with the smallest coherent change needed to test the hypothesis; "
         "unnecessary rewrites are defects."
     ),
     "debug": (
