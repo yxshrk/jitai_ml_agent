@@ -16,7 +16,7 @@ fixer = "claude-haiku-4-5-20251001"
 reflector = "claude-sonnet-5"
 
 [max_output_tokens]
-selector = 2500
+selector = 6000
 
 # Conservative pricing ESTIMATES, USD per 1M tokens (in/out). Costs are always
 # rounded UP; names ending in '*' are prefix patterns; a model not listed here
