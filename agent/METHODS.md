@@ -618,7 +618,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - preconditions: Contexts with no opposite-label row need a fallback tier; keep total negatives per positive unchanged.
 - citation: convergent recommendation of two independent reviews (gpt-5.6-sol consult; external playbook §4.2), both from this campaign's own journals.
 - expected_gain / cost: +0.0005-0.0015 est / low.
-- status_pure: untried
+- status_pure: measured-win (run_final_s4 n3: 0.60521, +0.0015 from 0.6038 gauge base — largest single-mechanism gain of the final wave; NO ensemble close attempted on this base yet — highest-priority follow-up)
 - status_1k: untried
 
 ### directional-temporal-pair-weighting: Forward-time pair emphasis
