@@ -216,3 +216,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# dataset (downloaded from Zenodo, never committed)
+KuaiRand-Pure/
+*.tar.gz
+
+# harness artefacts (regenerable / large)
+workspace/data/
+workspace/evaluate.py
+private/
+runs/*/outputs/
+
+# literature PDFs are re-downloadable via kb/literature/fetch.sh
+kb/literature/**/*.pdf
+# scratch self-check runs
+runs/_selfcheck/
+.DS_Store

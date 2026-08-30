@@ -1,0 +1,50 @@
+# Project log — changes, decisions, results
+
+Chronological. Decisions are written up in `kb/adr/`; agent-run journals will live in `runs/<run_id>/`.
+
+## 2026-08-30
+- Read the problem statement (`docs`) and the starter kit; walked through the task, metrics, data, and baseline.
+- **Decision:** independent attempt — the teammate's `origin/mle-agent` branch is off-limits (ADR-0001).
+- Translated all starter-kit comments, docstrings, and user-facing strings to English; `README.md` → English with
+  the original kept as `README.zh.md`. AST check against the pristine kit: `evaluate.py` and `data.py` logic
+  identical; `baseline.py`, `ablation_features.py`, `submit.py` differ only in text strings.
+- Verified the metric spec: `docs` line 43 (NDCG@10 / Recall@50 / click) is stale — see `kb/spec/corrections.md`.
+  `long_view` definition confirmed from kuairand.com: `play_time_ms >= min(duration_ms, 18 s)`.
+- Literature: 19 PDFs into `kb/literature/` with a reading guide. Missing: MMoE, PLE (ACM paywall).
+- Environment: `.venv` (Python 3.9.6) + numpy 2.0.2. KuaiRand-Pure downloaded from Zenodo into
+  `kuairand-starter-kit/KuaiRand-Pure/` (gitignored, 195 MB).
+- **Baseline reproduction — Task Requirement #1 done:**
+
+  | model | valid primary | test primary | published (valid / test) |
+  |---|---|---|---|
+  | random, seed 0 | 0.4827 | 0.4757 | 0.4834 / 0.4753 |
+  | item popularity | 0.5807 | 0.5715 | 0.5807 / 0.5715 (exact) |
+  | FM, seed 0 | 0.6015 (GAUC 0.6671, nDCG@5 0.5358) | 0.5953 | 0.6016 / 0.5946 ± 0.0008 |
+
+  FM learning curve (valid primary): 0.5869 → 0.5956 → 0.5993 → 0.5994 → 0.6010 → 0.6006 → **0.6015 (ep 7)** →
+  0.6012 → 0.6007 → 0.5996 → 0.5990, early stop at ep 11; training loss falls monotonically → overfits after
+  ~7 epochs. Runtime 16 s. (The organizer script prints test scores by design; our harness will not — ADR-0005.)
+- Wrote the KB spec layer (`kb/spec/`), ADR-0001…0007, this log.
+- Browser: the Lark doc is reachable in Chrome (guest mode), last updated Aug 28 — the `docs` paste is current.
+  Its body is not scriptable, so general sections (Key Dates, submission process) still need pasting.
+  **Registration deadline 1 Sep 2026 12:00** (form + Devpost).
+- **EDA** (`kb/data/eda.py` → `eda_report.md`; interpretation in `facts.md`; label diagnostics `label_check.py`).
+  Headline facts: closed catalogue (0 % unseen videos/authors in valid/test); valid users have median 35 train
+  rows (not hundreds); `long_view` rule verified (exceptions: `duration_ms = 0` ⇒ label 0, 1.9 % of rows);
+  **short videos are the hard case** (positive rate 0.27–0.28 under 20 s vs 0.38 at 90–117 s) — an earlier guess
+  overturned; `tab` dominates (tab 0 rate 0.04 vs tab 4 0.49); strong volume drift (280 K rows/day on 04-11 → 20 K/day
+  from 04-18, matching valid/test) and positive-rate drift (0.337 train → 0.313 valid → 0.29 by 04-28);
+  `is_click` correlates 0.76 with the label; valid cohorts 30.3 / 11.9 / 57.8 %, test composition reproduced
+  exactly (27.1 / 9.2 / 63.7, oracle 0.7289) — harness matches `evaluate.py` conventions. No rows on 2022-04-08.
+- **Harness foundation built and verified.** `harness/config.py`, `data_access.py` (workspace builder = the firewall:
+  `workspace/data/{train,valid}.csv` + side tables, `private/test_features.csv` without labels; split sizes asserted),
+  `referee.py` (subprocess + timeout, static forbidden-path check, prediction alignment validation, official
+  `evaluate.py` scoring, ε-acceptance, convergence counter), `journal.py` (JSONL + diffs + markdown), the script
+  contract (`workspace/CONTRACT.md`), and the baseline ported to it (`harness/seeds/node_000_fm.py`).
+  Self-check: smoke run 6 s (1 epoch, primary 0.5869); full run 14 s → **valid primary 0.6015** = `baseline.py` seed 0
+  exactly; a deliberately corrupted prediction row is rejected ("row 4 misaligned"). Two bugs fixed on the way
+  (relative script path; workspace not on PYTHONPATH).
+- Literature survey of autonomous-ML-agent architectures (AIDE, MLE-STAR, R&D-Agent, ML-Master, AIRA, AI-Scientist-v2)
+  → `kb/literature/agent-design-notes.md`; harness architecture proposed as ADR-0008.
+- Tooling: `anthropic` 0.125.0 and `pytest` installed in `.venv`. No API credential is configured yet
+  (`ANTHROPIC_API_KEY` unset, no `ant` CLI) — needed before the first live agent run.
