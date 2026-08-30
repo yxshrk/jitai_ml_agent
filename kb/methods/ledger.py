@@ -6,15 +6,20 @@ the cards' front matter and `## Measured` lines plus the oracle bounds in `famil
 
 Importable: build(methods_dir) -> dict (the JSON), write(methods_dir) -> path. The code ranks families from this
 table (ADR-0016 `_family_score`); the cards stay the narrative. A card's `expected_delta` is read as it is — the
-calibration pass (distill.calibrate) is what rewrites it; the ledger only reports `measured_max` and `bound` next to it."""
-import argparse, datetime, json, pathlib, re, sys
+calibration pass (distill.calibrate) is what rewrites it; the ledger only reports `measured_max` and `bound` next to it.
+Bounds refer to the REFERENCE STACK (family_bounds.json `reference_stack`); `measured_max_ref` / `best_measured_ref` are the
+records on stacks containing every reference component, and violations() lists cards whose reference-stack gain beats
+their bound — the check that keeps the signal map honest. Output is deterministic (no timestamp): regenerate and diff."""
+import argparse, json, pathlib, re, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from harness.distill import MEASURED_RE, SCREEN_RE   # one parser for the Measured lines: the writer's
+from harness.config import MIN_EFFECT, SEED_SD
 from kb.methods.validate import front_matter
 
 METHODS = ROOT / 'kb' / 'methods'
-CLOSED_BOUND = 0.0005   # = MIN_EFFECT: a family whose oracle bound is at or below the acceptance threshold is closed
+CLOSED_BOUND = MIN_EFFECT   # a family whose oracle bound is at or below the acceptance threshold is closed
+MARGIN = SEED_SD + 0.0001    # a reference-stack gain above bound + this margin means the card's signal mapping is wrong
 PAPER_WORDS = re.compile(r'arxiv|\.pdf|et al|paper|kdd|sigir|cikm|recsys|www\b|neurips|icml|iclr', re.I)
 
 def _measured(text):
@@ -44,6 +49,9 @@ def _expected(fm):
     return [float(lo_hi[0]), float(lo_hi[1])] if len(lo_hi) == 2 else [None, None]
 
 def _basis_class(fm, measured, bounded):
+    """'measured' = Measured node lines exist (the record rules); 'oracle' = unmeasured but its signal has a bound;
+    'measured-fact' = the promise cites a data fact; 'paper' / 'analogy' = a literature claim / a guess — the only two
+    classes the calibration factor (ADR-0018 rule 6b) applies to."""
     if measured:
         return 'measured'
     if bounded:
@@ -56,7 +64,8 @@ def _basis_class(fm, measured, bounded):
 def build(methods_dir=METHODS):
     methods_dir = pathlib.Path(methods_dir)
     bounds = json.loads((methods_dir / 'family_bounds.json').read_text())
-    sig_of = bounds['cards']; sig = bounds['signal_families']
+    sig_of = bounds['cards']; sig = bounds['signal_families']; ref = bounds.get('reference_stack', [])
+    on_ref = lambda stack: all(c in stack for c in ref)
     cards, families = {}, {}
     for p in sorted(methods_dir.glob('*.md')):
         if p.name == 'README.md':
@@ -64,11 +73,15 @@ def build(methods_dir=METHODS):
         text = p.read_text(); fm = front_matter(text) or {}
         cid = fm.get('id', p.stem); fam = fm.get('family', 'unknown')
         nodes, screens = _measured(text)
+        for n in nodes:
+            n['on_reference'] = on_ref(n['stack'])
         deltas = [n['delta'] for n in nodes if n['delta'] is not None]
+        ref_deltas = [n['delta'] for n in nodes if n['delta'] is not None and n['on_reference']]
         sf = sig_of.get(cid); bound = sig[sf]['bound'] if sf else None
         cards[cid] = {'family': fam, 'signal_family': sf, 'status': fm.get('status', ''), 'expected': _expected(fm),
                       'basis_class': _basis_class(fm, nodes, sf is not None),
-                      'measured_max': max(deltas) if deltas else None, 'accepted': any(n['accepted'] for n in nodes),
+                      'measured_max': max(deltas) if deltas else None, 'measured_max_ref': max(ref_deltas) if ref_deltas else None,
+                      'accepted': any(n['accepted'] for n in nodes),
                       'bound': bound, 'bound_source': sig[sf]['source'] if sf else None}
         f = families.setdefault(fam, {'bound': None, 'bound_source': None, 'status': 'open', 'cards': [], 'screen_gains': [], 'measured': [], 'best_measured': None})
         f['cards'].append(cid)
@@ -78,6 +91,8 @@ def build(methods_dir=METHODS):
         cs = [cards[c] for c in f['cards']]
         deltas = [m['delta'] for m in f['measured'] if m['delta'] is not None]
         f['best_measured'] = max(deltas) if deltas else None
+        ref_d = [m['delta'] for m in f['measured'] if m['delta'] is not None and m['on_reference']]
+        f['best_measured_ref'] = max(ref_d) if ref_d else None      # the record on the stack the bounds refer to
         if all(c['bound'] is not None for c in cs):        # every card in the family draws on a bounded signal
             f['bound'] = max(c['bound'] for c in cs)
             f['bound_source'] = '; '.join(sorted({c['bound_source'] for c in cs}))
@@ -89,8 +104,16 @@ def build(methods_dir=METHODS):
             f['status'] = 'exhausted'
         else:
             f['status'] = 'open'
-    return {'generated': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),
-            'signal_families': sig, 'families': dict(sorted(families.items())), 'cards': dict(sorted(cards.items()))}
+    return {'reference_stack': ref, 'signal_families': sig, 'families': dict(sorted(families.items())), 'cards': dict(sorted(cards.items()))}
+
+def violations(ledger):
+    """Cards whose measured gain on the reference stack exceeds their signal's bound + MARGIN: the mapping in
+    family_bounds.json is wrong for them (a bound a measurement beats is not a bound). Empty = the map is honest."""
+    out = []
+    for cid, c in ledger['cards'].items():
+        if c['bound'] is not None and c['measured_max_ref'] is not None and c['measured_max_ref'] > c['bound'] + MARGIN:
+            out.append((cid, c['signal_family'], c['bound'], c['measured_max_ref']))
+    return out
 
 def write(methods_dir=METHODS):
     out = pathlib.Path(methods_dir) / 'families.json'
@@ -99,10 +122,10 @@ def write(methods_dir=METHODS):
 
 def table(ledger):
     def fmt(x): return '' if x is None else f'{x:+.4f}'
-    lines = [f"{'family':18s} {'status':10s} {'bound':>7s} {'best Δ':>8s} {'cards':>5s} {'meas':>4s} {'scr':>3s}  untried"]
+    lines = [f"{'family':18s} {'status':10s} {'bound':>7s} {'best Δ':>8s} {'on ref':>8s} {'cards':>5s} {'meas':>4s} {'scr':>3s}  untried"]
     for fam, f in ledger['families'].items():
         cs = ledger['cards']; untried = [c for c in f['cards'] if cs[c]['status'].startswith('untried')]
-        lines.append(f"{fam:18s} {f['status']:10s} {fmt(f['bound']):>7s} {fmt(f['best_measured']):>8s} "
+        lines.append(f"{fam:18s} {f['status']:10s} {fmt(f['bound']):>7s} {fmt(f['best_measured']):>8s} {fmt(f['best_measured_ref']):>8s} "
                      f"{len(f['cards']):5d} {len(f['measured']):4d} {len(f['screen_gains']):3d}  {', '.join(untried)}")
     return '\n'.join(lines)
 
@@ -112,5 +135,7 @@ if __name__ == '__main__':
     led = build(a.methods_dir); print(table(led))
     unb = [c for c, v in led['cards'].items() if v['bound'] is None and not v['accepted'] and not v['status'].startswith('untried')]
     print(f"\n{len(led['cards'])} cards, {len(led['families'])} families; cards judged by record only (no oracle): {len(unb)}")
+    for cid, sf, bound, got in violations(led):
+        print(f"  MAPPING VIOLATION: {cid} ({sf}) measured {got:+.4f} on the reference stack against bound {bound:+.4f}")
     if a.write:
         print('written', write(a.methods_dir))

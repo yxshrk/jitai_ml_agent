@@ -1,16 +1,46 @@
 {
-  "_doc": "Oracle bounds per SIGNAL family (kb/data/facts.md §11; kb/data/screens/CEILING.md), and which card draws on which signal. A bound is the most a family measured with information no legal model has (valid-week labels, split-half, the random log, the leaky statistics file) could add on the champion; null = no oracle exists, the card is judged by its record alone. Cards absent from `cards` are unbounded.",
+  "_doc": "Oracle bounds per SIGNAL family (kb/data/facts.md §11; kb/data/screens/CEILING.md, RESULTS.md), and which card draws on which signal. A bound is the most a family could add ON THE REFERENCE STACK (`reference_stack`: the champion of live_06/07 — BPR + seed average) when measured with information no legal model has (valid-week labels, split-half, the random log, the leaky statistics file). Gains measured on weaker stacks (the plain FM, single-seed BPR) can exceed it legitimately; a gain on a stack containing every reference component that exceeds bound + seed SD means the card is mapped to the wrong signal (ledger.violations). null = no oracle; the card is judged by its record alone. Cards absent from `cards` are unbounded.",
   "signal_families": {
-    "item-side":        {"bound": 0.0003, "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000"},
-    "day-state":        {"bound": 0.0000, "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002"},
-    "random-log":       {"bound": 0.0001, "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001"},
-    "user-context-taste": {"bound": 0.0003, "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"},
-    "history-cf":       {"bound": 0.0002, "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"},
-    "creator-affinity": {"bound": 0.0021, "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001"},
-    "recency-volume":   {"bound": 0.0000, "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"},
-    "pair-sampling":    {"bound": 0.0000, "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"},
-    "ensembling":       {"bound": 0.0006, "source": "facts §11.3 + blend009 calibration: 20 seeds 0.6044, two lineages 0.6047, GBDT member on node_009 +0.0006 — seed averaging absorbs re-weightings of the same information"},
-    "session-context":  {"bound": 0.0010, "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend"}
+    "item-side": {
+      "bound": 0.0003,
+      "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+    },
+    "day-state": {
+      "bound": 0.0,
+      "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002"
+    },
+    "random-log": {
+      "bound": 0.0001,
+      "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001"
+    },
+    "user-context-taste": {
+      "bound": 0.0003,
+      "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
+    },
+    "history-cf": {
+      "bound": 0.0002,
+      "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
+    },
+    "creator-affinity": {
+      "bound": 0.0021,
+      "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001"
+    },
+    "recency-volume": {
+      "bound": 0.0,
+      "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
+    },
+    "pair-sampling": {
+      "bound": 0.0,
+      "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
+    },
+    "ensembling": {
+      "bound": 0.0016,
+      "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
+    },
+    "session-context": {
+      "bound": 0.001,
+      "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
+    }
   },
   "cards": {
     "encoding-ordered-item-context-target-statistics": "item-side",
@@ -28,7 +58,7 @@
     "model-user-tab-duration-cp-interaction": "user-context-taste",
     "history-ordered-user-tag-affinity": "user-context-taste",
     "history-user-aggregates": "history-cf",
-    "history-last-positive-attribute-recurrence": "history-cf",
+    "history-last-positive-attribute-recurrence": "session-context",
     "model-din-history-attention": "history-cf",
     "model-lightgcn-positive-id-propagation": "history-cf",
     "data-weighting-recency": "recency-volume",
@@ -41,7 +71,7 @@
     "loss-duration-cohort-weighted-bpr": "pair-sampling",
     "loss-bpr-hard-negatives": "pair-sampling",
     "data-weighting-user-balanced-bpr-pairs": "pair-sampling",
-    "ensembling-long-duration-slot-specialists": "pair-sampling",
+    "ensembling-long-duration-slot-specialists": "ensembling",
     "ensembling-seed-average": "ensembling",
     "ensembling-heterogeneous-rank-average": "ensembling",
     "ensembling-multiseed-heterogeneous-rank-blend": "ensembling",
@@ -51,5 +81,9 @@
     "history-same-author-run-features": "session-context",
     "history-repeat-exposure-fatigue": "session-context",
     "model-first-order-exposure-transition-fm": "session-context"
-  }
+  },
+  "reference_stack": [
+    "loss-bpr-pairwise-within-user",
+    "ensembling-seed-average"
+  ]
 }
