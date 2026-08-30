@@ -36,5 +36,5 @@ for d in logs/run_*/; do
     echo "  $(printf %-24s "$n") LIVE  nodes=$nodes ${prog:+probe: $prog}"
   fi
 done'
-echo "== coral =="; ssh -o ConnectTimeout=8 ${FLEET_CORAL:-pallav@coral.local} "${REMOTE_SNIPPET//REPO/~\/techjam\/mle-agent}" 2>/dev/null
-echo "== ruby =="; ssh -o ConnectTimeout=8 ${FLEET_RUBY:-gpubox} "${REMOTE_SNIPPET//REPO/~\/mle-agent}" 2>/dev/null
+[ -n "$FLEET_CORAL" ] && { echo "== coral =="; ssh -o ConnectTimeout=8 ${FLEET_CORAL:?set FLEET_CORAL (see MACHINES.local.md)} "${REMOTE_SNIPPET//REPO/~\/techjam\/mle-agent}" 2>/dev/null; }
+[ -n "$FLEET_RUBY" ] && { echo "== ruby =="; ssh -o ConnectTimeout=8 ${FLEET_RUBY:?set FLEET_RUBY} "${REMOTE_SNIPPET//REPO/~\/mle-agent}" 2>/dev/null 2>/dev/null; }
