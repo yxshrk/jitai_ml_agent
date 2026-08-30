@@ -70,6 +70,22 @@ timeout is measured in hours: probe at full training length (short probes mis-ra
 configs near the optimum), afford 16-24 matrix cells, and refine twice. Reserve time
 for the final full training + the ensemble close.
 
+
+## Measured search basins (cross-run probe evidence — sample HERE first)
+Aggregated from ~600 logged probes across prior runs on PURE (full tables in each
+run's progress.log). The productive basin for the DCN package:
+- dropout 0.16-0.28 (winners cluster 0.17-0.23)
+- weight_decay 5e-5..5e-4 (log-uniform)
+- lr 0.0003..0.0014 with StepLR gamma 0.45-0.68, step 1-2 epochs
+- recency half_life 4-15 days (7 +/- a few is safe)
+- probe scores in-basin: 0.6026-0.6044 single-model; out-of-basin drops fast.
+Champion configs measured: (0.18, 9e-5, lr 0.001, gamma 0.57/2, hl 7.0) -> 0.6042
+single / 0.6056 ensembled.
+Guidance: draw ~50% of stage-1 samples from this basin, ~50% wide exploration
+(basins can move with architecture changes); refine locally as usual. On 1K the
+known-good point is (dropout 0.21, wd 4e-5, lr 0.00168, k 24, hl 7) -> 0.621
+single; ensembling gains are LARGE on 1K (0.632-0.639 measured).
+
 ## Measured campaign digest (this benchmark, cross-run memory — full seed tables in zoo/EXPERIMENTS*.md)
 
 Interaction facts, each replicated across >= 3 seeds unless noted:
