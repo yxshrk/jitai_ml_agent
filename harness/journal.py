@@ -31,37 +31,54 @@ class Journal:
         return str(p.relative_to(self.run_dir)), sum(1 for l in patch.splitlines() if l[:1] in '+-' and l[:3] not in ('+++', '---'))
 
     def compact_lines(self):
-        """One line per iteration -- what the proposer sees as history (never a growing transcript)."""
+        """One line per node plus a marker per generation -- what the proposer sees as history."""
         out = []
         for r in self.records():
-            if r.get('action') in ('event',):
+            a = r.get('action')
+            if a == 'event':
+                continue
+            if a == 'generation':
+                out.append(f"--- generation {r.get('generation')}: {'improved' if r.get('improved') else 'no improvement'}, "
+                           f"streak {r.get('streak')}, champion node_{(r.get('champion') or 0):03d}, best {r.get('best', 0):.4f} ---")
                 continue
             m = r.get('metrics') or {}
             if r.get('error'):
                 tail = f"ERROR at {r.get('failure_stage')}: {str(r['error'])[:90]} (recovery: {r.get('recovery')})"
             else:
                 d = r.get('realized_delta')
-                tail = f"primary {m.get('primary', float('nan')):.4f} GAUC {m.get('gauc', float('nan')):.4f} nDCG@5 {m.get('ndcg5', float('nan')):.4f}" \
-                       + (f" (Δ{d:+.4f} vs champion, {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else '')
-            out.append(f"n={r['n']} node_{r['n']:03d} <- {r.get('parent')} [{r.get('action')}] {r.get('method') or ''}: "
+                tail = (f"primary {m.get('primary', 0):.4f} GAUC {m.get('gauc', 0):.4f} nDCG@5 {m.get('ndcg5', 0):.4f}"
+                        + (f" (\u0394{d:+.4f} vs champion, {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else ''))
+            parent = r.get('parent'); parent = f"node_{parent:03d}" if isinstance(parent, int) else 'root'
+            out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}] {r.get('method') or ''}: "
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")
         return out
 
     def render_md(self, summary=None):
-        L = [f'# Run journal — {self.run_dir.name}', '']
+        L = [f'# Run journal \u2014 {self.run_dir.name}', '']
         if summary:
             L += ['## Summary', '```json', json.dumps(summary, indent=1, default=str), '```', '']
         L += ['## Iterations', '']
         for r in self.records():
-            if r.get('action') == 'event':
-                L.append(f"- _event_ (after n={r.get('n')}): {r.get('note')}"); continue
+            a = r.get('action')
+            if a == 'event':
+                L.append(f"- _event_ (generation {r.get('generation')}): {r.get('note')}"); L.append(''); continue
+            if a == 'generation':
+                L += [f"#### generation {r.get('generation')} closed \u2014 {'improved' if r.get('improved') else 'no improvement'}; "
+                      f"streak {r.get('streak')}; champion node_{(r.get('champion') or 0):03d}; best {r.get('best', 0):.4f}; "
+                      f"tokens {r.get('tokens_in', 0)}/{r.get('tokens_out', 0)}; {r.get('duration_s', 0):.0f}s",
+                      f"_Diagnosis:_ {r.get('diagnosis')}", f"_Plan for next generation:_ `{json.dumps(r.get('plan'), default=str)}`", '']
+                continue
             m = r.get('metrics') or {}
-            L += [f"### n={r['n']} — node_{r['n']:03d} ({r.get('action')}, parent {r.get('parent')})",
+            d = r.get('realized_delta')
+            result = (f"**Result:** GAUC {m.get('gauc', 0):.4f} \u00b7 nDCG@5 {m.get('ndcg5', 0):.4f} \u00b7 primary {m.get('primary', 0):.4f}"
+                      + (f" \u00b7 realized \u0394 {d:+.4f} \u00b7 {'ACCEPTED' if r.get('accepted') else 'rejected'}" if d is not None else '')
+                      + (f" \u00b7 grey-zone confirmation {r.get('grey_confirmation')}" if r.get('grey_confirmation') else '')
+                      + (f" \u00b7 recovery: {r.get('recovery')}" if r.get('recovery') else '')) if m else \
+                     f"**Result:** ERROR at stage `{r.get('failure_stage')}`: {r.get('error')} \u2014 recovery: {r.get('recovery')}"
+            L += [f"### n={r['n']} \u2014 node_{r['n']:03d} ({a}, parent {r.get('parent')}{', merge of ' + str(r.get('merge_parents')) if r.get('merge_parents') else ''})",
                   f"**Hypothesis:** {r.get('hypothesis')}",
-                  f"**Method:** {r.get('method')} · expected Δ {r.get('expected_delta')} ({r.get('expected_delta_basis')})",
-                  (f"**Result:** GAUC {m.get('gauc'):.4f} · nDCG@5 {m.get('ndcg5'):.4f} · primary {m.get('primary'):.4f} · "
-                   f"realized Δ {r.get('realized_delta'):+.4f} · {'ACCEPTED' if r.get('accepted') else 'rejected'}") if m else
-                  f"**Result:** ERROR at stage `{r.get('failure_stage')}`: {r.get('error')} — recovery: {r.get('recovery')}",
-                  f"**Diff:** `{r.get('diff_path')}` ({r.get('diff_lines')} changed lines) · duration {r.get('duration_s', 0):.0f}s · "
-                  f"tokens in/out {r.get('tokens_in', 0)}/{r.get('tokens_out', 0)} · intervention: {r.get('intervention', False)}", '']
+                  f"**Method:** {r.get('method')} \u00b7 target `{r.get('target_component')}` \u00b7 expected \u0394 {r.get('expected_delta')} ({r.get('expected_delta_basis')})",
+                  result,
+                  f"**Diff:** `{r.get('diff_path')}` ({r.get('diff_lines')} changed lines) \u00b7 duration {r.get('duration_s') or 0:.0f}s \u00b7 "
+                  f"tokens in/out {r.get('tokens_in', 0)}/{r.get('tokens_out', 0)} \u00b7 intervention: {r.get('intervention', False)}", '']
         return '\n'.join(L)

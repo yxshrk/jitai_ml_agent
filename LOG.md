@@ -48,3 +48,16 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   → `kb/literature/agent-design-notes.md`; harness architecture proposed as ADR-0008.
 - Tooling: `anthropic` 0.125.0 and `pytest` installed in `.venv`. No API credential is configured yet
   (`ANTHROPIC_API_KEY` unset, no `ant` CLI) — needed before the first live agent run.
+- **Loop built and exercised** (ADR-0008/0009): `harness/prompts.py` (cached stable prefix + six role prompts),
+  `harness/brain.py` (`Brain` interface; `FakeBrain` for offline tests; `AnthropicBrain` with per-call token/cost
+  metering, fenced-block parsing with one format-reminder retry, refusal/max_tokens handling), `harness/loop.py`
+  (generations of k parallel branches; implementer→static firewall→critic with up to two revise rounds; smoke test
+  with one fixer attempt; full runs in a thread pool; referee acceptance ≥ ε with grey-zone 3-seed confirmation;
+  per-generation champion/convergence; consolidator plan; parked ideas; resumable `state.json`; a crashed
+  generation counts as non-improving and never kills the run), `harness/submit.py` (final CSV + official
+  `--check`, no test metric ever computed), `harness/cli.py`, tests (6 unit + 1 end-to-end).
+  End-to-end fake generation on the real data: node_000 0.6015; k=8 → 0.6000 (−0.0014), lr 2e-3 → 0.6007
+  (−0.0007), a deliberately broken script → smoke failure → fixer → reverted to parent → 0.6015 (Δ 0);
+  all rejected, streak 1; 45 s for the generation (three full runs in parallel). Journal, diffs, summary written.
+- Git: commits are attributed to Yash only (`.claude/settings.json` attribution block); repo-local identity set to
+  his GitHub no-reply address; branch `yash-attempt` pushed.

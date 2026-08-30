@@ -73,7 +73,7 @@ class RunResult:
     out_dir: str = ''
     def to_dict(self): return asdict(self)
 
-def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra=None, timeout=None, extra_args=()):
+def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra=None, timeout=None, extra_args=(), threads=None):
     """Execute one experiment script under the contract; validate and score its valid predictions."""
     code_path, out_dir = Path(code_path).resolve(), Path(out_dir).resolve()   # the subprocess runs with cwd=workspace
     res = RunResult(stage='smoke' if smoke else 'full', out_dir=str(out_dir))
@@ -92,6 +92,9 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
                PYTHONPATH=str(C.WORKSPACE) + (os.pathsep + os.environ['PYTHONPATH'] if os.environ.get('PYTHONPATH') else ''))
     if smoke:
         env['SMOKE_EPOCHS'] = '1'
+    if threads:   # parallel branches must not oversubscribe the cores
+        for var in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS', 'VECLIB_MAXIMUM_THREADS'):
+            env[var] = str(threads)
     timeout = timeout or (C.SMOKE_TIMEOUT_S if smoke else C.RUN_TIMEOUT_S)
     t0 = time.time()
     try:

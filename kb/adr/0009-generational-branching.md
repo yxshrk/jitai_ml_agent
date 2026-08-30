@@ -31,3 +31,14 @@ and the convergence rule, which is defined on validation improvement per iterati
 generation instead of one); combination of orthogonal wins becomes an explicit, journaled step. Costs: k× tokens,
 and a rules question to settle with the organizers. If they count nodes, k = 3 gives ~16 generations — still more
 than the convergence rule normally allows.
+
+## Search policy (clarified 2026-08-30)
+- **Beam width 1.** The next generation's k slots branch from the current champion (best-so-far node), never from
+  all siblings; uniform expansion (3 → 9 → 27) would exhaust the 50-node cap by generation 3 while expanding losers.
+- **Merge operator.** After each generation the Consolidator may reserve one slot for a merge of two accepted or
+  near-accepted nodes whose `target_component`s differ; a merge node has two parents (the solution graph is a DAG).
+- **Exploration valve.** After a non-improving generation, one slot is forced to expand the runner-up lineage or a
+  parked idea (ADR-0004) instead of the champion.
+- **Losers are not expanded**; their ideas remain in the journal and may be re-proposed on a later champion.
+- **Roles never decide acceptance.** The referee (code) decides champion / accepted / streak; the Consolidator only
+  plans the next generation's slots from those verdicts.

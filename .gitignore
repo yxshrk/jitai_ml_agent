@@ -232,3 +232,4 @@ kb/literature/**/*.pdf
 # scratch self-check runs
 runs/_selfcheck/
 .DS_Store
+runs/_test_fake/
