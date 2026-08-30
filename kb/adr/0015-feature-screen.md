@@ -78,6 +78,22 @@ two of five candidates; the whole screen is cheaper than one Implementer call at
   believe in can be re-proposed as a `retest` (not screened) with the reason.
 - It measures on valid, like everything else in the run; the seed test (ADR-0012) remains the acceptance decision.
 
+## Calibration (the real screen on live_07's own feature nodes, 2026-08-31)
+
+| candidate, measured against the champion it was proposed on | seed-test verdict | screen best_gain | additive (best column) | stack |
+|---|---|---|---|---|
+| node_001 last-positive tag / music / type match + recency, vs node_000 | ACCEPTED +0.0009, z 3.1 | **+0.0013** | −0.0009 (every column negative alone) | +0.0013 |
+| session position / density / gap, vs node_003 (BPR) | ACCEPTED +0.0009, z 3.1 (node_010) | **+0.0012** | +0.0012 (previous_gap) | +0.0001 |
+| the same session features, vs node_009 (seed blend) | rejected +0.0002, z 1.0 (node_013) | +0.0008 | +0.0003 | +0.0008 |
+| item target statistics (video / author / tag / play-through), vs node_003 | never built | +0.0003 … +0.0004 | ≤ +0.0004 | — |
+| random noise / constants (tests) | — | ≈ 0 | ≈ 0 | ≈ 0 |
+
+Every node the seed test accepted clears the 0.0003 gate by 4×; node_001 clears it only through the stack term (its
+columns are individually negative beside the FM — the interaction test is not optional). The gate is a *floor that
+removes noise-equivalent candidates*, not a predictor of acceptance: a +0.0008 screen still failed the seed test. Raising
+the threshold to MIN_EFFECT (0.0005) would keep every accepted node but gains little; it stays at 0.0003. A probe runs
+in 14–17 s end to end (one Probe call more).
+
 ## Tests
 
 `tests/test_screen.py`: the probe dir strips outcomes; a real signal (video train rate) scores varies > 0.8, GAUC > 0.6,
