@@ -92,30 +92,26 @@ journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: se
 session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
 SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
 
-OVERNIGHT AUTONOMOUS PLAN (Rohan asleep, ~05:45 Mon; standing orders: squeeze Pure+1K,
-NO new laptop work):
-1) Harvest+log each finisher (watchdog: novel_l1/final_s1/clean_r3; ruby audit watcher:
-   2 omega replications + shuffle audit).
-2) 1K: if shuffle audit holds (replications already trending 0.674-0.677 on fresh seeds),
-   proceed with PRE-AUTHORIZED re-designation prep: build predict-test for omega_1k n5
-   recipe (train-window only, session features), rebuild 1K test CSV, update docs —
-   Rohan confirms final designation in the morning.
-3) Pure SETTLED (pending final_s5/final_r6 longshots): novel_l1 ensemble FAILED
-   confirm -> official 0.605239 (node_004). bigclock_07 0.605575 clear of all
-   concluded runs (s4 0.60521 context-pairs win +0.0015, s2 0.60499 hetero close).
-   Random probe MOOT (bigclock leads on number+feasibility+replication). Designate
-   bigclock_07 unless s5/r6 clear it; feature novel_l1 as the researcher-story run.
-4) Refresh site rundata/RESULTS/RUNS as designations settle; commit+push everything.
-
-1K RE-DESIGNATION DECISION (morning, Rohan): audits ALL PASSED (replications 0.6766/0.6762,
-shuffle floor 0.6652). Artifact question: (a) FAITHFUL = node_005 single-model checkpoint
-(designated 0.66892; our seed-42 train-only reproduction scored 0.6772 — node's final fit
-likely used fewer epochs; reconcile before claiming exact reproduction) vs (b) RECIPE
-ENSEMBLE = 3-seed rank average, validation 0.680195 — better, but is an improved artifact,
-not the converged checkpoint (same trap ChatGPT flagged re Pure 5-seed). Default lean:
-(a) faithful unless Rohan prefers documenting (b) as the declared submission recipe.
-CSV builder: tools/predict_test_1k_omega.py (fidelity-asserted session features; test
-hourmin export verified aligned). CSV building on ruby now.
+MORNING STATE (Mon ~05:30, campaign COMPLETE — all machines idle):
+- Pure: bigclock_07 0.605575 UNBEATEN over 9 overnight challengers (novel_l1 0.60524
+  after its 0.6055 ensemble FAILED fresh-seed confirm; s4 0.60521 context-pairs win
+  +0.0015; s2 0.60499 hetero-close win +0.0010; rest lower). Random probe moot.
+  RECOMMEND: designate bigclock_07 (already built CSV), feature novel_l1 as
+  researcher-story run, s4/s2 as knowledge-loop evidence.
+- 1K: omega_1k 0.66892 triple-audited (replications 0.6766/0.6762 fresh seeds,
+  shuffle floor 0.6652, exact independent recompute). Second independent run
+  (1k_push 0.65977) re-validated session mechanism +0.022. CSV BUILT + checker-OK:
+  evidence/test_submission_1k_omega.csv (3-seed ensemble form, val 0.6802); old
+  max_1k_c CSV preserved. DECISIONS FOR ROHAN: (1) confirm 1K re-designation,
+  (2) artifact form faithful-vs-ensemble (see decision note above), (3) Pure sign-off.
+- New measured knowledge tonight (all carded): context-stratified-pairs +0.0015 (best
+  new Pure mechanism), hetero-ensemble close +0.0010, gated-session +0.0006 sub-eps,
+  plain session on Pure +0.0002, gap-conditioned-recency +0.0003 sub-eps,
+  session-on-1K re-validated +0.022.
+- After sign-off: fill {{TBD}} slots (DEVPOST/README/RESULTS/VIDEO_SCRIPT), refresh
+  site rail 1K number + rebuild rundata if desired, then video + Devpost + README
+  contributions (Rohan), GitHub Pages, repo public. Keys rotation + data deletion
+  post-submission.
 
 REMAINING before Tue 1 Sep 12:00 noon SGT:
 1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
