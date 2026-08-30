@@ -14,7 +14,7 @@ cost: ~16 changed lines; adds at most 25% of eligible cohort-positive pairs per 
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, regularization-embedding-dropout-l2]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-ranksvm-margin-pairs]
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0020)]
-evidence: [live_05:node_011, ceiling:oracle]
+evidence: [live_05:node_011]
 ---
 ## Claim
 Add an auxiliary BPR stream sampled from positive rows whose duration is below 18 seconds or above 180 seconds,
@@ -42,4 +42,3 @@ of that user; only the positive-row sampling distribution changes.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0020)
 - live_05:node_011 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6017, single-seed Δ -0.0020 — rejected; 16 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'same-tab-pairs' — facts §11 §3: same-tab BPR negatives at 30 / 70 / 100 % score 0.6030 / 0.6024 / 0.5880; cross-tab pairs are already solved (error 0.186) (facts §11, kb/data/screens/CEILING.md)

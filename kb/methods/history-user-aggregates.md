@@ -13,7 +13,7 @@ cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketise
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: proven — accepted on [official FM]
-evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004, ceiling:oracle]
+evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -46,4 +46,3 @@ _Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010)
 - live_04:node_011 on [official FM + field-aware FM embeddings]: primary 0.6017, single-seed Δ -0.0014 — rejected; 69 changed lines
 - live_05:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0006 (z 1.89) — rejected; 87 changed lines
 - live_06:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0008 (z 1.85) — rejected; 75 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

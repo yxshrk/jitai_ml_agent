@@ -14,7 +14,7 @@ cost: 16 changed lines; runtime remained ~1x (16 s measured); numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, model-dcn-cross-head, regularization-embedding-dropout-l2]
 conflicts_with: [loss-bpr-hard-negatives, loss-lambdarank-pairs, loss-listwise-softmax-within-user, loss-ranksvm-margin-pairs]
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]
-evidence: [live_05:node_006, ceiling:oracle]
+evidence: [live_05:node_006]
 ---
 ## Claim
 Retain one ordinary same-user BPR pair per eligible positive and add a second pair for positives having a
@@ -44,4 +44,3 @@ Eligible positives receive both an ordinary pair and a context-matched pair, so 
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)
 - live_05:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6033, single-seed Δ -0.0003 — rejected; 16 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'same-tab-pairs' — facts §11 §3: same-tab BPR negatives at 30 / 70 / 100 % score 0.6030 / 0.6024 / 0.5880; cross-tab pairs are already solved (error 0.186) (facts §11, kb/data/screens/CEILING.md)

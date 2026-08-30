@@ -13,7 +13,7 @@ cost: ~40 lines (sort by user and time, run-so-far encoding, one or two categori
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, history-repeat-exposure-fatigue]
 conflicts_with: []
 status: untried
-evidence: [ceiling:oracle]
+evidence: []
 ---
 ## Claim
 A user shown the same author twice in a row is far less likely to long-view the second exposure (0.142 vs 0.337
@@ -41,4 +41,3 @@ its interactions with tab and duration.
 
 ## Measured
 _Verdict:_ no measurement yet
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

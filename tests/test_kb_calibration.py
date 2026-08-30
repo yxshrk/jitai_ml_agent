@@ -44,8 +44,8 @@ def test_selector_parser_validates_card_ids(monkeypatch):
     answers = iter(['```json\n{"selections": [{"type": "improve", "card": "session feature idea", "target_component": "features", "hypothesis": "h", "expected_delta": 0.001, "expected_delta_basis": "b"}]}\n```',
                     '```json\n{"selections": [{"type": "improve", "card": "session feature idea", "target_component": "features", "hypothesis": "h", "expected_delta": 0.001, "expected_delta_basis": "b"}, {"type": "deepen", "card": "loss-bpr-pairwise-within-user — hard negatives", "target_component": "loss", "hypothesis": "h2", "expected_delta": 0.001, "expected_delta_basis": "b"}]}\n```'])
     class Stub(LLMBrain):
-        def __init__(self): Brain.__init__(self); self.calls = []      # LLMBrain.__init__ needs a provider; the stub does not
-        def _call(self, role, text, **kw): self.calls.append(text); return next(answers)
+        def __init__(self): Brain.__init__(self); self.calls = []; self.log = lambda *a: None   # LLMBrain.__init__ needs a provider; the stub does not
+        def _call(self, role, text, **kw): self.calls.append(kw.get('retry_note') or text); return next(answers)
     b = Stub(); sels = b.select({'k': 3}, 3)
-    assert len(b.calls) == 2 and 'not a card id' in b.calls[1]                        # one format reminder …
+    assert len(b.calls) == 2 and 'not a card id' in b.calls[1]                        # one format reminder (the retry note) …
     assert sels[0].get('card_unknown') is True and 'card_unknown' not in sels[1]        # … then accepted and flagged; a real deepen name passes

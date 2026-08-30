@@ -14,7 +14,7 @@ cost: 85 changed lines; 146 s measured versus 51 s for the parent; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-dcn-cross-head]
 conflicts_with: [history-ordered-user-tag-affinity, history-last-positive-attribute-recurrence]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)]
-evidence: [live_07:node_018, ceiling:oracle]
+evidence: [live_07:node_018]
 ---
 ## Claim
 Append a seven-level candidate-content affinity field equal to the clipped difference between the user's strictly
@@ -47,4 +47,3 @@ equal-time groups are scored before their outcomes update the profile.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)
 - live_07:node_018 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6038, single-seed Δ -0.0003 — rejected; 85 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

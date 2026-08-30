@@ -15,7 +15,7 @@ cost: ~40 changed lines; two video-sized embedding tables and one extra dot prod
 composes_with: [loss-bpr-pairwise-within-user, history-same-author-run-features, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)]
-evidence: [live_07:node_012, ceiling:oracle]
+evidence: [live_07:node_012]
 ---
 ## Claim
 Add an FPMC-style latent transition score between the user's immediately previous exposed video and the current
@@ -43,4 +43,3 @@ across different video pairs while the existing FM retains long-term user prefer
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)
 - live_07:node_012 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6036, single-seed Δ -0.0005 — rejected; 89 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

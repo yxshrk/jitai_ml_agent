@@ -240,7 +240,10 @@ def calibrate(methods_dir=None, bounds_path=None, log=print):
     mapped to a bounded family carries one `ceiling:oracle` Measured line so the bound is visible where the evidence is.
     Idempotent; run at the end of every distill."""
     methods_dir = Path(methods_dir or C.KB / 'methods')
-    bounds = json.loads(Path(bounds_path or methods_dir / 'family_bounds.json').read_text()) if (bounds_path or (methods_dir / 'family_bounds.json')).exists() else {'bounds': {}, 'cards': {}, 'stack': 'official FM'}
+    bp = Path(bounds_path or methods_dir / 'family_bounds.json')
+    bounds = json.loads(bp.read_text()) if bp.exists() else {}
+    bounds = {'bounds': bounds.get('signal_families') or bounds.get('bounds') or {}, 'cards': bounds.get('cards') or {},
+              'stack': bounds.get('stack', 'official FM + loss-bpr-pairwise-within-user + ensembling-seed-average')}   # the ledger's schema (research session)
     changed = {}
     for card in sorted(methods_dir.glob('*.md')):
         if card.name == 'README.md':

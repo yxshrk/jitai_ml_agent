@@ -15,7 +15,7 @@ composes_with: [loss-bpr-pairwise-within-user, data-weighting-recency, model-fie
   regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)]
-evidence: [live_05:node_013, ceiling:oracle]
+evidence: [live_05:node_013]
 ---
 ## Claim
 Add a normalized continuous-date term
@@ -44,4 +44,3 @@ a user's compared rows occur on different dates.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)
 - live_05:node_013 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6038, single-seed Δ +0.0001, seed-mean Δ -0.0000 (z -0.02) — rejected; 61 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'day-state' — facts §11 row 'user state that day': user × date from the other half of the user's own valid rows +0.0000; day-level label-free context <= +0.0002 (facts §11, kb/data/screens/CEILING.md)

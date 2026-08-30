@@ -14,7 +14,7 @@ cost: 83 changed lines; equal-time-safe history preprocessing plus one FM field;
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0004)]
-evidence: [live_06:node_014, ceiling:oracle]
+evidence: [live_06:node_014]
 ---
 ## Claim
 Add a categorical field representing the user's smoothed prior long-view rate for the current video's tags,
@@ -47,4 +47,3 @@ user-author history is unavailable.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0004)
 - live_06:node_014 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6036, single-seed Δ -0.0004 — rejected; 83 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

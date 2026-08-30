@@ -15,7 +15,7 @@ composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features
   model-lightgbm-lambdarank]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]
-evidence: [live_07:node_016, ceiling:oracle]
+evidence: [live_07:node_016]
 ---
 ## Claim
 Append trailing-24-hour exposure-count and previous-exposure-gap buckets for the current video and author, using
@@ -48,4 +48,3 @@ from a dormant one even when their static embeddings are unchanged.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)
 - live_07:node_016 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 97 changed lines
-- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11 row 'video / author side, any period': valid-week LOO rate from the valid labels +0.0003, the whole-month statistics file +0.0000 (facts §11, kb/data/screens/CEILING.md)
