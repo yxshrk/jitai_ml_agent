@@ -15,6 +15,11 @@ from .brain import Usage, ParseError
 from .data_access import build as build_workspace
 from .journal import Journal, diff_lines
 
+def _slug(x):
+    """Normalise a mechanism tag for comparison: lower-case, non-alphanumerics collapsed to '-'."""
+    s = re.sub(r'[^a-z0-9]+', '-', str(x or '').lower()).strip('-')
+    return s or None
+
 def pick_champion(results):
     """The accepted node with the largest seed-mean gain (falls back to the single-seed delta), or None.
     A rejected node with the best single seed must not block an accepted one (ADR-0012)."""
@@ -115,7 +120,11 @@ class Loop:
              'champion': ch, 'best': self.state['best'], 'streak': self.state['streak'],
              'journal_lines': self.j.compact_lines(), 'plan': self.state.get('plan'), 'parked': self.state.get('parked', []),
              'last_generation': self.state.get('last_generation', []), 'parent_code': self.code_of(ch['n']),
-             'champion_stack': self.stack_of(ch['n'])}
+             'champion_stack': self.stack_of(ch['n']),
+             # ADR-0014 planning state: free-slot candidates, closed mechanisms, hard groups, the champion's inputs
+             'untried': P.untried_cards(), 'proven_not_on_stack': self._proven_not_on_stack(),
+             'closed_mechanisms': self._closed_mechanisms(), 'hard_groups': self._hard_groups(),
+             'champion_inputs': self.inputs_of(ch['n'])}
         d.update(extra); return d
 
     def _brain(self, fn, *args, what='', attempts=2):
@@ -166,11 +175,13 @@ class Loop:
                'expected_delta': selection.get('expected_delta'), 'expected_delta_basis': selection.get('expected_delta_basis'),
                'rejected_alternative': selection.get('rejected_alternative'), 'change_summary': selection.get('change_summary'),
                'wildcard': bool(selection.get('wildcard', False)),
+               'mechanism': selection.get('mechanism'), 'target_group': selection.get('target_group'),
+               'new_signal': selection.get('new_signal'), 'rebased_from': selection.get('rebased_from'),
                'code_path': str(self.j.node_path(n).relative_to(self.run_dir)),
                'diff_path': diff[0] if diff else None, 'diff_lines': diff[1] if diff else None,
                'metrics': res.metrics if res else None, 'history': res.history if res else [],
                'failure_stage': None if (res and res.ok) else (res.stage if res else 'implement'),
-               'error': None if (res and res.ok) else (res.error if res else 'no runnable script produced'),
+               'error': None if (res and res.ok) else (res.error if res else None),
                'log_tail': (res.log_tail[-800:] if res and not res.ok else ''),
                'duration_s': res.duration_s if res else 0.0, 'tokens_in': tokens[0], 'tokens_out': tokens[1],
                'critic': critic, 'recovery': recovery, 'intervention': False,
@@ -206,6 +217,15 @@ class Loop:
             selections, err = f_sel.result()
             wild, werr = f_wild.result() if f_wild else (None, None)
         selections = selections or []
+        if selections and g >= C.FREE_SLOT_FROM_GENERATION and not self._free_slot_ok(selections):   # ADR-0014
+            self.log('  selector: no free-slot candidate (an untried / not-yet-stacked card); asking once more')
+            again, err2 = self._brain(self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel, free_slot_violation=True), n_sel,
+                                      what='select', attempts=1)
+            if again and self._free_slot_ok(again):
+                selections = again
+            else:
+                self.log(f'  selector: still no free-slot candidate; proceeding with its first answer ({err2})')
+                self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': 'free-slot rule violated twice by the Selector; proceeded'})
         if self.wildcard:
             if wild:
                 wild['type'] = 'explore'; wild['wildcard'] = True
@@ -213,6 +233,7 @@ class Loop:
                 self.log(f"  wildcard: [{wild.get('target_component')}] {str(wild.get('hypothesis'))[:120]}")
             elif werr:
                 self.log(f'  wildcard unavailable: {werr}')
+        selections = self._apply_rules(selections)                  # ADR-0014: closed mechanisms, hard groups, information
         if not selections:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: selector failed ({err})'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
@@ -234,6 +255,8 @@ class Loop:
             hist = self._history_for(nd['sel'])
             code, critic, err = self._implement_with_critic(nd['sel'], nd['parent_code'], nd['extra_code'], hist)
             nd['critic'] = critic
+            if nd['sel'].get('parent_n') != nd['parent']:          # the Critic rebased the candidate onto another node (ADR-0014)
+                nd['parent'] = nd['sel']['parent_n']; nd['parent_code'] = self.code_of(nd['parent'])
             if code is None:
                 self.j.node_path(nd['n']).write_text(nd['parent_code'])          # keep the tree consistent
                 nd['error'] = err or 'implementer produced no script'
@@ -287,7 +310,7 @@ class Loop:
                         accepted, conf = self._confirm_with_seeds(nd['n']); rec['seed_confirmation'] = conf
                 rec['accepted'] = accepted
             else:
-                rec['error'] = rec['error'] or nd['error']
+                rec['error'] = rec['error'] or nd['error'] or 'no runnable script produced'
             self.state['nodes'][str(nd['n'])].update({k: rec.get(k) for k in ('realized_delta', 'accepted', 'seed_confirmation', 'single_seed_accept', 'error', 'identical_to_parent')})
             self.j.append(rec); results.append(self._result_view(rec))
             self.log(f"node_{nd['n']:03d} [{rec['target_component']}] " + (
@@ -357,7 +380,9 @@ class Loop:
     def _maybe_librarian(self, g, improved, results):
         """After a flat generation, when fewer than k untried cards remain, ask the Librarian (web search) for two
         new cards; at most librarian_max times per run (ADR-0013)."""
-        if improved or self.state.get('librarian_calls', 0) >= self.librarian_max or len(P.untried_cards()) >= self.k:
+        if improved or self.state.get('librarian_calls', 0) >= self.librarian_max:
+            return
+        if len(P.untried_cards()) >= self.k and self.state.get('streak', 0) < 2:   # ADR-0014: two flat generations also call it
             return
         from .librarian import run_librarian
         self.state['librarian_calls'] = self.state.get('librarian_calls', 0) + 1
@@ -431,6 +456,73 @@ class Loop:
             n = int(m.group(1))
         return n if str(n) in self.state['nodes'] and self.node(n).get('metrics') else None
 
+    # ---------------- ADR-0014 slot rules (code, not prose) ----------------
+    INPUT_COLUMNS = ('user_id', 'video_id', 'date', 'hourmin', 'time_ms', 'tab', 'duration_ms', 'is_rand', 'author_id', 'video_type',
+                     'upload_dt', 'upload_type', 'visible_status', 'video_duration', 'server_width', 'server_height', 'music_id',
+                     'music_type', 'tag', 'user_active_degree', 'is_lowactive_period', 'is_live_streamer', 'is_video_author',
+                     'follow_user_num', 'fans_user_num', 'friend_user_num', 'register_days', 'onehot_feat', 'is_click', 'is_like',
+                     'is_follow', 'is_comment', 'is_forward', 'is_hate', 'play_time_ms', 'profile_stay_time', 'comment_stay_time',
+                     'is_profile_enter', 'long_view')
+
+    def inputs_of(self, n):
+        """Columns and side-table fields a node's script references — the Explorer must add a signal outside this set."""
+        try:
+            code = self.code_of(n)
+        except Exception:      # noqa: BLE001
+            return []
+        return [c for c in self.INPUT_COLUMNS if re.search(r'\b' + re.escape(c) + r'\b', code)]
+
+    def _proven_not_on_stack(self):
+        stack = self.stack_of(self.state['champion'])
+        return [c for c in P.proven_cards() if c not in stack]
+
+    def _rejected_deepens(self):
+        return [r for r in self.state['nodes'].values() if r.get('action') == 'deepen' and r.get('metrics') and not r.get('accepted')]
+
+    def _closed_mechanisms(self):
+        """mechanism slug -> rejected deepen nodes; a rejected mechanism is not deepened again this run."""
+        out = {}
+        for r in self._rejected_deepens():
+            m = _slug(r.get('mechanism'))
+            if m:
+                out.setdefault(m, []).append(r['n'])
+        return out
+
+    def _hard_groups(self):
+        """breakdown group -> rejected deepen nodes, for groups with >= HARD_GROUP_REJECTS of them."""
+        cnt = {}
+        for r in self._rejected_deepens():
+            g_ = str(r.get('target_group') or 'all').strip()
+            if g_.lower() not in ('all', '', 'none'):
+                cnt.setdefault(g_, []).append(r['n'])
+        return {g_: ns for g_, ns in cnt.items() if len(ns) >= C.HARD_GROUP_REJECTS}
+
+    def _free_slot_ok(self, selections):
+        """From FREE_SLOT_FROM_GENERATION on, one candidate must take an untried card or a proven card not on the stack."""
+        eligible = set(P.untried_cards()) | set(self._proven_not_on_stack())
+        if not eligible:
+            return True
+        return any(s.get('card') in eligible and s.get('type') in ('improve', 'retest', 'explore') for s in selections)
+
+    def _apply_rules(self, selections):
+        """Drop candidates the rules forbid: a deepen of a closed mechanism or of a hard group, a wildcard without new_signal."""
+        closed, hard, out = self._closed_mechanisms(), self._hard_groups(), []
+        for s in selections:
+            h = str(s.get('hypothesis'))[:80]
+            if s.get('type') == 'deepen':
+                m = _slug(s.get('mechanism'))
+                if m and m in closed:
+                    self.log(f"  dropping deepen of closed mechanism {m!r} (rejected in node(s) {closed[m]}): {h}"); continue
+                g_ = str(s.get('target_group') or 'all').strip()
+                if g_ in hard:
+                    self.log(f"  dropping deepen on hard group {g_!r} (rejected deepens {hard[g_]}): {h}"); continue
+            if s.get('wildcard'):
+                sig = str(s.get('new_signal') or '').strip()
+                if len(sig) < 8 or sig.lower() in ('none', 'n/a', 'null'):
+                    self.log(f"  dropping wildcard without a new_signal (capacity-only proposals are closed, ADR-0014): {h}"); continue
+            out.append(s)
+        return out
+
     def _resolve_parents(self, sel):
         """The parent a candidate is built on. A deepen/retest of a specific node must branch from THAT node — live_05's
         node_014 named node_012 as a string, was silently built on the champion, and the Critic rejected it three times
@@ -476,6 +568,15 @@ class Loop:
                 return code, critic_log, None
             if verdict['verdict'] == 'veto':
                 return None, critic_log, 'vetoed by critic: ' + '; '.join(verdict.get('reasons', []))[:300]
+            nb = self._node_ref(verdict.get('rebase_to')) if verdict.get('rebase_to') not in (None, '', 'null') else None
+            if nb is not None and nb != sel.get('parent_n') and str(nb) in self.state['nodes'] and self.j.node_path(nb).exists():
+                # ADR-0014: the hypothesis edits a specific node but the candidate was built on another script — hand the
+                # Implementer the right parent instead of letting it re-implement that node's mechanism (live_06 node_020)
+                self.log(f"  critic: rebasing the candidate onto node_{nb:03d} (was node_{sel.get('parent_n', self.state['champion']):03d})")
+                sel['rebased_from'] = sel.get('parent_n'); sel['parent'] = sel['parent_n'] = nb; parent_code = self.code_of(nb)
+                sel['critic_instructions'] = (f"The parent script is now node_{nb:03d} (the harness rebased the candidate as the Critic asked): "
+                                              f"edit THAT script for the hypothesis only. " + (verdict.get('instructions') or ''))
+                continue
             sel['critic_instructions'] = verdict.get('instructions') or '; '.join(verdict.get('reasons', []))
         return None, critic_log, 'critic requested revisions three times'
 

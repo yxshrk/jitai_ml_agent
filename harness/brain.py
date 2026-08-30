@@ -201,7 +201,8 @@ class LLMBrain(Brain):
             h = parse_header(t)
             if h.get('verdict') not in ('ok', 'revise', 'veto'):
                 raise ParseError('verdict must be ok | revise | veto')
-            return {'verdict': h['verdict'], 'reasons': h.get('reasons', []), 'instructions': h.get('instructions', '')}
+            return {'verdict': h['verdict'], 'reasons': h.get('reasons', []), 'instructions': h.get('instructions', ''),
+                    'rebase_to': h.get('rebase_to')}   # ADR-0014: 'revise' onto another node's script
         return self._with_retry('critique', P.user_critique(ctx, code, selection, diff_text), parse)
 
     def fix(self, ctx, code, error, log_tail):

@@ -208,6 +208,25 @@ va = sorted(rows['valid'], key=lambda x: (x[0], x[10])); prev = {}; same = new =
 for x in va:
     u, a = x[0], vid2author.get(x[1], 'UNK')
     same += prev.get(u) == a; new += ua_seen[(u, a)] == 0; seen3 += ua_seen[(u, a)] >= 3; prev[u] = a
+# session position / density / gap (label-free), tab 1 only
+pos_g = collections.defaultdict(list); gap_g = collections.defaultdict(list); den_g = collections.defaultdict(list)
+prev_t = {}; sess = {}; recent = collections.defaultdict(list)
+for x in tr:
+    u, t, tab, y = x[0], x[10], x[4], x[5]
+    pt = prev_t.get(u); g_min = (t - pt) / 60000 if pt else None
+    if g_min is None or g_min > 30: sess[u] = 0
+    sess[u] += 1
+    if tab == '1':
+        pos_g['1' if sess[u] == 1 else '2-3' if sess[u] <= 3 else '4-10' if sess[u] <= 10 else '11-30' if sess[u] <= 30 else '>30'].append(y)
+        if g_min is not None: gap_g['<0.5 min' if g_min < 0.5 else '0.5-2' if g_min < 2 else '2-10' if g_min < 10 else '10-60' if g_min < 60 else '>60 min'].append(y)
+        k = sum(1 for z in recent[u] if t - z < 600000)
+        den_g['0' if k == 0 else '1-3' if k <= 3 else '4-10' if k <= 10 else '>10'].append(y)
+    prev_t[u] = t; recent[u] = [z for z in recent[u] if t - z < 600000] + [t]
+P('\nSession features (label-free, tab 1 only; a session breaks at a gap > 30 min):')
+for name, d, order in (('position in session', pos_g, ['1', '2-3', '4-10', '11-30', '>30']),
+                       ('gap since the previous impression', gap_g, ['<0.5 min', '0.5-2', '2-10', '10-60', '>60 min']),
+                       ('impressions in the previous 10 min', den_g, ['0', '1-3', '4-10', '>10'])):
+    P(f'- {name}: ' + '; '.join(f'{k} → {np.mean(d[k]):.3f} (n={len(d[k]):,})' for k in order if d[k]))
 P(f'\nValid (features only): previous impression by the same author {pct(same, len(va))} of rows; author never seen by the user in train '
   f'{pct(new, len(va))}; user x author with >= 3 train exposures {pct(seen3, len(va))}.\n')
 

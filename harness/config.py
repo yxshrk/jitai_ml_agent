@@ -38,6 +38,19 @@ SEED_SD = 0.0003                  # measured seed-to-seed SD of the validation p
 FORBIDDEN_PATTERNS = ['KuaiRand-Pure', 'log_standard_4_22', 'log_standard_4_08', 'log_random',
                       'private/', 'private\\', 'test_features', 'video_features_statistic', '../']
 
+# ADR-0014: the organizers allow any open-source library; numpy-only was our own contract. These are the libraries
+# installed in the venv that agent scripts may import (the Critic checks the contract's determinism rules).
+AVAILABLE_LIBS = ['numpy', 'pandas 2.3', 'scikit-learn 1.6', 'lightgbm 4.6', 'torch 2.8 (CPU only)']
+HARD_GROUP_REJECTS = 2            # rejected deepens on one breakdown group before it is marked hard (ADR-0014)
+FREE_SLOT_FROM_GENERATION = 2     # from this generation on, one Selector slot goes to an untried / not-yet-stacked card
+
+def libs_text():
+    """The library rule as one sentence, generated from AVAILABLE_LIBS so prompts cannot drift from the contract."""
+    return ('LIBRARIES (ADR-0014): ' + ', '.join(AVAILABLE_LIBS) + ' and the standard library are available to scripts; '
+            'CPU only (never MPS/CUDA); thread count from the OMP_NUM_THREADS environment variable; every library seeded '
+            'from --seed (numpy Generator, torch.manual_seed, LightGBM seed + deterministic=True); SMOKE_EPOCHS caps epochs '
+            'AND boosting rounds.')
+
 def rules_text():
     """The acceptance and convergence rules as one sentence each, generated from the constants above so the text
     the LLM roles read can never drift from what the code does (ADR-0012)."""

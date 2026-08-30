@@ -6,6 +6,13 @@ def diff_lines(a, b):
     """Number of changed lines between two scripts (what the judges would read)."""
     return sum(1 for l in difflib.unified_diff(a.splitlines(), b.splitlines(), lineterm='') if l[:1] in '+-' and l[:3] not in ('+++', '---'))
 
+def _tags(r):
+    """ADR-0014 planning tags carried by a node: the deepen mechanism slug and target group, the wildcard's new signal."""
+    parts = [f"mechanism={r['mechanism']}" for _ in [0] if r.get('mechanism')] + \
+            [f"group={r['target_group']}" for _ in [0] if r.get('target_group')] + \
+            [f"new_signal={str(r['new_signal'])[:60]}" for _ in [0] if r.get('new_signal')]
+    return (' {' + '; '.join(parts) + '}') if parts else ''
+
 class Journal:
     def __init__(self, run_dir):
         self.run_dir = Path(run_dir)
@@ -60,7 +67,7 @@ class Journal:
                         + (f" (\u0394{d:+.4f}" + (f", seed-mean \u0394{c['delta_mean']:+.4f}" if c else '') + (f", expected {e:+.4f}" if isinstance(e, (int, float)) else '')
                            + f" \u2192 {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else ''))
             parent = r.get('parent'); parent = f"node_{parent:03d}" if isinstance(parent, int) else 'root'
-            out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] {r.get('method') or ''}: "
+            out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] {r.get('method') or ''}{_tags(r)}: "
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")
         return out
 

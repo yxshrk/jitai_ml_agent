@@ -15,7 +15,7 @@ Every card has this front matter (all fields required):
 | `source` | paper(s) in `kb/literature/` with section, or the organizer README line |
 | `applies_when` | preconditions, each checkable against a numbered fact in `facts.md` |
 | `expected_delta` | `[lo, hi]` on validation primary, honest against the 0.002 floor and the +0.023 that all of personalisation is worth |
-| `cost` | lines changed / runtime multiplier / dependencies (none allowed beyond numpy) |
+| `cost` | lines changed / runtime multiplier / dependencies (any library the contract lists: numpy, pandas, scikit-learn, LightGBM, torch on CPU — ADR-0014) |
 | `composes_with` / `conflicts_with` | card ids |
 | `status` | `untried` · `proven — accepted on [stack]` · `dead_under [stack ×N (best Δ)]` — aggregated over every stack the card was measured on, recomputed by `distill.py` |
 | `evidence` | journal references once measured |

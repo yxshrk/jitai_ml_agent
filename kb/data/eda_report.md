@@ -147,5 +147,10 @@ Base P(long_view) = 0.337. Rows sorted by (user, time_ms); "prev" = the same use
 
 Share of rows that are same-author-consecutive, by tab (tabs with >= 2,000 rows): tab 1 0.6 %, tab 0 1.0 %, tab 4 1.3 %, tab 2 0.5 %, tab 6 47.5 %, tab 3 0.3 %, tab 5 46.2 %, tab 8 1.2 %
 
+Session features (label-free, tab 1 only; a session breaks at a gap > 30 min):
+- position in session: 1 → 0.418 (n=403,609); 2-3 → 0.387 (n=243,943); 4-10 → 0.333 (n=153,308); 11-30 → 0.243 (n=31,598); >30 → 0.137 (n=2,418)
+- gap since the previous impression: <0.5 min → 0.361 (n=64,608); 0.5-2 → 0.259 (n=57,393); 2-10 → 0.356 (n=177,488); 10-60 → 0.399 (n=200,868); >60 min → 0.417 (n=315,416)
+- impressions in the previous 10 min: 0 → 0.413 (n=535,387); 1-3 → 0.350 (n=275,363); 4-10 → 0.207 (n=23,743); >10 → 0.120 (n=383)
+
 Valid (features only): previous impression by the same author 2.7 % of rows; author never seen by the user in train 96.6 %; user x author with >= 3 train exposures 0.1 %.
 

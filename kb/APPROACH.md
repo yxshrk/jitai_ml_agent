@@ -182,6 +182,23 @@ generation; the Archivist produced three cards from live_04's wildcards for $0.4
 the field-aware stack), each with the measurement and the honest expected range; the Librarian's cards enter as
 `untried` and are judged by measurement like every other card.
 
+## 13. Leaving the model family: any library, and search rules in code (ADR-0014)
+
+Four runs stopped at the same 0.604 — BPR plus a seed average of the organizers' numpy FM — with 38 of 48 cards
+dead and ~0.2 of headroom to the oracle in every tab and duration band. The ceiling was ours: the contract said
+"numpy only", the organizers' rules allow any open-source library. ADR-0014 installs pandas, scikit-learn, LightGBM
+and PyTorch (CPU) under determinism rules the Critic checks (CPU only, threads from the harness, every library
+seeded, `SMOKE_EPOCHS` capping boosting rounds), and adds three cards from the literature: label-free session
+features (position and density are the strongest label-free signals on this data, facts §10.5), LightGBM lambdarank
+over time-safe target statistics, and DIN-style attention over the user's history.
+
+live_06 also showed what a search does when its family is exhausted: five nodes shrinking the dose of one rejected
+mechanism, a "weakest group" that is probably label noise, untried cards locked out by deepen-only slots, and four
+wildcards that added parameters rather than information. Each is now a rule in code, not a hope in prose: one free
+slot per generation (untried card → proven card not on the stack → deepen), rejected mechanisms closed for the run,
+groups with two rejected deepens marked hard, wildcards that must name a new input signal, and a Critic that can
+rebase a candidate onto the node it actually varies. The prompts cite the live_06 numbers so the roles know why.
+
 ## What this is not
 
 Not a pipeline of stage agents; not an LLM judging its own results; not a 50-iteration grind — AIRA shows that

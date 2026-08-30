@@ -4,8 +4,9 @@ Every experiment is ONE self-contained Python script. The harness runs it as
 
     python <script>.py --data-dir data --out-dir <out> --seed <int> [--score-extra <csv>]
 
-with the current directory = this `workspace/` folder. Available: Python 3.9, numpy. (Other libraries only if the
-harness config lists them.) `from evaluate import evaluate` gives you the official scorer.
+with the current directory = this `workspace/` folder. Available: Python 3.9 with numpy, pandas, scikit-learn,
+LightGBM and PyTorch (CPU) — see "Libraries and determinism" below. `from evaluate import evaluate` gives you the
+official scorer.
 
 ## Inputs (read only from `--data-dir`)
 | file | columns | notes |
@@ -31,8 +32,23 @@ Rules baked into the data:
   also write `predictions_extra.csv` with the same header as `predictions.csv`, one line per row of that file, in order.
   The harness uses this once, at the end, on the hidden test features. The model must be the one selected on valid.
 
+## Libraries and determinism (ADR-0014)
+The organizers allow any open-source library; this workspace provides `numpy`, `pandas 2.3`, `scikit-learn 1.6`,
+`lightgbm 4.6` and `torch 2.8` (CPU build). Rules that keep runs reproducible and the parallel branches fair:
+- **CPU only.** `torch.device('cpu')`; never MPS or CUDA (non-deterministic, and branches share the machine).
+- **Threads come from the harness**: `n = int(os.environ.get('OMP_NUM_THREADS', '1'))`; pass it as
+  `torch.set_num_threads(n)` and LightGBM `num_threads=n`. Never spawn your own worker processes.
+- **Seed everything from `--seed`**: `np.random.default_rng(seed)`, `torch.manual_seed(seed)`,
+  LightGBM `seed=seed, deterministic=True, force_row_wise=True`; scikit-learn `random_state=seed`.
+- **`SMOKE_EPOCHS` caps boosting rounds as well as epochs** (e.g. `n_estimators=min(n_estimators, SMOKE_EPOCHS)`).
+- **`metrics.json` `history` still needs one entry per epoch or per evaluation checkpoint** (for trees: every N rounds
+  via a callback or staged prediction) — the learning curve is how over/underfitting is diagnosed.
+- Budget: the numpy FM parent takes ~15 s; LightGBM with ~500 trees on the full train split takes 1–3 minutes at
+  4 threads; a small torch model 5–20 minutes. The 30-minute cap and the 120 s smoke test are unchanged.
+
 ## Behaviour
-- Honour the environment variable `SMOKE_EPOCHS` (an integer): when set, cap every training phase at that many
-  epochs. The harness smoke-tests every script with `SMOKE_EPOCHS=1` and a 120 s timeout before the real run.
+- Honour the environment variable `SMOKE_EPOCHS` (an integer): when set, cap every training phase (epochs and
+  boosting rounds) at that many. The harness smoke-tests every script with `SMOKE_EPOCHS=1` and a 120 s timeout
+  before the real run.
 - Deterministic given `--seed`. Full run must finish within 30 minutes on CPU.
 - The harness re-scores `predictions.csv` itself with the official `evaluate.py`; your `metrics.json` is diagnostic.

@@ -95,3 +95,9 @@ base P(long_view) = 0.337; reproduced by `eda.py` — exact table in `eda_report
    rows are repeated (user, video) pairs (§8). live_04 node_005 (exposure count 0/1/2/3+ and log time-since) scored
    −0.0005 on one seed, unconfirmed — a candidate for a cleaner retest (within-window exposure sequence, tab-aware)
    rather than a dead lever.
+5. **Session position and density are the strongest label-free signals measured** (tab 1 only, train; base 0.337):
+   P(long_view) by position in the session (a gap > 30 min starts a new one) 1st 0.418 · 2nd–3rd 0.387 · 4th–10th 0.333 ·
+   11th–30th 0.243 · beyond 0.137; by impressions in the previous 10 min 0 → 0.413 · 1–3 → 0.350 · 4–10 → 0.207 ·
+   > 10 → 0.120; by gap since the previous impression < 0.5 min 0.361 · 10–60 min 0.399 · > 60 min 0.417. Attention
+   budget per impression is the mechanism; the features vary within a user's list and need only `time_ms` of earlier
+   rows (card `features-exposure-session`).

@@ -1,4 +1,4 @@
-# Harness architecture — the reference (as of ADR-0013; runs `live_04` onward)
+# Harness architecture — the reference (as of ADR-0014; runs `live_07` onward)
 
 **In one paragraph.** A deterministic Python loop (`harness/loop.py`) searches a graph of whole training scripts.
 Each script is a *node*; each node is scored by a code-only referee with the organizers' untouched `evaluate.py`.
@@ -42,6 +42,13 @@ flowchart TD
 - **Adaptive breadth.** k = 5 in generation 1, when nothing is measured and breadth pays (live_04: four of five
   accepted), then 3, growing back toward 5 only for the Consolidator's concrete merge/retest slots (live_04's
   later generations: 20 nodes for one hit). `--k` / `--k-later`.
+- **Slot rules in code (ADR-0014, after live_06).** From generation 2 one Selector slot is *free*: an untried card
+  whose preconditions hold, else a proven card not yet on the champion stack, else a deepen (`_free_slot_ok`, one
+  re-ask). Every deepen carries a `mechanism` slug and a `target_group`; a mechanism rejected this run is closed
+  (`_closed_mechanisms`), a group with two rejected deepens is hard (`_hard_groups`), and `_apply_rules` drops
+  deepens that repeat either. The wildcard must name a `new_signal` absent from the champion's input set
+  (`inputs_of`) or it is dropped. The Critic may answer `rebase_to`, and the loop rebuilds the candidate on that
+  node's script.
 
 ## 2. Inside one branch — the role chain
 
@@ -77,10 +84,10 @@ referee measures that), and it judges scope from the diff against the parent's *
 | role | receives | returns | model / effort |
 |---|---|---|---|
 | Diagnostician | champion curve + metrics (GAUC, nDCG@5, ndcg5_disc) + last generation | ≤ 8 lines: dynamics, which metric half moved per node, next probe, overfitting risk | gpt-5.6-sol / medium |
-| Selector | diagnosis + cards + facts + full journal + consolidator plan + parked ideas | k candidates in priority order, distinct components, calibrated expected Δ with a cited basis, cheapest test, rejected alternative | gpt-5.6-sol / xhigh |
-| Explorer | the same, plus the list of card ids | one off-menu candidate, same schema, flagged WILDCARD | gpt-5.6-sol / xhigh |
+| Selector | diagnosis + cards + facts + full journal + consolidator plan + parked ideas + the ADR-0014 state (untried cards, proven cards not on the stack, closed mechanisms, hard groups, champion inputs) | k candidates in priority order, distinct components, the free slot first from generation 2, `mechanism` + `target_group` on deepens, calibrated expected Δ with a cited basis, cheapest test, rejected alternative | gpt-5.6-sol / xhigh |
+| Explorer | the same, plus the list of card ids | one off-menu candidate, same schema plus `new_signal` (an input the champion does not read), flagged WILDCARD | gpt-5.6-sol / xhigh |
 | Implementer | one candidate + parent script + parent stack + same-component history (+ critic instructions on a revise) | the whole script with only the necessary lines changed | gpt-5.6-sol / xhigh |
-| Critic | candidate + unified diff + parent docstring/stack + script | ok / revise / veto — leakage, contract, scope; terse on ok | gpt-5.6-sol / medium |
+| Critic | candidate + unified diff + parent docstring/stack + script | ok / revise / veto — leakage, contract, scope, information (wildcards), library determinism; `rebase_to` when the diff is against the wrong parent; terse on ok | gpt-5.6-sol / medium |
 | Fixer | failing script + error + log tail | minimal patch + note | gpt-5.6-sol / medium |
 | Consolidator | all verdicts of the generation | plan of ≤ k slots: merge / retest / explore | gpt-5.6-sol / medium |
 | Archivist | a measured wildcard: record + diff + run journal + card schema | a new card (or `duplicate_of` an existing one) | gpt-5.6-sol / medium |
@@ -134,7 +141,8 @@ When a run ends: **distill** folds every card-node into its card — a `## Measu
 seed-mean Δ, t, verdict, diff size, NO-OP), the `run:node` reference, and a `status` aggregated over all stacks
 (`proven — accepted on [stack]` · `dead_under [stack ×N (best Δ)]` · `untried`) with a one-line verdict; the
 **Archivist** turns every measured wildcard into a new card written from its actual diff (code fixes status,
-evidence and the measurement; the validator gates it). The **Librarian** adds web-searched cards after flat
+evidence and the measurement; the validator gates it); a Selector deepen named `<card id> — <variant>` is filed as a
+measurement of the base card with the variant text, not as a card (ADR-0014). The **Librarian** adds web-searched cards after flat
 generations and on demand. The next run's Selector opens with the status table, so a method dead on one stack can
 be argued for a retest only when the stack changes, and yesterday's wildcard is today's menu item.
 
@@ -144,6 +152,15 @@ Nodes and generations are both counted (ADR-0006: `--iteration-unit node|generat
 counts). Every LLM call records input, cached, output and reasoning tokens, web searches, seconds and response id,
 attributed to a node or a generation. `--budget-usd` stops the run on estimated spend. Wall-clock is recorded per
 node and per run and survives resumes.
+
+## 6b. Libraries and determinism (ADR-0014)
+
+Agent scripts may import numpy, pandas, scikit-learn, LightGBM and PyTorch (CPU); `config.AVAILABLE_LIBS` and
+`libs_text()` generate the sentence every role reads, and `workspace/CONTRACT.md` states the rules: CPU only, thread
+count from `OMP_NUM_THREADS` (the runner sets it to `cores // k` per branch), every library seeded from `--seed`,
+`SMOKE_EPOCHS` capping boosting rounds too, the learning curve still required. The Critic checks these; the seed
+confirmation catches what it misses (a non-deterministic script cannot pass a fresh-seed z-test by accident twice).
+`tests/test_rules_adr0014.py` runs LightGBM + torch under the runner twice and asserts identical predictions.
 
 ## 7. The firewall (ADR-0005)
 

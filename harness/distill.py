@@ -67,13 +67,29 @@ def summarize(text):
     body_tail = '\n_Verdict:_ ' + verdict + '\n' + '\n'.join(l for l in tail_lines if l.strip())
     return f'---\n{fm}\n---\n{head}## Measured{body_tail}\n'
 
-def _measured_line(ref, r, stack, run_id):
+def _card_for(method, methods_dir):
+    """The card a node's method name refers to. A Selector deepen names its card as '<card id> — <variant>' (live_06:
+    'loss-bpr-pairwise-within-user — same-tab long-duration stream'); such a node is a measurement of the base card, not a
+    new card (ADR-0014). Returns (card path or None, variant text or None)."""
+    method = str(method or '')
+    direct = methods_dir / f"{method}.md"
+    if direct.exists():
+        return direct, None
+    for sep in (' — ', ' – ', ' -- '):
+        if sep in method:
+            base, variant = method.split(sep, 1)
+            if (methods_dir / f"{base.strip()}.md").exists():
+                return methods_dir / f"{base.strip()}.md", variant.strip()
+    return None, None
+
+def _measured_line(ref, r, stack, run_id, variant=None):
     """One exact evidence line for a card's ## Measured section, plus the provisional status it implies."""
     m = r.get('metrics') or {}; conf = r.get('seed_confirmation') or {}
+    sv = f" (variant: {variant})" if variant else ''
     if not m:
-        return (f"- {ref} on [{stack}]: FAILED at {r.get('failure_stage')} — {str(r.get('error'))[:120]} (recovery: {r.get('recovery')})", None)
+        return (f"- {ref} on [{stack}]{sv}: FAILED at {r.get('failure_stage')} — {str(r.get('error'))[:120]} (recovery: {r.get('recovery')})", None)
     d1 = r.get('realized_delta'); dm = conf.get('delta_mean')
-    line = (f"- {ref} on [{stack}]: primary {m['primary']:.4f}, single-seed Δ {d1:+.4f}"
+    line = (f"- {ref} on [{stack}]{sv}: primary {m['primary']:.4f}, single-seed Δ {d1:+.4f}"
             + ((f", seed-mean Δ {dm:+.4f} (z {conf['z']})" if 'z' in conf else f", seed-mean Δ {dm:+.4f} (t {conf.get('t')})") if dm is not None else '')
             + (' — NO-OP (predictions identical to the parent)' if r.get('identical_to_parent') else '')
             + f" — {'ACCEPTED' if r.get('accepted') else 'rejected'}; {r.get('diff_lines')} changed lines")
@@ -129,7 +145,7 @@ def _archivable(r, methods_dir):
     """Wildcards, and Selector candidates naming a card that does not exist, once they have a measurement."""
     if r.get('n') is None or not r.get('metrics') or r.get('action') not in ('improve', 'merge', 'retest', 'explore', 'deepen'):
         return False
-    return bool(r.get('wildcard')) or (bool(r.get('method')) and not (methods_dir / f"{r['method']}.md").exists())
+    return bool(r.get('wildcard')) or (bool(r.get('method')) and _card_for(r['method'], methods_dir)[0] is None)
 
 def archive(run_id, brain, methods_dir=None, log=print):
     """ADR-0013: every measured wildcard becomes a card, written by the Archivist role from the node's actual diff and
@@ -204,12 +220,12 @@ def distill(run_id, methods_dir=None, log=print):
     for r in recs:
         if r.get('action') not in ('improve', 'merge', 'retest', 'explore', 'deepen') or not r.get('method'):
             continue
-        card = methods_dir / f"{r['method']}.md"
-        if not card.exists():
+        card, variant = _card_for(r['method'], methods_dir)
+        if card is None:
             log(f"  no card for method {r['method']!r} (node_{r['n']:03d}); the Archivist handles wildcards"); continue
         ref = f"{run_id}:node_{r['n']:03d}"
         stack = _stack(nodes, r['parent']) if r.get('parent') is not None else 'official FM'
-        line, status = _measured_line(ref, r, stack, run_id)
+        line, status = _measured_line(ref, r, stack, run_id, variant)
         if _add_measurement(card, ref, line, status, log):
             touched[card.name] = status or 'noted'
             log(f"  {card.name}: {status or 'noted'}  <- {ref}")

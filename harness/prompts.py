@@ -83,7 +83,7 @@ You perform exactly one role per call and answer in the required format. The fac
 dataset; treat them as ground truth. A card's status says what was measured in SOME run on SOME stack; what the
 current champion script actually contains is stated as 'Champion stack' in the context — never assume a method is
 in a script because its card is proven. There is no test data anywhere you can see; never look for it.
-All code must follow the script contract. Only numpy and the standard library are available."""
+All code must follow the script contract. """ + C.libs_text()
 
 ROLE_SYSTEM = {
  'diagnose': """Role: DIAGNOSTICIAN. Write <= 8 lines of plain text (no code) from the champion's learning curve, its metrics
@@ -96,17 +96,28 @@ loss change that moves GAUC but not nDCG points at top-of-list ordering; a featu
 (5) from the per-group breakdown (tabs, duration bands) and each node's by_group_delta: WHERE the champion is weakest
 and which node moved which group — the deepen slot should target that. Group metrics are computed within group and
 within user on SHORTER lists, so a group's nDCG@5 is a map of relative weakness, not comparable to the overall number
-(tab=0 or dur=0 users are mostly all-negative, so their nDCG is near zero whatever the model does).""",
+(tab=0 or dur=0 users are mostly all-negative, so their nDCG is near zero whatever the model does). Groups listed as
+HARD in the state (>= HARD_GROUP_REJECTS rejected deepens; likely irreducible label noise — a long video needs only 18 s of play
+to be a positive) are not "next": say so in one clause and move on.""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
 target_components; fill the Consolidator's slots (merge / retest / deepen / explore) first, then the highest expected
-gain per cost given the diagnosis; from generation 2 on EVERY candidate of yours must DEEPEN (type "deepen") unless it fills a
+gain per cost given the diagnosis; from generation FREE_SLOT_FROM_GENERATION on, your FIRST candidate is the FREE SLOT (ADR-0014),
+filled in this priority: (i) an "untried" card whose applies_when holds against the facts, (ii) a proven card not yet
+measured on the current champion stack, (iii) only if the context lists neither, a deepen — the state lists both sets;
+code checks that the free slot is used and asks once more if it is not (two runs left history-same-author-run-features
+untried because every later slot deepened); every OTHER candidate of yours must DEEPEN (type "deepen") unless it fills a
 Consolidator merge/retest slot: a specific variant of the champion's own mechanism, or of a near-miss (|delta| <=
 0.0005, unconfirmed), driven by the per-group breakdown and the diagnosis — e.g. negatives per positive, tab-stratified
 pair sampling, a schedule change on the champion, a second iteration of a feature that moved one group — never a new
 single-shot idea (the Explorer's slot is for those); depth beats breadth here (four runs: the confirmed gains came from
 iterating two families, the wide generations returned flat single shots); never repeat an idea already measured on the
-same parent unless it is a planned retest;
+same parent unless it is a planned retest. A deepen carries "mechanism" (a short slug of the mechanism family, e.g.
+long-duration-matched-pairs) and "target_group" (a breakdown group such as dur>180s or tab=4, or "all"): a mechanism
+rejected this run is CLOSED for deepening for the rest of the run (the state lists them; code drops repeats) — the next
+deepen must change the mechanism, not the dose, the sampling fraction or the group (live_06 spent five nodes shrinking
+one rejected mechanism: 10 %% -> 5 %% -> 2.5 %%); groups marked HARD in the state are not deepen targets; a deepen of a
+near-miss node edits THAT node's script, so its "parent" is that node's id;
 prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
 ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
@@ -121,14 +132,21 @@ Output exactly one fenced block:
   "expected_delta": 0.002, "expected_delta_basis": "<one sentence citing a card range, a numbered data fact or a journal line>",
   "cheapest_test": "<the smallest code change that tests the hypothesis>",
   "rejected_alternative": {"card": "...", "reason": "..."},
-  "parent": "champion", "merge_parents": [<node ids, only for merge>]}]}
+  "mechanism": "<deepen only: slug of the mechanism family>", "target_group": "<deepen only: breakdown group or all>",
+  "parent": "<node whose script is edited: champion for a variant of the champion; the near-miss node's id for a variant of that node (a deepen of node_010 -> 10)>",
+  "merge_parents": [<node ids, only for merge>]}]}
 ```""" % TARGET_COMPONENTS,
  'explore': """Role: EXPLORER (the wildcard slot). Propose exactly ONE candidate that is NOT a card on the menu as it stands:
 (a) a combination of two mechanisms the cards treat separately, (b) a technique from ranking / recommendation
 research that no card covers (name the paper or idea), or (c) an unconventional idea grounded in a numbered data
 fact — the tab x duration structure, the repeated (user, video) pairs, the 18-second threshold, the volume collapse
-after 04-12, the closed catalogue. Constraints: one target_component; implementable in numpy in under 120 changed
-lines starting from the champion; not a hyper-parameter tweak; not something the journal already measured. Prefer
+after 04-12, the closed catalogue. Constraints: one target_component; implementable with the contract's libraries in under
+120 changed lines starting from the champion; not a hyper-parameter tweak; not something the journal already measured;
+and it must ADD INFORMATION (ADR-0014): a signal absent from the champion's input set (listed in the state as 'Champion
+input set') — an exposure/session feature from earlier rows, a side-table field, a history statistic, a library model
+that uses the inputs differently — named in "new_signal" with where it comes from. Capacity-only proposals (higher-order
+terms, tensors, extra heads over the same id fields) are dropped by code: live_06's four such wildcards measured -0.0026,
+-0.0007, -0.0005 and -0.0004 on five id fields where capacity is not the bottleneck. Prefer
 mechanisms orthogonal to what the champion stack already contains (see 'Champion stack' in the context; do not
 assume anything else is in it). Be bold on the idea, honest on
 expected_delta (lower third of what a card in that family would promise). Output exactly one fenced block with
@@ -138,14 +156,17 @@ exactly these fields:
   "hypothesis": "<one sentence: what changes and why it should help>", "expected_delta": 0.002,
   "expected_delta_basis": "<one sentence citing a paper, a numbered data fact or a journal line>",
   "cheapest_test": "<the smallest code change that tests it>",
-  "rejected_alternative": {"card": "<another idea you considered>", "reason": "..."}, "parent": "champion"}]}
+  "rejected_alternative": {"card": "<another idea you considered>", "reason": "..."},
+  "new_signal": "<the input signal the champion does not have, and which rows/table it is computed from>", "parent": "champion"}]}
 ```""" % TARGET_COMPONENTS,
  'implement': """Role: IMPLEMENTER. EDIT the parent script; do not rewrite it. Return the parent script with ONLY the lines the
 hypothesis requires changed, added or removed — keep every other line byte-for-byte, including the module
 docstring (you may append one line to it), comments, import order, function names and the output code. The diff is
 what the judges read: a one-component change is typically 5-80 changed lines; a diff above ~150 lines for an
 "improve" node is a defect and will be sent back. Never restructure, rename, reformat, or "clean up".
-Requirements: numpy + stdlib only; must finish in < 30 minutes on CPU (the parent takes ~15 s); predictions.csv and
+Requirements: only the libraries the contract lists (numpy, pandas, scikit-learn, LightGBM, torch on CPU), seeded and
+thread-limited exactly as the contract says; must finish in < 30 minutes on CPU (the numpy FM parent takes ~15 s; budget
+trees and torch epochs accordingly); predictions.csv and
 metrics.json exactly per contract (metrics.json must include the per-epoch history); deterministic given --seed;
 read only from --data-dir; never mention any path outside --data-dir anywhere in the file, not even in a comment or
 docstring; never use an outcome column as a feature of the row being scored; history features only from rows
@@ -168,10 +189,17 @@ implements the stated hypothesis and nothing else. The parent's stack is stated 
 not add, remove or swap a loss, sampler, feature, schedule or ensemble that the hypothesis does not name — whatever
 the cards mark as proven, and whatever the candidate's own text claims the parent contains. If the diff is far larger
 than the hypothesis needs, say "revise" with the instruction to return the parent script with only the necessary edits. A minor over-reach that does not change the hypothesis (e.g. a coefficient
-also applied to a second matrix) is a NOTE in reasons, not a revise.
+also applied to a second matrix) is a NOTE in reasons, not a revise. (4) INFORMATION — for a wildcard (type explore)
+the diff must add the named new_signal as an input; if it only adds capacity over the champion's existing inputs, say
+"revise" with the instruction to implement the named signal. (5) LIBRARIES — the contract's determinism rules: CPU only,
+threads from OMP_NUM_THREADS, every library seeded from --seed, SMOKE_EPOCHS capping boosting rounds too.
+REBASE: when the hypothesis deepens or edits a SPECIFIC earlier node (e.g. a variant of node_010) but the diff is against
+another script, answer "revise" with "rebase_to": <that node id> — the harness hands the Implementer that node's script
+for the next round; never ask for a re-implementation of the other node's mechanism on the wrong parent (live_06 lost a
+slot to three such rounds).
 Be terse: if the verdict is ok, give at most two short reasons; spend words only on problems. Veto only for leakage
 or test access; everything else is revise (code changes only) or ok. Output exactly one fenced block:
-```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<exact code changes, if revise>"}```""",
+```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<exact code changes, if revise>", "rebase_to": <node id, only with revise when the candidate must be built on another node's script, else null>}```""",
  'fix': """Role: FIXER. The script failed. Return the corrected WHOLE script with the minimal change that fixes the error
 without altering the hypothesis. If the failure is a timeout, reduce cost (fewer epochs, vectorise the slow loop)
 while keeping the method. Output exactly: ```json {"note": "<what was wrong and what you changed>"}``` followed by one
@@ -184,7 +212,7 @@ improve, one slot from the runner-up lineage or an untried family. Leave the rem
 Do NOT decide acceptance — the referee already did. Output exactly one fenced block:
 ```json {"note": "<two lines of reasoning>", "plan": [{"type": "merge", "merge_parents": [3, 5], "hypothesis": "..."},
  {"type": "retest", "parent": "champion", "card": "...", "hypothesis": "...", "reason": "..."},
- {"type": "deepen", "parent": "champion", "card": "...", "hypothesis": "<a specific variant of the champion's mechanism, driven by the per-group breakdown>"},
+ {"type": "deepen", "parent": "<the node whose script is edited: champion, or the near-miss node's id (a deepen of node_010 -> 10)>", "card": "...", "mechanism": "<slug>", "target_group": "<group or all>", "hypothesis": "<a specific variant of that node's mechanism, driven by the per-group breakdown; never a closed mechanism or a hard group>"},
  {"type": "explore", "parent": 2, "card": "...", "hypothesis": "..."}]}```""",
 }
 
@@ -205,17 +233,19 @@ ROLE_SYSTEM['librarian'] = """Role: LIBRARIAN. Extend the menu with PUBLISHED me
 the run journal (what is alive, what died on which stack, what nobody tried). Use web search to find concrete sources — papers,
 competition write-ups (KDD Cup, RecSys Challenge, Kaggle, WSDM Cup), open-source recommender libraries (RecBole, DeepCTR, LightFM,
 xLearn, TorchRec) — then check every candidate against Foundations (a user-constant term cannot move the metric) and the constraints
-(numpy only, one CPU, script under 30 min, no test access, no pretrained weights, edits of node_000). Propose exactly n cards, each a
+(the contract's libraries — numpy, pandas, scikit-learn, LightGBM, torch on CPU — one CPU, script under 30 min, no test access, no pretrained weights, edits of node_000). Propose exactly n cards, each a
 DIFFERENT mechanism from every existing card and from each other; preconditions checkable against numbered facts; expected_delta
 honest against the 0.0005-0.005 range the journal shows; target_component must be one of %s (an optimizer or
 learning-rate change is training-schedule; a new feature is features; a new interaction model is model); How to implement = a
-concrete numpy edit of node_000 in at most 12 lines;
+concrete edit of node_000 in at most 12 lines (any contract library);
 source = citation with URL. Prefer methods a Selector would plausibly pick next generation over exotic ones. Same schema as the menu
 cards; status: untried; evidence: []; ## Measured "(none yet)"; at most 60 lines each. Output exactly: ```json {"cards": [{"id": "<id>",
 "source_url": "<url>", "why_now": "<one line tied to the journal evidence>"}]}``` followed by one ```card ... ``` block per card, in
 the same order."""
 
-ROLE_SYSTEM['select'] = ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('Z_CRIT', str(C.Z_CRIT))
+ROLE_SYSTEM['select'] = (ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('Z_CRIT', str(C.Z_CRIT))
+                        .replace('FREE_SLOT_FROM_GENERATION', str(C.FREE_SLOT_FROM_GENERATION)))
+ROLE_SYSTEM['diagnose'] = ROLE_SYSTEM['diagnose'].replace('HARD_GROUP_REJECTS', str(C.HARD_GROUP_REJECTS))
 ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
 
 _STABLE = None
@@ -244,6 +274,10 @@ def refresh_menu():
 def untried_cards():
     return sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md'
                   and _front_fields(p.read_text()).get('status', '').startswith('untried'))
+
+def proven_cards():
+    return sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md'
+                  and _front_fields(p.read_text()).get('status', '').startswith('proven'))
 
 def run_block(generation, digest):
     """The exact run journal, frozen at the start of a generation: identical for every call of that generation, so
@@ -278,10 +312,22 @@ def _state(ctx):
             f"Champion stack (accepted methods actually in its script): [{ctx.get('champion_stack', 'official FM')}]\n"
             f"Champion learning curve (epoch:valid primary): {curve}\n"
             + _breakdown(ch)
+            + _rules_state(ctx)
             + f"Best-so-far {ctx['best']:.4f}; non-improving generation streak {ctx['streak']} "
             f"(converged at {C.N_CONVERGE}); baseline valid primary {C.BASELINE_VALID_PRIMARY}.\n"
             f"Journal index (one line per node; the full record with diffs is the '# Run journal' section of your instructions):\n"
             + ('\n'.join(ctx['journal_lines']) or '(empty)'))
+
+def _rules_state(ctx):
+    """ADR-0014 planning state: what the free slot may take, what is closed, what is hard, what the champion reads."""
+    hard = ctx.get('hard_groups') or {}; closed = ctx.get('closed_mechanisms') or {}
+    return (f"Untried cards (free-slot priority 1): {', '.join(ctx.get('untried') or []) or 'none'}\n"
+            f"Proven cards not in the champion stack (free-slot priority 2): {', '.join(ctx.get('proven_not_on_stack') or []) or 'none'}\n"
+            f"Champion input set (columns / side-table fields its script references): {', '.join(ctx.get('champion_inputs') or []) or 'unknown'}\n"
+            f"Closed mechanisms (deepens rejected this run; not to be deepened again): "
+            + ('; '.join(f"{m} (node(s) {ns})" for m, ns in closed.items()) if closed else 'none') + '\n'
+            f"HARD groups (>= {C.HARD_GROUP_REJECTS} rejected deepens; likely irreducible, move on): "
+            + ('; '.join(f"{g} (node(s) {ns})" for g, ns in hard.items()) if hard else 'none') + '\n')
 
 def _breakdown(ch):
     bg = (ch.get('metrics') or {}).get('by_group') or {}
@@ -300,7 +346,10 @@ def user_select(ctx):
             f"Parked ideas (measured before, retest only with a reason): {json.dumps(ctx.get('parked', []), default=str)}\n"
             f"Choose exactly k = {ctx['k']} candidates, in priority order. One generation slot belongs to an Explorer role "
             f"whose target_component you cannot see: if it collides with one of yours, that one is dropped and your last "
-            f"candidate takes the slot — so make the last one a genuine reserve, not a throwaway.")
+            f"candidate takes the slot — so make the last one a genuine reserve, not a throwaway."
+            + ("\n\nYour previous answer had NO FREE-SLOT candidate (ADR-0014): put exactly one candidate FIRST with type "
+               "\"improve\" and a card from the untried / not-in-champion-stack lists in the state, then the rest."
+               if ctx.get('free_slot_violation') else ''))
 
 def user_explore(ctx):
     cards = sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []

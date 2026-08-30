@@ -194,3 +194,31 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   cached), not 3.39 M as first written. Per-role in live_05: the Diagnostician (first call of each generation) and
   the Librarian (called after ~10 min of training, when the provider cache has expired) pay the uncached prefix.
 
+### live_06 (first run with the live_05 fixes) — converged; plateau confirmed; ADR-0014
+- **live_06**: converged at generation 5 — 21 nodes, 38 min, $10.74 (64 calls, 2.41 M input tokens of which 1.56 M
+  cached, 190 K output). Generation 1: BPR accepted (+0.0013, z 3.6) and a seed average of the FM accepted (+0.0013,
+  z 3.2); generation 2: their merge, node_007 (BPR + 5-seed rank average), accepted at +0.0016 over BPR (z 3.8),
+  fresh-seed mean **0.6044** — identical to live_04's submitted node_015 (0.6043). Generations 3–5 flat (twelve
+  nodes, ~$7): the best, node_010 (long-duration specialists), +0.0003 at z 0.6. Champion and designated node_007;
+  submission unchanged. The literal ε rule stopped at the same generation.
+- Mechanics: node_020 died at implement — the Consolidator wrote `"parent": "champion"` (its schema example said so
+  verbatim) for a deepen of node_010, and the Critic could only reject the re-implementation three times (215 K
+  tokens). Distill could not match the Selector's `<card> — <variant>` names, so the Archivist minted eight cards for
+  variants of existing ones. The Librarian never fired (more than k untried cards remained).
+- **Review (both sessions agree; peer's four findings adopted):** the plateau is real — four runs at 0.604, 38 of 48
+  cards dead, ~0.2 headroom to the oracle in every group — and the family was our own constraint: the contract said
+  numpy only while `kb/spec/rules.md` allows any open-source library. live_06's flat generations were dose-shrinking
+  deepens (011 → 016 → 019 on one rejected mechanism), a "weakest group" that is probably label noise (long videos need
+  18 s), untried cards locked out by deepen-only slots, and capacity-only wildcards (−0.0026, −0.0007, −0.0005, −0.0004).
+- **ADR-0014** (`kb/adr/0014-libraries-and-slot-rules.md`): pandas 2.3.3, scikit-learn 1.6.1, lightgbm 4.6.0 and
+  torch 2.8.0 (CPU) installed in the venv (no Homebrew on this Mac: LightGBM linked to torch's bundled libomp via an
+  rpath); `CONTRACT.md` gains "Libraries and determinism"; `config.AVAILABLE_LIBS` / `libs_text()` replace every
+  "numpy only" sentence in the prompts. Slot rules in code: free slot from generation 2 (untried → proven-not-on-stack
+  → deepen; one re-ask), `mechanism` + `target_group` on deepens, closed mechanisms, hard groups (≥ 2 rejected
+  deepens), wildcards must name `new_signal`, Critic `rebase_to`, deepen variants filed on the base card, Librarian
+  also after two flat generations. Tests: `tests/test_rules_adr0014.py` (rules, rebase, distill variants, LightGBM +
+  torch deterministic under the runner) — 17 pass.
+- Cards by the review session: `features-exposure-session`, `model-lightgbm-lambdarank`, `model-din-history-attention`
+  (51 cards valid); facts §10.5 — session position and density are the strongest label-free signals (P(long_view)
+  0.418 first in session → 0.137 beyond the 30th; 0.413 with no impression in the previous 10 min → 0.120 with > 10).
+- live_07 waits for the peer's code review of this batch (Yash: "code review everything before we run it again").
