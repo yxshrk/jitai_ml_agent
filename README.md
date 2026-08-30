@@ -54,7 +54,7 @@ organizers' `evaluate.py`. Official FM baseline: **0.6016 valid / 0.5946 hidden 
    raw data. Every iteration is journaled with its hypothesis, code diff, metrics, learning curve, errors and
    recovery, tokens and wall-clock.
 
-Design decisions and their reasons: `kb/adr/` (sixteen records). The reference: `kb/ARCHITECTURE.md`.
+Design decisions and their reasons: `kb/adr/` (eighteen records; ADR-0015 feature screen, ADR-0016 family campaigns, ADR-0018 calibrated cards and the family ledger were built after live_07 by the three sessions and reviewed crosswise). The reference: `kb/ARCHITECTURE.md`.
 Why this shape and not a pipeline of stage-agents: `kb/literature/agent-design-notes.md` (AIDE, MLE-STAR,
 R&D-Agent, ML-Master, AIRA, AI-Scientist-v2 compared).
 

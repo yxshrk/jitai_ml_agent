@@ -167,6 +167,16 @@ counts). Every LLM call records input, cached, output and reasoning tokens, web 
 attributed to a node or a generation. `--budget-usd` stops the run on estimated spend. Wall-clock is recorded per
 node and per run and survives resumes.
 
+## 6a. Calibrated cards and the family ledger (ADR-0018)
+
+`distill.calibrate()` runs at the end of every distill: a card with measurements gets `expected_delta = [0, max
+measured seed-mean gain]` (0 if never positive); an unmeasured card whose signal family has an oracle bound
+(`kb/methods/family_bounds.json`, from facts §11) is capped at the bound; every bounded card carries a
+`ceiling:oracle` Measured line. Variants of a card are Measured lines on it, not new cards (the Archivist answers
+`duplicate_of`; `MEASURED_RE` accepts `(variant: …)`). The Selector's parser validates card ids (one format
+reminder, then flagged). `kb/methods/ledger.py` generates `families.json` — per signal family the bound, screen
+gains, measured nodes, best measured gain and status — which `_family_score` reads to order campaigns.
+
 ## 6b. Libraries and determinism (ADR-0014)
 
 Agent scripts may import numpy, pandas, scikit-learn, LightGBM and PyTorch (CPU); `config.AVAILABLE_LIBS` and

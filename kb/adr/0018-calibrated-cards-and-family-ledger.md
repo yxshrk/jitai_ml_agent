@@ -51,3 +51,13 @@ session, listed the weaknesses; the ledger section is written by the research se
 - `calibrate()` is idempotent and cheap (57 files); it runs inside `distill`, so a run cannot leave the promises stale.
 - Rule 1 is deliberately blunt: a card measured once at −0.0002 keeps upper 0.0000 until a retest on another stack
   measures better — which is exactly the retest slot's job (ADR-0004), with a reason.
+
+## The family ledger (research session)
+
+`kb/methods/families.json` is the one table the code ranks families from; the cards remain the narrative. `ledger.py`
+generates it from the cards' front matter and `## Measured` lines (the writer's regexes, seed-mean preferred) and from
+`family_bounds.json`, where each oracle bound is a measurement from `kb/data/facts.md` §11 of what a signal family
+could add on the champion with information no legal model has. A family is `bounded` when every card draws on a
+signal whose bound is at or below the acceptance threshold and none is accepted, `exhausted` when everything is
+measured below +0.0005 and nothing is untried, `open` otherwise. Per card the ledger carries `expected` (as the card
+says — `calibrate()` rewrites it), `basis_class`, `measured_max`, `bound`. Regenerated at the end of every distill.
