@@ -580,3 +580,53 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-dead (0.5974 primary alone; 0.6034 best blend)
 - status_1k: untried
 
+
+### temporal-pair-kernel: Time-local BPR pair sampling
+- mechanism: When sampling BPR negative impressions for a positive, draw the negative from the same user with probability weighted by exp(-|day_pos-day_neg|/tau) (tau≈2-3 days, local_probability≈0.7, uniform fallback), redrawn each epoch; weight pairs by sqrt(recency_pos*recency_neg). Pairs the model must rank are contemporaneous, matching the date-split eval.
+- treats: data-shift | ranking-mismatch
+- reference_primary: 0.60524 (run_novel_l1 node_004, from 0.60387 base, +0.0014 — best single mechanism measured)
+- preconditions: BPR or hybrid loss present; per-user day indices available.
+- citation: run_novel_l1 journal n4; temporal covariate-shift weighting notes
+- expected_gain / cost: +0.0008-0.0014 primary / low (sampling-time only).
+- status_pure: measured-win (run_novel_l1)
+- status_1k: untried
+
+### gauge-fixed-bce: Per-user gauge-fixed pointwise loss
+- mechanism: Center logits per user within each batch (subtract the user's mean logit) before BCE, removing the user-level score gauge that per-user ranking metrics ignore; gradients concentrate on within-user ordering.
+- treats: ranking-mismatch | overfit
+- reference_primary: 0.60447 (run_novel_r1 node_003, +0.0026 over baseline)
+- preconditions: Batches must contain multiple impressions per user (group or re-batch by user).
+- citation: run_novel_r1 journal n3; GAUC is invariant to per-user monotone shifts
+- expected_gain / cost: +0.0010-0.0026 primary / low.
+- status_pure: measured-win (run_novel_r1)
+- status_1k: untried
+
+### decayed-positive-sampling: Recency-decayed positive resampling
+- mechanism: Resample training positives each epoch with recency-decayed probability (later days over-represented), combined with the stage-matrix schedule; approximates training on the eval-adjacent distribution without dropping data.
+- treats: data-shift
+- reference_primary: 0.60466 (run_qb_b node_001 stage-matrix package)
+- preconditions: Date indices; keep an unweighted warmup epoch.
+- citation: run_qb_b journal n1
+- expected_gain / cost: +0.0010-0.0028 primary / low.
+- status_pure: measured-win (run_qb_b)
+- status_1k: untried
+
+### heterogeneous-ensemble-design: Validation-selected cross-mechanism ensemble
+- mechanism: Train members under DIFFERENT mechanisms (e.g. temporal-pair-kernel, gauge-fixed-bce, decayed-positive, frozen regularized stack) rather than jittered copies of one recipe; validation-select the member subset and aggregation (rank vs probability average, optional per-member weights) before scoring. Diversity across mechanisms is the untested axis — jittered same-recipe closes are measured at +0.0013.
+- treats: variance | plateau
+- reference_primary: none (post-hoc 50/50 blends of finished runs measured +0.00017 — in-run validation-selected design is the open question)
+- preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage; select on validation only.
+- citation: run_bigclock_07 n6 (jitter close +0.0013); evidence/blend_audit.md (caveat)
+- expected_gain / cost: +0.0005-0.0020 primary / medium (several member trainings).
+- status_pure: untried
+- status_1k: untried
+
+### snapshot-ensemble: Cyclic-LR snapshot ensemble within one training
+- mechanism: Use a cyclic LR schedule and save a checkpoint at each cycle minimum; rank-average the snapshots' scores. Ensemble diversity for the price of ONE training run; distinct from SWA/EMA weight averaging (scores are averaged, not weights).
+- treats: variance | overfit
+- reference_primary: none
+- preconditions: Training long enough for >=3 LR cycles; validation-select which snapshots enter.
+- citation: Snapshot Ensembles (Huang et al. 2017)
+- expected_gain / cost: +0.0003-0.0010 primary / low.
+- status_pure: untried
+- status_1k: untried

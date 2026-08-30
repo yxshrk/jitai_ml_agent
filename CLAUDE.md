@@ -39,48 +39,60 @@ present, or ask). Sync helper copies with rsync (NOT git), excluding
 - After meaningful changes: commit + push to team branch; keep SUBMISSION_RECIPE.md and
   this file current.
 
-## State (Sun 30 Aug, late night — post-context-clear pickup)
-DESIGNATIONS (final unless a live run beats them):
-- Pure: run_bigclock_07, 0.605575 valid (+0.00398 published baseline). Test CSV built
-  + validated (predict_test_bc07; reproduced 0.60561). Say "best observed validation
-  checkpoint at rule convergence", "no executable seed" — see SUBMISSION_RECIPE.md.
-- 1K: run_max_1k_c, 0.6524 (triple-verified: independent evaluator exact match,
-  in-run replication 0.65221, fresh seeds 7/99 = 0.648/0.647). Test CSV built +
-  validated (predict_test_1k_winner, 2 members seeds 42+1051).
-- Predicted hidden test ~0.5977 ± 0.0020 (evidence/PREDICTED_TEST.md); robustness CI
-  [+0.0020,+0.0055] (evidence/bc07_robustness.md); post-mortem over 108 runs in
-  evidence/CAMPAIGN_POSTMORTEM.md (incl. recovered #2 run bigclock_r4 0.60524).
+## State (Mon 31 Aug ~02:00, live session)
+DESIGNATION POLICY (settled with Rohan 31 Aug): prefer a CLEAN run (no --seed-scripts)
+for the Pure designation if one converges >= ~0.6050; bigclock_07 (0.605575, seeded
+with human-tuned frozen_stack) is the disclosed fallback only if clean runs fall short.
+Rationale: brief says agent "draw[s] on established methods" — method CARDS are the
+clean knowledge channel; seed scripts (esp. human-tuned frozen_stack) weaken the
+autonomy exhibit even though they are legal, disclosed launch config.
 
-STILL RUNNING (nohup'd on machines — SURVIVE context clear; watchdog does NOT):
-- laptop: run_novel_l1 (champ 0.60524 — temporal-pair-kernel discovery; its CLOSE
-  is the last realistic shot above the champion — if it beats 0.60558, re-designate:
-  update SUBMISSION_RECIPE/README/RESULTS_AND_RESOURCES, rebuild test CSV from its
-  recipe, regenerate site via tools/build_site.py + tools/instrument_weights.py).
-- coral (pallav@coral.local ~/techjam/mle-agent ./.venv312/bin/python): run_qb_b
-  (champ 0.60466, decayed-positive sampling; close pending).
-- ruby (gpubox ~/mle-agent ~/techjam27k/.venv/bin/python): run_final_f1 (dial-jitter
-  member-bank close, GPU, long), run_novel_r1 (0.60447, final close pending),
-  run_omega_1k (0.64975 climbing — if >0.6524, 1K re-designation same procedure).
-FIRST ACTIONS after clear: bash /tmp/fleet_watchdog.sh (script survives; run via
-run_in_background) to resume monitoring; collect any summary.json that appeared;
-append results to CAMPAIGN_POSTMORTEM addendum + RUNS inventory (tools/audit_runs.py).
-A stalled Codex task (blend audit) was superseded — blend audit DONE in-house
-(evidence/blend_audit.md: predeclared blends +0.00017, evidence only).
+TERMINOLOGY (do not re-confuse):
+- "search 40-80" = IN-NODE probe budget: agent/METHODS.md digest — opener quality
+  flattens past ~50-80 well-ranked full-fidelity probes; stage-1 40-80 probes with
+  stop-early after 15 non-improving; then ~10-15 refinement probes. Already policy.
+- "k≈48" = EMBEDDING WIDTH capacity peak on KuaiRand-1K only (logs/k1_bigk). On Pure
+  k=16 is measured optimal. Neither number is an iteration cap (official rule governs).
 
-SITE: site/index.html = "Agent's Lab Notebook" v3 (artifact cd989436-...-92d747db8f80;
-rebuild: tools/build_site.py <run> + optionally tools/instrument_weights.py; assembly
-= inline scripts, see git history). User may request further design iterations.
+DESIGNATIONS (unchanged so far):
+- Pure: run_bigclock_07 0.605575 (fallback; seeded). Test CSV built (predict_test_bc07).
+- 1K: run_max_1k_c 0.6524. Test CSV built (predict_test_1k_winner).
 
-REMAINING before Tue 1 Sep 12:00 noon SGT deadline (verified Tuesday):
-1) Harvest last runs; final designations (ask user); rebuild CSVs if changed.
-2) Fresh sanitized zip + ChatGPT endgame-review prompt (user asked for this).
-3) qb_d optional (untried cards: listwise-regime, curriculum, relative-watch,
-   small-batch) — only if machines free and user wants.
-4) README team-contributions (user fills); figures/briefing-artifact refresh;
-   RESULTS_AND_RESOURCES regenerate if designations changed.
-5) User-side Monday: video (VIDEO_SCRIPT.md), Devpost form (evidence/DEVPOST.md),
-   teammate Devpost+form registration, GitHub Pages enable for site/, repo public.
-6) Post-competition: rotate BOTH API keys (were pasted in chat), delete KuaiRand
-   data copies (rules), spend ledgers ~$95-120 total (caps: laptop+machines $125).
-BUDGET: BUDGET_USD=125 in .env (all machines). Effort medium ONLY. Dosing: 1 run
-laptop / 2 coral / 3 ruby. Machines map: MACHINES.local.md (untracked).
+FLEET (watchdog /tmp/fleet_watchdog.sh, relaunch via run_in_background after any clear):
+- laptop: run_novel_l1 — CLEAN, 0.60524 (temporal-pair-kernel discovery), in ensemble
+  close (node_005 jitter members ~0.6037-0.6046). If close > 0.60558 => designate (clean!).
+- coral: run_clean_c1 — CLEAN, no seeds, enriched 44-card METHODS.md (new cards below).
+  Also logs/mcsweep member-count sweep (12 polish members; ensembles k=3/5/7/9/12) to
+  re-verify final-submission member count (5 was never swept on Pure; 1K peaked high).
+- ruby: run_combo_r1 — SEEDED experiment (seed_pairkernel + frozen_stack): tests whether
+  mechanisms compose; likely NOT the designation per policy above; keep for the report.
+  Also run_omega_1k 0.64975 (needs >0.6524; unlikely).
+- Concluded tonight (harvested, logs/RUNS.md): qb_b 0.60466, novel_r1 0.60447 (both
+  clean), final_f1 0.60403. Lessons: winning shape = strong package -> ensemble close
+  (+0.0013); drafts overpromise; ensemble closes underpromise/overdeliver; eps kills
+  +0.0004 steps from high base; novelty = 1-2 lottery slots.
+
+NEW METHOD CARDS (agent/METHODS.md, appended 31 Aug, synced to coral): temporal-pair-
+kernel (0.60524 evidence), gauge-fixed-bce (0.60447), decayed-positive-sampling
+(0.60466), heterogeneous-ensemble-design (untried; blend-audit caveat), snapshot-
+ensemble (untried). combo_r1/novel_l1 launched BEFORE these cards existed.
+
+SITE: site/ = "Flight Recorder" v4.1 (2D scrollytelling: hero self-drawing chart, loop
+diagram, pinned mission-log replay from rundata.js, memorization evidence panels from
+weights.js via tools/instrument_weights.py, receipts). 3D starscape REMOVED (built,
+then cut as unintuitive — do not resurrect without asking; build_space.py deleted).
+Rebuild data: tools/build_site.py <run> (also emits rundata.js). Serve: python3 -m
+http.server (fetch-free, file:// safe). Local preview server may be on :8642.
+
+ENDGAME DONE: sanitized zip ~/Desktop/mle-agent-endgame.zip (34MB, code+docs+key
+journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: see
+session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
+SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
+
+REMAINING before Tue 1 Sep 12:00 noon SGT:
+1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
+   (policy above; ask Rohan); rebuild test CSV via designated run recipe if changed.
+2) README team-contributions (Rohan fills); RESULTS_AND_RESOURCES + figures refresh if
+   designations change; Devpost (evidence/DEVPOST.md) + video (VIDEO_SCRIPT.md,
+   optional per webinar) Monday; GitHub Pages enable for site/; repo public.
+3) Post-comp: rotate BOTH API keys; delete KuaiRand data copies (rules).
