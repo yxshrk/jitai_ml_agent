@@ -39,3 +39,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | omega1k audits | ruby | complete | - | 0.6766/0.6762/0.6652 | replication + shuffle: breakthrough confirmed |
 | clean_r3 | ruby | converged | 3 | 0.60381 | GPU clean run; session +0.0001 and gauge-bce flat from dial-swept base — mechanisms overlap confirmed |
 | omega CSV | ruby | built+checked | - | ens-val 0.68020 | evidence/test_submission_1k_omega.csv (4.13M rows, checker OK); old max_1k_c CSV preserved pending decision |
+| final_s2 | coral | converged | 4 | 0.60499 | best of final wave: gauge-bce -> hetero-ensemble close (+0.0010, first measured win for that card); gated-session +0.0006 sub-eps |

@@ -588,7 +588,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage; select on validation only.
 - citation: run_bigclock_07 n6 (jitter close +0.0013); evidence/blend_audit.md (caveat)
 - expected_gain / cost: +0.0005-0.0020 primary / medium (several member trainings).
-- status_pure: untried
+- status_pure: measured-win (run_final_s2 n4: 0.60499, +0.0010 close from 0.6040 gauge base)
 - status_1k: untried
 
 ### snapshot-ensemble: Cyclic-LR snapshot ensemble within one training
@@ -608,7 +608,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - preconditions: Include anchor, +session, +session+pair ablation fits before the final fit; Pure sessions are sparse (85% of validation rows are position 0) so expect most gain from position 1-8 rows.
 - citation: run_omega_1k n5 journal; gpt-5.6-sol consult 31 Aug (gap/position bucket redesign for Pure density; gradient routing)
 - expected_gain / cost: +0.0018-0.0032 est. (consult); session-alone est +0.0014 — composite needed to clear eps / medium.
-- status_pure: untried — NOTE plain session fields measured +0.0002 on Pure (run_final_s1 n2); the gating/gradient-routing IS the hypothesis, not the fields
+- status_pure: measured-marginal (run_final_s2 n3: +0.0006 sub-eps; run_final_s3 n3: 0.6044 grey-rejected — real but small on Pure)
 - status_1k: variant measured-win
 
 ### context-stratified-pairs: Same-context BPR negative stratification
