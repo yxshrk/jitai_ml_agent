@@ -89,3 +89,17 @@ def test_librarian_batch_validation(tmp_path, monkeypatch):
     written = run_librarian(Stub(), n=2, methods_dir=tmp_path, log=lambda *a: None)
     assert written == ['model-alpha']                                           # beta fails the validator (bad component)
     assert 'composes_with: []' in (tmp_path / 'model-alpha.md').read_text()     # the dangling reference to beta was scrubbed
+
+
+def test_resolve_parents_accepts_string_refs(tmp_path, monkeypatch):
+    from harness import config as C
+    from harness.loop import Loop
+    from harness.brain import FakeBrain
+    monkeypatch.setattr(C, 'RUNS', tmp_path)
+    lp = Loop('r2', FakeBrain([[]]), k=3)
+    lp.state['nodes'] = {'0': {'n': 0, 'metrics': {'primary': 0.6}}, '2': {'n': 2, 'metrics': {'primary': 0.603}}, '12': {'n': 12, 'metrics': {'primary': 0.604}}}
+    lp.state['champion'] = 2
+    assert lp._resolve_parents({'type': 'deepen', 'parent': 'node_012'}) == (12, None)
+    assert lp._resolve_parents({'type': 'deepen', 'parent': '12'}) == (12, None)
+    sel = {'type': 'improve', 'parent': 'node_099'}; assert lp._resolve_parents(sel) == (2, None) and sel['parent'] == 2
+    assert lp._resolve_parents({'type': 'merge', 'merge_parents': ['node_002', 12]}) == (2, [2, 12])

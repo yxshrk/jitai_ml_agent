@@ -7,7 +7,7 @@
     until converged (N non-improving generations), node cap, generation cap, wall-clock, or LLM budget.
 The LLM never judges a score; every decision about numbers is in referee.py."""
 from __future__ import annotations
-import json, os, shutil, statistics, time, traceback
+import json, os, re, shutil, statistics, time, traceback
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from . import config as C, referee as R, prompts as P
@@ -418,14 +418,33 @@ class Loop:
             seen.add(tc); out.append(s)
         return out[:self.k]
 
+    def _node_ref(self, x):
+        """Parse a node reference the roles may write: 12, "12", "node_012", "champion"; None if unknown."""
+        if isinstance(x, bool) or x is None:
+            return None
+        if isinstance(x, int):
+            n = x
+        else:
+            m = re.search(r'(\d+)', str(x))
+            if str(x).strip().lower() == 'champion' or not m:
+                return None
+            n = int(m.group(1))
+        return n if str(n) in self.state['nodes'] and self.node(n).get('metrics') else None
+
     def _resolve_parents(self, sel):
-        ch = self.state['champion']; mp = sel.get('merge_parents') or []
-        if sel.get('type') == 'merge' and len(mp) >= 2 and all(str(p) in self.state['nodes'] for p in mp[:2]):
-            return int(mp[0]), [int(mp[0]), int(mp[1])]
-        p = sel.get('parent', 'champion')
-        if isinstance(p, int) and str(p) in self.state['nodes'] and self.node(p).get('metrics'):
-            return p, None
-        return ch, None
+        """The parent a candidate is built on. A deepen/retest of a specific node must branch from THAT node — live_05's
+        node_014 named node_012 as a string, was silently built on the champion, and the Critic rejected it three times
+        for being against the wrong parent. The candidate's `parent` field is rewritten to the resolved node so the
+        Implementer, the Critic and the journal agree."""
+        ch = self.state['champion']; mp = [self._node_ref(x) for x in (sel.get('merge_parents') or [])]
+        if sel.get('type') == 'merge' and len(mp) >= 2 and mp[0] is not None and mp[1] is not None:
+            sel['merge_parents'] = [mp[0], mp[1]]
+            return mp[0], [mp[0], mp[1]]
+        p = self._node_ref(sel.get('parent', 'champion'))
+        if p is None and sel.get('parent') not in (None, 'champion'):
+            self.log(f"  parent {sel.get('parent')!r} not resolvable; building on the champion node_{ch:03d}")
+        sel['parent'] = p if p is not None else ch
+        return sel['parent'], None
 
     def _implement_with_critic(self, sel, parent_code, extra, hist=None):
         """Implementer -> static firewall -> Critic; up to two 'revise' rounds; veto ends the candidate."""
