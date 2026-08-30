@@ -771,6 +771,7 @@ class Loop:
                 context_mode=self.config.context_mode,
                 full_context=self.full_proposer_context() if self.config.context_mode == "full" else None,
                 prior_runs=self.prior_runs,
+                timeout_s=self.config.timeout_s,
             )
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             expected_delta = spec.get("expected_delta")

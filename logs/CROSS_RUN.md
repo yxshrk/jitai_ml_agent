@@ -1461,3 +1461,37 @@ What the next run should try first:
 5. If the gain remains stable, test whether it survives without recency weighting and under temporal or user-disjoint validation.
 
 The strongest immediate question is not how to add more complexity, but whether the reported +0.00185 over node_001 is reproducible and genuinely caused by the censored watch-time objective.
+
+## Run logs/run_deep_l2
+dataset: pure
+stop_reason: converged
+best_primary: 0.602732
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: A dial sweep over coherent strong-regularization packages—embedding/MLP dropout, | primary: 0.598169 | verdict: rejected
+- node_003 | method: stage-matrix-sweep | hypothesis: Because validation peaks around epoch 8 and then | primary: 0.602732 | verdict: accepted
+self_critique:
+Run critique
+
+What was suboptimal:
+- The search was too shallow: only two metric-bearing experiments beyond baseline before declaring convergence.
+- node_001 failed at proposal generation, wasting a branch. node_002 was then attached to that failed node rather than the last valid checkpoint, weakening lineage and reproducibility.
+- node_002 bundled dropout, AdamW decay, embedding L2, and rapid LR decay. Its regression to 0.5982 cannot identify which component caused harm.
+- node_003 also changed four factors simultaneously. It found the best score, but the winning interaction/configuration was not isolated or validated.
+- The gain over baseline was only 0.000932 (0.6018 to 0.602732), below the stated 0.0025 hypothesis target. Accepting it as an incumbent is reasonable, but treating it as convincing progress without replication is not.
+- The reported baseline sigma of 0.0001 makes the gain appear significant, but the journal does not establish whether this came from repeated seeds or a reliable uncertainty estimate.
+- The observed epoch-8 peak strongly suggests early stopping is important, yet the run emphasized broad architecture/loss changes rather than first tuning checkpoint selection and nearby regularization.
+
+Scaffold changes:
+- Reject malformed proposals before creating a node, and always branch experiments from the most recent valid parent.
+- Separate exploration from attribution: broad factorial screening may identify a region, but immediately follow it with single-factor ablations.
+- Record the exact winning arm from every sweep, per-epoch validation curves, checkpoint choice, seed, and all changed hyperparameters.
+- Require repeated seeds for small improvements and base acceptance/convergence on confidence intervals, not a single score.
+- Avoid “regularization packages.” Tune dropout, weight decay, embedding L2, LR schedule, and early stopping independently or with a structured design.
+- Do not declare convergence after one marginal improvement unless the local neighborhood has actually been tested.
+
+Next run:
+1. Re-run baseline and the exact node_003 winner over 3–5 matched seeds.
+2. If the gain persists, ablate FM/DCN-lite, logloss/hybrid BPR, recency weighting, and regularization one at a time around that winner.
+3. Tune early stopping/checkpoint epoch around the observed peak, roughly epochs 6–10.
+4. Perform a narrow regularization and learning-rate search around the winning setting; avoid the aggressive combined package from node_002.
+5. Only then explore additional architecture complexity.

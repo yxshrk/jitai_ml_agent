@@ -316,6 +316,7 @@ class Brain:
         context_mode: str = "compact",
         full_context: str | None = None,
         prior_runs: str | None = None,
+        timeout_s: int | None = None,
     ) -> dict:
         selected_card = None
         if method_selection:
@@ -332,6 +333,7 @@ class Brain:
             context_mode=context_mode,
             full_context=full_context,
             prior_runs=prior_runs,
+            timeout_s=timeout_s,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
         spec = extract_json_spec(text)

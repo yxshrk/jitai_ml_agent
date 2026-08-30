@@ -277,6 +277,7 @@ def proposer_user_prompt(
     context_mode: str = "compact",
     full_context: str | None = None,
     prior_runs: str | None = None,
+    timeout_s: int | None = None,
 ) -> str:
     parts = []
     parts.append(
@@ -300,6 +301,18 @@ def proposer_user_prompt(
         )
     if streak_state is not None:
         parts.append(_streak_section(streak_state))
+    if timeout_s:
+        parts.append(
+            "## Runtime budget (overrides the 600s default above)\n"
+            f"THIS run's per-node timeout is {timeout_s} seconds "
+            f"(~{timeout_s//60} minutes). A full-length training on the npz fast "
+            "path costs roughly 40-90s on CPU, far less on GPU. Plan to SPEND "
+            "~60-70% of this budget on search probes when playing a search card "
+            "— e.g. at 2+ hours that is 40+ full-length probes plus refinement, "
+            "not 8. Reserve the remainder for the final training(s). "
+            "Finishing a search node in a small fraction of the budget is a "
+            "defect, not efficiency: unspent budget is free score variance left "
+            "unexplored.")
     if directive:
         parts.append(f"Directive: {directive}")
     parts.append(f'## Parent node "{parent_id}" (full code)\n```python\n{parent_code}\n```')
