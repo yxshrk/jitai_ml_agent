@@ -600,3 +600,13 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: +0.0003-0.0010 primary / low.
 - status_pure: untried
 - status_1k: untried
+
+### gated-session-residual: Pure-tuned session context via gated residual tower
+- mechanism: Add causal session features tuned for Pure's sparsity — HOUR-level gaps (0,1,2-3,4-7,8-23h,1-3d,4-7d,>7d), session = same (user,date,hour), position buckets (0,1,2,3,4-5,6-8,9+), crosses position*tab then position*duration_bucket then hour*tab — fed through a small zero-initialized residual tower with a learnable gate (init ~0.1) ON TOP of the frozen-shape champion scorer. Route pairwise/BPR loss to the BASE score only; pointwise BCE to the total. Keeps the champion anchor intact and avoids session/BPR gradient interference (1K matched configs: session gain +0.0180 under logloss vs only +0.0036 under BPR-hybrid).
+- treats: data-shift | flat-signal
+- reference_primary: none on Pure; mechanism family measured +0.0192 on 1K (run_omega_1k n5)
+- preconditions: Include anchor, +session, +session+pair ablation fits before the final fit; Pure sessions are sparse (85% of validation rows are position 0) so expect most gain from position 1-8 rows.
+- citation: run_omega_1k n5 journal; gpt-5.6-sol consult 31 Aug (gap/position bucket redesign for Pure density; gradient routing)
+- expected_gain / cost: +0.0018-0.0032 est. (consult); session-alone est +0.0014 — composite needed to clear eps / medium.
+- status_pure: untried
+- status_1k: variant measured-win
