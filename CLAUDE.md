@@ -100,10 +100,11 @@ NO new laptop work):
    proceed with PRE-AUTHORIZED re-designation prep: build predict-test for omega_1k n5
    recipe (train-window only, session features), rebuild 1K test CSV, update docs —
    Rohan confirms final designation in the morning.
-3) Pure: when ruby audit chain frees GPU, launch one more clean full-library run
-   (run_final_r4, GPU-fast twin of final_s1). Wait on random-probe head-to-head until
-   all finalists known (agreed with Rohan). novel_l1 winner already recorded: 0.605496
-   (7-member rank ensemble; confirm can only accept/reject, not raise).
+3) Pure SETTLED (pending final_s5/final_r6 longshots): novel_l1 ensemble FAILED
+   confirm -> official 0.605239 (node_004). bigclock_07 0.605575 clear of all
+   concluded runs (s4 0.60521 context-pairs win +0.0015, s2 0.60499 hetero close).
+   Random probe MOOT (bigclock leads on number+feasibility+replication). Designate
+   bigclock_07 unless s5/r6 clear it; feature novel_l1 as the researcher-story run.
 4) Refresh site rundata/RESULTS/RUNS as designations settle; commit+push everything.
 
 1K RE-DESIGNATION DECISION (morning, Rohan): audits ALL PASSED (replications 0.6766/0.6762,

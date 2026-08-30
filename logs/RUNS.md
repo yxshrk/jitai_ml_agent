@@ -42,3 +42,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | final_s2 | coral | converged | 4 | 0.60499 | best of final wave: gauge-bce -> hetero-ensemble close (+0.0010, first measured win for that card); gated-session +0.0006 sub-eps |
 | final_s4 | coral | converged | 3 | 0.60521 | context-stratified-pairs FIRST WIN +0.0015 in one node; converged before any close — close-on-top untried |
 | 1k_push | ruby | converged | 7 | 0.65977 | 2nd independent 1K run: session features +0.022 from different base; below omega designation |
+| novel_l1 | laptop | max_hours | 5 | 0.60524 | CLEAN researcher run: invented-card pair-kernel +0.0014; its 0.6055 ensemble FAILED fresh-seed confirm (discipline held); official best node_004 |
