@@ -114,3 +114,7 @@
 {"best_epoch": 8, "k": 10, "member": 13, "phase": "dimension_probe", "primary": 0.601493117868483, "seed": 14159}
 {"best_epoch": 6, "k": 10, "member": 14, "phase": "dimension_probe", "primary": 0.6017548316234294, "seed": 15168}
 {"best_epoch": 4, "k": 10, "member": 15, "phase": "dimension_probe", "primary": 0.6003568264111058, "seed": 16177}
+{"best_epoch": 8, "k": 10, "member": 16, "phase": "dimension_probe", "primary": 0.6010427011170643, "seed": 17186}
+{"best_epoch": 7, "k": 10, "member": 17, "phase": "dimension_probe", "primary": 0.6026253909243706, "seed": 18195}
+{"best_epoch": 7, "k": 10, "member": 18, "phase": "dimension_probe", "primary": 0.6009674988019775, "seed": 19204}
+{"best_epoch": 7, "k": 10, "member": 19, "phase": "dimension_probe", "primary": 0.6020922334437191, "seed": 20213}

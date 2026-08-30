@@ -456,6 +456,15 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried (in this regime)
 - status_1k: untried
 
+
+### social-mtl-heads: Multi-signal auxiliary heads (like/follow/comment/forward)
+- mechanism: Add SEVERAL small auxiliary BCE heads at once on the shared representation — like, follow, comment, forward (and optionally click) — each at low weight (~0.05-0.1), targets from the training columns only (never inputs). Distinct from our measured single-aux cards: the hypothesis is that the BUNDLE of sparse social signals regularizes the shared embedding jointly where any one signal is too sparse to matter.
+- treats: overfit | flat-signal
+- citation: ESMM-style multi-task (Ma et al., SIGIR 2018; explicitly endorsed by the brief's appendix A.3); observed working in a public Track 2 solution (github.com/9irija/TikTok_TechJam: DeepFM + 4 social heads, +0.0030 primary, 3-seed verified) — public solutions are in-scope per the resource policy.
+- expected_gain / cost: their +0.0030 total includes architecture change; the aux-bundle increment here is unknown — probe on our package / low-med. NOTE: our data export may lack like/follow/comment/forward columns — if unavailable in the npz, use available aux targets (click, play_time_ms-derived) as a reduced bundle and note the limitation.
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
