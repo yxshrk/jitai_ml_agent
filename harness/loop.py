@@ -775,6 +775,11 @@ class Loop:
         recovery: str | None = None
         try:
             parent_history = (parent.metrics or {}).get("history", [])
+            if isinstance(parent_history, dict):  # fan-out nodes may group history by stage
+                parent_history = [e for v in parent_history.values()
+                                  if isinstance(v, list) for e in v if isinstance(e, dict)]
+            elif not isinstance(parent_history, list):
+                parent_history = []
             if mode in ("draft", "improve"):
                 node.method_selection = self.select_method(parent_history, streak_state, mode)
             spec = self.brain.propose(

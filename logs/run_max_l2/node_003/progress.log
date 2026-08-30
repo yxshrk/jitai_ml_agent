@@ -38,3 +38,6 @@
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.572536, "val_gauc": 0.668572, "val_primary": 0.602321}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6685715292506296, "ndcg5": 0.5360699045708756, "primary": 0.6023207169107525}, "seed": 1044, "stage": "matched_recency_probe"}
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.570945, "val_gauc": 0.667147, "val_primary": 0.601584}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.667147332432514, "ndcg5": 0.5360199502753282, "primary": 0.6015836413539211}, "seed": 1045, "stage": "matched_recency_probe"}
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.57328, "val_gauc": 0.668207, "val_primary": 0.60203}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6682067022308926, "ndcg5": 0.5358541123413267, "primary": 0.6020304072861097}, "seed": 1046, "stage": "matched_recency_probe"}
+{"floor": 0.35, "member": 0, "primary": 0.6016970999425357, "seed": 42, "stage": "final"}
+{"floor": 0.35, "member": 1, "primary": 0.6014767217238426, "seed": 43, "stage": "final"}
+{"floor": 0.35, "member": 2, "primary": 0.601229890243334, "seed": 44, "stage": "final"}
