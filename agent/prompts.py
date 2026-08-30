@@ -149,9 +149,13 @@ CONVERGENCE_PRESSURE = (
     "reset the streak. Keep genuinely novel/unproven ideas atomic — bundle only "
     "proven parts. If streak is N-1 of N, this may be the final iteration — prefer "
     "the highest-expected-gain untried card or the strongest proven bundle, not a "
-    "small dose adjustment. When the current streak is N-1 of N and no untried "
-    "single-model card remains promising, the seed-ensemble card applied to the "
-    "current champion is the canonical closing move."
+    "small dose adjustment. HARD RULE at streak N-1 of N: this iteration is the "
+    "run's LAST unless it gains > epsilon, so play the move that maximizes the "
+    "FINAL champion — the ensemble-design close (seed/snapshot members, "
+    "validation-selected count) applied to your best config, bundled in the same "
+    "node with whichever add-on your probes measured positive. Never spend the "
+    "final iteration on a bare sub-epsilon single change: even an accepted one "
+    "ends the run un-ensembled and forfeits the close's reliable gain."
 )
 
 

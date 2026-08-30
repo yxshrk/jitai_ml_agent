@@ -1425,3 +1425,39 @@ Start by validating node_003 rather than introducing another idea:
 4. If the gain survives, ensemble several node_003 replicas and compare raw-probability averaging, logit averaging, and rank averaging.
 
 The highest-priority question is whether node_003’s gain is stable and specifically attributable to duration-conditioned structure. Until that is established, 0.604658 should be treated as a promising validation result, not a confirmed improvement.
+
+## Run logs/run_deep_l1
+dataset: pure
+stop_reason: converged
+best_primary: 0.604153
+- node_001 | method: package-dial-sweep | hypothesis: Because the parent validation curve peaks and then | primary: 0.602330 | verdict: accepted
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Adding a CWM-style censored watch-time auxiliary loss to | primary: 0.604153 | verdict: accepted
+self_critique:
+Overall, the run found a modest improvement, but convergence was declared too early and the causal evidence is weak.
+
+What was suboptimal:
+- Only three models produced metrics, with one intervening proposal failure. That is insufficient evidence for convergence.
+- Node_001 bundled architecture, loss mixing, dropout, weight decay, learning-rate decay, and recency weighting. The gain cannot be attributed to any specific change.
+- Node_003 was nominally descended from failed node_002 while referring to the “known-best” model. The lineage should instead explicitly branch from node_001.
+- Node_003 predicted at least +0.003, but achieved about +0.00185 over node_001 and +0.00235 over baseline. The model improved, but the hypothesis’s quantitative claim was not met.
+- Acceptance appears based on point estimates. Only the baseline reports sigma, so the significance and seed stability of the gains are unknown.
+- The watch-time auxiliary may introduce leakage or exploit dataset-specific censoring artifacts. No ablation or feature-availability audit was recorded.
+- No simpler controls were tested, such as matched extra supervision, duration prediction without censoring logic, or equivalent regularization.
+
+Scaffold changes:
+- Require valid artifact lineage; failed nodes should not become implementation parents.
+- Separate “metric improved” from “hypothesis confirmed.”
+- Run repeated seeds for incumbent and challenger, then accept using paired uncertainty or a minimum robust effect threshold.
+- Prefer atomic proposals; if a package is tested, automatically schedule component ablations.
+- Do not declare convergence after so few successful trials. Require either budget exhaustion or several diverse, non-improving branches.
+- Record implementation failures by category and retry recoverable proposal-generation or execution failures.
+
+What the next run should try first:
+1. Reproduce node_003 and node_001 over multiple matched seeds.
+2. Audit the auxiliary targets for train/validation leakage and inference-time availability.
+3. Ablate the censored watch-time loss while holding all other settings fixed.
+4. Sweep only its loss weight around zero, including a plain watch-time auxiliary control.
+5. If the gain remains stable, test whether it survives without recency weighting and under temporal or user-disjoint validation.
+
+The strongest immediate question is not how to add more complexity, but whether the reported +0.00185 over node_001 is reproducible and genuinely caused by the censored watch-time objective.
