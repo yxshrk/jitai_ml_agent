@@ -222,3 +222,37 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   (51 cards valid); facts §10.5 — session position and density are the strongest label-free signals (P(long_view)
   0.418 first in session → 0.137 beyond the 30th; 0.413 with no impression in the previous 10 min → 0.120 with > 10).
 - live_07 waits for the peer's code review of this batch (Yash: "code review everything before we run it again").
+
+### live_07 — first run with libraries and the ADR-0014 rules; converged at the ceiling
+- **live_07**: converged at generation 5 — 25 nodes, 60 min, $17.82 (72 calls, 3.71 M input tokens of which 2.13 M
+  cached, 296 K output; library nodes take minutes, and the Librarian fired twice). Generation 1: BPR (+0.0016, z 5.9),
+  a seed average (+0.0013, z 4.2), embedding L2 (+0.0010, z 3.4) and the first information-adding wildcard —
+  matches against the user's most recent earlier long-viewed video's tag/music/type (+0.0009, z 3.1) — accepted;
+  the session-feature card flat on the pointwise FM. Generation 2: merge BPR + seed average accepted (+0.0013, z 4.7,
+  fresh-seed mean **0.6044** = the plateau), session features retested on BPR accepted (+0.0009, z 3.1),
+  LightGBM lambdarank on BPR −0.0022, BPR + L2 +0.0001 (z 0.3), a Rocchio wildcard **vetoed by the Critic for leakage**
+  (global bin thresholds computed from scores that had seen the row's label). Generations 3–5 flat: the session
+  features on the seed blend +0.0002 (z 1.0), DIN-style attention −0.0005, node_019 (the session model's rank
+  substituted only for dur>180s / tab-4 rows) +0.0005 at z 1.94 — just under the adaptive bar — and eleven others.
+- **Designation question.** `designate_final` ranked node_019 (fresh-seed mean 0.6049, rejected) above the champion
+  node_009 (0.6044) because the gap exceeds one SE — the ADR-0012 rule as written. Both sessions now recommend the
+  STRICT rule for the future (candidates = accepted nodes; the re-ranking only among them; the best unaccepted node
+  reported): re-testing the best-looking rejected node at a lower bar re-enters the winner's curse, the stake is one
+  seed SD on valid, and "we never submit a node the run rejected" is the sentence the judges will accept. Pending Yash.
+- **Ceiling study** (research session, `kb/data/screens/CEILING.md`, `BEHAVIOUR.md`): 69 % of the remaining GAUC error
+  mass is tab-1 × tab-1 pairs on different days; 2 % within 10 minutes; every oracle (valid-week item rates, the leaky
+  month statistics, user × date from the user's own other valid rows, the random-exposure log, history taste, item
+  kNN, repeats, weekday/hour) adds ≤ +0.0003 on the champion; recency is not a lever (volume is); 20 seeds 0.6044.
+  ≈ 0.605–0.607 is the information ceiling of these inputs on valid. Feature screens (review session,
+  `RESULTS.md`): session position varies within a user's rows for 37 % of users (standalone GAUC 0.508); target
+  statistics strong alone (0.63–0.65) but ≤ +0.0004 additive; a 62-feature lambdarank stack 0.6014 OOF / 0.6038 blend.
+- **Built during the run, on isolated branches, reviewed crosswise:** ADR-0015 feature screen (review session — a Probe
+  role writes a small script that computes a proposed signal on a label-stripped valid split; `screen.py` measures
+  within-user varies / GAUC / additive-on-champion / lambdarank stack gain; below 0.0003 the slot is dropped without a
+  node; calibrated on live_07's own nodes: every accepted feature node clears it by 4×) and ADR-0016 family campaigns
+  (this session — one card family per generation from generation 2, chosen in code by measured screen gain then card
+  promise, ensembling last; mechanism-level diversity inside the family; a family closes after two flat generations;
+  screen records fold into the cards). Integration branch `campaigns` at 41c019b, 32 tests; merge after Yash's go.
+- Open with Yash: the designation rule; the designation-time refit on train + valid (the ≤ 04-14 window experiment:
+  0.5999 vs 0.6031 → the last week is worth ~0.003 on valid; likely +0.001–0.003 on the hidden test); whether the
+  KuaiRand-27K log may serve as extra history for the Pure model (contains the test period — organizers' question).
