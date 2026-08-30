@@ -1,0 +1,43 @@
+--- node_007.py
++++ node_016.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
+ Ensemble averages tie-free normalized within-user ranks from five independently early-stopped seeds.
++Same-tab long-duration pairs from tabs 1 and 4 replace 5% of each member's ordinary BPR samples.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -133,6 +134,15 @@
+     neg_sorted = neg_idx[np.argsort(Xtr[neg_idx, 0], kind='stable')]
+     pair_pos = np.flatnonzero((ytr > 0) & (neg_count[Xtr[:, 0]] > 0))
+     pair_users = Xtr[pair_pos, 0]
++    long_mask = np.array([float(x[3]) > 180_000 for x in tr])
++    tab14_mask = np.array([x[2] in ('1', '4') for x in tr])
++    long_tab_key = Xtr[:, 0] * 2 + np.array([x[2] == '4' for x in tr], dtype=np.int32)
++    long_neg_idx = np.flatnonzero((ytr == 0) & long_mask & tab14_mask)
++    long_neg_count = np.bincount(long_tab_key[long_neg_idx], minlength=dims[0] * 2)
++    long_neg_start = np.cumsum(np.r_[0, long_neg_count[:-1]])
++    long_neg_sorted = long_neg_idx[np.argsort(long_tab_key[long_neg_idx], kind='stable')]
++    long_pair_pos = np.flatnonzero((ytr > 0) & long_mask & tab14_mask &
++                                   (long_neg_count[long_tab_key] > 0))
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+@@ -148,8 +158,15 @@
+             if not active[s]:
+                 continue
+             pair_neg = neg_sorted[neg_start[pair_users] + rngs[s].integers(0, neg_count[pair_users])]
++            train_pos = pair_pos.copy()
++            replace = rngs[s].choice(len(pair_pos), size=len(pair_pos) // 20, replace=False)
++            matched_pos = long_pair_pos[rngs[s].integers(0, len(long_pair_pos), size=len(replace))]
++            matched_keys = long_tab_key[matched_pos]
++            train_pos[replace] = matched_pos
++            pair_neg[replace] = long_neg_sorted[long_neg_start[matched_keys] +
++                                                rngs[s].integers(0, long_neg_count[matched_keys])]
+             idx = rngs[s].permutation(len(pair_pos))
+-            losses = [m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[pair_neg[idx[i:i + a.batch]]])
++            losses = [m.step(Xtr[train_pos[idx[i:i + a.batch]]], Xtr[pair_neg[idx[i:i + a.batch]]])
+                       for i in range(0, len(idx), a.batch)]
+             epoch_losses.extend(losses)
+             pred = m.predict(Xva); rm = evaluate(uva, yva, pred)

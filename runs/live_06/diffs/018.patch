@@ -1,0 +1,72 @@
+--- node_007.py
++++ node_018.py
+@@ -49,10 +49,12 @@
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
++        self.T = rng.normal(0, 0.05, (dim, k)).astype(np.float32)
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
++        self.mT = np.zeros_like(self.T); self.vT = np.zeros_like(self.T)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
+ 
+@@ -60,23 +62,32 @@
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
++        C = self.T[X[:, (0, 1, 3)]]
++        third = (C[:, 0] * C[:, 1] * C[:, 2]).sum(1)
++        return self.b + self.W[X].sum(1) + inter + third, E, S, C
+ 
+     def step(self, Xp, Xn):
+         B = len(Xp)
+-        zp, Ep, Sp = self.logits(Xp)
+-        zn, En, Sn = self.logits(Xn)
++        zp, Ep, Sp, Cp = self.logits(Xp)
++        zn, En, Sn, Cn = self.logits(Xn)
+         d = zp - zn
+         g = (-sigmoid(-d) / B).astype(np.float32)                  # d(BPR loss)/d(score_pos)
+-        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        gV = np.zeros_like(self.V); gT = np.zeros_like(self.T); gW = np.zeros_like(self.W)
+         np.add.at(gW, Xp, g[:, None])
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        np.add.at(gT, Xp[:, 0], g[:, None] * Cp[:, 1] * Cp[:, 2])
++        np.add.at(gT, Xp[:, 1], g[:, None] * Cp[:, 0] * Cp[:, 2])
++        np.add.at(gT, Xp[:, 3], g[:, None] * Cp[:, 0] * Cp[:, 1])
++        np.add.at(gT, Xn[:, 0], -g[:, None] * Cn[:, 1] * Cn[:, 2])
++        np.add.at(gT, Xn[:, 1], -g[:, None] * Cn[:, 0] * Cn[:, 2])
++        np.add.at(gT, Xn[:, 3], -g[:, None] * Cn[:, 0] * Cn[:, 1])
++        gV += self.l2 * self.V; gT += self.l2 * self.T; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.T, gT, self.mT, self.vT),
++                            (self.W, gW, self.mW, self.vW)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -155,7 +166,7 @@
+             pred = m.predict(Xva); rm = evaluate(uva, yva, pred)
+             if rm['primary'] > best[s] + 1e-5:
+                 best[s], bad[s] = rm['primary'], 0
+-                best_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                best_state[s] = (m.V.copy(), m.T.copy(), m.W.copy(), np.float32(m.b))
+                 best_ranks[s] = normalized_ranks(uva, pred)
+             else:
+                 bad[s] += 1
+@@ -167,7 +178,7 @@
+         print(f"epoch {ep:2d} | loss {np.mean(epoch_losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+     for m, state in zip(models, best_state):
+-        m.V, m.W, m.b = state
++        m.V, m.T, m.W, m.b = state
+ 
+     # ---- outputs ----
+     sva = average_ranks(uva, best_ranks); r = evaluate(uva, yva, sva)

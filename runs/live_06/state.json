@@ -1,0 +1,4597 @@
+{
+ "run_id": "live_06",
+ "n_next": 21,
+ "generation": 5,
+ "champion": 7,
+ "best": 0.60438,
+ "streak": 3,
+ "nodes": {
+  "0": {
+   "n": 0,
+   "generation": 0,
+   "parent": null,
+   "merge_parents": null,
+   "action": "reproduce_baseline",
+   "method": "official FM",
+   "target_component": null,
+   "hypothesis": "Reproduce the official FM baseline under the harness contract.",
+   "expected_delta": 0.0,
+   "expected_delta_basis": "published valid primary 0.6016",
+   "rejected_alternative": null,
+   "change_summary": null,
+   "wildcard": false,
+   "code_path": "nodes/000.py",
+   "diff_path": null,
+   "diff_lines": null,
+   "metrics": {
+    "gauc": 0.6671326321610643,
+    "ndcg5": 0.5358048805448711,
+    "primary": 0.6014687563529677,
+    "ndcg5_disc": 0.7213787463804301,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6413,
+      "ndcg5": 0.4598,
+      "primary": 0.5505
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.649,
+      "ndcg5": 0.4877,
+      "primary": 0.5683
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.6946,
+      "ndcg5": 0.4048,
+      "primary": 0.5497
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.6269,
+      "ndcg5": 0.0865,
+      "primary": 0.3567
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6196,
+      "ndcg5": 0.3768,
+      "primary": 0.4982
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5531,
+      "ndcg5": 0.0625,
+      "primary": 0.3078
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6173,
+      "ndcg5": 0.5401,
+      "primary": 0.5787
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6238,
+      "ndcg5": 0.5103,
+      "primary": 0.567
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5636,
+      "ndcg5": 0.5457,
+      "primary": 0.5546
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6502,
+      "ndcg5": 0.106,
+      "primary": 0.3781
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.639089406813894,
+     "val_gauc": 0.6466754117904603,
+     "val_ndcg5": 0.5271850953688951,
+     "val_primary": 0.5869302535796777
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5478637908186231,
+     "val_gauc": 0.6588507713909505,
+     "val_ndcg5": 0.5322875997651874,
+     "val_primary": 0.5955691855780689
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5129100065146174,
+     "val_gauc": 0.6641943934300241,
+     "val_ndcg5": 0.5344258054066774,
+     "val_primary": 0.5993100994183507
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5003835705774171,
+     "val_gauc": 0.6642205331536866,
+     "val_ndcg5": 0.5346307523334315,
+     "val_primary": 0.599425642743559
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.494123198730605,
+     "val_gauc": 0.6661276032071011,
+     "val_ndcg5": 0.5359638540231441,
+     "val_primary": 0.6010457286151225
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.48968474609511237,
+     "val_gauc": 0.6657969708252829,
+     "val_ndcg5": 0.5354271259749465,
+     "val_primary": 0.6006120484001147
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.48593335492270334,
+     "val_gauc": 0.6671326321610643,
+     "val_ndcg5": 0.5358048805448711,
+     "val_primary": 0.6014687563529677
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.482088355081422,
+     "val_gauc": 0.6664977916178049,
+     "val_ndcg5": 0.5359287477143124,
+     "val_primary": 0.6012132696660586
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.47836316909108845,
+     "val_gauc": 0.6665954732760578,
+     "val_ndcg5": 0.5347894579692735,
+     "val_primary": 0.6006924656226657
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4743812152317592,
+     "val_gauc": 0.6650439271014731,
+     "val_ndcg5": 0.5342296847939081,
+     "val_primary": 0.5996368059476906
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4704518760953631,
+     "val_gauc": 0.6640201495772833,
+     "val_ndcg5": 0.5340621126819299,
+     "val_primary": 0.5990411311296067
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.587864875793457,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "critic": null,
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "42ba75b10188eb1098b0e8454e3b116d",
+   "identical_to_parent": false,
+   "realized_delta": null,
+   "accepted": false,
+   "seed_confirmation": null
+  },
+  "1": {
+   "n": 1,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "inverse-day-volume weighting",
+   "target_component": "data-weighting",
+   "hypothesis": "Weight each training day to contribute equal total gradient mass, preventing the high-volume early logging regime from overwhelming patterns representative of validation and test.",
+   "expected_delta": 0.0015,
+   "expected_delta_basis": "Data Fact \u00a75 shows roughly 230\u2013280K rows on early days versus about 20K later, with 04-10/11 alone contributing 44% of train, so inverse logging-intensity weighting addresses covariate imbalance rather than merely favoring recent rows.",
+   "rejected_alternative": {
+    "card": "video-age-by-tab field",
+    "reason": "The closed catalogue in Data Fact \u00a71 makes upload age largely recoverable from video identity, whereas day-volume balancing directly targets the measured train-to-evaluation regime mismatch."
+   },
+   "change_summary": "Added normalized inverse training-day frequency weights and applied them to the existing pointwise logloss gradient so every date contributes equal total gradient mass.",
+   "wildcard": true,
+   "code_path": "nodes/001.py",
+   "diff_path": "diffs/001.patch",
+   "diff_lines": 20,
+   "metrics": {
+    "gauc": 0.6638127149765476,
+    "ndcg5": 0.5338882095032185,
+    "primary": 0.598850462239883,
+    "ndcg5_disc": 0.7180614482213257,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6432,
+      "ndcg5": 0.4593,
+      "primary": 0.5512
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6412,
+      "ndcg5": 0.4866,
+      "primary": 0.5639
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.6883,
+      "ndcg5": 0.4039,
+      "primary": 0.5461
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5707,
+      "ndcg5": 0.0864,
+      "primary": 0.3286
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.621,
+      "ndcg5": 0.3771,
+      "primary": 0.499
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5555,
+      "ndcg5": 0.0625,
+      "primary": 0.309
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6125,
+      "ndcg5": 0.5381,
+      "primary": 0.5753
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6122,
+      "ndcg5": 0.5077,
+      "primary": 0.56
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5833,
+      "ndcg5": 0.5475,
+      "primary": 0.5654
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6978,
+      "ndcg5": 0.1065,
+      "primary": 0.4022
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6431853183678218,
+     "val_gauc": 0.6462985206017172,
+     "val_ndcg5": 0.5273591678374301,
+     "val_primary": 0.5868288442195737
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5556164562702179,
+     "val_gauc": 0.6568526653520101,
+     "val_ndcg5": 0.5318934707613007,
+     "val_primary": 0.5943730680566555
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5150995222585542,
+     "val_gauc": 0.6609880884737854,
+     "val_ndcg5": 0.5331106579405879,
+     "val_primary": 0.5970493732071867
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.4967431025845664,
+     "val_gauc": 0.6631583894608942,
+     "val_ndcg5": 0.5344917949160037,
+     "val_primary": 0.598825092188449
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.48617985418864657,
+     "val_gauc": 0.6630691596412541,
+     "val_ndcg5": 0.5344398139136086,
+     "val_primary": 0.5987544867774314
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.47902791861976896,
+     "val_gauc": 0.6631493683949093,
+     "val_ndcg5": 0.5342233137560212,
+     "val_primary": 0.5986863410754653
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.4732725309474128,
+     "val_gauc": 0.6638127149765476,
+     "val_ndcg5": 0.5338882095032185,
+     "val_primary": 0.598850462239883
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.46769815789801733,
+     "val_gauc": 0.6633400114717413,
+     "val_ndcg5": 0.5342064083924587,
+     "val_primary": 0.5987732099320999
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.46247690469026564,
+     "val_gauc": 0.6627210883275175,
+     "val_ndcg5": 0.5334542075066729,
+     "val_primary": 0.5980876479170952
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.45692753153187887,
+     "val_gauc": 0.6610362258782666,
+     "val_ndcg5": 0.5332963842091204,
+     "val_primary": 0.5971663050436935
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4515638040644782,
+     "val_gauc": 0.6596042990114036,
+     "val_ndcg5": 0.5329948401323487,
+     "val_primary": 0.5962995695718761
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 22.8862361907959,
+   "tokens_in": 64713,
+   "tokens_out": 4191,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage: date-derived weights use only training-row metadata, and labels remain targets only.",
+      "Contract and scope are preserved; weighting is normalized, deterministic, and applied only to the existing pointwise loss."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "196480f5de697633dc12b643950184d0",
+   "identical_to_parent": false,
+   "realized_delta": -0.00262,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "2": {
+   "n": 2,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "loss-bpr-pairwise-within-user",
+   "target_component": "loss",
+   "hypothesis": "Replace pointwise logloss with same-user positive-negative BPR so training directly optimizes the within-user ordering measured by GAUC.",
+   "expected_delta": 0.0016,
+   "expected_delta_basis": "The card was accepted five times on official FM, with confirmed fresh-seed gains of +0.0011 to +0.0017, and Data Fact \u00a77 says most training users are discriminative.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "It is more complex and measured -0.0029 on a field-aware FM stack, whereas BPR has repeated positive evidence on this exact champion stack."
+   },
+   "change_summary": "Replaced pointwise FM logloss with vectorized same-user BPR using one uniformly sampled negative per eligible positive each epoch.",
+   "wildcard": false,
+   "code_path": "nodes/002.py",
+   "diff_path": "diffs/002.patch",
+   "diff_lines": 36,
+   "metrics": {
+    "gauc": 0.6691530095869569,
+    "ndcg5": 0.5365043482798145,
+    "primary": 0.6028286789333857,
+    "ndcg5_disc": 0.7225893573715995,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6453,
+      "ndcg5": 0.46,
+      "primary": 0.5527
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6461,
+      "ndcg5": 0.4868,
+      "primary": 0.5664
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7022,
+      "ndcg5": 0.4056,
+      "primary": 0.5539
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5746,
+      "ndcg5": 0.086,
+      "primary": 0.3303
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6351,
+      "ndcg5": 0.3784,
+      "primary": 0.5068
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5381,
+      "ndcg5": 0.0621,
+      "primary": 0.3001
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6194,
+      "ndcg5": 0.5409,
+      "primary": 0.5801
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6426,
+      "ndcg5": 0.5147,
+      "primary": 0.5786
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5762,
+      "ndcg5": 0.5472,
+      "primary": 0.5617
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6213,
+      "ndcg5": 0.1056,
+      "primary": 0.3635
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749543687130543,
+     "val_gauc": 0.6574596286558325,
+     "val_ndcg5": 0.5300482325026108,
+     "val_primary": 0.5937539305792217
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6170179171765104,
+     "val_gauc": 0.6651647300378983,
+     "val_ndcg5": 0.5339029525753876,
+     "val_primary": 0.5995338413066429
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5731912483560279,
+     "val_gauc": 0.667847782974678,
+     "val_ndcg5": 0.5356275380683015,
+     "val_primary": 0.6017376605214897
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5573060258905939,
+     "val_gauc": 0.6691530095869569,
+     "val_ndcg5": 0.5365043482798145,
+     "val_primary": 0.6028286789333857
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5498637848712028,
+     "val_gauc": 0.6687025711703444,
+     "val_ndcg5": 0.536483926732446,
+     "val_primary": 0.6025932489513952
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5450548466215742,
+     "val_gauc": 0.6681242673949556,
+     "val_ndcg5": 0.5357091443816354,
+     "val_primary": 0.6019167058882955
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5396686462645836,
+     "val_gauc": 0.6692244797452661,
+     "val_ndcg5": 0.5364345049660473,
+     "val_primary": 0.6028294923556567
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5351446638716028,
+     "val_gauc": 0.6685604340554423,
+     "val_ndcg5": 0.5364556583974476,
+     "val_primary": 0.6025080462264449
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 13.79369592666626,
+   "tokens_in": 66174,
+   "tokens_out": 7337,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; labels are used only as training targets and validation evaluation labels.",
+      "BPR sampling is vectorized, deterministic, same-user, contract-compliant, and the diff is limited to the stated loss change."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "483b4a95577301f8974470f18709ad8c",
+   "identical_to_parent": false,
+   "realized_delta": 0.00136,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seed0": 0.6028286789333857,
+    "node_seeds": [
+     0.6029525159912483,
+     0.601968666398895,
+     0.6033155626423989
+    ],
+    "champion_seeds": [
+     0.6017609746263709,
+     0.6010899806390073,
+     0.6015033559120361
+    ],
+    "delta_mean": 0.00129,
+    "se": 0.000361,
+    "z": 3.59,
+    "sigma_pooled": 0.000442,
+    "sigma_df": 4,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "3": {
+   "n": 3,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "regularization-embedding-dropout-l2",
+   "target_component": "regularization",
+   "hypothesis": "Raise sparse-embedding L2 from the baseline value to 1e-5 so the model retains its epoch-7 ranking peak instead of fitting rare-ID noise.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The champion falls from 0.6015 at epoch 7 to 0.5990 at epoch 11, while this one-parameter change previously produced confirmed gains of +0.0009 and +0.0010 on official FM.",
+   "rejected_alternative": {
+    "card": "field dropout",
+    "reason": "Whole-field dropout changes optimization scale and requires masked interaction code, while the accepted L2 probe is a one-line test."
+   },
+   "change_summary": "Raised the FM sparse-embedding L2 coefficient from 1e-6 to 1e-5; all other training, stopping, and scoring logic is unchanged.",
+   "wildcard": false,
+   "code_path": "nodes/003.py",
+   "diff_path": "diffs/003.patch",
+   "diff_lines": 2,
+   "metrics": {
+    "gauc": 0.6684913593708386,
+    "ndcg5": 0.536514481883161,
+    "primary": 0.6025029206269998,
+    "ndcg5_disc": 0.7226068962100312,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6449,
+      "ndcg5": 0.4601,
+      "primary": 0.5525
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6454,
+      "ndcg5": 0.4875,
+      "primary": 0.5665
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.6975,
+      "ndcg5": 0.4046,
+      "primary": 0.551
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.6037,
+      "ndcg5": 0.0864,
+      "primary": 0.345
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6306,
+      "ndcg5": 0.378,
+      "primary": 0.5043
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5628,
+      "ndcg5": 0.0626,
+      "primary": 0.3127
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6185,
+      "ndcg5": 0.5406,
+      "primary": 0.5796
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6169,
+      "ndcg5": 0.5086,
+      "primary": 0.5628
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5734,
+      "ndcg5": 0.5478,
+      "primary": 0.5606
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6587,
+      "ndcg5": 0.1062,
+      "primary": 0.3824
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6397843130997249,
+     "val_gauc": 0.6458583897838303,
+     "val_ndcg5": 0.5268614476441232,
+     "val_primary": 0.5863599187139767
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5518600940704346,
+     "val_gauc": 0.6579784945107905,
+     "val_ndcg5": 0.5318689421941408,
+     "val_primary": 0.5949237183524656
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5186429977416992,
+     "val_gauc": 0.6633870607840876,
+     "val_ndcg5": 0.5342456415335461,
+     "val_primary": 0.5988163511588169
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.506933174601623,
+     "val_gauc": 0.6632508459843849,
+     "val_ndcg5": 0.5346582125700582,
+     "val_primary": 0.5989545292772216
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5014660196644919,
+     "val_gauc": 0.6651386153090141,
+     "val_ndcg5": 0.5352954868507737,
+     "val_primary": 0.6002170510798939
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.49806947218520303,
+     "val_gauc": 0.6665559472912459,
+     "val_ndcg5": 0.5355481893963367,
+     "val_primary": 0.6010520683437913
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.49566552213260107,
+     "val_gauc": 0.6677164719850041,
+     "val_ndcg5": 0.535897925362691,
+     "val_primary": 0.6018071986738476
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.49346591042620797,
+     "val_gauc": 0.6682291670291696,
+     "val_ndcg5": 0.536531705409933,
+     "val_primary": 0.6023804362195513
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4915579189147268,
+     "val_gauc": 0.6681881574655142,
+     "val_ndcg5": 0.5358098327491349,
+     "val_primary": 0.6019989951073246
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4895794766289847,
+     "val_gauc": 0.6671062243748479,
+     "val_ndcg5": 0.5357759491328175,
+     "val_primary": 0.6014410867538327
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4877323976584843,
+     "val_gauc": 0.6671474048353385,
+     "val_ndcg5": 0.5350902397535978,
+     "val_primary": 0.6011188222944681
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.485975880920887,
+     "val_gauc": 0.6684913593708386,
+     "val_ndcg5": 0.536514481883161,
+     "val_primary": 0.6025029206269998
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.4841425171920231,
+     "val_gauc": 0.66745865389632,
+     "val_ndcg5": 0.5356510671716798,
+     "val_primary": 0.6015548605339999
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.4821747481822968,
+     "val_gauc": 0.6673699954718414,
+     "val_ndcg5": 0.5357964871649008,
+     "val_primary": 0.601583241318371
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.48030678906611035,
+     "val_gauc": 0.6654203677362357,
+     "val_ndcg5": 0.5346937651011051,
+     "val_primary": 0.6000570664186704
+    },
+    {
+     "epoch": 16,
+     "train_loss": 0.47834564873150415,
+     "val_gauc": 0.66437336491091,
+     "val_ndcg5": 0.5344240576855601,
+     "val_primary": 0.5993987112982351
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 28.45681881904602,
+   "tokens_in": 64599,
+   "tokens_out": 3427,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract regression; the diff is the intended one-parameter L2 change.",
+      "NOTE: the shared coefficient also raises L2 on linear weights W, not only embeddings V, but this is minor inherited coupling."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "4667409a91b1ef36ffb237dc86dc94e4",
+   "identical_to_parent": false,
+   "realized_delta": 0.00103,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6025029206269998,
+    "node_seeds": [
+     0.6028729444838677,
+     0.6017090117891591,
+     0.6020694898356386
+    ],
+    "champion_seeds": [
+     0.6017609746263709,
+     0.6010899806390073,
+     0.6015033559120361
+    ],
+    "delta_mean": 0.00077,
+    "se": 0.000389,
+    "z": 1.97,
+    "sigma_pooled": 0.000477,
+    "sigma_df": 6,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "4": {
+   "n": 4,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Add leakage-safe bucketized user preferences for the current author, tab, and duration bucket so sparse users can rank row-varying contexts using their earlier behavior.",
+   "expected_delta": 0.0008,
+   "expected_delta_basis": "The method previously gained +0.0010 fresh-seed mean on official FM and another exact-stack probe moved +0.0006; Data Fact \u00a72 reports a median of 35 training rows per user.",
+   "rejected_alternative": {
+    "card": "history-same-author-run-features",
+    "reason": "It affects only 2.7% of validation rows and has an expected ceiling of +0.0008, whereas user aggregates have direct accepted evidence on official FM."
+   },
+   "change_summary": "Added leakage-safe, strictly earlier user-author, user-tab, and user-duration smoothed-rate buckets as three FM fields, using full training totals for validation and extra scoring.",
+   "wildcard": false,
+   "code_path": "nodes/004.py",
+   "diff_path": "diffs/004.patch",
+   "diff_lines": 75,
+   "metrics": {
+    "gauc": 0.6676803432445202,
+    "ndcg5": 0.5360641815273665,
+    "primary": 0.6018722623859434,
+    "ndcg5_disc": 0.7218275342283146,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6407,
+      "ndcg5": 0.4595,
+      "primary": 0.5501
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6412,
+      "ndcg5": 0.4863,
+      "primary": 0.5638
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7029,
+      "ndcg5": 0.4056,
+      "primary": 0.5542
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5804,
+      "ndcg5": 0.0862,
+      "primary": 0.3333
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6259,
+      "ndcg5": 0.3773,
+      "primary": 0.5016
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5672,
+      "ndcg5": 0.0627,
+      "primary": 0.315
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6167,
+      "ndcg5": 0.5399,
+      "primary": 0.5783
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6187,
+      "ndcg5": 0.5106,
+      "primary": 0.5647
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5784,
+      "ndcg5": 0.5479,
+      "primary": 0.5632
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6575,
+      "ndcg5": 0.1064,
+      "primary": 0.382
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6067998328379223,
+     "val_gauc": 0.6574207947181598,
+     "val_ndcg5": 0.5308907473672322,
+     "val_primary": 0.594155771042696
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5261125462395805,
+     "val_gauc": 0.6658627483841668,
+     "val_ndcg5": 0.5351213081016926,
+     "val_primary": 0.6004920282429297
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.510710232598441,
+     "val_gauc": 0.6676461109170353,
+     "val_ndcg5": 0.536051191484198,
+     "val_primary": 0.6018486512006167
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5035761511751584,
+     "val_gauc": 0.6676159851520549,
+     "val_ndcg5": 0.5360416529576059,
+     "val_primary": 0.6018288190548304
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.4980399979012353,
+     "val_gauc": 0.6676803432445202,
+     "val_ndcg5": 0.5360641815273665,
+     "val_primary": 0.6018722623859434
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.4930888884833881,
+     "val_gauc": 0.6658878407594309,
+     "val_ndcg5": 0.5350721071855948,
+     "val_primary": 0.6004799739725128
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.4885621036802019,
+     "val_gauc": 0.6662995970846197,
+     "val_ndcg5": 0.5351355495177637,
+     "val_primary": 0.6007175733011917
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.483982304590089,
+     "val_gauc": 0.664366263165395,
+     "val_ndcg5": 0.5345195354348581,
+     "val_primary": 0.5994428993001266
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4795832851103374,
+     "val_gauc": 0.6639458982694779,
+     "val_ndcg5": 0.5332427153189176,
+     "val_primary": 0.5985943067941978
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 32.01630687713623,
+   "tokens_in": 67080,
+   "tokens_out": 8841,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "Training labels enter only histories from strictly earlier time; equal-time rows are committed together, and validation/extra use train totals only.",
+      "Diff is scoped to the three history fields; output order, determinism, SMOKE_EPOCHS, and training loop remain compliant."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "2d6a069228ab97877e6eb8ef4434f088",
+   "identical_to_parent": false,
+   "realized_delta": 0.0004,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6018722623859434,
+    "node_seeds": [
+     0.6021197760408004,
+     0.601621487783518,
+     0.6029344438819488
+    ],
+    "champion_seeds": [
+     0.6017609746263709,
+     0.6010899806390073,
+     0.6015033559120361
+    ],
+    "delta_mean": 0.00077,
+    "se": 0.000418,
+    "z": 1.85,
+    "sigma_pooled": 0.000512,
+    "sigma_df": 8,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "5": {
+   "n": 5,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "ensembling-seed-average",
+   "target_component": "ensembling",
+   "hypothesis": "Average normalized within-user ranks from five independently initialized FM models to suppress seed-specific ordering errors without mixing incomparable logit scales.",
+   "expected_delta": 0.0008,
+   "expected_delta_basis": "The prior official-FM seed ensemble was a positive but unconfirmed +0.0008 near-miss, and normalized ranks are justified by the metrics' within-user monotone invariance.",
+   "rejected_alternative": {
+    "card": "ensembling-multiseed-heterogeneous-rank-blend",
+    "reason": "The champion lacks a second competitive architecture, and the heterogeneous recipe requires ten training phases rather than five."
+   },
+   "change_summary": "Added five independently early-stopped FM members and tie-free within-user normalized-rank averaging for validation and extra predictions.",
+   "wildcard": false,
+   "code_path": "nodes/005.py",
+   "diff_path": "diffs/005.patch",
+   "diff_lines": 68,
+   "metrics": {
+    "gauc": 0.6692283524151125,
+    "ndcg5": 0.5366713886172909,
+    "primary": 0.6029498705162017,
+    "ndcg5_disc": 0.7228784641572527,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6414,
+      "ndcg5": 0.4598,
+      "primary": 0.5506
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6492,
+      "ndcg5": 0.4878,
+      "primary": 0.5685
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7023,
+      "ndcg5": 0.4056,
+      "primary": 0.554
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.6328,
+      "ndcg5": 0.0867,
+      "primary": 0.3597
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6229,
+      "ndcg5": 0.377,
+      "primary": 0.4999
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5602,
+      "ndcg5": 0.0628,
+      "primary": 0.3115
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6192,
+      "ndcg5": 0.5408,
+      "primary": 0.58
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6288,
+      "ndcg5": 0.5103,
+      "primary": 0.5695
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.574,
+      "ndcg5": 0.5466,
+      "primary": 0.5603
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6484,
+      "ndcg5": 0.1061,
+      "primary": 0.3772
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6402891939878463,
+     "val_gauc": 0.6485174550471909,
+     "val_ndcg5": 0.5279376039595738,
+     "val_primary": 0.5882275295033823
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5507265365123749,
+     "val_gauc": 0.659376129856025,
+     "val_ndcg5": 0.5326904449797039,
+     "val_primary": 0.5960332874178644
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5137500768048423,
+     "val_gauc": 0.6656142868579044,
+     "val_ndcg5": 0.5349278684928398,
+     "val_primary": 0.6002710776753721
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5006201312371663,
+     "val_gauc": 0.666690916369285,
+     "val_ndcg5": 0.535878878687127,
+     "val_primary": 0.601284897528206
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.4943135256426675,
+     "val_gauc": 0.6678205351899367,
+     "val_ndcg5": 0.5365617519995618,
+     "val_primary": 0.6021911435947492
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.4899297988840512,
+     "val_gauc": 0.6679338135656542,
+     "val_ndcg5": 0.536558512578161,
+     "val_primary": 0.6022461630719076
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.4861488510455404,
+     "val_gauc": 0.6692283524151125,
+     "val_ndcg5": 0.5366713886172909,
+     "val_primary": 0.6029498705162017
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.4824762625353677,
+     "val_gauc": 0.6692283524151125,
+     "val_ndcg5": 0.5366713886172909,
+     "val_primary": 0.6029498705162017
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.47852029449173383,
+     "val_gauc": 0.6692283524151125,
+     "val_ndcg5": 0.5366713886172909,
+     "val_primary": 0.6029498705162017
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4746179296502045,
+     "val_gauc": 0.6692283524151125,
+     "val_ndcg5": 0.5366713886172909,
+     "val_primary": 0.6029498705162017
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4701651433394069,
+     "val_gauc": 0.6692283524151125,
+     "val_ndcg5": 0.5366713886172909,
+     "val_primary": 0.6029498705162017
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 63.527971267700195,
+   "tokens_in": 66126,
+   "tokens_out": 8239,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or unauthorized data access; validation labels are used only for evaluation and early stopping.",
+      "The diff is scoped to five independently early-stopped FM seeds and deterministic within-user rank averaging; SMOKE_EPOCHS caps all members and output order is preserved."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "b9c25ff23345093bd5939d08182344c6",
+   "identical_to_parent": false,
+   "realized_delta": 0.00148,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seed0": 0.6029498705162017,
+    "node_seeds": [
+     0.6029798477500652,
+     0.6024102758902958,
+     0.6028004012335035
+    ],
+    "champion_seeds": [
+     0.6017609746263709,
+     0.6010899806390073,
+     0.6015033559120361
+    ],
+    "delta_mean": 0.00128,
+    "se": 0.000398,
+    "z": 3.22,
+    "sigma_pooled": 0.000487,
+    "sigma_df": 10,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "6": {
+   "n": 6,
+   "generation": 2,
+   "parent": 2,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "targeted third-order user-tab-duration HOFM",
+   "target_component": "model",
+   "hypothesis": "Add a factorized third-order user\u00d7tab\u00d7duration interaction to the BPR FM so it can represent personal duration preferences that change by tab rather than only pairwise effects.",
+   "expected_delta": 0.0008,
+   "expected_delta_basis": "Higher-Order Factorization Machines (Blondel et al., 2016) model interactions absent from an FM, while Data Facts \u00a73\u20134 show strong duration and tab structure and the champion remains weak on dur>180s.",
+   "rejected_alternative": {
+    "card": "sparse-user popularity-prior blend",
+    "reason": "The FM already learns first-order video and tab effects, whereas the targeted cubic term adds a genuinely missing interaction order without another training branch."
+   },
+   "change_summary": "Added a separate rank-k embedding table for a factorized user\u00d7tab\u00d7duration cubic term, including analytic BPR gradients, Adam state, L2, and early-stop checkpointing.",
+   "wildcard": true,
+   "code_path": "nodes/006.py",
+   "diff_path": "diffs/006.patch",
+   "diff_lines": 27,
+   "metrics": {
+    "gauc": 0.6691864582209727,
+    "ndcg5": 0.5366031196322332,
+    "primary": 0.602894788926603,
+    "ndcg5_disc": 0.722760306907764,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6457,
+      "ndcg5": 0.46,
+      "primary": 0.5529
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6466,
+      "ndcg5": 0.487,
+      "primary": 0.5668
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7018,
+      "ndcg5": 0.4056,
+      "primary": 0.5537
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5746,
+      "ndcg5": 0.086,
+      "primary": 0.3303
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6337,
+      "ndcg5": 0.3782,
+      "primary": 0.5059
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5361,
+      "ndcg5": 0.0622,
+      "primary": 0.2991
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6191,
+      "ndcg5": 0.5408,
+      "primary": 0.58
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6427,
+      "ndcg5": 0.5148,
+      "primary": 0.5787
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5778,
+      "ndcg5": 0.5473,
+      "primary": 0.5626
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6213,
+      "ndcg5": 0.1056,
+      "primary": 0.3635
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749473797514084,
+     "val_gauc": 0.6573924698394016,
+     "val_ndcg5": 0.5300307416827396,
+     "val_primary": 0.5937116057610705
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6169386341216716,
+     "val_gauc": 0.6652792778594891,
+     "val_ndcg5": 0.5338672426511468,
+     "val_primary": 0.599573260255318
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5727029873969707,
+     "val_gauc": 0.6678875725213217,
+     "val_ndcg5": 0.5356428113956877,
+     "val_primary": 0.6017651919585048
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5552036711510192,
+     "val_gauc": 0.6691864582209727,
+     "val_ndcg5": 0.5366031196322332,
+     "val_primary": 0.602894788926603
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5436068709860457,
+     "val_gauc": 0.6685658654930257,
+     "val_ndcg5": 0.5363542511778976,
+     "val_primary": 0.6024600583354616
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5311822967326387,
+     "val_gauc": 0.6675755523318863,
+     "val_ndcg5": 0.5358724514119064,
+     "val_primary": 0.6017240018718963
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5149265857453041,
+     "val_gauc": 0.6670526187460505,
+     "val_ndcg5": 0.535370212666159,
+     "val_primary": 0.6012114157061048
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.49702779092687244,
+     "val_gauc": 0.6637569460319169,
+     "val_ndcg5": 0.5341692611173866,
+     "val_primary": 0.5989631035746518
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 16.570892095565796,
+   "tokens_in": 65347,
+   "tokens_out": 5580,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; validation labels are used only for evaluation and early stopping.",
+      "The diff is scoped to the targeted cubic user\u00d7tab\u00d7duration term, with correct gradients, optimizer state, and checkpoint restoration."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "b987db4846aa70b74f7624fe83530173",
+   "identical_to_parent": false,
+   "realized_delta": 7e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.602894788926603,
+    "node_seeds": [
+     0.6024738516452064,
+     0.6010919535389108,
+     0.6026152249314444
+    ],
+    "champion_seeds": [
+     0.6029525159912483,
+     0.601968666398895,
+     0.6033155626423989
+    ],
+    "delta_mean": -0.00069,
+    "se": 0.000444,
+    "z": -1.54,
+    "sigma_pooled": 0.000544,
+    "sigma_df": 12,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "7": {
+   "n": 7,
+   "generation": 2,
+   "parent": 2,
+   "merge_parents": [
+    2,
+    5
+   ],
+   "action": "merge",
+   "method": "ensembling-seed-average",
+   "target_component": "ensembling",
+   "hypothesis": "Train five independently early-stopped same-user BPR FMs and average their tie-free normalized within-user ranks, retaining BPR's metric alignment while suppressing seed-specific ordering errors.",
+   "expected_delta": 0.0009,
+   "expected_delta_basis": "Nodes 002 and 005 each delivered about +0.0013 fresh-seed mean, while the prior exact-stack FM+BPR seed ensemble moved +0.0009, so overlap-adjusted expectation is +0.0009.",
+   "rejected_alternative": {
+    "card": "ensembling-multiseed-heterogeneous-rank-blend",
+    "reason": "The champion has no accepted field-aware branch, and the heterogeneous recipe requires ten models rather than the five-model merge requested by the Consolidator."
+   },
+   "change_summary": "Merged node_005's five-member tie-free normalized-rank ensemble into the champion, retaining the champion's same-user BPR loss and pair sampler for every independently early-stopped member.",
+   "wildcard": false,
+   "code_path": "nodes/007.py",
+   "diff_path": "diffs/007.patch",
+   "diff_lines": 72,
+   "metrics": {
+    "gauc": 0.6706470560076542,
+    "ndcg5": 0.5372670890995723,
+    "primary": 0.6039570725536132,
+    "ndcg5_disc": 0.723909478906422,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.646,
+      "ndcg5": 0.4605,
+      "primary": 0.5532
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6502,
+      "ndcg5": 0.4878,
+      "primary": 0.569
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.703,
+      "ndcg5": 0.4056,
+      "primary": 0.5543
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5572,
+      "ndcg5": 0.0859,
+      "primary": 0.3215
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.628,
+      "ndcg5": 0.3778,
+      "primary": 0.5029
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5497,
+      "ndcg5": 0.0628,
+      "primary": 0.3062
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6208,
+      "ndcg5": 0.5412,
+      "primary": 0.581
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.644,
+      "ndcg5": 0.5166,
+      "primary": 0.5803
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5817,
+      "ndcg5": 0.5475,
+      "primary": 0.5646
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6212,
+      "ndcg5": 0.1055,
+      "primary": 0.3633
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6755238170319415,
+     "val_gauc": 0.658293264866264,
+     "val_ndcg5": 0.5306769146567093,
+     "val_primary": 0.5944850897614866
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6186175386956397,
+     "val_gauc": 0.665915393032392,
+     "val_ndcg5": 0.5343390600094757,
+     "val_primary": 0.6001272265209339
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5744606162639374,
+     "val_gauc": 0.6680889080616033,
+     "val_ndcg5": 0.5356783463109828,
+     "val_primary": 0.6018836271862931
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5570477315720092,
+     "val_gauc": 0.6694720514941205,
+     "val_ndcg5": 0.5363881714412759,
+     "val_primary": 0.6029301114676981
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5491713090145841,
+     "val_gauc": 0.6696352626792235,
+     "val_ndcg5": 0.5365157840320001,
+     "val_primary": 0.6030755233556118
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5433598985063269,
+     "val_gauc": 0.6701210369217528,
+     "val_ndcg5": 0.5368910416980943,
+     "val_primary": 0.6035060393099236
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5389326549590903,
+     "val_gauc": 0.670651300467095,
+     "val_ndcg5": 0.5373603302979728,
+     "val_primary": 0.6040058153825338
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5339476501688044,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.52789229059473,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5233625511751108,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5115169083818476,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5064241505683736,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 44.5829656124115,
+   "tokens_in": 71400,
+   "tokens_out": 4561,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test-data access; validation labels are used only for evaluation and early stopping.",
+      "The five deterministic BPR phases are independently early-stopped, all obey SMOKE_EPOCHS, and outputs preserve input order with tie-free within-user rank averaging."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "21362648f9f87715af7fa2c4137c8623",
+   "identical_to_parent": false,
+   "realized_delta": 0.00113,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seed0": 0.6039570725536132,
+    "node_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "champion_seeds": [
+     0.6029525159912483,
+     0.601968666398895,
+     0.6033155626423989
+    ],
+    "delta_mean": 0.00163,
+    "se": 0.000429,
+    "z": 3.8,
+    "sigma_pooled": 0.000525,
+    "sigma_df": 14,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "8": {
+   "n": 8,
+   "generation": 2,
+   "parent": 2,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "loss-ranksvm-margin-pairs",
+   "target_component": "loss",
+   "hypothesis": "Replace logistic BPR with a margin-0.5 hinge on the same within-user pairs so comfortably ordered pairs stop updating and capacity remains focused on weak orderings, including the dur>180s cohort where BPR helped most.",
+   "expected_delta": 0.0006,
+   "expected_delta_basis": "The card range is 0.000\u20130.0015, and the diagnosis shows both a peaked BPR curve and a +0.0086 dur>180s group improvement, giving specific support for a conservative lower-third estimate.",
+   "rejected_alternative": {
+    "card": "loss-duration-cohort-weighted-bpr",
+    "reason": "That direct long-duration upweighting already lost 0.0020 on the same FM+BPR stack, whereas hinge changes how all existing pairs are regularized without repeating the failed sampler."
+   },
+   "change_summary": "Replaced logistic BPR with a margin-0.5 RankSVM hinge loss on the unchanged uniformly sampled same-user pairs.",
+   "wildcard": false,
+   "code_path": "nodes/008.py",
+   "diff_path": "diffs/008.patch",
+   "diff_lines": 9,
+   "metrics": {
+    "gauc": 0.6699366935907853,
+    "ndcg5": 0.5366709252590571,
+    "primary": 0.6033038094249212,
+    "ndcg5_disc": 0.722877662195214,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6471,
+      "ndcg5": 0.4601,
+      "primary": 0.5536
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6459,
+      "ndcg5": 0.4868,
+      "primary": 0.5664
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7036,
+      "ndcg5": 0.4057,
+      "primary": 0.5546
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5514,
+      "ndcg5": 0.0858,
+      "primary": 0.3186
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6333,
+      "ndcg5": 0.3781,
+      "primary": 0.5057
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5442,
+      "ndcg5": 0.0628,
+      "primary": 0.3035
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6194,
+      "ndcg5": 0.5407,
+      "primary": 0.5801
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6446,
+      "ndcg5": 0.5134,
+      "primary": 0.579
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5803,
+      "ndcg5": 0.5473,
+      "primary": 0.5638
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6612,
+      "ndcg5": 0.1062,
+      "primary": 0.3837
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.45908116660219556,
+     "val_gauc": 0.6550307576316841,
+     "val_ndcg5": 0.5293912568145781,
+     "val_primary": 0.592211007223131
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.36063750310147064,
+     "val_gauc": 0.6677288875901163,
+     "val_ndcg5": 0.5353168689777714,
+     "val_primary": 0.6015228782839439
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.3404024795014807,
+     "val_gauc": 0.6689490863356153,
+     "val_ndcg5": 0.5365137152818535,
+     "val_primary": 0.6027314008087344
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.33549995752091105,
+     "val_gauc": 0.6699366935907853,
+     "val_ndcg5": 0.5366709252590571,
+     "val_primary": 0.6033038094249212
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.33065897797016386,
+     "val_gauc": 0.6681638964079785,
+     "val_ndcg5": 0.5363227061335992,
+     "val_primary": 0.6022433012707888
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.3259807951906894,
+     "val_gauc": 0.6676434895794084,
+     "val_ndcg5": 0.535825688393597,
+     "val_primary": 0.6017345889865027
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.3188495395031381,
+     "val_gauc": 0.6667453873505427,
+     "val_ndcg5": 0.5350966912368408,
+     "val_primary": 0.6009210392936917
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.31197769781376455,
+     "val_gauc": 0.666482087846778,
+     "val_ndcg5": 0.5354326734499444,
+     "val_primary": 0.6009573806483612
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 13.723554134368896,
+   "tokens_in": 66720,
+   "tokens_out": 3764,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test-data access; validation labels are used only for evaluation and early stopping.",
+      "The diff only replaces BPR\u2019s logistic surrogate with the specified margin-0.5 hinge loss; sampling, optimizer, stopping, and outputs remain unchanged."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "5279cc92cac9e62f8ed8325a3ea72975",
+   "identical_to_parent": false,
+   "realized_delta": 0.00048,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6033038094249212,
+    "node_seeds": [
+     0.6033466710004212,
+     0.6015471499800858,
+     0.6025937652245179
+    ],
+    "champion_seeds": [
+     0.6029525159912483,
+     0.601968666398895,
+     0.6033155626423989
+    ],
+    "delta_mean": -0.00025,
+    "se": 0.000469,
+    "z": -0.53,
+    "sigma_pooled": 0.000575,
+    "sigma_df": 16,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "9": {
+   "n": 9,
+   "generation": 2,
+   "parent": 2,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "regularization-embedding-only-l2",
+   "target_component": "regularization",
+   "hypothesis": "Raise L2 to 1e-5 only for latent embeddings while leaving linear field weights at 1e-6, reducing sparse-ID overfit without shrinking the useful tab and duration priors.",
+   "expected_delta": 0.0005,
+   "expected_delta_basis": "Global L2 was a positive FM+BPR near-miss of about +0.0003 fresh-seed mean, the champion mildly overfits, and node_003's critic identified the avoidable coupling between embedding and linear-weight penalties.",
+   "rejected_alternative": {
+    "card": "regularization-adversarial-personalized-ranking",
+    "reason": "APR needs a second gradient evaluation per batch, while decoupling the near-miss L2 penalty is a cheaper and more isolated test of the diagnosed overfit."
+   },
+   "change_summary": "Split the shared L2 penalty into embedding-only l2_v=1e-5 and linear-weight l2_w=1e-6; all other training, stopping, and scoring logic is unchanged.",
+   "wildcard": false,
+   "code_path": "nodes/009.py",
+   "diff_path": "diffs/009.patch",
+   "diff_lines": 6,
+   "metrics": {
+    "gauc": 0.6688063653624411,
+    "ndcg5": 0.5364134722219028,
+    "primary": 0.602609918792172,
+    "ndcg5_disc": 0.722432072697774,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6447,
+      "ndcg5": 0.4597,
+      "primary": 0.5522
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6458,
+      "ndcg5": 0.4866,
+      "primary": 0.5662
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7024,
+      "ndcg5": 0.4056,
+      "primary": 0.554
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5746,
+      "ndcg5": 0.086,
+      "primary": 0.3303
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.634,
+      "ndcg5": 0.3783,
+      "primary": 0.5061
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5417,
+      "ndcg5": 0.0625,
+      "primary": 0.3021
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6189,
+      "ndcg5": 0.5408,
+      "primary": 0.5798
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6404,
+      "ndcg5": 0.5143,
+      "primary": 0.5773
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5766,
+      "ndcg5": 0.5474,
+      "primary": 0.562
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6213,
+      "ndcg5": 0.1056,
+      "primary": 0.3635
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749919145665271,
+     "val_gauc": 0.6574784222761311,
+     "val_ndcg5": 0.5301694735477905,
+     "val_primary": 0.5938239479119608
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6175923157245555,
+     "val_gauc": 0.6650402806126211,
+     "val_ndcg5": 0.5338437472795633,
+     "val_primary": 0.5994420139460922
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5743998111562526,
+     "val_gauc": 0.6675589299181317,
+     "val_ndcg5": 0.5355839041449443,
+     "val_primary": 0.601571417031538
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5589637160301208,
+     "val_gauc": 0.6688063653624411,
+     "val_ndcg5": 0.5364134722219028,
+     "val_primary": 0.602609918792172
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5521686216618152,
+     "val_gauc": 0.6683947862340972,
+     "val_ndcg5": 0.5363205741010854,
+     "val_primary": 0.6023576801675913
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5482321774705927,
+     "val_gauc": 0.6679404332305379,
+     "val_ndcg5": 0.535754752332629,
+     "val_primary": 0.6018475927815834
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.544015829867505,
+     "val_gauc": 0.6690152352393464,
+     "val_ndcg5": 0.5362057992698599,
+     "val_primary": 0.6026105172546031
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5407892161227287,
+     "val_gauc": 0.6686175936217269,
+     "val_ndcg5": 0.5363155018244891,
+     "val_primary": 0.6024665477231079
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 13.801181077957153,
+   "tokens_in": 64568,
+   "tokens_out": 3292,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations found.",
+      "Diff is scoped exactly to separating embedding and linear-weight L2 penalties."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "88057e475048c2853310767cb6acd7a0",
+   "identical_to_parent": false,
+   "realized_delta": -0.00022,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "10": {
+   "n": 10,
+   "generation": 3,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "long-duration slot-preserving specialist",
+   "target_component": "ensembling",
+   "hypothesis": "Retain the champion's global rank slots, but train long-only BPR specialists on same-user pairs where both rows exceed 180 seconds and use their seed-averaged order to permute only the long-video occupants of those slots, improving the weak cohort without disturbing cross-duration ordering.",
+   "expected_delta": 0.0006,
+   "expected_delta_basis": "Data Fact \u00a73 motivates distinct long-video behavior, while the current journal identifies dur>180s as the weakest actionable cohort at 0.5029 primary and reports that every generation-2 candidate worsened it.",
+   "rejected_alternative": {
+    "card": "pointwise-BPR objective-diverse rank blend",
+    "reason": "The five-seed pointwise branch is already about 0.0016 below the BPR ensemble and likely shares most item/context errors, whereas a conditional long-duration expert targets the diagnosed failure while preserving every cross-cohort decision."
+   },
+   "change_summary": "Added three independently seeded >180 s same-user BPR specialists whose averaged conditional ranks permute only long-video occupants of the champion ensemble\u2019s fixed within-user rank slots.",
+   "wildcard": true,
+   "code_path": "nodes/010.py",
+   "diff_path": "diffs/010.patch",
+   "diff_lines": 68,
+   "metrics": {
+    "gauc": 0.6712479078600344,
+    "ndcg5": 0.5374995534183147,
+    "primary": 0.6043737306391745,
+    "ndcg5_disc": 0.7243118189219296,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.646,
+      "ndcg5": 0.4605,
+      "primary": 0.5532
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6502,
+      "ndcg5": 0.4878,
+      "primary": 0.569
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.703,
+      "ndcg5": 0.4056,
+      "primary": 0.5543
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5572,
+      "ndcg5": 0.0859,
+      "primary": 0.3215
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6347,
+      "ndcg5": 0.3783,
+      "primary": 0.5065
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5477,
+      "ndcg5": 0.0627,
+      "primary": 0.3052
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6216,
+      "ndcg5": 0.5414,
+      "primary": 0.5815
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6436,
+      "ndcg5": 0.5162,
+      "primary": 0.5799
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5839,
+      "ndcg5": 0.5476,
+      "primary": 0.5658
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6126,
+      "ndcg5": 0.1054,
+      "primary": 0.359
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6755238170319415,
+     "val_gauc": 0.658293264866264,
+     "val_ndcg5": 0.5306769146567093,
+     "val_primary": 0.5944850897614866
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6186175386956397,
+     "val_gauc": 0.665915393032392,
+     "val_ndcg5": 0.5343390600094757,
+     "val_primary": 0.6001272265209339
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5744606162639374,
+     "val_gauc": 0.6680889080616033,
+     "val_ndcg5": 0.5356783463109828,
+     "val_primary": 0.6018836271862931
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5570477315720092,
+     "val_gauc": 0.6694720514941205,
+     "val_ndcg5": 0.5363881714412759,
+     "val_primary": 0.6029301114676981
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5491713090145841,
+     "val_gauc": 0.6696352626792235,
+     "val_ndcg5": 0.5365157840320001,
+     "val_primary": 0.6030755233556118
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5433598985063269,
+     "val_gauc": 0.6701210369217528,
+     "val_ndcg5": 0.5368910416980943,
+     "val_primary": 0.6035060393099236
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5389326549590903,
+     "val_gauc": 0.670651300467095,
+     "val_ndcg5": 0.5373603302979728,
+     "val_primary": 0.6040058153825338
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5339476501688044,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.52789229059473,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5233625511751108,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5115169083818476,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5064241505683736,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.6915064255396525,
+     "val_gauc": 0.6697984821418567,
+     "val_ndcg5": 0.5374546778554197,
+     "val_primary": 0.6036265799986382
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.6874056259791056,
+     "val_gauc": 0.6703372084393786,
+     "val_ndcg5": 0.5373981410745438,
+     "val_primary": 0.6038676747569611
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.6829558312892914,
+     "val_gauc": 0.6705137955146274,
+     "val_ndcg5": 0.5373351276608794,
+     "val_primary": 0.6039244615877535
+    },
+    {
+     "epoch": 16,
+     "train_loss": 0.6762346004446348,
+     "val_gauc": 0.6706353741593506,
+     "val_ndcg5": 0.5373708469870978,
+     "val_primary": 0.6040031105732242
+    },
+    {
+     "epoch": 17,
+     "train_loss": 0.66954738398393,
+     "val_gauc": 0.6706063209295954,
+     "val_ndcg5": 0.5373412258901216,
+     "val_primary": 0.6039737734098585
+    },
+    {
+     "epoch": 18,
+     "train_loss": 0.6635149717330933,
+     "val_gauc": 0.6708870037618218,
+     "val_ndcg5": 0.5374462788954157,
+     "val_primary": 0.6041666413286187
+    },
+    {
+     "epoch": 19,
+     "train_loss": 0.6550515269239744,
+     "val_gauc": 0.6711579918421552,
+     "val_ndcg5": 0.5375276686091099,
+     "val_primary": 0.6043428302256326
+    },
+    {
+     "epoch": 20,
+     "train_loss": 0.6470982208848,
+     "val_gauc": 0.6711579918421552,
+     "val_ndcg5": 0.5375276686091099,
+     "val_primary": 0.6043428302256326
+    },
+    {
+     "epoch": 21,
+     "train_loss": 0.6386837189396223,
+     "val_gauc": 0.6712479078600344,
+     "val_ndcg5": 0.5374995534183147,
+     "val_primary": 0.6043737306391745
+    },
+    {
+     "epoch": 22,
+     "train_loss": 0.6293848703304926,
+     "val_gauc": 0.6712479078600344,
+     "val_ndcg5": 0.5374995534183147,
+     "val_primary": 0.6043737306391745
+    },
+    {
+     "epoch": 23,
+     "train_loss": 0.6170644760131836,
+     "val_gauc": 0.6712479078600344,
+     "val_ndcg5": 0.5374995534183147,
+     "val_primary": 0.6043737306391745
+    },
+    {
+     "epoch": 24,
+     "train_loss": 0.6144478023052216,
+     "val_gauc": 0.6712479078600344,
+     "val_ndcg5": 0.5374995534183147,
+     "val_primary": 0.6043737306391745
+    },
+    {
+     "epoch": 25,
+     "train_loss": 0.6013212688267231,
+     "val_gauc": 0.6712479078600344,
+     "val_ndcg5": 0.5374995534183147,
+     "val_primary": 0.6043737306391745
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 64.07937812805176,
+   "tokens_in": 71116,
+   "tokens_out": 9890,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or unauthorized data access; duration is a legal show-time feature and labels are used only for training or validation selection.",
+      "The diff is scoped to three long-only BPR specialists and slot-preserving rank permutation; all training phases honor SMOKE_EPOCHS."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "a7f306b4e359e121c8a85ad4a06ddafb",
+   "identical_to_parent": false,
+   "realized_delta": 0.00042,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6043737306391745,
+    "node_seeds": [
+     0.6044934573613927,
+     0.604434679131614,
+     0.6050167548948051
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": 0.00027,
+    "se": 0.000454,
+    "z": 0.6,
+    "sigma_pooled": 0.000556,
+    "sigma_df": 18,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "11": {
+   "n": 11,
+   "generation": 3,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "loss-bpr-pairwise-within-user \u2014 within-long-duration matched stream",
+   "target_component": "loss",
+   "hypothesis": "Replace 10% of each member's ordinary BPR samples with same-user positive-negative pairs where both videos exceed 180 seconds, directly improving ordering inside the weakest actionable duration cohort without disturbing most broad pairs.",
+   "expected_delta": 0.0005,
+   "expected_delta_basis": "The diagnosis identifies dur>180s as weakest at 0.5029 primary and says every generation-2 node worsened it; unlike the failed broad duration weighting, matched long-duration pairs cancel coarse duration effects and optimize within-cohort ordering.",
+   "rejected_alternative": {
+    "card": "loss-ranksvm-margin-pairs margin 1.0",
+    "reason": "Margin 0.5 reversed to a negative fresh-seed mean and mainly moved GAUC rather than top-five quality, providing less targeted support for the diagnosed long-duration failure."
+   },
+   "change_summary": "Replaced 10% of each ensemble member's ordinary BPR pairs with precomputed same-user positive-negative pairs where both durations exceed 180 seconds, preserving the total per-epoch pair count.",
+   "wildcard": false,
+   "code_path": "nodes/011.py",
+   "diff_path": "diffs/011.patch",
+   "diff_lines": 16,
+   "metrics": {
+    "gauc": 0.6705499824909036,
+    "ndcg5": 0.5373151943014508,
+    "primary": 0.6039325883961773,
+    "ndcg5_disc": 0.7239927374803593,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6445,
+      "ndcg5": 0.4603,
+      "primary": 0.5524
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6472,
+      "ndcg5": 0.4874,
+      "primary": 0.5673
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7054,
+      "ndcg5": 0.4059,
+      "primary": 0.5556
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5407,
+      "ndcg5": 0.0859,
+      "primary": 0.3133
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6328,
+      "ndcg5": 0.3785,
+      "primary": 0.5056
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5533,
+      "ndcg5": 0.0629,
+      "primary": 0.3081
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6203,
+      "ndcg5": 0.5411,
+      "primary": 0.5807
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6457,
+      "ndcg5": 0.5143,
+      "primary": 0.58
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5813,
+      "ndcg5": 0.5479,
+      "primary": 0.5646
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6426,
+      "ndcg5": 0.1059,
+      "primary": 0.3742
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6760577006542936,
+     "val_gauc": 0.6579534141473984,
+     "val_ndcg5": 0.5305474101811546,
+     "val_primary": 0.5942504121642764
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6209457534424803,
+     "val_gauc": 0.6650562310558371,
+     "val_ndcg5": 0.5339695077651572,
+     "val_primary": 0.5995128694104972
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5780750472494897,
+     "val_gauc": 0.6676175749261715,
+     "val_ndcg5": 0.5351569957147558,
+     "val_primary": 0.6013872853204636
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5611810780586081,
+     "val_gauc": 0.6690541000594445,
+     "val_ndcg5": 0.5363491942578212,
+     "val_primary": 0.6027016471586328
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5532329158580049,
+     "val_gauc": 0.6695381050287674,
+     "val_ndcg5": 0.5367595392105894,
+     "val_primary": 0.6031488221196784
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5477158130483425,
+     "val_gauc": 0.6698754286987018,
+     "val_ndcg5": 0.5373681075748644,
+     "val_primary": 0.603621768136783
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5424802260195956,
+     "val_gauc": 0.6701583512387326,
+     "val_ndcg5": 0.537247324602999,
+     "val_primary": 0.6037028379208658
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.53791791581093,
+     "val_gauc": 0.6705499824909036,
+     "val_ndcg5": 0.5373151943014508,
+     "val_primary": 0.6039325883961773
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5314119090425208,
+     "val_gauc": 0.6705499824909036,
+     "val_ndcg5": 0.5373151943014508,
+     "val_primary": 0.6039325883961773
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5251809551994852,
+     "val_gauc": 0.6705499824909036,
+     "val_ndcg5": 0.5373151943014508,
+     "val_primary": 0.6039325883961773
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5177347947519721,
+     "val_gauc": 0.6705499824909036,
+     "val_ndcg5": 0.5373151943014508,
+     "val_primary": 0.6039325883961773
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5112472227279176,
+     "val_gauc": 0.6705499824909036,
+     "val_ndcg5": 0.5373151943014508,
+     "val_primary": 0.6039325883961773
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 56.65767693519592,
+   "tokens_in": 68106,
+   "tokens_out": 5470,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "Training outcomes are used only to construct legal training pairs; scored-row features remain show-time-only.",
+      "The diff narrowly implements a 10% same-user, >180s matched-pair substitution while preserving pair count, ensemble, outputs, determinism, and SMOKE_EPOCHS behavior."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "babf0934aacb2dc1f7f87baa8bc979ca",
+   "identical_to_parent": false,
+   "realized_delta": -2e-05,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "12": {
+   "n": 12,
+   "generation": 3,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "features-fine-duration-and-tab-cross \u2014 upper-tail-only refinement",
+   "target_component": "features",
+   "hypothesis": "Append one tab-crossed logarithmic duration field that is constant below 180 seconds but splits the >180-second tail into several bins, giving the ensemble finer row-varying structure only where its ranking is weakest.",
+   "expected_delta": 0.0005,
+   "expected_delta_basis": "The generic duration refinement was an overall near-miss at -0.0001 on FM-BPR, while the current diagnosis specifically isolates dur>180s at only 0.3778 nDCG@5, supporting a narrower second iteration rather than another global rebucketing.",
+   "rejected_alternative": {
+    "card": "history-user-aggregates",
+    "reason": "User aggregates were flat or negative on prior BPR stacks, and creator histories are unavailable for 96.6% of validation rows, whereas the proposed field is observed for every long-duration impression."
+   },
+   "change_summary": "Appended one tab-crossed upper-tail duration field with a shared <=180s bucket and bins at 240s, 360s, and 600s; all model and ensemble training logic is unchanged.",
+   "wildcard": false,
+   "code_path": "nodes/012.py",
+   "diff_path": "diffs/012.patch",
+   "diff_lines": 10,
+   "metrics": {
+    "gauc": 0.6699781429305972,
+    "ndcg5": 0.5367168514198982,
+    "primary": 0.6033474971752477,
+    "ndcg5_disc": 0.722957149371418,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6485,
+      "ndcg5": 0.4607,
+      "primary": 0.5546
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6503,
+      "ndcg5": 0.4879,
+      "primary": 0.5691
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7016,
+      "ndcg5": 0.4056,
+      "primary": 0.5536
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5804,
+      "ndcg5": 0.0861,
+      "primary": 0.3333
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6267,
+      "ndcg5": 0.3776,
+      "primary": 0.5021
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5183,
+      "ndcg5": 0.0613,
+      "primary": 0.2898
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6206,
+      "ndcg5": 0.5408,
+      "primary": 0.5807
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6423,
+      "ndcg5": 0.5174,
+      "primary": 0.5798
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5853,
+      "ndcg5": 0.5488,
+      "primary": 0.567
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6164,
+      "ndcg5": 0.1058,
+      "primary": 0.3611
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6680738943688413,
+     "val_gauc": 0.659585380263864,
+     "val_ndcg5": 0.5316627095175321,
+     "val_primary": 0.5956240448906981
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5976909657742114,
+     "val_gauc": 0.6665713791724863,
+     "val_ndcg5": 0.5353222021220753,
+     "val_primary": 0.6009467906472807
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.561838877708354,
+     "val_gauc": 0.6680916959163262,
+     "val_ndcg5": 0.536473552969916,
+     "val_primary": 0.6022826244431211
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5517523258290392,
+     "val_gauc": 0.6698281101638325,
+     "val_ndcg5": 0.5366429055801303,
+     "val_primary": 0.6032355078719813
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5462454937874003,
+     "val_gauc": 0.6698281101638325,
+     "val_ndcg5": 0.5366429055801303,
+     "val_primary": 0.6032355078719813
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5409783256814835,
+     "val_gauc": 0.6699781429305972,
+     "val_ndcg5": 0.5367168514198982,
+     "val_primary": 0.6033474971752477
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5365025066314859,
+     "val_gauc": 0.6699781429305972,
+     "val_ndcg5": 0.5367168514198982,
+     "val_primary": 0.6033474971752477
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5311669844262144,
+     "val_gauc": 0.6699781429305972,
+     "val_ndcg5": 0.5367168514198982,
+     "val_primary": 0.6033474971752477
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5269941319810584,
+     "val_gauc": 0.6699781429305972,
+     "val_ndcg5": 0.5367168514198982,
+     "val_primary": 0.6033474971752477
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5199349230908333,
+     "val_gauc": 0.6699781429305972,
+     "val_ndcg5": 0.5367168514198982,
+     "val_primary": 0.6033474971752477
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 52.13404107093811,
+   "tokens_in": 65387,
+   "tokens_out": 4637,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations; duration and tab are legal show-time features.",
+      "Diff is scoped to the stated upper-tail tab-duration categorical field; ensemble and BPR training remain unchanged."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "15729fbbd89a101b763caacf252a93ba",
+   "identical_to_parent": false,
+   "realized_delta": -0.00061,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "13": {
+   "n": 13,
+   "generation": 3,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "training-schedule-lr-decay-early-stop \u2014 per-member rescue decay",
+   "target_component": "training-schedule",
+   "hypothesis": "When an ensemble member has two validation stalls, halve its learning rate once and grant a fresh patience window so late low-step updates can improve its cached ranking instead of terminating at the first plateau.",
+   "expected_delta": 0.0004,
+   "expected_delta_basis": "Delayed decay previously reached a +0.0004 near-miss on FM-BPR, and the champion ensemble remains flat from epochs 7\u201312 without a late aggregate decline, making a cheap per-member rescue the most defensible schedule refinement.",
+   "rejected_alternative": {
+    "card": "regularization-embedding-only-l2",
+    "reason": "The champion shows no late decline and embedding-only L2 already reduced both metrics on BPR, so further shrinkage is less justified than a reversible optimization refinement."
+   },
+   "change_summary": "Added one-shot per-member rescue decay: after two validation stalls, halve that member's learning rate and reset its patience window.",
+   "wildcard": false,
+   "code_path": "nodes/013.py",
+   "diff_path": "diffs/013.patch",
+   "diff_lines": 7,
+   "metrics": {
+    "gauc": 0.6706869775317932,
+    "ndcg5": 0.5372808834568136,
+    "primary": 0.6039839304943033,
+    "ndcg5_disc": 0.723933353632386,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6435,
+      "ndcg5": 0.4601,
+      "primary": 0.5518
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6494,
+      "ndcg5": 0.4877,
+      "primary": 0.5685
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7032,
+      "ndcg5": 0.4057,
+      "primary": 0.5544
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5378,
+      "ndcg5": 0.0856,
+      "primary": 0.3117
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6275,
+      "ndcg5": 0.3778,
+      "primary": 0.5026
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5518,
+      "ndcg5": 0.0628,
+      "primary": 0.3073
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6203,
+      "ndcg5": 0.541,
+      "primary": 0.5807
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.641,
+      "ndcg5": 0.5149,
+      "primary": 0.5779
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5766,
+      "ndcg5": 0.5474,
+      "primary": 0.562
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6255,
+      "ndcg5": 0.1056,
+      "primary": 0.3655
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6755238170319415,
+     "val_gauc": 0.658293264866264,
+     "val_ndcg5": 0.5306769146567093,
+     "val_primary": 0.5944850897614866
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6186175386956397,
+     "val_gauc": 0.665915393032392,
+     "val_ndcg5": 0.5343390600094757,
+     "val_primary": 0.6001272265209339
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5744606162639374,
+     "val_gauc": 0.6680889080616033,
+     "val_ndcg5": 0.5356783463109828,
+     "val_primary": 0.6018836271862931
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5570477315720092,
+     "val_gauc": 0.6694720514941205,
+     "val_ndcg5": 0.5363881714412759,
+     "val_primary": 0.6029301114676981
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5491713090145841,
+     "val_gauc": 0.6696352626792235,
+     "val_ndcg5": 0.5365157840320001,
+     "val_primary": 0.6030755233556118
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5433598985063269,
+     "val_gauc": 0.6701210369217528,
+     "val_ndcg5": 0.5368910416980943,
+     "val_primary": 0.6035060393099236
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5389714601192068,
+     "val_gauc": 0.670651300467095,
+     "val_ndcg5": 0.5373603302979728,
+     "val_primary": 0.6040058153825338
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.534499188686939,
+     "val_gauc": 0.6706470560076542,
+     "val_ndcg5": 0.5372670890995723,
+     "val_primary": 0.6039570725536132
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5302264053770837,
+     "val_gauc": 0.6705649225876616,
+     "val_ndcg5": 0.5369974837165348,
+     "val_primary": 0.6037812031520982
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.527007619878079,
+     "val_gauc": 0.6704003325969533,
+     "val_ndcg5": 0.5370146586278189,
+     "val_primary": 0.6037074956123861
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5236147256607705,
+     "val_gauc": 0.6706869775317932,
+     "val_ndcg5": 0.5372808834568136,
+     "val_primary": 0.6039839304943033
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5211748179603131,
+     "val_gauc": 0.6706869775317932,
+     "val_ndcg5": 0.5372808834568136,
+     "val_primary": 0.6039839304943033
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.5163657874503034,
+     "val_gauc": 0.6706869775317932,
+     "val_ndcg5": 0.5372808834568136,
+     "val_primary": 0.6039839304943033
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.5123724395290334,
+     "val_gauc": 0.6706869775317932,
+     "val_ndcg5": 0.5372808834568136,
+     "val_primary": 0.6039839304943033
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.5210434857835161,
+     "val_gauc": 0.6706869775317932,
+     "val_ndcg5": 0.5372808834568136,
+     "val_primary": 0.6039839304943033
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 64.91797399520874,
+   "tokens_in": 65024,
+   "tokens_out": 4003,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or external/test-data access; validation labels are used only for evaluation and early stopping.",
+      "The diff narrowly implements deterministic one-shot per-member LR rescue, preserves independent checkpoints/output ordering, and SMOKE_EPOCHS caps the shared training loop."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "ebee4902b950c27cfa7f3b18b2486518",
+   "identical_to_parent": false,
+   "realized_delta": 3e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6039839304943033,
+    "node_seeds": [
+     0.6039198710588058,
+     0.6039912098617719,
+     0.6047145798989604
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": -0.00017,
+    "se": 0.000447,
+    "z": -0.38,
+    "sigma_pooled": 0.000548,
+    "sigma_df": 20,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "14": {
+   "n": 14,
+   "generation": 4,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "ordered user-tag semantic affinity",
+   "target_component": "history",
+   "hypothesis": "Add a leakage-safe categorical field for each user's smoothed prior long-view affinity to the current video's tags, allowing semantic preference to generalize across the mostly unseen-to-user creators that raw user-author interactions cannot estimate.",
+   "expected_delta": 0.0006,
+   "expected_delta_basis": "Data Fact \u00a710.3 says 96.6% of validation rows involve authors unseen by that user, while Data Fact \u00a71 shows videos and their tags are in a closed catalogue, so tag-level history can share preference evidence where creator-level history is absent.",
+   "rejected_alternative": {
+    "card": "pointwise-BPR objective-diverse rank blend",
+    "reason": "The pointwise ensemble is materially weaker and likely shares the FM's item/context errors, whereas semantic tag affinity introduces row-varying information absent from every champion member."
+   },
+   "change_summary": "Added one leakage-safe user-tag affinity field using equal-time-safe ordered training totals, user-prior smoothing, and a dedicated no-history bucket across all ensemble members.",
+   "wildcard": true,
+   "code_path": "nodes/014.py",
+   "diff_path": "diffs/014.patch",
+   "diff_lines": 83,
+   "metrics": {
+    "gauc": 0.670317967994721,
+    "ndcg5": 0.5368520628840111,
+    "primary": 0.603585015439366,
+    "ndcg5_disc": 0.7231911680064597,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6453,
+      "ndcg5": 0.4603,
+      "primary": 0.5528
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6457,
+      "ndcg5": 0.487,
+      "primary": 0.5664
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7024,
+      "ndcg5": 0.4057,
+      "primary": 0.5541
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5649,
+      "ndcg5": 0.0862,
+      "primary": 0.3256
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6332,
+      "ndcg5": 0.3784,
+      "primary": 0.5058
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5535,
+      "ndcg5": 0.0623,
+      "primary": 0.3079
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6206,
+      "ndcg5": 0.5407,
+      "primary": 0.5806
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6367,
+      "ndcg5": 0.5124,
+      "primary": 0.5746
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5763,
+      "ndcg5": 0.5474,
+      "primary": 0.5619
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.5965,
+      "ndcg5": 0.1056,
+      "primary": 0.351
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6716708956880773,
+     "val_gauc": 0.6591694671941907,
+     "val_ndcg5": 0.5311217291062238,
+     "val_primary": 0.5951455981502072
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6024169462792417,
+     "val_gauc": 0.6673219571077539,
+     "val_ndcg5": 0.535593056562967,
+     "val_primary": 0.6014575068353605
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5638041503885959,
+     "val_gauc": 0.6685143979514186,
+     "val_ndcg5": 0.5360219895305506,
+     "val_primary": 0.6022681937409846
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5530815603885245,
+     "val_gauc": 0.6682438771379243,
+     "val_ndcg5": 0.5361957202626111,
+     "val_primary": 0.6022197987002678
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5483937316752495,
+     "val_gauc": 0.6691242324164236,
+     "val_ndcg5": 0.5362444526621697,
+     "val_primary": 0.6026843425392967
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.54432586532958,
+     "val_gauc": 0.6692491027580376,
+     "val_ndcg5": 0.5366575523197957,
+     "val_primary": 0.6029533275389167
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5412913094175623,
+     "val_gauc": 0.6693020853463039,
+     "val_ndcg5": 0.5366947380142445,
+     "val_primary": 0.6029984116802742
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5372656649731575,
+     "val_gauc": 0.6698141569266745,
+     "val_ndcg5": 0.5368513835877918,
+     "val_primary": 0.6033327702572331
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5330739845620825,
+     "val_gauc": 0.670317967994721,
+     "val_ndcg5": 0.5368520628840111,
+     "val_primary": 0.603585015439366
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5283546845118204,
+     "val_gauc": 0.670317967994721,
+     "val_ndcg5": 0.5368520628840111,
+     "val_primary": 0.603585015439366
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5226195014960376,
+     "val_gauc": 0.670317967994721,
+     "val_ndcg5": 0.5368520628840111,
+     "val_primary": 0.603585015439366
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5133516179754379,
+     "val_gauc": 0.670317967994721,
+     "val_ndcg5": 0.5368520628840111,
+     "val_primary": 0.603585015439366
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.5059755920095647,
+     "val_gauc": 0.670317967994721,
+     "val_ndcg5": 0.5368520628840111,
+     "val_primary": 0.603585015439366
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 65.29775404930115,
+   "tokens_in": 69472,
+   "tokens_out": 9741,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "Training affinities use only strictly earlier labels with equal-time commits; validation and extra scoring use train-final totals only.",
+      "The diff adds exactly one tag-affinity field across the existing five-member BPR ensemble and preserves contract behavior."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "686f6b25f4328c0297f8f1b3f0545012",
+   "identical_to_parent": false,
+   "realized_delta": -0.00037,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "15": {
+   "n": 15,
+   "generation": 4,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "ensembling-multiseed-heterogeneous-rank-blend",
+   "target_component": "ensembling",
+   "hypothesis": "Retain the champion's five standard FM-BPR members, add five independently early-stopped field-aware FM-BPR members, and blend branch-averaged within-user ranks 0.6/0.4 to capture complementary ordering errors.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The complete heterogeneous multiseed recipe previously delivered a confirmed +0.0017 seed-mean gain, and the current stack now supplies a confirmed five-seed standard-BPR branch rather than the weaker single-model stack of the borderline retest.",
+   "rejected_alternative": {
+    "card": "long-duration slot-preserving specialist \u2014 tab-gated variant",
+    "reason": "It shares the ensembling component, while the heterogeneous retest has stronger confirmed evidence and was explicitly prioritized by the Consolidator."
+   },
+   "change_summary": "Added five independently early-stopped partner-field FM-BPR members and 0.6/0.4 field-aware/standard tie-free within-user rank fusion while leaving the five standard members' seeds and training unchanged.",
+   "wildcard": false,
+   "code_path": "nodes/015.py",
+   "diff_path": "diffs/015.patch",
+   "diff_lines": 43,
+   "metrics": {
+    "gauc": 0.669974587952293,
+    "ndcg5": 0.5367819431906521,
+    "primary": 0.6033782655714726,
+    "ndcg5_disc": 0.7230698076245048,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6447,
+      "ndcg5": 0.4602,
+      "primary": 0.5524
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6495,
+      "ndcg5": 0.4875,
+      "primary": 0.5685
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7048,
+      "ndcg5": 0.4059,
+      "primary": 0.5554
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5921,
+      "ndcg5": 0.0863,
+      "primary": 0.3392
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6267,
+      "ndcg5": 0.3776,
+      "primary": 0.5021
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5758,
+      "ndcg5": 0.0634,
+      "primary": 0.3196
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6199,
+      "ndcg5": 0.5407,
+      "primary": 0.5803
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6441,
+      "ndcg5": 0.5157,
+      "primary": 0.5799
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5752,
+      "ndcg5": 0.5469,
+      "primary": 0.561
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6326,
+      "ndcg5": 0.1057,
+      "primary": 0.3691
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.673527270809133,
+     "val_gauc": 0.6604196940648648,
+     "val_ndcg5": 0.5314070348426871,
+     "val_primary": 0.595913364453776
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6118510810618705,
+     "val_gauc": 0.6672699698271691,
+     "val_ndcg5": 0.5350119274967514,
+     "val_primary": 0.6011409486619603
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5674608099967875,
+     "val_gauc": 0.6696617107410013,
+     "val_ndcg5": 0.5362080626912208,
+     "val_primary": 0.6029348867161111
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5464449755688932,
+     "val_gauc": 0.6697067505921757,
+     "val_ndcg5": 0.5367640848201204,
+     "val_primary": 0.6032354177061481
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5313705507111042,
+     "val_gauc": 0.6698571661909394,
+     "val_ndcg5": 0.5366411450183998,
+     "val_primary": 0.6032491556046695
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5165250189760898,
+     "val_gauc": 0.6698510872458768,
+     "val_ndcg5": 0.5366722618903562,
+     "val_primary": 0.6032616745681165
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5019229562358654,
+     "val_gauc": 0.6700867056828334,
+     "val_ndcg5": 0.5368931572342589,
+     "val_primary": 0.6034899314585461
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.4924309585534089,
+     "val_gauc": 0.669974587952293,
+     "val_ndcg5": 0.5367819431906521,
+     "val_primary": 0.6033782655714726
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.52789229059473,
+     "val_gauc": 0.669974587952293,
+     "val_ndcg5": 0.5367819431906521,
+     "val_primary": 0.6033782655714726
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5233625511751108,
+     "val_gauc": 0.669974587952293,
+     "val_ndcg5": 0.5367819431906521,
+     "val_primary": 0.6033782655714726
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5115169083818476,
+     "val_gauc": 0.669974587952293,
+     "val_ndcg5": 0.5367819431906521,
+     "val_primary": 0.6033782655714726
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5064241505683736,
+     "val_gauc": 0.669974587952293,
+     "val_ndcg5": 0.5367819431906521,
+     "val_primary": 0.6033782655714726
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 134.78904795646667,
+   "tokens_in": 71475,
+   "tokens_out": 7031,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test-data access; validation outcomes are used only for evaluation and early stopping.",
+      "Diff preserves the five standard members and adds only the stated five field-aware members plus 0.6/0.4 rank fusion; SMOKE_EPOCHS caps the shared training loop."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "ec558e86bc9298dc5497f467e9b9a09a",
+   "identical_to_parent": false,
+   "realized_delta": -0.00058,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "16": {
+   "n": 16,
+   "generation": 4,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "loss-bpr-pairwise-within-user \u2014 same-tab long-duration stream",
+   "target_component": "loss",
+   "hypothesis": "Replace only 5% of ordinary pairs with same-user, same-tab long-duration pairs restricted to tabs 1 and 4, concentrating updates where the long-duration variants helped while avoiding tab 6 losses and easy cross-tab comparisons.",
+   "expected_delta": 0.0004,
+   "expected_delta_basis": "Node 011 improved dur>180s primary by +0.0027 despite being globally flat, while node 010 showed positive tab 1/tab 4 movements and a \u22120.0043 tab 6 movement, supporting a narrower second iteration.",
+   "rejected_alternative": {
+    "card": "loss-ranksvm-margin-pairs margin 1.0",
+    "reason": "The margin-0.5 screen gain reversed to a \u22120.0003 fresh-seed mean and did not address the diagnosed tab-specific long-duration failure."
+   },
+   "change_summary": "Replaced 5% of each ensemble member's ordinary BPR samples with precomputed same-user, same-tab pairs where both rows exceed 180 seconds and the tab is 1 or 4.",
+   "wildcard": false,
+   "code_path": "nodes/016.py",
+   "diff_path": "diffs/016.patch",
+   "diff_lines": 19,
+   "metrics": {
+    "gauc": 0.6702834366241842,
+    "ndcg5": 0.5372432028038985,
+    "primary": 0.6037633197140413,
+    "ndcg5_disc": 0.7238681374540055,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6461,
+      "ndcg5": 0.4606,
+      "primary": 0.5533
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6485,
+      "ndcg5": 0.4879,
+      "primary": 0.5682
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7023,
+      "ndcg5": 0.4056,
+      "primary": 0.5539
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5717,
+      "ndcg5": 0.0861,
+      "primary": 0.3289
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6304,
+      "ndcg5": 0.3783,
+      "primary": 0.5043
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5373,
+      "ndcg5": 0.0625,
+      "primary": 0.2999
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6194,
+      "ndcg5": 0.5406,
+      "primary": 0.58
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6425,
+      "ndcg5": 0.5152,
+      "primary": 0.5789
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5896,
+      "ndcg5": 0.5489,
+      "primary": 0.5693
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6194,
+      "ndcg5": 0.1057,
+      "primary": 0.3625
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6760987667327232,
+     "val_gauc": 0.6584375827624849,
+     "val_ndcg5": 0.5307369202776114,
+     "val_primary": 0.5945872515200481
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6210222979809376,
+     "val_gauc": 0.665140761767336,
+     "val_ndcg5": 0.5338948128832481,
+     "val_primary": 0.5995177873252922
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5790781784564891,
+     "val_gauc": 0.6677558713416362,
+     "val_ndcg5": 0.5355577417546394,
+     "val_primary": 0.6016568065481378
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5620207619159779,
+     "val_gauc": 0.6692788102157656,
+     "val_ndcg5": 0.5368288872585947,
+     "val_primary": 0.6030538487371802
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5545140558100762,
+     "val_gauc": 0.6694520057864243,
+     "val_ndcg5": 0.5367495991668378,
+     "val_primary": 0.6031008024766311
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5489369438049642,
+     "val_gauc": 0.6698988526819106,
+     "val_ndcg5": 0.5371662184192617,
+     "val_primary": 0.6035325355505862
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.543997338984875,
+     "val_gauc": 0.6703880169531348,
+     "val_ndcg5": 0.5374542735072266,
+     "val_primary": 0.6039211452301807
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5387482107953823,
+     "val_gauc": 0.6702834366241842,
+     "val_ndcg5": 0.5372432028038985,
+     "val_primary": 0.6037633197140413
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5339923660805885,
+     "val_gauc": 0.6702834366241842,
+     "val_ndcg5": 0.5372432028038985,
+     "val_primary": 0.6037633197140413
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5286066750896737,
+     "val_gauc": 0.6702834366241842,
+     "val_ndcg5": 0.5372432028038985,
+     "val_primary": 0.6037633197140413
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5229407380870048,
+     "val_gauc": 0.6702834366241842,
+     "val_ndcg5": 0.5372432028038985,
+     "val_primary": 0.6037633197140413
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5177118833183397,
+     "val_gauc": 0.6702834366241842,
+     "val_ndcg5": 0.5372432028038985,
+     "val_primary": 0.6037633197140413
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 58.98936200141907,
+   "tokens_in": 67426,
+   "tokens_out": 5208,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage: long_view is used only to construct legal training pairs; scored-row features are show-time fields.",
+      "The diff only replaces 5% of BPR pairs with same-user, same-tab, >180 s pairs for tabs 1/4; pair count, ensemble, model, schedule, output order, and smoke cap remain unchanged."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "531378bb5f225b6fd07b5440d3620b15",
+   "identical_to_parent": false,
+   "realized_delta": -0.00019,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "17": {
+   "n": 17,
+   "generation": 4,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "regularization-embedding-dropout-l2 \u2014 mild ID-only shrinkage",
+   "target_component": "regularization",
+   "hypothesis": "Apply a milder 3e-6 L2 penalty only to user, video, and author embeddings while leaving tab, duration, and all linear weights at 1e-6, reducing sparse-ID variance without repeating the over-strong all-embedding penalty.",
+   "expected_delta": 0.0003,
+   "expected_delta_basis": "The BPR L2 probes were small near-misses around +0.0002 to +0.0003 fresh-seed mean, whereas node 009's 1e-5 all-embedding penalty lost only 0.0002, making a lower field-targeted strength the cheapest defensible refinement.",
+   "rejected_alternative": {
+    "card": "training-schedule-lr-decay-early-stop \u2014 per-member rescue decay",
+    "reason": "Node 013 was flat on seed 0 and \u22120.0002 on fresh seeds, and the champion has a stable plateau rather than late overfit requiring rescue."
+   },
+   "change_summary": "Added a fixed user/video/author feature-ID mask so only those embeddings use 3e-6 L2; tab/duration embeddings and all linear weights remain at 1e-6.",
+   "wildcard": false,
+   "code_path": "nodes/017.py",
+   "diff_path": "diffs/017.patch",
+   "diff_lines": 10,
+   "metrics": {
+    "gauc": 0.6710603983647616,
+    "ndcg5": 0.5374017265894327,
+    "primary": 0.6042310624770972,
+    "ndcg5_disc": 0.7241425041296107,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6472,
+      "ndcg5": 0.4608,
+      "primary": 0.554
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6493,
+      "ndcg5": 0.4878,
+      "primary": 0.5685
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7025,
+      "ndcg5": 0.4056,
+      "primary": 0.554
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5572,
+      "ndcg5": 0.0859,
+      "primary": 0.3215
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6292,
+      "ndcg5": 0.378,
+      "primary": 0.5036
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5565,
+      "ndcg5": 0.063,
+      "primary": 0.3097
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6211,
+      "ndcg5": 0.5412,
+      "primary": 0.5811
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6393,
+      "ndcg5": 0.5153,
+      "primary": 0.5773
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5844,
+      "ndcg5": 0.548,
+      "primary": 0.5662
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.619,
+      "ndcg5": 0.1055,
+      "primary": 0.3623
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6755250694903921,
+     "val_gauc": 0.6583286557466451,
+     "val_ndcg5": 0.5307410834969363,
+     "val_primary": 0.5945348696217907
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6187241711515061,
+     "val_gauc": 0.6658059841829975,
+     "val_ndcg5": 0.5342701697423339,
+     "val_primary": 0.6000380769626656
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5747385788471141,
+     "val_gauc": 0.6680737453876461,
+     "val_ndcg5": 0.5356893166031744,
+     "val_primary": 0.6018815309954102
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5574600727000135,
+     "val_gauc": 0.6694787884065659,
+     "val_ndcg5": 0.5363105199242395,
+     "val_primary": 0.6028946541654028
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5497632105299767,
+     "val_gauc": 0.669588382678543,
+     "val_ndcg5": 0.5365559041285528,
+     "val_primary": 0.603072143403548
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5441950531716042,
+     "val_gauc": 0.6701821479009467,
+     "val_ndcg5": 0.5368674713191847,
+     "val_primary": 0.6035248096100656
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5400802077131068,
+     "val_gauc": 0.6702893792315697,
+     "val_ndcg5": 0.536955571514979,
+     "val_primary": 0.6036224753732744
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5354624286611029,
+     "val_gauc": 0.6707872596837962,
+     "val_ndcg5": 0.5373077825367242,
+     "val_primary": 0.6040475211102602
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5298400511767002,
+     "val_gauc": 0.6710603983647616,
+     "val_ndcg5": 0.5374017265894327,
+     "val_primary": 0.6042310624770972
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5246927294325321,
+     "val_gauc": 0.6710603983647616,
+     "val_ndcg5": 0.5374017265894327,
+     "val_primary": 0.6042310624770972
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5144733862673982,
+     "val_gauc": 0.6710603983647616,
+     "val_ndcg5": 0.5374017265894327,
+     "val_primary": 0.6042310624770972
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5098802840456049,
+     "val_gauc": 0.6710603983647616,
+     "val_ndcg5": 0.5374017265894327,
+     "val_primary": 0.6042310624770972
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.5035343867667178,
+     "val_gauc": 0.6710603983647616,
+     "val_ndcg5": 0.5374017265894327,
+     "val_primary": 0.6042310624770972
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 55.50091600418091,
+   "tokens_in": 66650,
+   "tokens_out": 5105,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations; scored-row outcomes are used only for evaluation.",
+      "Diff is scoped to field-targeted embedding L2 and preserves the parent loss, sampler, schedule, and ensemble."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "88c670f3eb6b06a937a3e0a280ad1402",
+   "identical_to_parent": false,
+   "realized_delta": 0.00027,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6042310624770972,
+    "node_seeds": [
+     0.6044728917816915,
+     0.6044414664461526,
+     0.6046650262058673
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": 0.00015,
+    "se": 0.00043,
+    "z": 0.35,
+    "sigma_pooled": 0.000527,
+    "sigma_df": 22,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "18": {
+   "n": 18,
+   "generation": 5,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "tab-conditioned user-video CP tensor",
+   "target_component": "model",
+   "hypothesis": "Add a low-rank CP term sum(P[user] * Q[video] * R[tab]) to every BPR ensemble member so user-video preferences can change by surface rather than remaining shared across tabs.",
+   "expected_delta": 0.0006,
+   "expected_delta_basis": "Karatzoglou et al.'s Multiverse Recommendation motivates context-conditioned tensor factorization, while Data Facts \u00a71 and \u00a74 show a closed catalogue and extreme tab-dependent behavior that make a user\u00d7video\u00d7tab interaction estimable and relevant.",
+   "rejected_alternative": {
+    "card": "late-window item-trend ranker",
+    "reason": "Inverse-day weighting already hurt both metrics and temporal target statistics would overlap more with failed recency mechanisms than a genuinely missing context-conditioned collaborative interaction."
+   },
+   "change_summary": "Added a separately parameterized low-rank user\u00d7video\u00d7tab CP score, analytic BPR gradients with Adam/L2, and per-member early-stop checkpoint restoration.",
+   "wildcard": true,
+   "code_path": "nodes/018.py",
+   "diff_path": "diffs/018.patch",
+   "diff_lines": 27,
+   "metrics": {
+    "gauc": 0.6709155883170402,
+    "ndcg5": 0.5371169311679055,
+    "primary": 0.6040162597424729,
+    "ndcg5_disc": 0.7236495915186187,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6467,
+      "ndcg5": 0.4605,
+      "primary": 0.5536
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6498,
+      "ndcg5": 0.4879,
+      "primary": 0.5688
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7014,
+      "ndcg5": 0.4054,
+      "primary": 0.5534
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5572,
+      "ndcg5": 0.0859,
+      "primary": 0.3215
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6285,
+      "ndcg5": 0.3777,
+      "primary": 0.5031
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5482,
+      "ndcg5": 0.0627,
+      "primary": 0.3055
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6207,
+      "ndcg5": 0.5409,
+      "primary": 0.5808
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6451,
+      "ndcg5": 0.5161,
+      "primary": 0.5806
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.58,
+      "ndcg5": 0.5474,
+      "primary": 0.5637
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6255,
+      "ndcg5": 0.1055,
+      "primary": 0.3655
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6755134663683303,
+     "val_gauc": 0.6584358017829782,
+     "val_ndcg5": 0.5307103974674183,
+     "val_primary": 0.5945730996251983
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6185488655212078,
+     "val_gauc": 0.665796360232139,
+     "val_ndcg5": 0.534237544319604,
+     "val_primary": 0.6000169522758715
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5742484288012728,
+     "val_gauc": 0.6680186662518042,
+     "val_ndcg5": 0.5357140742371989,
+     "val_primary": 0.6018663702445015
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.556403795962638,
+     "val_gauc": 0.6694601408455593,
+     "val_ndcg5": 0.5363910404068272,
+     "val_primary": 0.6029255906261932
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5473116151829983,
+     "val_gauc": 0.6694859590057013,
+     "val_ndcg5": 0.53657979313004,
+     "val_primary": 0.6030328760678707
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5387413070556966,
+     "val_gauc": 0.6700012448253824,
+     "val_ndcg5": 0.5368878539052504,
+     "val_primary": 0.6034445493653164
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.52917606272596,
+     "val_gauc": 0.6700728833103822,
+     "val_ndcg5": 0.5370371855760375,
+     "val_primary": 0.6035550344432099
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5162000909764716,
+     "val_gauc": 0.6709155883170402,
+     "val_ndcg5": 0.5371169311679055,
+     "val_primary": 0.6040162597424729
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4993707169877722,
+     "val_gauc": 0.6709155883170402,
+     "val_ndcg5": 0.5371169311679055,
+     "val_primary": 0.6040162597424729
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.481168935696284,
+     "val_gauc": 0.6709155883170402,
+     "val_ndcg5": 0.5371169311679055,
+     "val_primary": 0.6040162597424729
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4568365821813015,
+     "val_gauc": 0.6709155883170402,
+     "val_ndcg5": 0.5371169311679055,
+     "val_primary": 0.6040162597424729
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.43585288144172507,
+     "val_gauc": 0.6709155883170402,
+     "val_ndcg5": 0.5371169311679055,
+     "val_primary": 0.6040162597424729
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 56.33019018173218,
+   "tokens_in": 67757,
+   "tokens_out": 4793,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test-data access; scored-row features remain show-time legal.",
+      "Diff is scoped to the CP term and correctly includes BPR gradients, Adam state, checkpoint restoration, smoke capping, and extra-split scoring."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "b6f53afd7d5ff15f8bf537e92f73f544",
+   "identical_to_parent": false,
+   "realized_delta": 6e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6040162597424729,
+    "node_seeds": [
+     0.603347018301863,
+     0.6038222558304378,
+     0.6043758866036342
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": -0.00053,
+    "se": 0.00043,
+    "z": -1.23,
+    "sigma_pooled": 0.000526,
+    "sigma_df": 24,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "19": {
+   "n": 19,
+   "generation": 5,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "loss-bpr-pairwise-within-user \u2014 tab-4-only long-duration matched stream",
+   "target_component": "loss",
+   "hypothesis": "Replace 2.5% of each ensemble member's ordinary BPR pairs with same-user tab-4 positive-negative pairs where both videos exceed 180 seconds, preserving node_016's strong tab-4 movement while avoiding its broader damage.",
+   "expected_delta": 0.0004,
+   "expected_delta_basis": "Node_016 was globally -0.0002 but improved tab=4 primary by +0.0047 and dur>180s by +0.0014, so restricting and halving that perturbation is the diagnosis-driven second iteration.",
+   "rejected_alternative": {
+    "card": "loss-ranksvm-margin-pairs margin 1.0",
+    "reason": "The margin-0.5 screen reversed to a negative fresh-seed mean and lacked the tab-4 group evidence supporting this refinement."
+   },
+   "change_summary": "Added a 2.5% replacement stream of same-user tab-4 BPR pairs where both positive and negative videos exceed 180 seconds.",
+   "wildcard": false,
+   "code_path": "nodes/019.py",
+   "diff_path": "diffs/019.patch",
+   "diff_lines": 18,
+   "metrics": {
+    "gauc": 0.6709856703643639,
+    "ndcg5": 0.5372946398705816,
+    "primary": 0.6041401551174728,
+    "ndcg5_disc": 0.7239571626872925,
+    "by_group": {
+     "dur18-60s": {
+      "rows": 33235,
+      "gauc": 0.6464,
+      "ndcg5": 0.4606,
+      "primary": 0.5535
+     },
+     "dur60-180s": {
+      "rows": 46565,
+      "gauc": 0.6469,
+      "ndcg5": 0.4875,
+      "primary": 0.5672
+     },
+     "dur<18s": {
+      "rows": 20101,
+      "gauc": 0.7024,
+      "ndcg5": 0.4052,
+      "primary": 0.5538
+     },
+     "dur=0": {
+      "rows": 2107,
+      "gauc": 0.5417,
+      "ndcg5": 0.0857,
+      "primary": 0.3137
+     },
+     "dur>180s": {
+      "rows": 22901,
+      "gauc": 0.6315,
+      "ndcg5": 0.3781,
+      "primary": 0.5048
+     },
+     "tab=0": {
+      "rows": 13726,
+      "gauc": 0.5447,
+      "ndcg5": 0.0626,
+      "primary": 0.3037
+     },
+     "tab=1": {
+      "rows": 92672,
+      "gauc": 0.6211,
+      "ndcg5": 0.5414,
+      "primary": 0.5812
+     },
+     "tab=2": {
+      "rows": 3834,
+      "gauc": 0.6402,
+      "ndcg5": 0.515,
+      "primary": 0.5776
+     },
+     "tab=4": {
+      "rows": 7877,
+      "gauc": 0.5736,
+      "ndcg5": 0.5473,
+      "primary": 0.5604
+     },
+     "tab=6": {
+      "rows": 5170,
+      "gauc": 0.6419,
+      "ndcg5": 0.106,
+      "primary": 0.374
+     }
+    }
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6757358228906672,
+     "val_gauc": 0.6576223641716447,
+     "val_ndcg5": 0.5300275360063755,
+     "val_primary": 0.59382495008901
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.619347497757445,
+     "val_gauc": 0.6654412082242288,
+     "val_ndcg5": 0.5337131372573909,
+     "val_primary": 0.5995771727408099
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5760262469027905,
+     "val_gauc": 0.6679910453620562,
+     "val_ndcg5": 0.5359395304215653,
+     "val_primary": 0.6019652878918107
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.558488411852654,
+     "val_gauc": 0.6688997872397836,
+     "val_ndcg5": 0.5362224004067933,
+     "val_primary": 0.6025610938232884
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5504284871385453,
+     "val_gauc": 0.6700893270855999,
+     "val_ndcg5": 0.5369542246764198,
+     "val_primary": 0.6035217758810099
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5440282035381236,
+     "val_gauc": 0.6707452900085435,
+     "val_ndcg5": 0.5369178022933102,
+     "val_primary": 0.6038315461509269
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.538483990506923,
+     "val_gauc": 0.6707437254667764,
+     "val_ndcg5": 0.5369907381963004,
+     "val_primary": 0.6038672318315383
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5331783205904859,
+     "val_gauc": 0.6709856703643639,
+     "val_ndcg5": 0.5372946398705816,
+     "val_primary": 0.6041401551174728
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5270076160735272,
+     "val_gauc": 0.6709856703643639,
+     "val_ndcg5": 0.5372946398705816,
+     "val_primary": 0.6041401551174728
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5221126447332666,
+     "val_gauc": 0.6709856703643639,
+     "val_ndcg5": 0.5372946398705816,
+     "val_primary": 0.6041401551174728
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5169606062960117,
+     "val_gauc": 0.6709856703643639,
+     "val_ndcg5": 0.5372946398705816,
+     "val_primary": 0.6041401551174728
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5037000902155613,
+     "val_gauc": 0.6709856703643639,
+     "val_ndcg5": 0.5372946398705816,
+     "val_primary": 0.6041401551174728
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 42.96634078025818,
+   "tokens_in": 67504,
+   "tokens_out": 4489,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "Training outcomes are used only to construct legal same-user BPR pairs; scored-row features remain show-time legal.",
+      "The diff is scoped to the stated 2.5% tab-4, duration>180s pair replacement and preserves determinism, smoke caps, ensemble behavior, and output order."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": "0b647f3856394d42b810d21566d97866",
+   "identical_to_parent": false,
+   "realized_delta": 0.00018,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6041401551174728,
+    "node_seeds": [
+     0.6041495240890606,
+     0.6045283268079515,
+     0.6043954976258115
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": -2e-05,
+    "se": 0.000417,
+    "z": -0.04,
+    "sigma_pooled": 0.000511,
+    "sigma_df": 26,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "single_seed_accept": false
+  },
+  "20": {
+   "n": 20,
+   "generation": 5,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "long-duration slot-preserving specialist \u2014 tab-1/tab-4 gate",
+   "target_component": "ensembling",
+   "hypothesis": "Allow node_010's long-duration specialists to permute only rank slots occupied by >180-second rows in tabs 1 or 4, leaving every other champion ordering unchanged.",
+   "expected_delta": 0.0005,
+   "expected_delta_basis": "Node_010 gained +0.00042 on seed 0 and +0.00027 over fresh seeds, while its group breakdown showed gains on tabs 1/4 and a -0.0043 loss on tab 6, making deterministic gating likely to remove its main harm.",
+   "rejected_alternative": {
+    "card": "ensembling-multiseed-heterogeneous-rank-blend",
+    "reason": "Node_015 already hurt both GAUC and nDCG@5 on this exact champion stack, whereas the gated specialist deepens a positive near-miss with localized group evidence."
+   },
+   "change_summary": "Restricted node_010's validation and score-extra eligible-slot masks to >180-second rows in tabs 1 or 4 while retaining duration-only specialist training and slot-preserving fusion unchanged.",
+   "wildcard": false,
+   "code_path": "nodes/020.py",
+   "diff_path": null,
+   "diff_lines": null,
+   "metrics": null,
+   "history": [],
+   "failure_stage": "implement",
+   "error": "no runnable script produced",
+   "duration_s": 0.0,
+   "tokens_in": 215053,
+   "tokens_out": 18841,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "The diff is not the predicate-only deepening claimed: it adds the entire three-model specialist phase to node_007 and also changes specialist training to tabs 1/4, while the hypothesis only gates which rank slots an existing node_010 specialist may permute."
+     ],
+     "instructions": "Base the candidate on the actual node_010 script. Leave specialist construction, seeds, training pairs, duration-only training predicate, early stopping, and slot-preserving fusion unchanged. Modify only the validation and score-extra eligible-slot masks from `duration_ms > 180000` to `duration_ms > 180000 and tab in {'1','4'}`; do not restrict the specialist training rows by tab."
+    },
+    {
+     "round": 1,
+     "verdict": "revise",
+     "reasons": [
+      "The diff is against node_007 and adds the entire specialist training/fusion implementation, while the fixed hypothesis requires only gating node_010's existing eligible-slot masks."
+     ],
+     "instructions": "Return the actual node_010 script unchanged except for exactly two predicates: in validation and score-extra, change `duration_ms > 180000` to `duration_ms > 180000 and tab in {'1', '4'}`. Do not alter specialist construction, training rows, pair sampling, seeds, early stopping, history, or slot-preserving fusion."
+    },
+    {
+     "round": 2,
+     "verdict": "revise",
+     "reasons": [
+      "The diff is against node_007 and adds the entire specialist training and fusion system; the fixed hypothesis requires only gating the already-existing node_010 specialist. The docstring and all added specialist code are out of scope."
+     ],
+     "instructions": "Return the actual node_010 script unchanged except for exactly two edits: in the validation eligible mask and score-extra eligible mask, replace `duration_ms > 180000` with `duration_ms > 180000 and tab in {'1', '4'}`. Do not change the docstring, specialist construction or training predicate, pair sampler, seeds, early stopping, history, or slot-preserving fusion."
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "pred_hash": null,
+   "identical_to_parent": false,
+   "realized_delta": null,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": null
+  }
+ },
+ "plan": {
+  "note": "No node improved the champion by >= 0.001, so there is no eligible cross-component merge; the run has reached its three-generation convergence streak.\nIf another generation is permitted, recover the failed gated specialist once and test the still-untried legal same-author sequence signal; leave the remaining slot to the Selector.",
+  "plan": [
+   {
+    "type": "retest",
+    "parent": "champion",
+    "card": "long-duration slot-preserving specialist \u2014 tab-1/tab-4 gate",
+    "hypothesis": "Recover node_020 and let node_010's long-duration specialists permute only slots occupied by >180-second impressions in tabs 1 or 4, preserving the champion ordering everywhere else.",
+    "reason": "Node_020 failed before producing a runnable script, so the mechanism was never measured; the narrow gate was motivated by node_010's positive tab-1/tab-4 subgroup movements and avoids its tab-6 damage."
+   },
+   {
+    "type": "explore",
+    "parent": 7,
+    "card": "history-same-author-run-features",
+    "hypothesis": "Add equal-time-safe run-so-far and previous-same-author\u00d7tab categorical fields to every BPR ensemble member, using only strictly earlier exposure features to capture the measured within-tab same-author fatigue signal."
+   }
+  ]
+ },
+ "parked": [
+  {
+   "node": 8,
+   "card": "loss-ranksvm-margin-pairs",
+   "target_component": "loss",
+   "delta": 0.00048,
+   "on_champion": 2
+  },
+  {
+   "node": 9,
+   "card": "regularization-embedding-only-l2",
+   "target_component": "regularization",
+   "delta": -0.00022,
+   "on_champion": 2
+  },
+  {
+   "node": 10,
+   "card": "long-duration slot-preserving specialist",
+   "target_component": "ensembling",
+   "delta": 0.00042,
+   "on_champion": 7
+  },
+  {
+   "node": 11,
+   "card": "loss-bpr-pairwise-within-user \u2014 within-long-duration matched stream",
+   "target_component": "loss",
+   "delta": -2e-05,
+   "on_champion": 7
+  },
+  {
+   "node": 12,
+   "card": "features-fine-duration-and-tab-cross \u2014 upper-tail-only refinement",
+   "target_component": "features",
+   "delta": -0.00061,
+   "on_champion": 7
+  },
+  {
+   "node": 13,
+   "card": "training-schedule-lr-decay-early-stop \u2014 per-member rescue decay",
+   "target_component": "training-schedule",
+   "delta": 3e-05,
+   "on_champion": 7
+  },
+  {
+   "node": 14,
+   "card": "ordered user-tag semantic affinity",
+   "target_component": "history",
+   "delta": -0.00037,
+   "on_champion": 7
+  },
+  {
+   "node": 15,
+   "card": "ensembling-multiseed-heterogeneous-rank-blend",
+   "target_component": "ensembling",
+   "delta": -0.00058,
+   "on_champion": 7
+  },
+  {
+   "node": 16,
+   "card": "loss-bpr-pairwise-within-user \u2014 same-tab long-duration stream",
+   "target_component": "loss",
+   "delta": -0.00019,
+   "on_champion": 7
+  },
+  {
+   "node": 17,
+   "card": "regularization-embedding-dropout-l2 \u2014 mild ID-only shrinkage",
+   "target_component": "regularization",
+   "delta": 0.00027,
+   "on_champion": 7
+  },
+  {
+   "node": 18,
+   "card": "tab-conditioned user-video CP tensor",
+   "target_component": "model",
+   "delta": 6e-05,
+   "on_champion": 7
+  },
+  {
+   "node": 19,
+   "card": "loss-bpr-pairwise-within-user \u2014 tab-4-only long-duration matched stream",
+   "target_component": "loss",
+   "delta": 0.00018,
+   "on_champion": 7
+  }
+ ],
+ "start": 1788101737.5516312,
+ "interventions": 0,
+ "stop_reason": "converged: 3 generations without a >= 0.001 cumulative rise of the champion fresh-seed mean (ADR-0012)",
+ "usage": {
+  "calls": 64,
+  "tokens_in": 2408307,
+  "tokens_out": 190414,
+  "cache_read": 1558696,
+  "cache_write": 0,
+  "cost_usd": 10.739823000000001
+ },
+ "seed_cache": {
+  "2:1": 0.6029525159912483,
+  "2:2": 0.601968666398895,
+  "2:3": 0.6033155626423989,
+  "3:1": 0.6028729444838677,
+  "3:2": 0.6017090117891591,
+  "3:3": 0.6020694898356386,
+  "4:1": 0.6021197760408004,
+  "4:2": 0.601621487783518,
+  "4:3": 0.6029344438819488,
+  "5:1": 0.6029798477500652,
+  "5:2": 0.6024102758902958,
+  "5:3": 0.6028004012335035,
+  "0:1": 0.6017609746263709,
+  "0:2": 0.6010899806390073,
+  "0:3": 0.6015033559120361,
+  "6:1": 0.6024738516452064,
+  "6:2": 0.6010919535389108,
+  "6:3": 0.6026152249314444,
+  "7:1": 0.6041188687289722,
+  "7:2": 0.6042451985221791,
+  "7:3": 0.6047650493502633,
+  "8:1": 0.6033466710004212,
+  "8:2": 0.6015471499800858,
+  "8:3": 0.6025937652245179,
+  "10:1": 0.6044934573613927,
+  "10:2": 0.604434679131614,
+  "10:3": 0.6050167548948051,
+  "13:1": 0.6039198710588058,
+  "13:2": 0.6039912098617719,
+  "13:3": 0.6047145798989604,
+  "17:1": 0.6044728917816915,
+  "17:2": 0.6044414664461526,
+  "17:3": 0.6046650262058673,
+  "18:1": 0.603347018301863,
+  "18:2": 0.6038222558304378,
+  "18:3": 0.6043758866036342,
+  "19:1": 0.6041495240890606,
+  "19:2": 0.6045283268079515,
+  "19:3": 0.6043954976258115
+ },
+ "best_single": 0.6043737306391745,
+ "librarian_calls": 0,
+ "elapsed_before": 0.0,
+ "conv_ref": 0.6043763722004716,
+ "last_save": 1788104013.974487,
+ "official_rule": {
+  "best_single_seed": 0.6039570725536132,
+  "streak": 3,
+  "converged_at_generation": 5,
+  "champion_at_stop": 7
+ },
+ "last_generation": [
+  {
+   "n": 18,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "tab-conditioned user-video CP tensor",
+   "target_component": "model",
+   "hypothesis": "Add a low-rank CP term sum(P[user] * Q[video] * R[tab]) to every BPR ensemble member so user-video preferences can change by surface rather than remaining shared across tabs.",
+   "change_summary": "Added a separately parameterized low-rank user\u00d7video\u00d7tab CP score, analytic BPR gradients with Adam/L2, and per-member early-stop checkpoint restoration.",
+   "expected_delta": 0.0006,
+   "realized_delta": 6e-05,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6040162597424729,
+    "node_seeds": [
+     0.603347018301863,
+     0.6038222558304378,
+     0.6043758866036342
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": -0.00053,
+    "se": 0.00043,
+    "z": -1.23,
+    "sigma_pooled": 0.000526,
+    "sigma_df": 24,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 56.33019018173218,
+   "metrics": {
+    "gauc": 0.6709155883170402,
+    "ndcg5": 0.5371169311679055,
+    "primary": 0.6040162597424729,
+    "ndcg5_disc": 0.7236495915186187
+   },
+   "curve": [
+    0.5946,
+    0.6,
+    0.6019,
+    0.6029,
+    0.603,
+    0.6034,
+    0.6036,
+    0.604,
+    0.604,
+    0.604,
+    0.604,
+    0.604
+   ],
+   "by_group_delta": {
+    "dur18-60s": 0.0004,
+    "dur60-180s": -0.0002,
+    "dur<18s": -0.0009,
+    "dur=0": 0.0,
+    "dur>180s": 0.0002,
+    "tab=0": -0.0007,
+    "tab=1": -0.0002,
+    "tab=2": 0.0003,
+    "tab=4": -0.0009,
+    "tab=6": 0.0022
+   }
+  },
+  {
+   "n": 19,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "loss-bpr-pairwise-within-user \u2014 tab-4-only long-duration matched stream",
+   "target_component": "loss",
+   "hypothesis": "Replace 2.5% of each ensemble member's ordinary BPR pairs with same-user tab-4 positive-negative pairs where both videos exceed 180 seconds, preserving node_016's strong tab-4 movement while avoiding its broader damage.",
+   "change_summary": "Added a 2.5% replacement stream of same-user tab-4 BPR pairs where both positive and negative videos exceed 180 seconds.",
+   "expected_delta": 0.0004,
+   "realized_delta": 0.00018,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seed0": 0.6041401551174728,
+    "node_seeds": [
+     0.6041495240890606,
+     0.6045283268079515,
+     0.6043954976258115
+    ],
+    "champion_seeds": [
+     0.6041188687289722,
+     0.6042451985221791,
+     0.6047650493502633
+    ],
+    "delta_mean": -2e-05,
+    "se": 0.000417,
+    "z": -0.04,
+    "sigma_pooled": 0.000511,
+    "sigma_df": 26,
+    "sigma_from_node_only": false,
+    "adaptive": false,
+    "rule": "fresh-seed mean gain >= 0.0005 and z >= 3.0 with the pooled seed SD"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 42.96634078025818,
+   "metrics": {
+    "gauc": 0.6709856703643639,
+    "ndcg5": 0.5372946398705816,
+    "primary": 0.6041401551174728,
+    "ndcg5_disc": 0.7239571626872925
+   },
+   "curve": [
+    0.5938,
+    0.5996,
+    0.602,
+    0.6026,
+    0.6035,
+    0.6038,
+    0.6039,
+    0.6041,
+    0.6041,
+    0.6041,
+    0.6041,
+    0.6041
+   ],
+   "by_group_delta": {
+    "dur18-60s": 0.0003,
+    "dur60-180s": -0.0018,
+    "dur<18s": -0.0005,
+    "dur=0": -0.0078,
+    "dur>180s": 0.0019,
+    "tab=0": -0.0025,
+    "tab=1": 0.0002,
+    "tab=2": -0.0027,
+    "tab=4": -0.0042,
+    "tab=6": 0.0107
+   }
+  },
+  {
+   "n": 20,
+   "parent": 7,
+   "merge_parents": null,
+   "action": "deepen",
+   "method": "long-duration slot-preserving specialist \u2014 tab-1/tab-4 gate",
+   "target_component": "ensembling",
+   "hypothesis": "Allow node_010's long-duration specialists to permute only rank slots occupied by >180-second rows in tabs 1 or 4, leaving every other champion ordering unchanged.",
+   "change_summary": "Restricted node_010's validation and score-extra eligible-slot masks to >180-second rows in tabs 1 or 4 while retaining duration-only specialist training and slot-preserving fusion unchanged.",
+   "expected_delta": 0.0005,
+   "realized_delta": null,
+   "accepted": false,
+   "seed_confirmation": null,
+   "failure_stage": "implement",
+   "error": "no runnable script produced",
+   "recovery": null,
+   "duration_s": 0.0,
+   "metrics": {},
+   "curve": []
+  }
+ ],
+ "designated": 7
+}

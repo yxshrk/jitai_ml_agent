@@ -1,0 +1,33 @@
+--- node_007.py
++++ node_012.py
+@@ -8,12 +8,13 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
+ Ensemble averages tie-free normalized within-user ranks from five independently early-stopped seeds.
++Feature appends tab crossed with duration-tail bins <=180s, 180-240s, 240-360s, 360-600s, and >600s.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'tab_dur_tail']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -108,10 +109,13 @@
+     tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 6 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
++    tail_edges = np.array([180_000, 240_000, 360_000, 600_000], dtype=np.float64)
+     def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++        tail = int(np.searchsorted(tail_edges, float(dur), side='left'))
++        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur)))),
++                f'{tab}|{tail}']
+     vocabs = [dict() for _ in FIELDS]
+     for x in tr:
+         for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):

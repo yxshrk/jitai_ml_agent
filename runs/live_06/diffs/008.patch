@@ -1,0 +1,39 @@
+--- node_002.py
++++ node_008.py
+@@ -7,6 +7,7 @@
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
++RankSVM Same pairs, with logistic BPR replaced by a margin-0.5 hinge surrogate.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -24,7 +25,7 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
++    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user RankSVM + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+@@ -46,7 +47,9 @@
+         zp, Ep, Sp = self.logits(Xp)
+         zn, En, Sn = self.logits(Xn)
+         d = zp - zn
+-        g = (-sigmoid(-d) / B).astype(np.float32)                  # d(BPR loss)/d(score_pos)
++        margin = 0.5
++        active = d < margin
++        g = (-active.astype(np.float32) / B)                       # d(RankSVM hinge loss)/d(score_pos)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         np.add.at(gW, Xp, g[:, None])
+         np.add.at(gW, Xn, -g[:, None])
+@@ -59,7 +62,7 @@
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
++        return float(np.maximum(0.0, margin - d).mean())
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])

@@ -1,0 +1,26 @@
+--- node_002.py
++++ node_009.py
+@@ -25,12 +25,12 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
++    def __init__(self, dim, k=16, lr=0.001, l2_v=1e-5, l2_w=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+-        self.lr, self.l2 = lr, l2
++        self.lr, self.l2_v, self.l2_w = lr, l2_v, l2_w
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
+@@ -52,7 +52,7 @@
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        gV += self.l2_v * self.V; gW += self.l2_w * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+         for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):

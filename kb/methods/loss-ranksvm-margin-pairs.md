@@ -14,8 +14,8 @@ expected_delta_basis: this changes only the pair surrogate, not information or c
 cost: ~6 changed lines on the proven BPR edit; runtime 1x; numpy only
 composes_with: [model-field-aware-fm-embeddings, model-dcn-cross-head, ensembling-multiseed-heterogeneous-rank-blend]
 conflicts_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs]
-status: untried
-evidence: []
+status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]
+evidence: [live_06:node_008]
 ---
 ## Claim
 Replace BPR's logistic pair loss with RankSVM's margin hinge,
@@ -39,4 +39,5 @@ the sharp post-peak overfitting seen in every competitive branch.
 - The pair sampler must remain within user; cross-user hinge pairs optimize an irrelevant global order.
 
 ## Measured
-(none yet)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)
+- live_06:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6033, single-seed Δ +0.0005, seed-mean Δ -0.0003 (z -0.53) — rejected; 9 changed lines

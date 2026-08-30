@@ -1,0 +1,52 @@
+--- node_007.py
++++ node_017.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
+ Ensemble averages tie-free normalized within-user ranks from five independently early-stopped seeds.
++Regularization uses L2=3e-6 for user/video/author embeddings and 1e-6 elsewhere.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -46,12 +47,13 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, embedding_l2=None, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
++        self.embedding_l2 = np.full(dim, l2, dtype=np.float32) if embedding_l2 is None else np.asarray(embedding_l2, dtype=np.float32)
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
+@@ -73,7 +75,7 @@
+         np.add.at(gW, Xn, -g[:, None])
+         np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+         np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
+-        gV += self.l2 * self.V; gW += self.l2 * self.W
++        gV += self.embedding_l2[:, None] * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+         for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
+@@ -119,6 +121,8 @@
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
++    id_feature_mask = np.arange(dim) < off[3]
++    embedding_l2 = np.where(id_feature_mask, 3e-6, 1e-6).astype(np.float32)
+     def encode(rows, ui, vi, ti, di):
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+@@ -136,7 +140,7 @@
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+-    models = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + s) for s in range(5)]
++    models = [FM(dim, k=a.k, lr=a.lr, embedding_l2=embedding_l2, seed=a.seed + s) for s in range(5)]
+     rngs = [np.random.default_rng(a.seed + s) for s in range(5)]
+     best = [-1.0] * 5; best_state = [None] * 5; best_ranks = [None] * 5
+     bad = [0] * 5; active = [True] * 5; history = []

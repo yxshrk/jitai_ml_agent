@@ -1,0 +1,116 @@
+--- node_007.py
++++ node_014.py
+@@ -8,12 +8,13 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
+ Ensemble averages tie-free normalized within-user ranks from five independently early-stopped seeds.
++History Adds a bucketized user-tag affinity from strictly earlier training rows.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'user_tag_rate']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -104,28 +105,88 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    video_rows = read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id', 'tag'])
++    vid2author = {x[0]: x[1] for x in video_rows}
++    def split_tags(value):
++        parts = value.replace(';', ',').replace('|', ',').split(',')
++        parts = [v.strip(" []'\"\t\r\n") for v in parts]
++        return tuple(dict.fromkeys(v for v in parts if v and v.lower() not in ('nan', 'none', 'null', '-1')))
++    vid2tags = {x[0]: split_tags(x[2]) for x in video_rows}
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+-    # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
++    # ---- encode: 6 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    tr_users = [x[0] for x in tr]
++    tr_tags = [vid2tags.get(x[1], ()) for x in tr]
++    times = np.array([int(x[5]) for x in tr], dtype=np.int64)
++    order = np.argsort(times, kind='stable')
++    tag_rates = np.zeros(len(tr), dtype=np.float32)
++    tag_known = np.zeros(len(tr), dtype=bool)
++    user_totals = {}
++    tag_totals = {}
++    start = 0
++    while start < len(order):
++        stop = start + 1
++        while stop < len(order) and times[order[stop]] == times[order[start]]:
++            stop += 1
++        current = order[start:stop]
++        for ii in current:
++            user = tr_users[ii]
++            un, up = user_totals.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            cn = cp = 0
++            for tag in tr_tags[ii]:
++                tn, tp = tag_totals.get((user, tag), (0, 0))
++                cn += tn; cp += tp
++            if cn:
++                tag_known[ii] = True
++                tag_rates[ii] = (cp + 5.0 * prior) / (cn + 5.0)
++        for ii in current:
++            user = tr_users[ii]; label = 1 if tr[ii][4] != '0' else 0
++            un, up = user_totals.get(user, (0, 0))
++            user_totals[user] = (un + 1, up + label)
++            for tag in tr_tags[ii]:
++                key = (user, tag)
++                tn, tp = tag_totals.get(key, (0, 0))
++                tag_totals[key] = (tn + 1, tp + label)
++        start = stop
++    hist_edges = np.quantile(tag_rates[tag_known], np.linspace(0, 1, 11)[1:-1])
++    Htr = np.full(len(tr), -1, dtype=np.int8)
++    Htr[tag_known] = np.searchsorted(hist_edges, tag_rates[tag_known]).astype(np.int8)
++    def full_history(rows, ui, vi):
++        H = np.full(len(rows), -1, dtype=np.int8)
++        for n, x in enumerate(rows):
++            user = x[ui]
++            un, up = user_totals.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            cn = cp = 0
++            for tag in vid2tags.get(x[vi], ()):
++                tn, tp = tag_totals.get((user, tag), (0, 0))
++                cn += tn; cp += tp
++            if cn:
++                H[n] = np.searchsorted(hist_edges, (cp + 5.0 * prior) / (cn + 5.0))
++        return H
++    def raw(user, video, tab, dur, hist):
++        return [user, video, vid2author.get(video, 'UNK'), tab,
++                str(int(np.searchsorted(edges, float(dur)))),
++                'NOHIST' if int(hist) < 0 else str(int(hist))]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], Htr[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, hist=None):
++        if hist is None:
++            hist = full_history(rows, ui, vi)
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], hist[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xtr = encode(tr, 0, 1, 2, 3, Htr); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     neg_idx = np.flatnonzero(ytr == 0)
+     neg_count = np.bincount(Xtr[neg_idx, 0], minlength=dims[0])

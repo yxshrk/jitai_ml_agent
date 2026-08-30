@@ -1,0 +1,106 @@
+--- node_007.py
++++ node_010.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user BPR with one uniformly sampled negative per eligible positive each epoch.
+ Ensemble averages tie-free normalized within-user ranks from five independently early-stopped seeds.
++Specialists reorder only >180 s rows within the global ensemble's occupied within-user rank slots.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -43,6 +44,17 @@
+ def average_ranks(users, ranks):
+     mean_rank = np.mean(np.stack(ranks), axis=0)
+     return normalized_ranks(users, mean_rank, ranks[0])
++
++def reorder_slots(users, base_scores, specialist_scores, selected):
++    users = np.asarray(users); base_scores = np.asarray(base_scores)
++    selected = np.asarray(selected, dtype=np.int64)
++    result = base_scores.copy()
++    if len(selected) == 0:
++        return result
++    slot_order = selected[np.lexsort((selected, result[selected], users[selected]))]
++    specialist_order = selected[np.lexsort((selected, np.asarray(specialist_scores), users[selected]))]
++    result[specialist_order] = result[slot_order]
++    return result
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+@@ -133,6 +145,13 @@
+     neg_sorted = neg_idx[np.argsort(Xtr[neg_idx, 0], kind='stable')]
+     pair_pos = np.flatnonzero((ytr > 0) & (neg_count[Xtr[:, 0]] > 0))
+     pair_users = Xtr[pair_pos, 0]
++    long_tr = np.array([float(x[3]) > 180000.0 for x in tr])
++    long_neg_idx = np.flatnonzero((ytr == 0) & long_tr)
++    long_neg_count = np.bincount(Xtr[long_neg_idx, 0], minlength=dims[0])
++    long_neg_start = np.cumsum(np.r_[0, long_neg_count[:-1]])
++    long_neg_sorted = long_neg_idx[np.argsort(Xtr[long_neg_idx, 0], kind='stable')]
++    long_pair_pos = np.flatnonzero((ytr > 0) & long_tr & (long_neg_count[Xtr[:, 0]] > 0))
++    long_pair_users = Xtr[long_pair_pos, 0]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+@@ -169,8 +188,48 @@
+     for m, state in zip(models, best_state):
+         m.V, m.W, m.b = state
+ 
++    sva_base = average_ranks(uva, best_ranks)
++    long_va = np.flatnonzero(np.array([float(x[4]) > 180000.0 for x in va]))
++    long_uva = [uva[i] for i in long_va]
++    specialists = [FM(dim, k=a.k, lr=a.lr, seed=a.seed + 5 + s) for s in range(3)]
++    specialist_rngs = [np.random.default_rng(a.seed + 5 + s) for s in range(3)]
++    specialist_best = [-1.0] * 3; specialist_state = [None] * 3; specialist_ranks = [None] * 3
++    specialist_bad = [0] * 3; specialist_active = [True] * 3
++    for ep in range(1, epochs + 1):
++        if not any(specialist_active):
++            break
++        epoch_losses = []
++        for s, m in enumerate(specialists):
++            if not specialist_active[s]:
++                continue
++            pair_neg = long_neg_sorted[long_neg_start[long_pair_users] +
++                                       specialist_rngs[s].integers(0, long_neg_count[long_pair_users])]
++            idx = specialist_rngs[s].permutation(len(long_pair_pos))
++            losses = [m.step(Xtr[long_pair_pos[idx[i:i + a.batch]]], Xtr[pair_neg[idx[i:i + a.batch]]])
++                      for i in range(0, len(idx), a.batch)]
++            epoch_losses.extend(losses)
++            rank = normalized_ranks(long_uva, m.predict(Xva[long_va]))
++            rm = evaluate(uva, yva, reorder_slots(uva, sva_base, rank, long_va))
++            if rm['primary'] > specialist_best[s] + 1e-5:
++                specialist_best[s], specialist_bad[s] = rm['primary'], 0
++                specialist_state[s] = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                specialist_ranks[s] = rank
++            else:
++                specialist_bad[s] += 1
++                if specialist_bad[s] >= a.patience:
++                    specialist_active[s] = False
++        sva = reorder_slots(uva, sva_base, average_ranks(long_uva, specialist_ranks), long_va)
++        r = evaluate(uva, yva, sva); hep = len(history) + 1
++        history.append({'epoch': hep, 'train_loss': float(np.mean(epoch_losses)), 'val_gauc': r['GAUC'],
++                        'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
++        print(f"epoch {hep:2d} | loss {np.mean(epoch_losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
++              f"primary {r['primary']:.4f}", flush=True)
++    for m, state in zip(specialists, specialist_state):
++        m.V, m.W, m.b = state
++
+     # ---- outputs ----
+-    sva = average_ranks(uva, best_ranks); r = evaluate(uva, yva, sva)
++    sva = reorder_slots(uva, sva_base, average_ranks(long_uva, specialist_ranks), long_va)
++    r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -180,7 +239,12 @@
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+         Xex = encode(ex, 1, 2, 3, 4); uex = [x[1] for x in ex]
+         rex = [normalized_ranks(uex, m.predict(Xex)) for m in models]
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, average_ranks(uex, rex))
++        sex_base = average_ranks(uex, rex)
++        long_ex = np.flatnonzero(np.array([float(x[4]) > 180000.0 for x in ex]))
++        long_uex = [uex[i] for i in long_ex]
++        specialist_rex = [normalized_ranks(long_uex, m.predict(Xex[long_ex])) for m in specialists]
++        sex = reorder_slots(uex, sex_base, average_ranks(long_uex, specialist_rex), long_ex)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, sex)
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

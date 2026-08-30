@@ -1,0 +1,109 @@
+--- node_000.py
++++ node_004.py
+@@ -6,12 +6,14 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++History Adds bucketized user-author, user-tab, and user-duration rates from strictly earlier training rows.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket',
++          'user_author_rate', 'user_tab_rate', 'user_dur_rate']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -80,27 +82,82 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+-    def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++    tr_users = [x[0] for x in tr]
++    tr_context = ([vid2author.get(x[1], 'UNK') for x in tr],
++                  [x[2] for x in tr],
++                  [str(int(np.searchsorted(edges, float(x[3])))) for x in tr])
++    times = np.array([int(x[5]) for x in tr], dtype=np.int64)
++    order = np.argsort(times, kind='stable')
++    rates = np.zeros((len(tr), 3), dtype=np.float32)
++    known = np.zeros((len(tr), 3), dtype=bool)
++    user_totals = {}
++    context_totals = [{}, {}, {}]
++    start = 0
++    while start < len(order):
++        stop = start + 1
++        while stop < len(order) and times[order[stop]] == times[order[start]]:
++            stop += 1
++        current = order[start:stop]
++        for ii in current:
++            user = tr_users[ii]
++            un, up = user_totals.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            for j in range(3):
++                cn, cp = context_totals[j].get((user, tr_context[j][ii]), (0, 0))
++                if cn:
++                    known[ii, j] = True
++                    rates[ii, j] = (cp + 5.0 * prior) / (cn + 5.0)
++        for ii in current:
++            user = tr_users[ii]; label = 1 if tr[ii][4] != '0' else 0
++            un, up = user_totals.get(user, (0, 0))
++            user_totals[user] = (un + 1, up + label)
++            for j in range(3):
++                key = (user, tr_context[j][ii])
++                cn, cp = context_totals[j].get(key, (0, 0))
++                context_totals[j][key] = (cn + 1, cp + label)
++        start = stop
++    hist_edges = [np.quantile(rates[known[:, j], j], np.linspace(0, 1, 11)[1:-1]) for j in range(3)]
++    Htr = np.full((len(tr), 3), -1, dtype=np.int8)
++    for j in range(3):
++        Htr[known[:, j], j] = np.searchsorted(hist_edges[j], rates[known[:, j], j]).astype(np.int8)
++    def full_history(rows, ui, vi, ti, di):
++        H = np.full((len(rows), 3), -1, dtype=np.int8)
++        for n, x in enumerate(rows):
++            user = x[ui]
++            un, up = user_totals.get(user, (0, 0))
++            prior = up / un if un else 0.0
++            values = (vid2author.get(x[vi], 'UNK'), x[ti],
++                      str(int(np.searchsorted(edges, float(x[di])))))
++            for j, value in enumerate(values):
++                cn, cp = context_totals[j].get((user, value), (0, 0))
++                if cn:
++                    H[n, j] = np.searchsorted(hist_edges[j], (cp + 5.0 * prior) / (cn + 5.0))
++        return H
++    def raw(user, video, tab, dur, hist):
++        return [user, video, vid2author.get(video, 'UNK'), tab,
++                str(int(np.searchsorted(edges, float(dur))))] + [
++                'NOHIST' if int(v) < 0 else str(int(v)) for v in hist]
+     vocabs = [dict() for _ in FIELDS]
+-    for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++    for n, x in enumerate(tr):
++        for i, v in enumerate(raw(x[0], x[1], x[2], x[3], Htr[n])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+     off = np.cumsum([0] + dims[:-1]).astype(np.int32); dim = int(sum(dims))
+-    def encode(rows, ui, vi, ti, di):
++    def encode(rows, ui, vi, ti, di, hist=None):
++        if hist is None:
++            hist = full_history(rows, ui, vi, ti, di)
+         X = np.empty((len(rows), len(FIELDS)), dtype=np.int32)
+         for n, x in enumerate(rows):
+-            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
++            for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di], hist[n])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xtr = encode(tr, 0, 1, 2, 3, Htr); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 

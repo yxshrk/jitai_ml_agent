@@ -1,0 +1,66 @@
+--- node_000.py
++++ node_001.py
+@@ -40,10 +40,10 @@
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+         return self.b + self.W[X].sum(1) + inter, E, S
+ 
+-    def step(self, X, y):
++    def step(self, X, y, weight):
+         B = len(y)
+         z, E, S = self.logits(X)
+-        g = ((sigmoid(z) - y) / B).astype(np.float32)              # d(logloss)/d(logit)
++        g = (((sigmoid(z) - y) * weight) / B).astype(np.float32)   # d(weighted logloss)/d(logit)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         np.add.at(gW, X, g[:, None])
+         np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
+@@ -55,7 +55,7 @@
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+         self.b -= self.lr * g.sum()
+-        return float(-np.mean(y * np.log(sigmoid(z) + 1e-9) + (1 - y) * np.log(1 - sigmoid(z) + 1e-9)))
++        return float(-np.mean(weight * (y * np.log(sigmoid(z) + 1e-9) + (1 - y) * np.log(1 - sigmoid(z) + 1e-9))))
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -80,16 +80,20 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'date', 'tab', 'duration_ms', 'long_view'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr_dates = np.array([x[2] for x in tr])
++    _, tr_day = np.unique(tr_dates, return_inverse=True)
++    day_counts = np.bincount(tr_day)
++    wtr = (len(tr) / (len(day_counts) * day_counts[tr_day])).astype(np.float32)
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+-    edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
++    edges = np.quantile(np.array([float(x[4]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+     def raw(user, video, tab, dur):
+         return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
+     vocabs = [dict() for _ in FIELDS]
+     for x in tr:
+-        for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
++        for i, v in enumerate(raw(x[0], x[1], x[3], x[4])):
+             if v not in vocabs[i]:
+                 vocabs[i][v] = len(vocabs[i])
+     unk = [len(v) for v in vocabs]; dims = [len(v) + 1 for v in vocabs]
+@@ -100,7 +104,7 @@
+             for i, v in enumerate(raw(x[ui], x[vi], x[ti], x[di])):
+                 X[n, i] = vocabs[i].get(v, unk[i]) + off[i]
+         return X
+-    Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
++    Xtr = encode(tr, 0, 1, 3, 4); ytr = np.array([1.0 if x[5] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+@@ -109,7 +113,7 @@
+     best, best_state, bad, history = -1.0, None, 0, []
+     for ep in range(1, epochs + 1):
+         idx = rng.permutation(len(ytr))
+-        losses = [m.step(Xtr[idx[i:i + a.batch]], ytr[idx[i:i + a.batch]]) for i in range(0, len(idx), a.batch)]
++        losses = [m.step(Xtr[idx[i:i + a.batch]], ytr[idx[i:i + a.batch]], wtr[idx[i:i + a.batch]]) for i in range(0, len(idx), a.batch)]
+         r = evaluate(uva, yva, m.predict(Xva))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})

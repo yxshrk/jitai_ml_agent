@@ -13,7 +13,7 @@ cost: ~15 lines (L2 sweep is a flag; field dropout ~10 lines); runtime 1x; numpy
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head, training-schedule-lr-decay-early-stop, data-weighting-recency]
 conflicts_with: []
 status: proven — accepted on [official FM]
-evidence: [live_02:node_006, live_03:node_003, live_04:node_004, live_04:node_007, live_05:node_003, live_05:node_007]
+evidence: [live_02:node_006, live_03:node_003, live_04:node_004, live_04:node_007, live_05:node_003, live_05:node_007, live_06:node_003]
 ---
 ## Claim
 Stronger, better-targeted regularisation of the embeddings — L2 raised from 1e-6 toward 1e-5/1e-4, or dropout of
@@ -42,3 +42,4 @@ _Verdict:_ ACCEPTED 2x (live_04:node_004 on [official FM] Δ +0.0009; live_05:no
 - live_04:node_007 on [official FM + field-aware FM embeddings]: primary 0.6032, single-seed Δ +0.0002, seed-mean Δ +0.0001 (t 0.43) — rejected; 2 changed lines
 - live_05:node_003 on [official FM]: primary 0.6025, single-seed Δ +0.0010, seed-mean Δ +0.0010 (z 3.47) — ACCEPTED; 2 changed lines
 - live_05:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0000, seed-mean Δ +0.0003 (z 1.04) — rejected; 2 changed lines
+- live_06:node_003 on [official FM]: primary 0.6025, single-seed Δ +0.0010, seed-mean Δ +0.0008 (z 1.97) — rejected; 2 changed lines
