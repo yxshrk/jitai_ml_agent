@@ -48,5 +48,5 @@ read). Remaining: finish fleet -> POST-WAVE VALIDATION ROUND (user-ordered, befo
 duration-heads, ordinal-aux, recency variants — incl. pairs); (2) verify snapshot-member
 close executes (read node code of any run that played it, else force one);
 (3) confirm runner-up branching triggers (grep journals for "branch:"), else unit-test it;
-(4) check f-wave node code for probe parallelism adoption. THEN final designation,
+(4) check f-wave node code for probe parallelism adoption; (5) post-wave combo run uses MODERATE depth (40-80 probes + refine + reserved close) per the dose-response finding in zoo/EXPERIMENTS_RECHECK.md. THEN final designation,
 regenerate RESULTS_AND_RESOURCES, figures + briefing artifact refresh, Devpost + video (user).

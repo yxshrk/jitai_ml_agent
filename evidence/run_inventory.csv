@@ -41,7 +41,7 @@ run_desig_seeded_02,pure,True,converged,4,5,0.604998,49498,1026
 run_desig_seeded_03,pure,True,converged,4,5,0.605126,38641,961
 run_desig_seeded_04,pure,True,converged,4,10,0.605126,51767,1519
 run_exp_anthropic,pure,True,converged,6,7,0.604766,190163,1845
-run_exp_clean,pure,False,(no summary — incomplete/aborted),2,3,0.601838,,
+run_exp_clean,pure,False,(no summary — incomplete/aborted),3,4,0.604007,,
 run_final_f1,pure,False,(no summary — incomplete/aborted),1,2,0.604029,,
 run_final_f2,pure,False,(no summary — incomplete/aborted),0,1,0.601838,,
 run_final_f3,pure,False,(no summary — incomplete/aborted),2,3,0.604015,,
@@ -66,6 +66,7 @@ run_night_d3,pure,True,converged,4,5,0.604998,48638,1022
 run_night_e,pure,True,converged,4,5,0.604998,45174,843
 run_night_f,pure,True,converged,4,5,0.604998,46591,935
 run_night_g,pure,True,converged,4,5,0.604998,50355,986
+run_novel_l1,pure,False,(no summary — incomplete/aborted),0,0,,,
 run_official_01,pure,True,converged,4,5,0.604998,46927,649
 run_official_02,pure,True,converged,4,5,0.604998,46246,529
 run_official_03,pure,True,converged,4,5,0.604998,45397,764

@@ -89,3 +89,19 @@ scale to 10 consecutive seeds (42-51) of frozen_stack_1k -> **0.63874** (node_00
 official oracle). 15-member attempt rejected (0.436, partial members). Converged
 at 7 iters. This beats the team-frozen 5-seed 0.6323 and is the 1K submission
 champion. Test CSV rebuilt with 10 members.
+
+## Search-depth dose-response (Sun 30 Aug, cross-run measurement)
+Opener quality vs probes in the opening sweep (Pure, all comparable runs):
+15 probes -> 0.60424 (bigclock_07) | 59 -> 0.60426 (max_r2) | 133 -> 0.60436 (max_c1)
+| ~208 (halving, no full-fidelity final) -> 0.60238 FAIL (max_r1) | 270 -> 0.60394 (max_r4)
+| 600+ single node -> uncommitted/timeout risk (final_f2).
+VERDICT: returns flatten past ~50-80 WELL-RANKED probes; excess width without
+full-fidelity finals actively hurts; basin priors reach the plateau in ~30 probes
+(final_f1/f3/f4 openers 0.6040-0.6043, tight cluster = variance collapse).
+Ensemble-close payoff is INDEPENDENT of search depth (4 failed closes on strong
+singles: r2 0.60379, r4 0.60295, c1 0.60229, exp_anthropic 0.598 — vs +0.0013 on
+bigclock_07's config). Remaining Pure gap lives in close payoff, not search.
+1K contrast: deep factorial DID pay hugely (max_1k_c 48-cell -> 0.6524 from 0.6205
+baseline) — depth should scale with remaining headroom.
+Recommended default going forward: 40-80 full-fidelity probes + 1 refinement pass
++ reserved close (moderate), maximal depth only on fresh benchmarks.
