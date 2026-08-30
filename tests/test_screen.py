@@ -82,7 +82,7 @@ def test_loop_gate_drops_null_feature_candidates(tmp_path, monkeypatch):
     from harness.brain import FakeBrain
     class Probing(FakeBrain):
         def probe(self, ctx, selection):
-            return {'strong': PROBE_GOOD, 'null': PROBE_NULL, 'broken': PROBE_LEAK}[selection['hypothesis']]
+            return {'strong': PROBE_GOOD, 'null': PROBE_NULL, 'broken': PROBE_LEAK, 'declined': None}[selection['hypothesis']]
     monkeypatch.setattr(C, 'RUNS', tmp_path)
     lp = Loop('r', Probing([[]]), k=4)
     assert lp.screen
@@ -95,15 +95,18 @@ def test_loop_gate_drops_null_feature_candidates(tmp_path, monkeypatch):
             {'type': 'explore', 'card': 'a-new-idea', 'target_component': 'features', 'hypothesis': 'null', 'wildcard': True, 'new_signal': 'noise from nowhere'},
             {'type': 'improve', 'card': 'history-x', 'target_component': 'history', 'hypothesis': 'broken'},
             {'type': 'improve', 'card': 'loss-bpr-pairwise-within-user', 'target_component': 'loss', 'hypothesis': 'not screened'},
-            {'type': 'retest', 'card': 'features-exposure-session', 'target_component': 'features', 'hypothesis': 'retests are not screened'}]
+            {'type': 'retest', 'card': 'features-exposure-session', 'target_component': 'features', 'hypothesis': 'retests are not screened'},
+            {'type': 'explore', 'card': 'din-attention', 'target_component': 'model', 'hypothesis': 'model wildcards are not screened', 'wildcard': True, 'new_signal': 'attention over history'},
+            {'type': 'improve', 'card': 'history-y', 'target_component': 'history', 'hypothesis': 'declined'}]
     kept = lp._screen(sels, 1)
-    assert [s['hypothesis'] for s in kept] == ['strong', 'broken', 'not screened', 'retests are not screened']
+    assert [s['hypothesis'] for s in kept] == ['strong', 'broken', 'not screened', 'retests are not screened', 'model wildcards are not screened', 'declined']
     assert kept[0]['screen']['best_gain'] > 0.005 and 'screen' not in kept[2]
     recs = lp.j.records(); sc = [r for r in recs if r.get('action') == 'screen']
     assert [(r['card'], r['kept']) for r in sc] == [(card, True), ('a-new-idea', False)]
     assert sc[0]['family'] == P._front_fields((C.KB / 'methods' / f'{card}.md').read_text()).get('family') and sc[1]['family'] == 'features'
     assert sc[1]['new_signal'] == 'noise from nowhere' and sc[1]['columns']['noise']['varies'] > 0.8
     assert any(r.get('action') == 'event' and 'history-x' in r['note'] for r in recs)      # the failed probe is journaled, not fatal
+    assert any(r.get('action') == 'event' and 'history-y' in r['note'] and 'declined' in r['note'] for r in recs)   # so is a declining Probe
     assert [(e['card'], e['kept']) for e in lp.state['screened']] == [(card, True), ('a-new-idea', False)]
     assert 'DROPPED' in P._screened_state(lp.ctx()) and 'a-new-idea' in P._screened_state(lp.ctx())
     assert 'screen' in lp.j.digest() and 'a-new-idea' in lp.j.digest()

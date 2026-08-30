@@ -259,7 +259,9 @@ discrimination of the number itself and of a small tree model on top of it. Trai
 for under 60 seconds with numpy/pandas (vectorised; no per-row Python loops over a million rows); pandas 2.3, numpy,
 scikit-learn and the standard library are available. Determinism: no randomness unless seeded with 0. The probe is not
 the implementation and is never scored as one — do not train the FM, do not write predictions.csv. Output exactly one
-```python block containing the whole script and nothing else."""
+```python block containing the whole script and nothing else. If the proposed signal is NOT something a column per valid row
+can carry (a model architecture, a loss, a training schedule), answer instead with one ```json block {"not_a_column": "<why>"}
+and no python block — the candidate then proceeds unscreened."""
 
 
 _STABLE = None
