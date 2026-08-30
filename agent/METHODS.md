@@ -516,6 +516,26 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: untried
 - status_1k: untried
 
+### ordinal-watch-ratio-fm: Ordinal watch-ratio auxiliary on FM
+- mechanism: Divide play time by min(duration, 18s), bucket the ratio, and train cumulative threshold heads beside long_view BCE. It exposes graded watch depth while preserving the binary scoring head.
+- treats: flat-signal | metric-mismatch
+- reference_primary: 0.6033
+- preconditions: Training outcomes only; cap/clean ratios and preserve ordinal threshold consistency. This card covers the measured FM auxiliary, not a future DCN-native ordinal main objective.
+- citation: TPM, KDD 2023 (arXiv:2306.03392); run_real_04 node_002 and run_real_05 node_003
+- expected_gain / cost: Best measured FM-aux primary 0.6033, below epsilon over 0.6018 baseline; run-04 form scored 0.6026 / low.
+- status_pure: PARENT-CONDITIONAL — dead on the bare FM (original test) but MEASURED WINS as riders on regularized packages (+0.0015 ordinal in run 12/real_05; +0.0018 CWM in deep_l1/run 23). Use on package parents only.
+- status_1k: untried
+
+### cwm-censored-fm: CWM-style censored auxiliary on FM
+- mechanism: Regress observed truncated watch time from shared FM representations; completed plays are right-censored lower bounds and penalize underprediction only. Combine with the long_view BCE head.
+- treats: flat-signal | metric-mismatch | data-shift
+- reference_primary: 0.6022
+- preconditions: Correct censoring at duration and training-only play_time; this measured card is only the cheap FM auxiliary, not the full counterfactual CWM likelihood.
+- citation: Zhao et al., CWM, KDD 2024 (arXiv:2406.07932); run_real_04 node_001
+- expected_gain / cost: Published watch-time GAUC is ~0.713-0.715, but the hackathon FM auxiliary measured 0.6022 and failed confirmation / medium.
+- status_pure: PARENT-CONDITIONAL — dead on the bare FM (original test) but MEASURED WINS as riders on regularized packages (+0.0015 ordinal in run 12/real_05; +0.0018 CWM in deep_l1/run 23). Use on package parents only.
+- status_1k: untried
+
 ## Measured-dead archive (NOT selectable — verdicts preserved for the record)
 
 #### [dead] listwise-softmax: Per-user listwise softmax
@@ -528,25 +548,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-dead (0.5991 primary, run 04)
 - status_1k: untried
 
-#### [dead] ordinal-watch-ratio-fm: Ordinal watch-ratio auxiliary on FM
-- mechanism: Divide play time by min(duration, 18s), bucket the ratio, and train cumulative threshold heads beside long_view BCE. It exposes graded watch depth while preserving the binary scoring head.
-- treats: flat-signal | metric-mismatch
-- reference_primary: 0.6033
-- preconditions: Training outcomes only; cap/clean ratios and preserve ordinal threshold consistency. This card covers the measured FM auxiliary, not a future DCN-native ordinal main objective.
-- citation: TPM, KDD 2023 (arXiv:2306.03392); run_real_04 node_002 and run_real_05 node_003
-- expected_gain / cost: Best measured FM-aux primary 0.6033, below epsilon over 0.6018 baseline; run-04 form scored 0.6026 / low.
-- status_pure: measured-dead (0.6033 best primary as FM auxiliary)
-- status_1k: untried
 
-#### [dead] cwm-censored-fm: CWM-style censored auxiliary on FM
-- mechanism: Regress observed truncated watch time from shared FM representations; completed plays are right-censored lower bounds and penalize underprediction only. Combine with the long_view BCE head.
-- treats: flat-signal | metric-mismatch | data-shift
-- reference_primary: 0.6022
-- preconditions: Correct censoring at duration and training-only play_time; this measured card is only the cheap FM auxiliary, not the full counterfactual CWM likelihood.
-- citation: Zhao et al., CWM, KDD 2024 (arXiv:2406.07932); run_real_04 node_001
-- expected_gain / cost: Published watch-time GAUC is ~0.713-0.715, but the hackathon FM auxiliary measured 0.6022 and failed confirmation / medium.
-- status_pure: measured-dead (0.6022 primary as FM auxiliary)
-- status_1k: untried
 
 #### [dead] item-aggregates: Train-window item/author target aggregates
 - mechanism: Add Bayesian-smoothed video/author long_view rates computed only on training dates. Item-varying rates can affect within-user order, unlike user-only rates.
