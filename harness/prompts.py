@@ -257,7 +257,7 @@ def _state(ctx):
             f"Champion stack (accepted methods actually in its script): [{ctx.get('champion_stack', 'official FM')}]\n"
             f"Champion learning curve (epoch:valid primary): {curve}\n"
             + _breakdown(ch)
-            f"Best-so-far {ctx['best']:.4f}; non-improving generation streak {ctx['streak']} "
+            + f"Best-so-far {ctx['best']:.4f}; non-improving generation streak {ctx['streak']} "
             f"(converged at {C.N_CONVERGE}); baseline valid primary {C.BASELINE_VALID_PRIMARY}.\n"
             f"Journal index (one line per node; the full record with diffs is the '# Run journal' section of your instructions):\n"
             + ('\n'.join(ctx['journal_lines']) or '(empty)'))

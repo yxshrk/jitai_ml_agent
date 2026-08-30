@@ -15,7 +15,8 @@ def test_accept_and_convergence():
     assert c.update(0.60284) is True and c.streak == 0 and c.ref == 0.60284   # staircase adds up to +0.0014: reset
     assert c.update(0.60340) is False and c.streak == 1          # +0.00056: one false acceptance cannot buy time
     assert all(c.update(0.60340) is False for _ in range(2)) and c.converged
-    c = R.Convergence(); assert c.update(0.6015) is False and c.ref == 0.6015 and c.update(0.6026) is True
+    c = R.Convergence(0, 0.60143)                                # the loop seeds ref with the BASELINE (start()), so generation 1's gain counts
+    assert c.update(0.60246) is True and c.streak == 0           # live_04 gen 1: node_001 fresh mean +0.0010 over the baseline -> reset
     o = R.OfficialRule(0.6015)                                   # the literal single-seed rule, tracked for reporting
     o.update(0.6030, 1); o.update(0.6032, 2); o.update(0.6033, 3)
     assert o.converged_at == 3 and o.best == 0.6015              # would have stopped at generation 3

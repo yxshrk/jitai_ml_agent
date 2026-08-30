@@ -151,6 +151,7 @@ class Loop:
             raise RuntimeError(f'baseline reproduction failed: {res.error}\n{res.log_tail}')
         rec['accepted'] = True; rec['realized_delta'] = None
         self.state['champion'] = n; self.state['best'] = res.metrics['primary']; self.state['best_single'] = res.metrics['primary']
+        self.state['conv_ref'] = res.metrics['primary']      # ADR-0012: the cumulative-rise reference starts at the baseline
         self.j.append(rec); self.save()
         self.log(f"node_{n:03d}: valid primary {res.metrics['primary']:.4f} (published {C.BASELINE_VALID_PRIMARY})")
 
@@ -302,7 +303,9 @@ class Loop:
             self.state['champion'] = new_champion
         if ok:                                                      # the literal single-seed best, reported alongside
             self.state['best_single'] = max(self.state.get('best_single') or 0.0, max(r['metrics']['primary'] for r in ok))
-        conv = R.Convergence(self.state['streak'], self.state.get('conv_ref'))
+        if self.state.get('conv_ref') is None:                      # older states: the reference is the baseline's fresh-seed mean
+            self.state['conv_ref'] = self.node_mean(0)
+        conv = R.Convergence(self.state['streak'], self.state['conv_ref'])
         improved = conv.update(self.champion_mean())                 # ADR-0012: cumulative rise of the champion's fresh-seed mean >= RESET_MIN_GAIN resets
         self.state['conv_ref'] = conv.ref; self.state['best'] = round(self.champion_mean(), 5)
         off = self.state.setdefault('official_rule', {'best_single_seed': self.node(0)['metrics']['primary'], 'streak': 0,
@@ -504,23 +507,27 @@ class Loop:
         base = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
         ch = self.state['champion']
         self._ensure_seeds(n, base); self._ensure_seeds(ch, base)
-        sigma, df = self._sigma()
         v_node, v_ch = self.fresh_seeds(n), self.fresh_seeds(ch)
         if not v_node or not v_ch:
             return False, {'error': 'confirmation seeds failed', 'node_seeds': v_node, 'champion_seeds': v_ch}
+        def sigma_for(v):
+            """Pooled sigma, unless the node's own seeds are clearly more unstable (sample SD > 2x pooled, p ~ 5 % under homogeneity)."""
+            s_pool, df = self._sigma(); s_own = statistics.stdev(v) if len(v) > 1 else 0.0
+            return (s_own, df, True) if s_own > 2 * s_pool else (s_pool, df, False)
+        sigma, df, own = sigma_for(v_node)
         m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
         adaptive = False
         if C.Z_BORDER <= z < C.Z_CRIT and len(v_node) < C.MAX_CONFIRM_SEEDS:
             adaptive = True
             self._ensure_seeds(n, [self.seed + i for i in range(C.CONFIRM_SEEDS + 1, C.MAX_CONFIRM_SEEDS + 1)])
-            sigma, df = self._sigma(); v_node = self.fresh_seeds(n)
+            v_node = self.fresh_seeds(n); sigma, df, own = sigma_for(v_node)
             m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
         self.log(f"node_{n:03d}: seed confirmation — fresh seeds {[round(v, 5) for v in v_node]} mean {m_node:.5f} vs champion "
                  f"{[round(v, 5) for v in v_ch]} mean {m_ch:.5f}: diff {diff:+.5f}, z {z:.1f} (sigma {sigma:.5f}, {df} df"
-                 f"{', adaptive' if adaptive else ''}) -> {'ACCEPTED' if accepted else 'rejected'}")
+                 f"{', node-own SD' if own else ''}{', adaptive' if adaptive else ''}) -> {'ACCEPTED' if accepted else 'rejected'}")
         return accepted, {'node_seed0': self.node(n)['metrics']['primary'], 'node_seeds': v_node, 'champion_seeds': v_ch,
                           'delta_mean': round(diff, 5), 'se': round(se, 6), 'z': round(z, 2), 'sigma_pooled': round(sigma, 6),
-                          'sigma_df': df, 'adaptive': adaptive,
+                          'sigma_df': df, 'sigma_from_node_only': own, 'adaptive': adaptive,
                           'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the pooled seed SD'}
 
     def _result_view(self, rec):
@@ -610,7 +617,7 @@ class Loop:
                    'convergence_switch': self.convergence,
                    'tokens': {'in_uncached': self.brain.usage.snapshot().get('tokens_in'), 'in_cached': self.brain.usage.snapshot().get('cache_read'),
                               'out': self.brain.usage.snapshot().get('tokens_out')},
-                   'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
+                   'interventions': self.state['interventions'], 'k': self.k_first, 'k_later': self.k_later, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
                    'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))
         (self.run_dir / 'journal.md').write_text(self.j.render_md(summary))
