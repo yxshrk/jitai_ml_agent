@@ -98,7 +98,8 @@ and which node moved which group — the deepen slot should target that. Group m
 within user on SHORTER lists, so a group's nDCG@5 is a map of relative weakness, not comparable to the overall number
 (tab=0 or dur=0 users are mostly all-negative, so their nDCG is near zero whatever the model does). Groups listed as
 HARD in the state (>= HARD_GROUP_REJECTS rejected deepens; likely irreducible label noise — a long video needs only 18 s of play
-to be a positive) are not "next": say so in one clause and move on.""",
+to be a positive) are not "next": say so in one clause and move on. (6) If the state names a CAMPAIGN family: one clause
+on whether its variants moved anything (which mechanism, which group) and whether it should stay open.""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
 target_components; fill the Consolidator's slots (merge / retest / deepen / explore) first, then the highest expected
@@ -117,7 +118,14 @@ long-duration-matched-pairs) and "target_group" (a breakdown group such as dur>1
 rejected this run is CLOSED for deepening for the rest of the run (the state lists them; code drops repeats) — the next
 deepen must change the mechanism, not the dose, the sampling fraction or the group (live_06 spent five nodes shrinking
 one rejected mechanism: 10 %% -> 5 %% -> 2.5 %%); groups marked HARD in the state are not deepen targets; a deepen of a
-near-miss node edits THAT node's script, so its "parent" is that node's id;
+near-miss node edits THAT node's script, so its "parent" is that node's id.
+CAMPAIGN (ADR-0016): when the state names a campaign family, EVERY candidate of yours except the Consolidator's
+merge/retest slots belongs to that family (its cards are listed with their status): the family's untried or
+not-yet-stacked cards take the free slot, the rest are variants of the family's mechanisms on the champion, each with
+a DISTINCT "mechanism" slug ("mechanism" is required for every campaign candidate; code keeps one candidate per
+mechanism, so a second dose of the same mechanism is dropped). A family closes after CAMPAIGN_FLAT_GENERATIONS generations
+without an accepted node from it and the next family opens — spend the generation on the family's genuinely different
+mechanisms, not on one mechanism at three doses;
 prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
 ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
@@ -244,7 +252,8 @@ cards; status: untried; evidence: []; ## Measured "(none yet)"; at most 60 lines
 the same order."""
 
 ROLE_SYSTEM['select'] = (ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_EFFECT)).replace('Z_CRIT', str(C.Z_CRIT))
-                        .replace('FREE_SLOT_FROM_GENERATION', str(C.FREE_SLOT_FROM_GENERATION)))
+                        .replace('FREE_SLOT_FROM_GENERATION', str(C.FREE_SLOT_FROM_GENERATION))
+                        .replace('CAMPAIGN_FLAT_GENERATIONS', str(C.CAMPAIGN_FLAT_GENERATIONS)))
 ROLE_SYSTEM['diagnose'] = ROLE_SYSTEM['diagnose'].replace('HARD_GROUP_REJECTS', str(C.HARD_GROUP_REJECTS))
 ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
 ROLE_SYSTEM['probe'] = """Role: PROBE (ADR-0015). Before a feature hypothesis gets a node, the harness measures the proposed signal on
@@ -295,6 +304,23 @@ def proven_cards():
     return sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md'
                   and _front_fields(p.read_text()).get('status', '').startswith('proven'))
 
+def card_index():
+    """{card id: {family, target_component, status, expected_hi}} from every card's front matter (ADR-0016 campaigns)."""
+    out = {}
+    for p in sorted((C.KB / 'methods').glob('*.md')) if (C.KB / 'methods').exists() else []:
+        if p.name == 'README.md':
+            continue
+        f = _front_fields(p.read_text())
+        nums = re.findall(r'-?\d+(?:\.\d+)?', f.get('expected_delta', ''))
+        out[f.get('id', p.stem)] = {'family': f.get('family') or 'other', 'target_component': f.get('target_component'),
+                                    'status': f.get('status', 'untried'), 'expected_hi': max(float(x) for x in nums) if nums else None}
+    return out
+
+def family_of(card, index=None):
+    """The family of a card id, also for a deepen named '<card id> — <variant>'; None for an unknown name."""
+    index = index if index is not None else card_index()
+    return index.get(str(card or '').split(' — ')[0].strip(), {}).get('family')
+
 def run_block(generation, digest):
     """The exact run journal, frozen at the start of a generation: identical for every call of that generation, so
     it sits right after the stable prefix and the provider's cache serves it after the first call."""
@@ -334,10 +360,23 @@ def _state(ctx):
             f"Journal index (one line per node; the full record with diffs is the '# Run journal' section of your instructions):\n"
             + ('\n'.join(ctx['journal_lines']) or '(empty)'))
 
+def _campaign_state(ctx):
+    """ADR-0016: the campaign family of this generation and every family's status."""
+    fams = ctx.get('families') or {}
+    if not fams and not ctx.get('campaign'):
+        return ''
+    camp = ctx.get('campaign')
+    rows = '; '.join(f"{f} ({v.get('status')}" + (f", best {v['best_gain']:+.4f}" if v.get('best_gain') is not None else '')
+                     + (f", flat {v.get('flat_streak')}" if v.get('flat_streak') else '') + ')' for f, v in fams.items())
+    return ((f"CAMPAIGN this generation: {camp} — every Selector candidate except Consolidator merge/retest slots belongs to this "
+             f"family, one per DISTINCT mechanism; its cards: {', '.join(ctx.get('campaign_cards') or []) or 'none'}\n"
+             if camp else "CAMPAIGN this generation: none (breadth generation, or every family is closed)\n")
+            + f"Families (status, best seed-mean gain, flat generations while campaigning): {rows or 'none'}\n")
+
 def _rules_state(ctx):
     """ADR-0014 planning state: what the free slot may take, what is closed, what is hard, what the champion reads."""
     hard = ctx.get('hard_groups') or {}; closed = ctx.get('closed_mechanisms') or {}
-    return (f"Untried cards (free-slot priority 1): {', '.join(ctx.get('untried') or []) or 'none'}\n"
+    return (_campaign_state(ctx) + f"Untried cards (free-slot priority 1): {', '.join(ctx.get('untried') or []) or 'none'}\n"
             f"Proven cards not in the champion stack (free-slot priority 2): {', '.join(ctx.get('proven_not_on_stack') or []) or 'none'}\n"
             f"Champion input set (columns / side-table fields its script references): {', '.join(ctx.get('champion_inputs') or []) or 'unknown'}\n"
             f"Closed mechanisms (deepens rejected this run; not to be deepened again): "

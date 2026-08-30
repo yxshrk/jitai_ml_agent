@@ -60,7 +60,7 @@ class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
                  iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed', k_later=None,
-                 screen=True):
+                 screen=True, campaigns=True):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         # adaptive breadth: k branches in generation 1 (breadth pays when nothing is measured), k_later afterwards,
         # growing back toward k only for the Consolidator's concrete merge/retest slots (live_04: 4 of 5 accepted in
@@ -76,13 +76,15 @@ class Loop:
         self.wildcard = wildcard     # ADR-0011: one slot per generation goes to the Explorer role
         # ADR-0015: feature candidates are probed and measured on valid before a node is spent; needs a brain with a probe role
         self.screen = bool(screen) and type(brain).probe is not Brain.probe
+        self.campaigns = campaigns   # ADR-0016: one card family per generation from CAMPAIGNS_FROM_GENERATION on
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
         self.run_dir = C.RUNS / run_id; self.j = Journal(self.run_dir); self._log = log
         self.state_path = self.run_dir / 'state.json'
         self.state = json.loads(self.state_path.read_text()) if self.state_path.exists() else {
             'run_id': run_id, 'n_next': 0, 'generation': 0, 'champion': None, 'best': None, 'streak': 0,
             'nodes': {}, 'plan': None, 'parked': [], 'start': time.time(), 'interventions': 0, 'stop_reason': None,
-            'usage': Usage().snapshot(), 'seed_cache': {}, 'best_single': None, 'librarian_calls': 0, 'elapsed_before': 0.0}
+            'usage': Usage().snapshot(), 'seed_cache': {}, 'best_single': None, 'librarian_calls': 0, 'elapsed_before': 0.0,
+            'families': {}, 'campaign': None}
         # one seed cache keyed 'node:seed', never cleared (ADR-0012); older states kept two that were thrown away
         sc = self.state.setdefault('seed_cache', {})
         for k_ in ('champion_seeds', 'final_seeds'):
@@ -133,7 +135,10 @@ class Loop:
              'untried': P.untried_cards(), 'proven_not_on_stack': self._proven_not_on_stack(),
              'closed_mechanisms': self._closed_mechanisms(), 'hard_groups': self._hard_groups(),
              'champion_inputs': self.inputs_of(ch['n']),
-             'screened': self.state.get('screened', [])}
+             'screened': self.state.get('screened', []),
+             # ADR-0016: the campaign family of this generation and every family's status
+             'campaign': self.state.get('campaign'), 'families': self.state.get('families') or {},
+             'campaign_cards': self._family_cards(self.state.get('campaign'))}
         d.update(extra); return d
 
     def _brain(self, fn, *args, what='', attempts=2):
@@ -208,6 +213,11 @@ class Loop:
         self.threads = max(1, (os.cpu_count() or 2) // max(1, self.k)) if self.parallel else (os.cpu_count() or 2)
         t_gen = time.time(); snap = self.brain.usage.snapshot()
         self.log(f'=== generation {g}: champion node_{self.champion["n"]:03d} ({self.champion["metrics"]["primary"]:.4f}), streak {self.state["streak"]} ===')
+        self.state['campaign'] = self._campaign_family(g)          # ADR-0016: one family per generation, chosen in code
+        if self.state['campaign']:
+            fams = self.state.get('families') or {}
+            self.log(f"  campaign: {self.state['campaign']} (open: {[f for f, v in fams.items() if v['status'] == 'open']}, "
+                     f"closed: {[f for f, v in fams.items() if v['status'] != 'open']})")
         # the exact journal so far, frozen for this generation, in the cached prefix of the roles that PLAN (ADR-0013);
         # full diffs for the champion lineage, accepted nodes and the last generation, stubs for older rejected nodes
         self.brain.set_context_block(P.run_block(g, self.j.digest(full_diff_nodes=self._diff_focus())), roles=P.PLANNING_ROLES)
@@ -358,6 +368,7 @@ class Loop:
             self.state['streak'] = o.streak; improved = (o.streak == 0)
         else:
             self.state['streak'] = conv.streak
+        self._campaign_update(g, results)                            # ADR-0016: a family closes after flat generations
         self._maybe_librarian(g, improved, results)
         # parked ideas: rejected-but-plausible nodes stay available for a justified retest (ADR-0004)
         for r in results:
@@ -373,6 +384,7 @@ class Loop:
         self.j.append({'n': None, 'generation': g, 'action': 'generation', 'diagnosis': diagnosis,
                        'improved': improved, 'streak': self.state['streak'], 'champion': self.state['champion'],
                        'best': self.state['best'], 'plan': self.state['plan'], 'tokens_in': tin, 'tokens_out': tout,
+                       'campaign': self.state.get('campaign'), 'families': json.loads(json.dumps(self.state.get('families') or {})),
                        'cost_usd': round(cost, 4), 'duration_s': round(time.time() - t_gen, 1),
                        'llm_calls': getattr(self.brain, 'calls', [])[-40:]})
         if hasattr(self.brain, 'calls'):
@@ -447,22 +459,25 @@ class Loop:
                 cache[f'{m}:{sd}'] = val
 
     def _diversify(self, selections):
-        """Enforce distinct target_components (portfolio diversity); keep the first of each — except that the free-slot
-        candidate (ADR-0014, tagged by _free_slot_ok) outranks the wildcard on a collision: an information-adding
-        wildcard and an untried features/history card share a component more often than not, and the free slot is
-        the rule that keeps untried cards from being locked out."""
-        seen, out = {}, []
+        """Portfolio diversity: distinct target_components — except that the free-slot candidate (ADR-0014, tagged by
+        _free_slot_ok) outranks the wildcard on a collision (an information-adding wildcard and an untried features/history
+        card share a component more often than not, and the free slot is the rule that keeps untried cards from being
+        locked out), and that inside a campaign (ADR-0016) the family's candidates are distinct by MECHANISM slug, since
+        they share a component by design."""
+        fam = self.state.get('campaign'); seen, out = {}, []
         for s in selections:
             tc = s.get('target_component')
-            if tc in seen and s.get('type') != 'merge':
-                prev = out[seen[tc]]
+            in_campaign = bool(fam) and not s.get('wildcard') and s.get('type') not in ('merge', 'retest')
+            key = ('mechanism', _slug(s.get('mechanism'))) if in_campaign and _slug(s.get('mechanism')) else ('component', tc)
+            if key in seen and s.get('type') != 'merge':
+                prev = out[seen[key]]
                 if s.get('free_slot') and prev.get('wildcard'):
                     self.log(f"  free-slot candidate {s.get('card')!r} outranks the wildcard on {tc!r}; dropping the wildcard")
-                    out[seen[tc]] = s; continue
-                self.log(f'  dropping duplicate target_component {tc!r}: {s.get("hypothesis", "")[:60]}')
+                    out[seen[key]] = s; continue
+                self.log(f'  dropping duplicate {key[0]} {key[1]!r}: {s.get("hypothesis", "")[:60]}')
                 continue
-            seen[tc] = len(out); out.append(s)
-        return out                       # the k truncation happens after the screen (ADR-0015), so a dropped slot is refilled from the reserve
+            seen[key] = len(out); out.append(s)
+        return out
 
     def _node_ref(self, x):
         """Parse a node reference the roles may write: 12, "12", "node_012", "champion"; None if unknown."""
@@ -521,6 +536,9 @@ class Loop:
     def _free_slot_ok(self, selections):
         """From FREE_SLOT_FROM_GENERATION on, one candidate must take an untried card or a proven card not on the stack."""
         eligible = set(P.untried_cards()) | set(self._proven_not_on_stack())
+        fam = self.state.get('campaign')
+        if fam:                                   # ADR-0016: the free slot stays inside the campaign family
+            idx = P.card_index(); eligible = {c for c in eligible if idx.get(c, {}).get('family') == fam}
         if not eligible:
             return True
         for s in selections:
@@ -532,8 +550,13 @@ class Loop:
     def _apply_rules(self, selections):
         """Drop candidates the rules forbid: a deepen of a closed mechanism or of a hard group, a wildcard without new_signal."""
         closed, hard, out = self._closed_mechanisms(), self._hard_groups(), []
+        fam = self.state.get('campaign'); idx = P.card_index() if fam else {}
         for s in selections:
             h = str(s.get('hypothesis'))[:80]
+            if fam and not s.get('wildcard') and s.get('type') not in ('merge', 'retest'):
+                cf = P.family_of(s.get('card'), idx)
+                if cf is not None and cf != fam:
+                    self.log(f"  dropping {s.get('card')!r}: outside the campaign family {fam!r} (it is {cf!r})"); continue
             if s.get('type') == 'deepen':
                 m = _slug(s.get('mechanism'))
                 if m and m in closed:
@@ -606,6 +629,73 @@ class Loop:
             if not kept:
                 dropped.add(id(s))
         return [s for s in selections if id(s) not in dropped]
+    # ---------------- ADR-0016 family campaigns ----------------
+    def _families_init(self):
+        """state['families']: every card family, open until it has been campaigned flat or has nothing left to measure."""
+        fams = self.state.setdefault('families', {})
+        for cid, f in P.card_index().items():
+            fams.setdefault(f['family'], {'status': 'open', 'generations': [], 'nodes': [], 'best_gain': None, 'flat_streak': 0, 'evidence': ''})
+        return fams
+
+    def _family_cards(self, fam):
+        if not fam:
+            return []
+        return sorted(f"{c} [{v['status'].split(' ')[0]}]" for c, v in P.card_index().items() if v['family'] == fam)
+
+    def _family_score(self, fam):
+        """Ordering key of an open family: (not a last family, has a measured screen gain, that gain or else the highest card
+        expected_delta among the family's cards still measurable on this stack); None when nothing is left to measure."""
+        idx = P.card_index(); stack = self.stack_of(self.state['champion'])
+        screened = [s.get('best_gain') for s in (self.state.get('screened') or []) if s.get('family') == fam and s.get('best_gain') is not None]
+        last = 0 if fam in C.CAMPAIGN_LAST_FAMILIES else 1
+        if screened:
+            return (last, 1, max(screened))
+        def measurable(c, v):
+            if c in stack:
+                return False
+            return stack not in v['status'] if v['status'].startswith('dead_under') else True
+        hi = [v['expected_hi'] for c, v in idx.items() if v['family'] == fam and measurable(c, v) and v['expected_hi'] is not None]
+        return (last, 0, max(hi)) if hi else None
+
+    def _campaign_family(self, g):
+        """The family this generation's Selector slots belong to: the current one while it is open, else the best-scoring
+        open family; None before CAMPAIGNS_FROM_GENERATION, with --no-campaigns, or when every family is closed."""
+        if not self.campaigns or g < C.CAMPAIGNS_FROM_GENERATION:
+            return None
+        fams = self._families_init(); cur = self.state.get('campaign')
+        if cur and fams.get(cur, {}).get('status') == 'open':
+            return cur
+        best = None
+        for fam, v in fams.items():
+            if v['status'] != 'open':
+                continue
+            key = self._family_score(fam)
+            if key is None:
+                v['status'] = 'exhausted'; v['evidence'] = (v['evidence'] + ' nothing left to measure on this stack').strip(); continue
+            if best is None or key > best[0]:
+                best = (key, fam)
+        return best[1] if best else None
+
+    def _campaign_update(self, g, results):
+        """Book this generation's nodes to the campaign family; close it after CAMPAIGN_FLAT_GENERATIONS flat generations."""
+        fam = self.state.get('campaign')
+        if not fam or self._families_init().get(fam, {}).get('status') != 'open':
+            return
+        v = self._families_init()[fam]; idx = P.card_index()
+        mine = [r for r in results if r.get('metrics') and r.get('action') != 'merge' and P.family_of(r.get('method'), idx) == fam]
+        v['generations'].append(g); v['nodes'] += [r['n'] for r in mine]
+        gains = [(r.get('seed_confirmation') or {}).get('delta_mean', r.get('realized_delta')) for r in mine]
+        gains = [x for x in gains if x is not None]
+        if gains:
+            v['best_gain'] = max(gains + ([v['best_gain']] if v['best_gain'] is not None else []))
+        if any(r.get('accepted') for r in mine):
+            v['flat_streak'] = 0
+        else:
+            v['flat_streak'] += 1
+            if v['flat_streak'] >= C.CAMPAIGN_FLAT_GENERATIONS:
+                v['status'] = 'closed'
+                v['evidence'] = f"closed at generation {g}: {v['flat_streak']} campaign generations without an accepted node (nodes {v['nodes']}, best gain {v['best_gain']})"
+                self.log(f"  campaign {fam!r} closed: {v['flat_streak']} flat generations (nodes {v['nodes']})")
 
     def _resolve_parents(self, sel):
         """The parent a candidate is built on. A deepen/retest of a specific node must branch from THAT node — live_05's
@@ -835,7 +925,7 @@ class Loop:
                    'champion_seed_mean': round(self.champion_mean(), 5), 'best_single_seed': self.state.get('best_single'),
                    'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
                    'official_rule': self.state.get('official_rule'), 'official_rule_submission': self._official_submission(),
-                   'convergence_switch': self.convergence,
+                   'convergence_switch': self.convergence, 'campaigns': self.campaigns, 'families': self.state.get('families'),
                    'tokens': {'in_total': usage.get('tokens_in'), 'in_cached': usage.get('cache_read'),
                               'in_uncached': (usage.get('tokens_in') or 0) - (usage.get('cache_read') or 0), 'out': usage.get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k_first, 'k_later': self.k_later, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,

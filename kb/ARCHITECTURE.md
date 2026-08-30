@@ -49,6 +49,12 @@ flowchart TD
   deepens that repeat either. The wildcard must name a `new_signal` absent from the champion's input set
   (`inputs_of`) or it is dropped. The Critic may answer `rebase_to`, and the loop rebuilds the candidate on that
   node's script.
+- **Family campaigns (ADR-0016).** From generation 2 code picks one card family per generation
+  (`_campaign_family`: a measured screen gain of its cards first, else the highest card promise still measurable on
+  this stack; ensembling last); every Selector candidate except Consolidator merge/retest slots and the wildcard
+  belongs to it, `_diversify` keeps one candidate per *mechanism* inside it, and `_campaign_update` closes the family
+  after `CAMPAIGN_FLAT_GENERATIONS` flat generations with its evidence in `state['families']`. `--no-campaigns`
+  restores breadth generations.
 
 - **The feature screen (ADR-0015, during live_07).** A feature / encoding / history candidate, and any wildcard naming a
   `new_signal`, is probed before it is built: a Probe-role script computes the signal for the valid rows on a data dir whose

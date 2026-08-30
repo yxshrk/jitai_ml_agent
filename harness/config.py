@@ -43,6 +43,12 @@ FORBIDDEN_PATTERNS = ['KuaiRand-Pure', 'log_standard_4_22', 'log_standard_4_08',
 AVAILABLE_LIBS = ['numpy', 'pandas 2.3', 'scikit-learn 1.6', 'lightgbm 4.6', 'torch 2.8 (CPU only)']
 HARD_GROUP_REJECTS = 2            # rejected deepens on one breakdown group before it is marked hard (ADR-0014)
 FREE_SLOT_FROM_GENERATION = 2     # from this generation on, one Selector slot goes to an untried / not-yet-stacked card
+# ADR-0016: family campaigns — from this generation on, the Selector's slots belong to ONE card family per generation
+# (chosen in code; k different mechanisms of that family); a family closes after CAMPAIGN_FLAT_GENERATIONS generations
+# without an accepted node from it, and the next family opens. Composition (ensembling) comes last.
+CAMPAIGNS_FROM_GENERATION = 2
+CAMPAIGN_FLAT_GENERATIONS = 2
+CAMPAIGN_LAST_FAMILIES = ('ensembling',)
 
 def libs_text():
     """The library rule as one sentence, generated from AVAILABLE_LIBS so prompts cannot drift from the contract."""

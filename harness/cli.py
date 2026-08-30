@@ -27,6 +27,7 @@ def main():
                    help='confirmed = stop after N generations without a seed-confirmed champion change >= RESET_MIN_GAIN (ADR-0012); official = the literal single-seed eps rule')
     r.add_argument('--no-distill', action='store_true', help='do not fold the journal into the cards when the run ends')
     r.add_argument('--no-screen', action='store_true', help='skip the feature screen (ADR-0015): build every feature candidate unmeasured')
+    r.add_argument('--no-campaigns', action='store_true', help='no family campaigns: every generation is a breadth generation (pre-ADR-0016 behaviour)')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
     s.add_argument('--out', default='submission.csv')
@@ -56,7 +57,7 @@ def main():
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
                     parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
                     iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill, convergence=a.convergence, k_later=a.k_later,
-                    screen=not a.no_screen)
+                    screen=not a.no_screen, campaigns=not a.no_campaigns)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         from .submit import make_submission

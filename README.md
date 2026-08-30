@@ -32,7 +32,9 @@ organizers' `evaluate.py`. Official FM baseline: **0.6016 valid / 0.5946 hidden 
    ideas, or exploration after a flat generation. From generation 2 the rules are code (ADR-0014): one slot is free
    for an untried card or a proven card not yet on the stack, a rejected deepen mechanism is closed for the run, a
    group with two rejected deepens is marked hard, the wildcard must name a signal the champion does not read, and
-   the Critic can rebase a candidate onto the node it actually varies.
+   the Critic can rebase a candidate onto the node it actually varies. Generations are *campaigns* (ADR-0016): code
+   picks one card family per generation (measured screen gains first, then card promise, ensembling last), the
+   Selector proposes k different mechanisms of that family, and a family closes after two flat generations.
 3. **Code decides.** A referee validates every prediction file, scores it with the untouched official
    `evaluate.py`, detects no-op changes (predictions byte-identical to the parent), and accepts a node only if its
    improvement holds up over **three fresh seeds** (fresh-seed mean gain ≥ 0.0005 at z ≥ 3 with the seed SD pooled
@@ -52,7 +54,7 @@ organizers' `evaluate.py`. Official FM baseline: **0.6016 valid / 0.5946 hidden 
    raw data. Every iteration is journaled with its hypothesis, code diff, metrics, learning curve, errors and
    recovery, tokens and wall-clock.
 
-Design decisions and their reasons: `kb/adr/` (fourteen records). The reference: `kb/ARCHITECTURE.md`.
+Design decisions and their reasons: `kb/adr/` (sixteen records). The reference: `kb/ARCHITECTURE.md`.
 Why this shape and not a pipeline of stage-agents: `kb/literature/agent-design-notes.md` (AIDE, MLE-STAR,
 R&D-Agent, ML-Master, AIRA, AI-Scientist-v2 compared).
 
