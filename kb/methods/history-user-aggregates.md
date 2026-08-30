@@ -12,8 +12,8 @@ expected_delta_basis: organizers' lead #2 (history is entirely unused by the bas
 cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketised fields); runtime ~1.5x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under {run: live_01, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0014}
-evidence: [live_01:node_006]
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0001}
+evidence: [live_01:node_006, live_02:node_008]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -40,3 +40,4 @@ action — in its simplest, leakage-safe form.
 
 ## Measured
 - live_01:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6023, single-seed Δ -0.0014 — rejected; 792 changed lines
+- live_02:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6030, single-seed Δ -0.0001 — rejected; 70 changed lines

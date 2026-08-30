@@ -1,0 +1,61 @@
+--- node_001.py
++++ node_010.py
+@@ -34,6 +34,7 @@
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
++        self.Va = self.Wa = self.ba = None
+ 
+     def logits(self, X):
+         E = self.V[X]                                              # (B, F, k)
+@@ -58,7 +59,22 @@
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
++        if self.Va is not None:
++            self.Va *= 0.99; self.Va += 0.01 * self.V
++            self.Wa *= 0.99; self.Wa += 0.01 * self.W
++            self.ba = np.float32(0.99 * self.ba + 0.01 * self.b)
+         return float(np.mean(np.logaddexp(0.0, -d)))
++
++    def start_ema(self):
++        self.Va, self.Wa, self.ba = self.V.copy(), self.W.copy(), np.float32(self.b)
++
++    def predict_ema(self, X, bs=200_000):
++        V, W, b = self.V, self.W, self.b
++        self.V, self.W, self.b = self.Va, self.Wa, self.ba
++        try:
++            return self.predict(X, bs)
++        finally:
++            self.V, self.W, self.b = V, W, b
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -124,17 +140,24 @@
+     m = FM(dim, k=a.k, lr=a.lr, seed=a.seed); rng = np.random.default_rng(a.seed)
+     best, best_state, bad, history = -1.0, None, 0, []
+     for ep in range(1, epochs + 1):
+-        neg_epoch = pair_neg[pair_neg_start + (rng.random(len(pair_pos)) * pair_neg_count).astype(np.int32)]
++        neg_candidates = pair_neg[pair_neg_start[:, None] +
++                                  (rng.random((len(pair_pos), 4)) * pair_neg_count[:, None]).astype(np.int32)]
++        neg_scores = m.predict(Xtr[neg_candidates.reshape(-1)]).reshape(len(pair_pos), 4)
++        neg_epoch = neg_candidates[np.arange(len(pair_pos)), np.argmax(neg_scores, axis=1)]
+         idx = rng.permutation(len(pair_pos))
+         losses = [m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[neg_epoch[idx[i:i + a.batch]]])
+                   for i in range(0, len(idx), a.batch)]
+-        r = evaluate(uva, yva, m.predict(Xva))
++        if ep == 2:
++            m.start_ema()
++        r = evaluate(uva, yva, m.predict_ema(Xva) if m.Va is not None else m.predict(Xva))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad = r['primary'], 0
++            best_state = ((m.Va.copy(), m.Wa.copy(), np.float32(m.ba)) if m.Va is not None else
++                          (m.V.copy(), m.W.copy(), np.float32(m.b)))
+         else:
+             bad += 1
+             if bad >= a.patience:

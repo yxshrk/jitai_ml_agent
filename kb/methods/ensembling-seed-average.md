@@ -12,8 +12,8 @@ expected_delta_basis: averaging N seeds removes ~sqrt(N) of the seed noise from 
 cost: ~20 lines (loop over seeds, average logits or within-user ranks); runtime N x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head, regularization-embedding-dropout-l2, training-schedule-lr-decay-early-stop]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0009}
+evidence: [live_02:node_015]
 ---
 ## Claim
 Train the champion's script N = 5 times with seeds seed..seed+4 and average the prediction scores (or average
@@ -34,4 +34,4 @@ part. This is variance reduction, not new signal — hence the small but reliabl
 - Averaging a good model with a clearly worse one hurts; only ensemble nodes within ~0.002 of each other.
 
 ## Measured
-(none yet)
+- live_02:node_015 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0006, seed-mean Δ +0.0009 (t 5.35) — rejected; 49 changed lines

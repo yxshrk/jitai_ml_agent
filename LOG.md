@@ -97,3 +97,18 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
 - Prompt calibration evidence: expected Δ 0.006 / 0.004 / 0.003 / 0.003 / 0.004 vs realised +0.0022 / +0.0005 /
   −0.0003 / −0.0005 / −0.0014; diffs 433 / 452 / 275 / 112 / 792 lines (the Implementer rewrote files) → prompts
   sharpened and a 200-line diff guard added (commit 3378f1b).
+- **Full autonomous run `live_02`** (GPT-5.6-sol, k = 3, sharpened prompts, seed-confirmed acceptance):
+  **converged by the official rule after 5 generations / 16 nodes, 29.7 min, $4.25**, 51 LLM calls, 866 K input
+  tokens (682 K served from cache) / 100 K output, 0 interventions. Accepted: node_001 within-user BPR
+  (+0.0016 single seed, +0.0016 over three seeds, t = 8.2). Rejected on seed confirmation despite positive single
+  seeds: recency (+0.0005→+0.0004), hard negatives (+0.0006→+0.0001), L2 1e-5 (+0.0005→+0.0002), duration flag on
+  BPR (+0.0000→+0.0002), fine duration + tab cross (+0.0002→−0.0001), censored watch-time aux (+0.0004→+0.0003,
+  t 1.85), checkpoint averaging (+0.0002→+0.0001), 5-seed ensemble (+0.0006→**+0.0009, t 5.4** — below the 0.001
+  minimum effect). Negative: history aggregates −0.0001, LambdaRank −0.0010, EMA averaging −0.0027, is_click head
+  −0.0003. Diffs 4–70 lines (one 29-line EMA). **Final designation** re-ranked the top-3 by 3-seed mean and chose
+  **node_015 (5-seed ensemble of the BPR champion): seeds 0.60367 / 0.60417 / 0.60395, mean 0.60393 = +0.0025 over
+  the baseline's 3-seed mean 0.60144.** `submission.csv` written for node_015 and passed the organizers' `--check`
+  (170,588 rows). Cards distilled (15 cards; BPR `alive`, everything else `dead_under` the FM or FM+BPR stack).
+- Observation for the next iteration of the harness: the 0.001 minimum-effect floor rejected a t = 5.4 improvement
+  (the ensemble); a floor of 0.0005 with the same t-test would have accepted it. The DCN cross head was planned for
+  generation 6 but never ran — the only card family left untried after two runs.

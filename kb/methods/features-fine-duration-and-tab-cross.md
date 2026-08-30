@@ -12,8 +12,8 @@ expected_delta_basis: the organizers measured extra static ID fields flat on FM 
 cost: ~10 lines (more quantile buckets; a crossed categorical tab|bucket field); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0001}
+evidence: [live_02:node_012]
 ---
 ## Claim
 Resolve duration more finely (30–50 quantile buckets, plus an explicit "<= 18 s" bit) and add a crossed field
@@ -34,4 +34,4 @@ express the interaction through one 16-d dot product.
 - If flat: this family is dead_under FM + logloss; retest only with a pairwise loss or a DCN head (ADR-0004).
 
 ## Measured
-(none yet)
+- live_02:node_012 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6033, single-seed Δ +0.0002, seed-mean Δ -0.0001 (t -0.44) — rejected; 10 changed lines

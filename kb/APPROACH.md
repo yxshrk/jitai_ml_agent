@@ -152,6 +152,6 @@ work around.
 | run | nodes | accepted | champion Δ (single / 3-seed) | false positives caught | cost | wall-clock |
 |---|---|---|---|---|---|---|
 | live_01 | 7 | BPR loss | +0.0022 / +0.0017 | (rule not yet in place) | $2.70 | 16 min |
-| live_02 | in progress | BPR loss | +0.0016 / +0.0016 (t = 8.2) | 3 in generation 2 | $1.68 after 2 generations | — |
+| live_02 | 16 (converged after 5 generations) | BPR loss; designated = 5-seed ensemble of it (3-seed mean 0.6039, +0.0025 vs baseline mean) | +0.0016 / +0.0016 (t = 8.2) | 9 single-seed "wins" of +0.0002…+0.0006 rejected on seeds | $4.25 | 30 min |
 
 Details: `runs/<run_id>/journal.md`, `LOG.md`.

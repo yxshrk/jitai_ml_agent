@@ -12,8 +12,8 @@ expected_delta_basis: extra supervision on shared embeddings helps sparse users,
 cost: ~30 lines (second bias vector + shared-V gradient); runtime ~1.2x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0003}
+evidence: [live_02:node_011]
 ---
 ## Claim
 Train a second logistic head for is_click on the same embeddings (ESMM-style shared bottom), weight 0.2–0.5, and
@@ -35,4 +35,4 @@ sees a smoother version of the label, which regularises sparse user vectors.
 - Two heads double the interaction computation; keep it vectorised.
 
 ## Measured
-(none yet)
+- live_02:node_011 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6028, single-seed Δ -0.0003 — rejected; 35 changed lines

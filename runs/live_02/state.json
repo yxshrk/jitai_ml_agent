@@ -1,10 +1,10 @@
 {
  "run_id": "live_02",
- "n_next": 10,
- "generation": 3,
+ "n_next": 16,
+ "generation": 5,
  "champion": 1,
  "best": 0.6036905218935378,
- "streak": 1,
+ "streak": 3,
  "nodes": {
   "0": {
    "n": 0,
@@ -1411,40 +1411,900 @@
    "accepted": false,
    "seed_confirmation": null,
    "single_seed_accept": false
+  },
+  "10": {
+   "n": 10,
+   "generation": 4,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "training-schedule-weight-averaging",
+   "target_component": "training-schedule",
+   "hypothesis": "EMA parameter averaging should stabilize node_005's promising hard-negative model around its validation peak and reduce late-epoch ordering degradation.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The card range is 0.000\u20130.003, and journal node_005 already gained +0.0006 while the champion curve shows a steady post-peak decline from 0.6031 to 0.6020.",
+   "rejected_alternative": {
+    "card": "ensembling-seed-average",
+    "reason": "Seed ensembling is a closing move with substantially higher runtime, whereas EMA tests the same variance-reduction mechanism in one training run."
+   },
+   "change_summary": "Preserve node_005's four-candidate hard-negative sampling, add post-epoch-2 EMA averaging of V, W, and bias with decay 0.99, evaluate EMA parameters each epoch, and retain the best EMA checkpoint.",
+   "code_path": "nodes/010.py",
+   "diff_path": "diffs/010.patch",
+   "diff_lines": 29,
+   "metrics": {
+    "gauc": 0.6658851917982032,
+    "ndcg5": 0.5348103573035088,
+    "primary": 0.600347774550856,
+    "ndcg5_disc": 0.7196574650305991
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6660320086682097,
+     "val_gauc": 0.6040101123670322,
+     "val_ndcg5": 0.5124942056477864,
+     "val_primary": 0.5582521590074092
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.7112101582770652,
+     "val_gauc": 0.6217792694146068,
+     "val_ndcg5": 0.5160613269737092,
+     "val_primary": 0.568920298194158
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.6991629701979617,
+     "val_gauc": 0.6387270474948918,
+     "val_ndcg5": 0.5230174633361482,
+     "val_primary": 0.58087225541552
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.7038475820358764,
+     "val_gauc": 0.6629639543094306,
+     "val_ndcg5": 0.5329984392042764,
+     "val_primary": 0.5979811967568535
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.6903922431012417,
+     "val_gauc": 0.6651336492998332,
+     "val_ndcg5": 0.5342470748320223,
+     "val_primary": 0.5996903620659277
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.6902897129667566,
+     "val_gauc": 0.6658851917982032,
+     "val_ndcg5": 0.5348103573035088,
+     "val_primary": 0.600347774550856
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.6825070533346622,
+     "val_gauc": 0.6639126380768915,
+     "val_ndcg5": 0.534324624827415,
+     "val_primary": 0.5991186314521533
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.677152581671451,
+     "val_gauc": 0.6625461151458322,
+     "val_ndcg5": 0.5341910752694414,
+     "val_primary": 0.5983685952076367
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.6759469394988202,
+     "val_gauc": 0.6604838168497256,
+     "val_ndcg5": 0.5334147677281557,
+     "val_primary": 0.5969492922889406
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.674128884964801,
+     "val_gauc": 0.6585976333520644,
+     "val_ndcg5": 0.5330675518969504,
+     "val_primary": 0.5958325926245074
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.910788774490356,
+   "tokens_in": 69713,
+   "tokens_out": 11498,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "The script samples one uniform negative per positive; it does not preserve node_005's stated hard-negative mechanism, so the change is broader than EMA-only.",
+      "Expected delta 0.001 is below the 0.002 acceptance/noise floor and requires multi-seed confirmation."
+     ],
+     "instructions": "Return to the exact node_005 parent script, preserve its hard-negative sampling unchanged, and add only the post-epoch-2 EMA evaluation/checkpoint logic. Confirm any apparent gain across at least 3 seeds."
+    },
+    {
+     "round": 1,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violation; EMA is applied only to model parameters and SMOKE_EPOCHS caps training.",
+      "The expected +0.001 is below the 0.002 noise floor, so any apparent gain requires confirmation across at least 3 seeds."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00273,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "11": {
+   "n": 11,
+   "generation": 4,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "aux-targets-is-click",
+   "target_component": "aux-targets",
+   "hypothesis": "A shared is_click logistic head should provide dense near-miss supervision that regularizes sparse BPR embeddings while preserving the long_view BPR score used for ranking.",
+   "expected_delta": 0.002,
+   "expected_delta_basis": "The card range is 0.000\u20130.005, and Data Fact #6 gives unusually specific support: is_click has 0.76 correlation with long_view and occurs on 46% of training rows.",
+   "rejected_alternative": {
+    "card": "loss-watchtime-censored",
+    "reason": "Watch-time supervision has a related mechanism but requires censored regression and score-combination choices, making the click head the cheaper and cleaner first auxiliary probe."
+   },
+   "change_summary": "Add a lambda-0.2 pointwise is_click head with separate linear biases and shared FM embeddings, jointly trained alongside the unchanged within-user BPR objective while ranking only with the long_view head.",
+   "code_path": "nodes/011.py",
+   "diff_path": "diffs/011.patch",
+   "diff_lines": 35,
+   "metrics": {
+    "gauc": 0.6688956022904774,
+    "ndcg5": 0.5367417680622986,
+    "primary": 0.6028186851763879,
+    "ndcg5_disc": 0.7230002741070505
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.8086883222803156,
+     "val_gauc": 0.6580223508580011,
+     "val_ndcg5": 0.530736650241925,
+     "val_primary": 0.594379500549963
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.7391074705631175,
+     "val_gauc": 0.6642818530799853,
+     "val_ndcg5": 0.5336151002198237,
+     "val_primary": 0.5989484766499045
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.6935907399400751,
+     "val_gauc": 0.6667521133782731,
+     "val_ndcg5": 0.5354934361671597,
+     "val_primary": 0.6011227747727164
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.6763660121471324,
+     "val_gauc": 0.6682805755667572,
+     "val_ndcg5": 0.5363988469395958,
+     "val_primary": 0.6023397112531765
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.6688307561772935,
+     "val_gauc": 0.6689517641557114,
+     "val_ndcg5": 0.5366239498677787,
+     "val_primary": 0.6027878570117451
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.6622708059371786,
+     "val_gauc": 0.6685061036178938,
+     "val_ndcg5": 0.5367618503813822,
+     "val_primary": 0.602633976999638
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.6567776241201035,
+     "val_gauc": 0.669030550051104,
+     "val_ndcg5": 0.5365661183035052,
+     "val_primary": 0.6027983341773047
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.653455045629055,
+     "val_gauc": 0.6691702048407467,
+     "val_ndcg5": 0.5361427138015278,
+     "val_primary": 0.6026564593211372
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.6476626586406788,
+     "val_gauc": 0.6689907137443827,
+     "val_ndcg5": 0.5363209568443907,
+     "val_primary": 0.6026558352943867
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.6432467559550671,
+     "val_gauc": 0.6682653302103879,
+     "val_ndcg5": 0.5363937646035338,
+     "val_primary": 0.6023295474069609
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.6374143044999305,
+     "val_gauc": 0.6688956022904774,
+     "val_ndcg5": 0.5367417680622986,
+     "val_primary": 0.6028186851763879
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.6315307401596232,
+     "val_gauc": 0.6680348464712638,
+     "val_ndcg5": 0.536067549772677,
+     "val_primary": 0.6020511981219704
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.6251722307915383,
+     "val_gauc": 0.6667648045274153,
+     "val_ndcg5": 0.5360551263406376,
+     "val_primary": 0.6014099654340264
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.6181490624204595,
+     "val_gauc": 0.666719948129558,
+     "val_ndcg5": 0.5350603761248456,
+     "val_primary": 0.6008901621272018
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.6103707983138713,
+     "val_gauc": 0.6646134964979563,
+     "val_ndcg5": 0.5348426127993037,
+     "val_primary": 0.59972805464863
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 17.475916862487793,
+   "tokens_in": 34929,
+   "tokens_out": 5472,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "is_click is used only as a training target; scored-row features remain legal and no future/test data is accessed.",
+      "The auxiliary head is narrowly scoped, deterministic, smoke-capped, and the expected 0.002 gain is plausible but at the noise floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00026,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  },
+  "12": {
+   "n": 12,
+   "generation": 4,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "features-fine-duration-and-tab-cross",
+   "target_component": "features",
+   "hypothesis": "A finer nonzero-duration encoding plus a tab-by-duration categorical cross should expose row-varying context interactions that the existing coarse FM fields may underrepresent under BPR.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The card range is 0.000\u20130.004; Data Facts #3\u20134 show duration-bucket positive rates of 0.27\u20130.38 and tab rates from 0.04 to 0.49, while this interaction has not been measured on the champion.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "BPR is already the only accepted improvement and LambdaRank regressed both metrics, so another loss replacement is less attractive than this roughly ten-line interaction probe."
+   },
+   "change_summary": "Use 30 positive-duration quantile buckets with a dedicated zero-duration value and add one tab-by-duration categorical FM field, leaving BPR training unchanged.",
+   "code_path": "nodes/012.py",
+   "diff_path": "diffs/012.patch",
+   "diff_lines": 10,
+   "metrics": {
+    "gauc": 0.6692081378183744,
+    "ndcg5": 0.5373191392739288,
+    "primary": 0.6032636385461516,
+    "ndcg5_disc": 0.7239995652821336
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6692759559509602,
+     "val_gauc": 0.6576289415594315,
+     "val_ndcg5": 0.5315076981258332,
+     "val_primary": 0.5945683198426324
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6028414660311759,
+     "val_gauc": 0.6649296215793702,
+     "val_ndcg5": 0.5342609328153924,
+     "val_primary": 0.5995952771973814
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5621670370406293,
+     "val_gauc": 0.6669610299016147,
+     "val_ndcg5": 0.5356344384448143,
+     "val_primary": 0.6012977341732144
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5458794033273737,
+     "val_gauc": 0.6683244866786093,
+     "val_ndcg5": 0.5363136630027295,
+     "val_primary": 0.6023190748406695
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5366116749479416,
+     "val_gauc": 0.6692081378183744,
+     "val_ndcg5": 0.5373191392739288,
+     "val_primary": 0.6032636385461516
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5271678934706018,
+     "val_gauc": 0.6678963268470988,
+     "val_ndcg5": 0.5361002598845733,
+     "val_primary": 0.6019982933658361
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5177640686643884,
+     "val_gauc": 0.6664695678142651,
+     "val_ndcg5": 0.5346229477246371,
+     "val_primary": 0.6005462577694511
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5097421832541202,
+     "val_gauc": 0.6668369826147912,
+     "val_ndcg5": 0.5350997539655027,
+     "val_primary": 0.600968368290147
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4993278079844536,
+     "val_gauc": 0.6644911453959922,
+     "val_ndcg5": 0.534431335997335,
+     "val_primary": 0.5994612406966636
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 13.997667074203491,
+   "tokens_in": 34583,
+   "tokens_out": 3920,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; validation outcomes are used only for evaluation and early stopping.",
+      "The edit is narrowly scoped and contract-compliant; expected +0.001 is plausible but below the 0.002 acceptance floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00018,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6032636385461516,
+     0.6033115822562571,
+     0.6021449605887285
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": -0.00015,
+    "se": 0.00033,
+    "t": -0.44,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "13": {
+   "n": 13,
+   "generation": 5,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "loss-watchtime-censored",
+   "target_component": "loss",
+   "hypothesis": "Adding a censored watch-time auxiliary loss to the champion's shared embeddings will provide graded near-threshold supervision that binary BPR lacks and improve within-user ordering.",
+   "expected_delta": 0.002,
+   "expected_delta_basis": "The card range is +0.001 to +0.008, and Data Fact #3 specifically supports the mechanism because long_view is duration-defined and 17.2% of plays are censored completions.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "It targets the same loss component, and the diagnosis identifies censored watch-time supervision as the more informative next probe."
+   },
+   "change_summary": "Add a shared-embedding censored log-watch-time auxiliary FM head at weight 0.1, excluding duration-zero rows while retaining BPR logits for prediction.",
+   "code_path": "nodes/013.py",
+   "diff_path": "diffs/013.patch",
+   "diff_lines": 50,
+   "metrics": {
+    "gauc": 0.6698212139716746,
+    "ndcg5": 0.5371845375253153,
+    "primary": 0.6035028757484949,
+    "ndcg5_disc": 0.7237666019184763
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 1.0757756425979288,
+     "val_gauc": 0.6541277759363409,
+     "val_ndcg5": 0.5285590448367388,
+     "val_primary": 0.5913434103865398
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.8560368266511471,
+     "val_gauc": 0.6567026241498248,
+     "val_ndcg5": 0.5299145403450125,
+     "val_primary": 0.5933085822474187
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.6946821144286622,
+     "val_gauc": 0.6623106654234212,
+     "val_ndcg5": 0.5335159588895848,
+     "val_primary": 0.597913312156503
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.6516381082382608,
+     "val_gauc": 0.6652714006391917,
+     "val_ndcg5": 0.5351525519301243,
+     "val_primary": 0.600211976284658
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.6424504225558424,
+     "val_gauc": 0.6676590400974487,
+     "val_ndcg5": 0.5361382304622614,
+     "val_primary": 0.601898635279855
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.6372409944838665,
+     "val_gauc": 0.6673089142554266,
+     "val_ndcg5": 0.5356468179075942,
+     "val_primary": 0.6014778660815103
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.6338433032340192,
+     "val_gauc": 0.668190130953422,
+     "val_ndcg5": 0.5359343218553738,
+     "val_primary": 0.6020622264043979
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.6329200512551247,
+     "val_gauc": 0.6698204431843734,
+     "val_ndcg5": 0.5365390574066778,
+     "val_primary": 0.6031797502955256
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.6298447650797824,
+     "val_gauc": 0.6691762795760586,
+     "val_ndcg5": 0.5367460249983759,
+     "val_primary": 0.6029611522872173
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.6287328395437687,
+     "val_gauc": 0.6689204972844875,
+     "val_ndcg5": 0.5364969911770276,
+     "val_primary": 0.6027087442307576
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.6265753133499875,
+     "val_gauc": 0.6698212139716746,
+     "val_ndcg5": 0.5371845375253153,
+     "val_primary": 0.6035028757484949
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.6244593942419011,
+     "val_gauc": 0.6695915087958973,
+     "val_ndcg5": 0.5369593385057998,
+     "val_primary": 0.6032754236508486
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.6218805640301805,
+     "val_gauc": 0.6683486983384763,
+     "val_ndcg5": 0.5369117138690284,
+     "val_primary": 0.6026302061037523
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.6192944228649139,
+     "val_gauc": 0.6685201608614216,
+     "val_ndcg5": 0.5365404103063277,
+     "val_primary": 0.6025302855838747
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.6158895095612139,
+     "val_gauc": 0.6691694034640759,
+     "val_ndcg5": 0.536881279164445,
+     "val_primary": 0.6030253413142604
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 22.98829984664917,
+   "tokens_in": 35136,
+   "tokens_out": 6318,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage: watch time and long_view are used only as training targets/evaluation labels; scored-row features remain legal.",
+      "Contract and scope are satisfied; the +0.002 expectation is plausible but exactly at the validation noise floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00042,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6035028757484949,
+     0.6032081140601903,
+     0.6033533405085663
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.0003,
+    "se": 0.00016,
+    "t": 1.85,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "14": {
+   "n": 14,
+   "generation": 5,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "training-schedule-weight-averaging",
+   "target_component": "training-schedule",
+   "hypothesis": "Averaging only the champion's epoch-5 through epoch-8 checkpoints should reduce peak-checkpoint variance without the severe early-training lag caused by node_010's apparent EMA or stack mismatch.",
+   "expected_delta": 0.0007,
+   "expected_delta_basis": "The card range is +0.000 to +0.003, while the champion's measured peak-and-decline curve and node_010's anomalously low initial score justify a clean implementation retest.",
+   "rejected_alternative": {
+    "card": "training-schedule-lr-decay-early-stop",
+    "reason": "Checkpoint averaging directly tests the documented node_010 implementation mismatch and requires less alteration to champion optimization."
+   },
+   "change_summary": "Store plain parameter snapshots at epochs 5\u20138, average them after training, and select the averaged checkpoint only when it beats the best single checkpoint on validation primary.",
+   "code_path": "nodes/014.py",
+   "diff_path": "diffs/014.patch",
+   "diff_lines": 13,
+   "metrics": {
+    "gauc": 0.6694980796570578,
+    "ndcg5": 0.5370757824178937,
+    "primary": 0.6032869310374758,
+    "ndcg5_disc": 0.7235783728954449
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6748662083706958,
+     "val_gauc": 0.6575714558727384,
+     "val_ndcg5": 0.5305158926694021,
+     "val_primary": 0.5940436742710702
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6165347416350182,
+     "val_gauc": 0.663993914539676,
+     "val_ndcg5": 0.5337199132992327,
+     "val_primary": 0.5988569139194544
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5736389971793966,
+     "val_gauc": 0.6663285079841673,
+     "val_ndcg5": 0.5352173938055466,
+     "val_primary": 0.6007729508948569
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5568071350138238,
+     "val_gauc": 0.6675187216332362,
+     "val_ndcg5": 0.5363435847573265,
+     "val_primary": 0.6019311531952813
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5502585033152966,
+     "val_gauc": 0.6691865245860085,
+     "val_ndcg5": 0.5367209356490853,
+     "val_primary": 0.6029537301175469
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5445524352662107,
+     "val_gauc": 0.6681745113368552,
+     "val_ndcg5": 0.5366088532386264,
+     "val_primary": 0.6023916822877409
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5395851325481495,
+     "val_gauc": 0.6691343020952872,
+     "val_ndcg5": 0.5364001005285008,
+     "val_primary": 0.6027672013118941
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5363092409803513,
+     "val_gauc": 0.6696755926496497,
+     "val_ndcg5": 0.5364878968791964,
+     "val_primary": 0.603081744764423
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5306056458899315,
+     "val_gauc": 0.6688535740922612,
+     "val_ndcg5": 0.5363150838422209,
+     "val_primary": 0.602584328967241
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5261912460022784,
+     "val_gauc": 0.6683668097610485,
+     "val_ndcg5": 0.5363784977732851,
+     "val_primary": 0.6023726537671668
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5204363541400179,
+     "val_gauc": 0.6683504983298473,
+     "val_ndcg5": 0.5362223486148906,
+     "val_primary": 0.6022864234723689
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5148981200887802,
+     "val_gauc": 0.6678839441394964,
+     "val_ndcg5": 0.5362058114337244,
+     "val_primary": 0.6020448777866103
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.641669273376465,
+   "tokens_in": 34669,
+   "tokens_out": 4839,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations; checkpoint averaging is confined to epochs 5\u20138 and falls back safely to the best single checkpoint.",
+      "Expected +0.0007 is below the 0.002 noise floor, so this is only a diagnostic retest unless the measured gain exceeds the acceptance threshold."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00021,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6032869310374758,
+     0.6034374160160765,
+     0.6028863281868211
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00015,
+    "se": 0.00018,
+    "t": 0.86,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "15": {
+   "n": 15,
+   "generation": 5,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "ensembling-seed-average",
+   "target_component": "ensembling",
+   "hypothesis": "A five-seed average of the BPR champion should cancel seed-specific pair-ordering errors and stabilize validation performance as the search approaches convergence.",
+   "expected_delta": 0.0012,
+   "expected_delta_basis": "The card predicts +0.001 to +0.003, and the measured seed standard deviation is 0.0008, making seed averaging a low-risk closing move after two non-improving generations.",
+   "rejected_alternative": {
+    "card": "model-dcn-cross-head",
+    "reason": "The DCN head costs substantially more and has weaker prior support because organizer ablations indicate model capacity is not the current bottleneck."
+   },
+   "change_summary": "Train five independent BPR members with seeds seed through seed+4, retain each member\u2019s best validation checkpoint, and average their logits for validation and extra outputs.",
+   "code_path": "nodes/015.py",
+   "diff_path": "diffs/015.patch",
+   "diff_lines": 49,
+   "metrics": {
+    "gauc": 0.6703421762624887,
+    "ndcg5": 0.5370077834124743,
+    "primary": 0.6036749798374815,
+    "ndcg5_disc": 0.7234606829159981
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6754678946860293,
+     "val_gauc": 0.6580475671638814,
+     "val_ndcg5": 0.5304087021028764,
+     "val_primary": 0.5942281346333789
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.618549959456667,
+     "val_gauc": 0.6653953841835138,
+     "val_ndcg5": 0.5341940768836378,
+     "val_primary": 0.5997947305335758
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5750263660512072,
+     "val_gauc": 0.6672108169925814,
+     "val_ndcg5": 0.5354020016027,
+     "val_primary": 0.6013064092976408
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5572223077429102,
+     "val_gauc": 0.6689867357379781,
+     "val_ndcg5": 0.5361406144818427,
+     "val_primary": 0.6025636751099104
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5492229073605639,
+     "val_gauc": 0.6695001509821896,
+     "val_ndcg5": 0.53719651923292,
+     "val_primary": 0.6033483351075548
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5433963405325057,
+     "val_gauc": 0.6697477072880108,
+     "val_ndcg5": 0.5373472371667135,
+     "val_primary": 0.6035474722273622
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5381357066174771,
+     "val_gauc": 0.6704625401405125,
+     "val_ndcg5": 0.5374093785503635,
+     "val_primary": 0.6039359593454381
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5335507824065837,
+     "val_gauc": 0.6703421762624887,
+     "val_ndcg5": 0.5370077834124743,
+     "val_primary": 0.6036749798374815
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.528350282983577,
+     "val_gauc": 0.6703421762624887,
+     "val_ndcg5": 0.5370077834124743,
+     "val_primary": 0.6036749798374815
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.523034885081839,
+     "val_gauc": 0.6703421762624887,
+     "val_ndcg5": 0.5370077834124743,
+     "val_primary": 0.6036749798374815
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5151939332907927,
+     "val_gauc": 0.6703421762624887,
+     "val_ndcg5": 0.5370077834124743,
+     "val_primary": 0.6036749798374815
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5148981200887802,
+     "val_gauc": 0.6703421762624887,
+     "val_ndcg5": 0.5370077834124743,
+     "val_primary": 0.6036749798374815
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 41.92839789390564,
+   "tokens_in": 34655,
+   "tokens_out": 5226,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations; SMOKE_EPOCHS caps the shared epoch loop and all five members are deterministic.",
+      "The five-seed checkpoint/logit averaging matches scope, though expected +0.0012 is below the 0.002 acceptance floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00059,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6036749798374815,
+     0.604173643311901,
+     0.6039537705727057
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00088,
+    "se": 0.00016,
+    "t": 5.35,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
   }
  },
  "plan": {
-  "note": "No merge qualifies: no node from this generation, or prior runner-up, improved the champion by the required >=0.001; duration/history/LambdaRank should remain parked.\nUse one runner-up-lineage slot to stabilize node_005's promising hard-negative gain and one untried auxiliary-target slot; leave the third slot to the Selector.",
+  "note": "No merge is eligible: no two nodes with different target components improved the champion by at least 0.001.\nThe generation did not improve, so reserve one exploration slot for the untried architecture family and leave two slots to the Selector.",
   "plan": [
    {
     "type": "explore",
-    "parent": 5,
-    "card": "training-schedule-weight-averaging",
-    "hypothesis": "EMA parameter averaging may stabilize node_005's +0.0006 hard-negative improvement across its peaked learning curve and turn the best runner-up lineage into a confirmable gain."
-   },
-   {
-    "type": "explore",
-    "parent": "champion",
-    "card": "aux-targets-is-click",
-    "hypothesis": "A shared is_click auxiliary head should regularize sparse BPR embeddings with dense supervision from the same watch-time mechanism while retaining long_view BPR scores for ranking."
+    "parent": 1,
+    "card": "model-dcn-cross-head",
+    "hypothesis": "Adding one regularized DCN-V2 cross layer to the BPR champion should capture higher-order user-by-tab-by-duration interactions that the FM cannot express directly, after feature, auxiliary-loss, and scheduling changes proved mostly flat."
    }
   ]
  },
  "parked": [
-  {
-   "node": 2,
-   "card": "data-weighting-recency",
-   "target_component": "data-weighting",
-   "delta": 0.00047,
-   "on_champion": 0
-  },
-  {
-   "node": 3,
-   "card": "features-duration-unknown-flag",
-   "target_component": "features",
-   "delta": -0.00031,
-   "on_champion": 0
-  },
   {
    "node": 4,
    "card": "data-weighting-recency",
@@ -1486,18 +2346,60 @@
    "target_component": "loss",
    "delta": -0.00098,
    "on_champion": 1
+  },
+  {
+   "node": 10,
+   "card": "training-schedule-weight-averaging",
+   "target_component": "training-schedule",
+   "delta": -0.00273,
+   "on_champion": 1
+  },
+  {
+   "node": 11,
+   "card": "aux-targets-is-click",
+   "target_component": "aux-targets",
+   "delta": -0.00026,
+   "on_champion": 1
+  },
+  {
+   "node": 12,
+   "card": "features-fine-duration-and-tab-cross",
+   "target_component": "features",
+   "delta": 0.00018,
+   "on_champion": 1
+  },
+  {
+   "node": 13,
+   "card": "loss-watchtime-censored",
+   "target_component": "loss",
+   "delta": 0.00042,
+   "on_champion": 1
+  },
+  {
+   "node": 14,
+   "card": "training-schedule-weight-averaging",
+   "target_component": "training-schedule",
+   "delta": 0.00021,
+   "on_champion": 1
+  },
+  {
+   "node": 15,
+   "card": "ensembling-seed-average",
+   "target_component": "ensembling",
+   "delta": 0.00059,
+   "on_champion": 1
   }
  ],
  "start": 1788087613.6936162,
  "interventions": 0,
- "stop_reason": null,
+ "stop_reason": "converged: 3 generations without > 0.002 improvement",
  "usage": {
-  "calls": 31,
-  "tokens_in": 522047,
-  "tokens_out": 56494,
-  "cache_read": 403738,
+  "calls": 51,
+  "tokens_in": 866254,
+  "tokens_out": 99740,
+  "cache_read": 682178,
   "cache_write": 0,
-  "cost_usd": 2.488234
+  "cost_usd": 4.253669
  },
  "champion_seeds": {
   "4:1": 0.6030548263316666,
@@ -1509,137 +2411,187 @@
   "6:1": 0.6032550631951964,
   "6:2": 0.6029592540695468,
   "7:1": 0.6032975650957224,
-  "7:2": 0.603313006772546
+  "7:2": 0.603313006772546,
+  "12:1": 0.6033115822562571,
+  "12:2": 0.6021449605887285,
+  "13:1": 0.6032081140601903,
+  "13:2": 0.6033533405085663,
+  "14:1": 0.6034374160160765,
+  "14:2": 0.6028863281868211,
+  "15:1": 0.604173643311901,
+  "15:2": 0.6039537705727057
  },
  "last_generation": [
   {
-   "n": 7,
+   "n": 13,
    "parent": 1,
    "merge_parents": null,
-   "action": "retest",
-   "method": "features-duration-unknown-flag",
-   "target_component": "features",
-   "hypothesis": "A dedicated duration-zero category may help BPR directly push always-negative unknown-duration impressions below each user's positive rows.",
-   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms=0 as a dedicated UNK0 category.",
-   "expected_delta": 0.001,
+   "action": "explore",
+   "method": "loss-watchtime-censored",
+   "target_component": "loss",
+   "hypothesis": "Adding a censored watch-time auxiliary loss to the champion's shared embeddings will provide graded near-threshold supervision that binary BPR lacks and improve within-user ordering.",
+   "change_summary": "Add a shared-embedding censored log-watch-time auxiliary FM head at weight 0.1, excluding duration-zero rows while retaining BPR logits for prediction.",
+   "expected_delta": 0.002,
    "metrics": {
-    "gauc": 0.6696626866324894,
-    "ndcg5": 0.5365127900050612,
-    "primary": 0.6030877383187754,
-    "ndcg5_disc": 0.7226039679745732
+    "gauc": 0.6698212139716746,
+    "ndcg5": 0.5371845375253153,
+    "primary": 0.6035028757484949,
+    "ndcg5_disc": 0.7237666019184763
    },
-   "realized_delta": 1e-05,
+   "realized_delta": 0.00042,
    "accepted": false,
    "seed_confirmation": {
     "node_seeds": [
-     0.6030877383187754,
-     0.6032975650957224,
-     0.603313006772546
+     0.6035028757484949,
+     0.6032081140601903,
+     0.6033533405085663
     ],
     "champion_seeds": [
      0.603081744764423,
      0.6032265276409501,
      0.6028476475917082
     ],
-    "delta_mean": 0.00018,
+    "delta_mean": 0.0003,
     "se": 0.00016,
-    "t": 1.11,
+    "t": 1.85,
     "rule": "diff >= 0.001 and t >= 2.5"
    },
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 14.423134803771973,
+   "duration_s": 22.98829984664917,
    "curve": [
-    0.5944,
-    0.5985,
-    0.601,
-    0.6016,
-    0.6029,
-    0.6029,
+    0.5913,
+    0.5933,
+    0.5979,
+    0.6002,
+    0.6019,
+    0.6015,
+    0.6021,
+    0.6032,
     0.603,
-    0.6031,
+    0.6027,
+    0.6035,
+    0.6033,
     0.6026,
     0.6025,
-    0.6025,
-    0.6013
+    0.603
    ]
   },
   {
-   "n": 8,
+   "n": 14,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "training-schedule-weight-averaging",
+   "target_component": "training-schedule",
+   "hypothesis": "Averaging only the champion's epoch-5 through epoch-8 checkpoints should reduce peak-checkpoint variance without the severe early-training lag caused by node_010's apparent EMA or stack mismatch.",
+   "change_summary": "Store plain parameter snapshots at epochs 5\u20138, average them after training, and select the averaged checkpoint only when it beats the best single checkpoint on validation primary.",
+   "expected_delta": 0.0007,
+   "metrics": {
+    "gauc": 0.6694980796570578,
+    "ndcg5": 0.5370757824178937,
+    "primary": 0.6032869310374758,
+    "ndcg5_disc": 0.7235783728954449
+   },
+   "realized_delta": 0.00021,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6032869310374758,
+     0.6034374160160765,
+     0.6028863281868211
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00015,
+    "se": 0.00018,
+    "t": 0.86,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 14.641669273376465,
+   "curve": [
+    0.594,
+    0.5989,
+    0.6008,
+    0.6019,
+    0.603,
+    0.6024,
+    0.6028,
+    0.6031,
+    0.6026,
+    0.6024,
+    0.6023,
+    0.602
+   ]
+  },
+  {
+   "n": 15,
    "parent": 1,
    "merge_parents": null,
    "action": "explore",
-   "method": "history-user-aggregates",
-   "target_component": "history",
-   "hypothesis": "Leakage-safe per-user historical rates by author, tab, and duration bucket should add row-varying personalization beyond BPR's user-item interactions, particularly for sparse users.",
-   "change_summary": "Added leakage-safe, strictly prior per-user long-view rate buckets for author, tab, and duration as three categorical FM fields, with train totals used for validation and extra scoring.",
-   "expected_delta": 0.002,
+   "method": "ensembling-seed-average",
+   "target_component": "ensembling",
+   "hypothesis": "A five-seed average of the BPR champion should cancel seed-specific pair-ordering errors and stabilize validation performance as the search approaches convergence.",
+   "change_summary": "Train five independent BPR members with seeds seed through seed+4, retain each member\u2019s best validation checkpoint, and average their logits for validation and extra outputs.",
+   "expected_delta": 0.0012,
    "metrics": {
-    "gauc": 0.6690670356712656,
-    "ndcg5": 0.5368357555608934,
-    "primary": 0.6029513956160795,
-    "ndcg5_disc": 0.7231629439389057
+    "gauc": 0.6703421762624887,
+    "ndcg5": 0.5370077834124743,
+    "primary": 0.6036749798374815,
+    "ndcg5_disc": 0.7234606829159981
    },
-   "realized_delta": -0.00013,
+   "realized_delta": 0.00059,
    "accepted": false,
-   "seed_confirmation": null,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6036749798374815,
+     0.604173643311901,
+     0.6039537705727057
+    ],
+    "champion_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "delta_mean": 0.00088,
+    "se": 0.00016,
+    "t": 5.35,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 22.45482301712036,
+   "duration_s": 41.92839789390564,
    "curve": [
-    0.5953,
+    0.5942,
     0.5998,
-    0.6014,
-    0.6016,
-    0.603,
-    0.6016,
-    0.6021,
-    0.6024,
-    0.6022
-   ]
-  },
-  {
-   "n": 9,
-   "parent": 1,
-   "merge_parents": null,
-   "action": "improve",
-   "method": "loss-lambdarank-pairs",
-   "target_component": "loss",
-   "hypothesis": "Weighting BPR pairs by their current nDCG@5 swap impact should focus updates on top-ranked mistakes and convert the observed nDCG-specific movement into a larger primary gain.",
-   "change_summary": "Add LambdaRank nDCG@5 swap-impact weighting to sampled BPR pairs after one plain-BPR warm-up epoch.",
-   "expected_delta": 0.002,
-   "metrics": {
-    "gauc": 0.6685440813601279,
-    "ndcg5": 0.5356564450726975,
-    "primary": 0.6021002632164127,
-    "ndcg5_disc": 0.7211218401571469
-   },
-   "realized_delta": -0.00098,
-   "accepted": false,
-   "seed_confirmation": null,
-   "failure_stage": null,
-   "error": null,
-   "recovery": null,
-   "duration_s": 20.942926168441772,
-   "curve": [
-    0.594,
-    0.5959,
-    0.597,
-    0.5985,
-    0.5989,
-    0.5992,
-    0.6003,
-    0.6008,
-    0.6016,
-    0.6018,
-    0.6021,
-    0.6017,
-    0.6019,
-    0.6017,
-    0.602
+    0.6013,
+    0.6026,
+    0.6033,
+    0.6035,
+    0.6039,
+    0.6037,
+    0.6037,
+    0.6037,
+    0.6037,
+    0.6037
    ]
   }
- ]
+ ],
+ "final_seeds": {
+  "5:1": 0.6031319982343639,
+  "5:2": 0.6027924981045094,
+  "15:1": 0.604173643311901,
+  "15:2": 0.6039537705727057,
+  "6:1": 0.6032550631951964,
+  "6:2": 0.6029592540695468
+ },
+ "designated": 15
 }

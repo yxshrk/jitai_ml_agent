@@ -1,0 +1,80 @@
+{
+ "run_id": "live_02",
+ "stop_reason": "converged: 3 generations without > 0.002 improvement",
+ "generations": 5,
+ "nodes": 16,
+ "champion": 1,
+ "champion_metrics": {
+  "gauc": 0.6696755926496497,
+  "ndcg5": 0.5364878968791964,
+  "primary": 0.603081744764423,
+  "ndcg5_disc": 0.7225608839404268
+ },
+ "baseline_valid_primary": 0.6014687563529677,
+ "delta_vs_baseline_valid": 0.00161,
+ "top3_valid": [
+  {
+   "n": 5,
+   "primary": 0.6036905218935378
+  },
+  {
+   "n": 15,
+   "primary": 0.6036749798374815
+  },
+  {
+   "n": 6,
+   "primary": 0.603591342679802
+  }
+ ],
+ "designated": 15,
+ "final_ranking": [
+  {
+   "n": 15,
+   "valid_primary": 0.6036749798374815,
+   "seeds": [
+    0.6036749798374815,
+    0.604173643311901,
+    0.6039537705727057
+   ],
+   "mean": 0.6039341312406961,
+   "std": 0.00020405161553125622
+  },
+  {
+   "n": 6,
+   "valid_primary": 0.603591342679802,
+   "seeds": [
+    0.603591342679802,
+    0.6032550631951964,
+    0.6029592540695468
+   ],
+   "mean": 0.6032685533148484,
+   "std": 0.0002582253412554744
+  },
+  {
+   "n": 5,
+   "valid_primary": 0.6036905218935378,
+   "seeds": [
+    0.6036905218935378,
+    0.6031319982343639,
+    0.6027924981045094
+   ],
+   "mean": 0.6032050060774704,
+   "std": 0.0003702335211561381
+  }
+ ],
+ "usage": {
+  "calls": 51,
+  "tokens_in": 866254,
+  "tokens_out": 99740,
+  "cache_read": 682178,
+  "cache_write": 0,
+  "cost_usd": 4.253669
+ },
+ "wall_clock_s": 1780.5,
+ "interventions": 0,
+ "k": 3,
+ "eps": 0.002,
+ "n_converge": 3,
+ "iteration_unit": "node",
+ "iterations_used": 16
+}

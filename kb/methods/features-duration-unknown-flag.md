@@ -12,8 +12,8 @@ expected_delta_basis: mechanism-backed but small — it only reorders rows for u
 cost: 2 lines in raw(); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under {run: live_01, stack: official FM, delta: -0.0003}
-evidence: [live_01:node_003]
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0002}
+evidence: [live_01:node_003, live_02:node_003, live_02:node_007]
 ---
 ## Claim
 Give unknown-duration rows their own categorical value so the model can learn they are never long views, instead of
@@ -35,3 +35,5 @@ model is currently denied.
 
 ## Measured
 - live_01:node_003 on [official FM]: primary 0.6012, single-seed Δ -0.0003 — rejected; 275 changed lines
+- live_02:node_003 on [official FM]: primary 0.6012, single-seed Δ -0.0003 — rejected; 4 changed lines
+- live_02:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ +0.0000, seed-mean Δ +0.0002 (t 1.11) — rejected; 4 changed lines

@@ -12,8 +12,8 @@ expected_delta_basis: overfitting is measured, so there is something to regulari
 cost: ~15 lines (L2 sweep is a flag; field dropout ~10 lines); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head, training-schedule-lr-decay-early-stop, data-weighting-recency]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0002}
+evidence: [live_02:node_006]
 ---
 ## Claim
 Stronger, better-targeted regularisation of the embeddings — L2 raised from 1e-6 toward 1e-5/1e-4, or dropout of
@@ -35,4 +35,4 @@ L2 applies the penalty only to ids present in the batch, scaled by their frequen
 - Dropout changes the effective learning rate; keep early stopping on primary.
 
 ## Measured
-(none yet)
+- live_02:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6036, single-seed Δ +0.0005, seed-mean Δ +0.0002 (t 1.15) — rejected; 4 changed lines

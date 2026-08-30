@@ -50,9 +50,11 @@ _Filled from `runs/<run_id>/summary.json` and `journal.md`._
 | run | generations / nodes | champion (valid primary) | Δ vs baseline (valid) | designated node | LLM tokens in / out | cost | wall-clock |
 |---|---|---|---|---|---|---|---|
 | live_01 | 2 / 7 | node_001 BPR loss — 0.6036 | +0.0021 (3-seed mean +0.0017) | node_004 | 370 K / 64 K | $2.70 | 16 min |
-| live_02 | _running_ | | | | | | |
+| live_02 | 5 / 16 — **converged** (official rule) | node_001 BPR loss — 0.6031 (3-seed mean 0.6032) | +0.0016 (3-seed +0.0016, t = 8.2) | **node_015: 5-seed ensemble of the BPR champion — valid 0.6037, 3-seed mean 0.6039 (+0.0025 over the baseline's 3-seed mean)** | 866 K (682 K cached) / 100 K | $4.25 | 30 min |
 
-Hidden-test score: reported by the organizers on the designated node's submission (`submission.csv`).
+`submission.csv` = live_02's designated node (node_015), validated by the organizers' `submit.py --check` (170,588 rows). Hidden-test score: reported by the organizers.
+
+What the two runs say: a ranking-aligned loss (within-user BPR) is a real, reproducible gain over the pointwise FM (+0.0016–0.0017 over three seeds in both runs); a seed ensemble on top adds a small, statistically clear +0.0009; every other lead the organizers listed — recency weighting, duration features, history aggregates, LambdaRank weighting, an is_click head, censored watch-time regression, regularisation, checkpoint averaging — measured flat on this stack once seed noise was controlled. The winner's-curse correction (ADR-0010) rejected nine single-seed "wins" of +0.0002 to +0.0006 that vanished on re-seeding.
 
 ## Setup
 
