@@ -386,6 +386,55 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
+
+### gauge-fixed-bce: User-centered BCE (within-user gauge fixing)
+- mechanism: Batch complete user slates; replace the pointwise BCE logits with user-centered logits (logit minus that user's batch-mean logit, plus one learned global bias). Gradient of the pointwise term then sums to zero within each user, so it can only learn relative deviations — the only thing GAUC/nDCG measure. Keep the BPR term unchanged.
+- treats: metric-mismatch
+- citation: gauge-fixing rationale (per-user constant shifts leave the metric invariant); pairwise-consistency literature.
+- expected_gain / cost: +0.0002..+0.0008 speculative; very cheap / low.
+- status_pure: untried
+- status_1k: untried
+
+### signed-sketch-residual: Signed co-consumption sketch rank blend
+- mechanism: Compute recency-weighted per-user long-view residuals r_ui = sqrt(w)(y - user_mean); give each user a fixed 64-dim Rademacher hash vector; video sketch z_i = normalize(sum_u r_ui * h_u); user taste p_u = normalize(sum_j r_uj * z_j); graph score = p_u . z_i with self-contribution removed. Blend WITHIN-USER RANKS: final = rank(champion) + alpha * rank(graph), alpha in {0.05,0.1,0.2} chosen on a train-only rolling holdout. Numpy index_add over a [7600,64] array — minutes of compute.
+- treats: flat-signal
+- citation: signed-feedback CF + lightweight graph propagation (LightGCN lineage), compressed to sketches; NOT covered by the measured-dead co-visitation SVD INIT (this is a separate scorer blended at rank level, not an initialization).
+- expected_gain / cost: +0.0003..+0.0012 if errors decorrelate; possibly flat / low-med.
+- status_pure: untried
+- status_1k: untried
+
+### temporal-pair-kernel: Temporally-local pair sampling
+- mechanism: Keep 1 negative per positive, but draw 70% of negatives with probability proportional to exp(-|day_pos - day_neg|/2) (fallback uniform when no opposite label within 3 days); 30% uniform. Pair weight = sqrt(w_pos * w_neg). Redraw each epoch. Changes WHICH comparisons constrain the model, not their scalar weights — orthogonal to recency row-weighting.
+- treats: data-shift
+- citation: temporal-drift rationale; distinct from measured recency-weighting (row weights).
+- expected_gain / cost: +0.0002..+0.0008 speculative / low.
+- status_pure: untried
+- status_1k: untried
+
+### top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
+- mechanism: After a half-epoch warm-up, per user take the top-M (M<=8) scoring negatives, form a smooth softmax-tail score t_u (tau=0.25), and add softplus(0.25 + t_u - s_pos) averaged over that user's positives, ramping weight 0->0.10 taken from BPR. Targets exactly what nDCG@5 punishes: observed negatives entering the top of the slate.
+- treats: metric-mismatch
+- citation: partial-AUC / top-K hard-negative theory (smooth pool variant); distinct from the measured-dead from-scratch hard-negative and listwise-softmax attempts (warm-up + smooth tail + small rider weight).
+- expected_gain / cost: +0.0002..+0.0009, mostly via nDCG / med.
+- status_pure: untried
+- status_1k: untried
+
+### full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
+- mechanism: Replace sampled BPR with ALL observed pos-neg pairs per user slate, weight sqrt(w_p*w_n), normalize per user, aggregate users weighted by positive count (exactly GAUC's weighting). ~42 impressions/user makes full enumeration cheap. Keep the pointwise term at current weight.
+- treats: metric-mismatch
+- citation: AUC-consistent pairwise surrogates (Gao & Zhou). CAVEAT: our measured evidence that adding sampled negatives HURT argues against a big gain — treat as a probe, screen at 1 seed first.
+- expected_gain / cost: 0..+0.0008 / low.
+- status_pure: untried
+- status_1k: untried
+
+### broad-to-recent-curriculum: Phase-scheduled recency
+- mechanism: Same rows and model; phase the recency weighting — first half-epoch uniform, then one epoch at 7d half-life, final half-epoch at 3.5d with LR x0.3, optimizer not reset; keep half-epoch validation-best checkpointing so the broad checkpoint can still win.
+- treats: data-shift
+- citation: curriculum/fine-tune-on-recent practice for temporal splits.
+- expected_gain / cost: +0.0001..+0.0007; the cheapest experiment in this family / low.
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal

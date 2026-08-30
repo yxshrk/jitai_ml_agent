@@ -1,0 +1,6 @@
+{"best_epoch": 1, "k": 6, "member": 0, "phase": "dimension_probe", "primary": 0.5872005810825451, "seed": 42}
+{"config": {"epoch_limit": 1, "k": 6, "matched_seed_count": 1}, "gauc": 0.6471503296053812, "mean_individual_primary": 0.5872005810825451, "ndcg5": 0.5277279788483596, "primary": 0.5874391542268704, "type": "dimension_summary"}
+{"best_epoch": 1, "k": 12, "member": 0, "phase": "dimension_probe", "primary": 0.5898521744914831, "seed": 42}
+{"config": {"epoch_limit": 1, "k": 12, "matched_seed_count": 1}, "gauc": 0.6511281971994671, "mean_individual_primary": 0.5898521744914831, "ndcg5": 0.52901828234511, "primary": 0.5900732397722885, "type": "dimension_summary"}
+{"best_epoch": 1, "k": 12, "member": 1, "phase": "final_seed_member", "primary": 0.5867272776702457, "seed": 1051}
+{"best_epoch": 1, "k": 12, "member": 2, "phase": "final_seed_member", "primary": 0.5884138332589911, "seed": 2060}
