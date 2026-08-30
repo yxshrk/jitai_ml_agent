@@ -13,8 +13,8 @@ expected_delta_basis: organizers' lead #1; aligns the objective with the scored 
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
-status: untried
-evidence: []
+status: alive
+evidence: [live_01:node_001]
 ---
 ## Claim
 Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
@@ -45,4 +45,4 @@ user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
   add a tiny logloss term or a small L2 to avoid exact ties.
 
 ## Measured
-(none yet)
+- live_01:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022 — ACCEPTED; 433 changed lines

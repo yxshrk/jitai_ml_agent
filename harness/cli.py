@@ -23,6 +23,8 @@ def main():
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
     s.add_argument('--out', default='submission.csv')
+    d = sub.add_parser('distill', help='fold a run journal back into the method cards (cross-run memory)')
+    d.add_argument('--run-id', required=True)
     p = sub.add_parser('report', help='print a run summary')
     p.add_argument('--run-id', required=True)
     a = ap.parse_args()
@@ -49,6 +51,9 @@ def main():
     elif a.cmd == 'submit':
         from .submit import make_submission
         print(json.dumps(make_submission(a.run_id, a.node, a.out), indent=1))
+    elif a.cmd == 'distill':
+        from .distill import distill
+        distill(a.run_id)
     elif a.cmd == 'report':
         print((C.RUNS / a.run_id / 'journal.md').read_text())
 

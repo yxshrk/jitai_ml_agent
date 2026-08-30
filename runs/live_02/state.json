@@ -1,0 +1,747 @@
+{
+ "run_id": "live_02",
+ "n_next": 4,
+ "generation": 1,
+ "champion": 1,
+ "best": 0.6014687563529677,
+ "streak": 1,
+ "nodes": {
+  "0": {
+   "n": 0,
+   "generation": 0,
+   "parent": null,
+   "merge_parents": null,
+   "action": "reproduce_baseline",
+   "method": "official FM",
+   "target_component": null,
+   "hypothesis": "Reproduce the official FM baseline under the harness contract.",
+   "expected_delta": 0.0,
+   "expected_delta_basis": "published valid primary 0.6016",
+   "rejected_alternative": null,
+   "change_summary": null,
+   "code_path": "nodes/000.py",
+   "diff_path": null,
+   "diff_lines": null,
+   "metrics": {
+    "gauc": 0.6671326321610643,
+    "ndcg5": 0.5358048805448711,
+    "primary": 0.6014687563529677,
+    "ndcg5_disc": 0.7213787463804301
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.639089406813894,
+     "val_gauc": 0.6466754117904603,
+     "val_ndcg5": 0.5271850953688951,
+     "val_primary": 0.5869302535796777
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5478637908186231,
+     "val_gauc": 0.6588507713909505,
+     "val_ndcg5": 0.5322875997651874,
+     "val_primary": 0.5955691855780689
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5129100065146174,
+     "val_gauc": 0.6641943934300241,
+     "val_ndcg5": 0.5344258054066774,
+     "val_primary": 0.5993100994183507
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5003835705774171,
+     "val_gauc": 0.6642205331536866,
+     "val_ndcg5": 0.5346307523334315,
+     "val_primary": 0.599425642743559
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.494123198730605,
+     "val_gauc": 0.6661276032071011,
+     "val_ndcg5": 0.5359638540231441,
+     "val_primary": 0.6010457286151225
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.48968474609511237,
+     "val_gauc": 0.6657969708252829,
+     "val_ndcg5": 0.5354271259749465,
+     "val_primary": 0.6006120484001147
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.48593335492270334,
+     "val_gauc": 0.6671326321610643,
+     "val_ndcg5": 0.5358048805448711,
+     "val_primary": 0.6014687563529677
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.482088355081422,
+     "val_gauc": 0.6664977916178049,
+     "val_ndcg5": 0.5359287477143124,
+     "val_primary": 0.6012132696660586
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.47836316909108845,
+     "val_gauc": 0.6665954732760578,
+     "val_ndcg5": 0.5347894579692735,
+     "val_primary": 0.6006924656226657
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4743812152317592,
+     "val_gauc": 0.6650439271014731,
+     "val_ndcg5": 0.5342296847939081,
+     "val_primary": 0.5996368059476906
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4704518760953631,
+     "val_gauc": 0.6640201495772833,
+     "val_ndcg5": 0.5340621126819299,
+     "val_primary": 0.5990411311296067
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.73169207572937,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "critic": null,
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": null,
+   "accepted": false,
+   "seed_confirmation": null
+  },
+  "1": {
+   "n": 1,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "loss-bpr-pairwise-within-user",
+   "target_component": "loss",
+   "hypothesis": "Replace pointwise logloss with within-user BPR so training directly improves positive-negative ordering while cancelling metric-irrelevant user-constant effects.",
+   "expected_delta": 0.0022,
+   "expected_delta_basis": "The card projects 0.002\u20130.010, Fact 7 confirms many discriminative users, and project calibration maps a nominal 0.006 ranking-loss gain to about +0.0022.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "It has comparable expected gain but requires more segment-normalization code, making BPR the cheaper ranking-aligned first probe."
+   },
+   "change_summary": "Replace pointwise logloss updates with pure within-user BPR, precomputing mixed-user positive/negative pools and sampling one same-user negative per positive each epoch.",
+   "code_path": "nodes/001.py",
+   "diff_path": "diffs/001.patch",
+   "diff_lines": 34,
+   "metrics": {
+    "gauc": 0.6696755926496497,
+    "ndcg5": 0.5364878968791964,
+    "primary": 0.603081744764423,
+    "ndcg5_disc": 0.7225608839404268
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6748662083706958,
+     "val_gauc": 0.6575714558727384,
+     "val_ndcg5": 0.5305158926694021,
+     "val_primary": 0.5940436742710702
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6165347416350182,
+     "val_gauc": 0.663993914539676,
+     "val_ndcg5": 0.5337199132992327,
+     "val_primary": 0.5988569139194544
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5736389971793966,
+     "val_gauc": 0.6663285079841673,
+     "val_ndcg5": 0.5352173938055466,
+     "val_primary": 0.6007729508948569
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5568071350138238,
+     "val_gauc": 0.6675187216332362,
+     "val_ndcg5": 0.5363435847573265,
+     "val_primary": 0.6019311531952813
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5502585033152966,
+     "val_gauc": 0.6691865245860085,
+     "val_ndcg5": 0.5367209356490853,
+     "val_primary": 0.6029537301175469
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5445524352662107,
+     "val_gauc": 0.6681745113368552,
+     "val_ndcg5": 0.5366088532386264,
+     "val_primary": 0.6023916822877409
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5395851325481495,
+     "val_gauc": 0.6691343020952872,
+     "val_ndcg5": 0.5364001005285008,
+     "val_primary": 0.6027672013118941
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5363092409803513,
+     "val_gauc": 0.6696755926496497,
+     "val_ndcg5": 0.5364878968791964,
+     "val_primary": 0.603081744764423
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5306056458899315,
+     "val_gauc": 0.6688535740922612,
+     "val_ndcg5": 0.5363150838422209,
+     "val_primary": 0.602584328967241
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5261912460022784,
+     "val_gauc": 0.6683668097610485,
+     "val_ndcg5": 0.5363784977732851,
+     "val_primary": 0.6023726537671668
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5204363541400179,
+     "val_gauc": 0.6683504983298473,
+     "val_ndcg5": 0.5362223486148906,
+     "val_primary": 0.6022864234723689
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5148981200887802,
+     "val_gauc": 0.6678839441394964,
+     "val_ndcg5": 0.5362058114337244,
+     "val_primary": 0.6020448777866103
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 14.507008075714111,
+   "tokens_in": 34206,
+   "tokens_out": 4668,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage: outcomes are used only as training targets/pair labels or validation evaluation labels; scored-row features remain legal.",
+      "Contract and scope are satisfied: deterministic same-user BPR, capped by SMOKE_EPOCHS, linear preprocessing, and preserved prediction order."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00161,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00161,
+    "se": 0.0002,
+    "t": 8.22,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "2": {
+   "n": 2,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "hypothesis": "Exponentially downweight early training rows so item and interaction estimates emphasize the late-April regime that most closely matches validation and hidden test.",
+   "expected_delta": 0.002,
+   "expected_delta_basis": "The card range is 0.001\u20130.006, while Fact 5 shows severe volume and label drift plus a measured \u22120.007 FM valid-to-test gap, supporting a lower-third estimate near +0.002.",
+   "rejected_alternative": {
+    "card": "training-schedule-lr-decay-early-stop",
+    "reason": "The peaked curve supports scheduling, but its 0.000\u20130.003 range is lower and early stopping already preserves the best epoch."
+   },
+   "change_summary": "Apply normalized exponential recency weights with a fixed seven-day half-life to pointwise training gradients and loss diagnostics.",
+   "code_path": "nodes/002.py",
+   "diff_path": "diffs/002.patch",
+   "diff_lines": 13,
+   "metrics": {
+    "gauc": 0.6678403372440794,
+    "ndcg5": 0.5360332110298209,
+    "primary": 0.6019367741369501,
+    "ndcg5_disc": 0.7217739317204969
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.64002574299063,
+     "val_gauc": 0.647544405810868,
+     "val_ndcg5": 0.5274652092314502,
+     "val_primary": 0.5875048075211591
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5503002030508859,
+     "val_gauc": 0.65911426264522,
+     "val_ndcg5": 0.531996741744117,
+     "val_primary": 0.5955555021946686
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5140772008470127,
+     "val_gauc": 0.6644640416871679,
+     "val_ndcg5": 0.5346205449609436,
+     "val_primary": 0.5995422933240557
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5004335105419159,
+     "val_gauc": 0.6650384098491855,
+     "val_ndcg5": 0.5354932661651087,
+     "val_primary": 0.6002658380071471
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.4934778424245971,
+     "val_gauc": 0.6657054405476314,
+     "val_ndcg5": 0.5358045873344923,
+     "val_primary": 0.6007550139410618
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.4885513520666531,
+     "val_gauc": 0.6668139688924459,
+     "val_ndcg5": 0.5355837549545999,
+     "val_primary": 0.6011988619235229
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.48445498900754114,
+     "val_gauc": 0.6678403372440794,
+     "val_ndcg5": 0.5360332110298209,
+     "val_primary": 0.6019367741369501
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.4802374045763697,
+     "val_gauc": 0.666113808539837,
+     "val_ndcg5": 0.5355726790200567,
+     "val_primary": 0.6008432437799469
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4761448772890227,
+     "val_gauc": 0.6664479560608436,
+     "val_ndcg5": 0.5354822156001686,
+     "val_primary": 0.6009650858305061
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.471733021736145,
+     "val_gauc": 0.6657488268401053,
+     "val_ndcg5": 0.5350403734326189,
+     "val_primary": 0.600394600136362
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.46741062019552504,
+     "val_gauc": 0.6635925919619146,
+     "val_ndcg5": 0.5343062720156901,
+     "val_primary": 0.5989494319888023
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 18.048760175704956,
+   "tokens_in": 34051,
+   "tokens_out": 3937,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; validation labels are used only for evaluation.",
+      "The fixed seven-day weighting is scoped, deterministic, smoke-capped, and its +0.002 expectation is plausible but at the acceptance floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00047,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6019367741369501,
+     0.6020871274532423,
+     0.6013703133923629
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00036,
+    "se": 0.00024,
+    "t": 1.5,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "3": {
+   "n": 3,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "features-duration-unknown-flag",
+   "target_component": "features",
+   "hypothesis": "Assign duration-zero impressions a dedicated category so the FM can push these always-negative rows below genuinely short videos within each user.",
+   "expected_delta": 0.0015,
+   "expected_delta_basis": "The card range is 0.001\u20130.004 and Fact 3 provides deterministic mechanism evidence, but only about 1.9% of rows are affected, so a conservative lower-third estimate is appropriate.",
+   "rejected_alternative": {
+    "card": "features-fine-duration-and-tab-cross",
+    "reason": "The explicit unknown-duration flag is cheaper and isolates a deterministic signal before adding many sparse crossed categories."
+   },
+   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms == 0 as a dedicated UNK0 category.",
+   "code_path": "nodes/003.py",
+   "diff_path": "diffs/003.patch",
+   "diff_lines": 4,
+   "metrics": {
+    "gauc": 0.6671075786876843,
+    "ndcg5": 0.5352102664676806,
+    "primary": 0.6011589225776824,
+    "ndcg5_disc": 0.7203496119380686
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6387663751840591,
+     "val_gauc": 0.6486933985107041,
+     "val_ndcg5": 0.5279304650133203,
+     "val_primary": 0.5883119317620122
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5470460508550916,
+     "val_gauc": 0.6597554341705503,
+     "val_ndcg5": 0.5327424839234551,
+     "val_primary": 0.5962489590470027
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5126762251768794,
+     "val_gauc": 0.6650727424609958,
+     "val_ndcg5": 0.5349505484777916,
+     "val_primary": 0.6000116454693937
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5004678468619074,
+     "val_gauc": 0.6647425773974077,
+     "val_ndcg5": 0.5351346956550288,
+     "val_primary": 0.5999386365262183
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.4943337176527296,
+     "val_gauc": 0.6657315263606032,
+     "val_ndcg5": 0.5355161458781561,
+     "val_primary": 0.6006238361193796
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.4899618923664093,
+     "val_gauc": 0.6664164123846817,
+     "val_ndcg5": 0.5354966661106956,
+     "val_primary": 0.6009565392476887
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.4862499211515699,
+     "val_gauc": 0.6664090987187621,
+     "val_ndcg5": 0.5355152863863256,
+     "val_primary": 0.6009621925525439
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.4824281762753214,
+     "val_gauc": 0.6663358538305676,
+     "val_ndcg5": 0.5356943749200612,
+     "val_primary": 0.6010151143753144
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4787104940840176,
+     "val_gauc": 0.6671075786876843,
+     "val_ndcg5": 0.5352102664676806,
+     "val_primary": 0.6011589225776824
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.47470424132687705,
+     "val_gauc": 0.6648935708898807,
+     "val_ndcg5": 0.5346739607065236,
+     "val_primary": 0.5997837657982021
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4707414822919028,
+     "val_gauc": 0.6641959423378371,
+     "val_ndcg5": 0.5344191380421202,
+     "val_primary": 0.5993075401899786
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.4667350262403488,
+     "val_gauc": 0.6641968784255324,
+     "val_ndcg5": 0.5343869790717996,
+     "val_primary": 0.599291928748666
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.46266296080180574,
+     "val_gauc": 0.6623903723535309,
+     "val_ndcg5": 0.5334666139745556,
+     "val_primary": 0.5979284931640433
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 19.833893299102783,
+   "tokens_in": 33927,
+   "tokens_out": 3137,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract issue; validation labels are used only for evaluation, and SMOKE_EPOCHS caps training.",
+      "Change is isolated to positive-duration quantiles plus a dedicated zero-duration category; expected +0.0015 is plausible but below the 0.002 acceptance/noise floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00031,
+   "accepted": false,
+   "seed_confirmation": null,
+   "single_seed_accept": false
+  }
+ },
+ "plan": {
+  "note": "No merge is eligible: only BPR improved the prior champion by at least 0.001; recency and duration-unknown did not.\nRetest weak recency weighting on the changed BPR stack, and explore hard-negative sampling as the most direct refinement of the accepted ranking loss.",
+  "plan": [
+   {
+    "type": "retest",
+    "parent": "champion",
+    "card": "data-weighting-recency",
+    "hypothesis": "Combining seven-day recency weighting with within-user BPR will emphasize recent positive-negative preferences and improve transfer under drift more than recency-weighted pointwise training.",
+    "reason": "The original pointwise result was weak but positive and uncertain (mean delta +0.00036, SE 0.00024); BPR is now the champion and changes which historical rows and pairs drive ranking gradients."
+   },
+   {
+    "type": "explore",
+    "parent": "champion",
+    "card": "loss-bpr-hard-negatives",
+    "hypothesis": "Sampling three same-user negatives per positive will reduce wasted updates on already-correct pairs and improve GAUC and top-list ordering over single-negative BPR."
+   }
+  ]
+ },
+ "parked": [
+  {
+   "node": 2,
+   "card": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "delta": 0.00047,
+   "on_champion": 0
+  },
+  {
+   "node": 3,
+   "card": "features-duration-unknown-flag",
+   "target_component": "features",
+   "delta": -0.00031,
+   "on_champion": 0
+  }
+ ],
+ "start": 1788087613.6936162,
+ "interventions": 0,
+ "stop_reason": null,
+ "usage": {
+  "calls": 9,
+  "tokens_in": 147487,
+  "tokens_out": 13678,
+  "cache_read": 97454,
+  "cache_write": 0,
+  "cost_usd": 0.709232
+ },
+ "champion_seeds": {},
+ "last_generation": [
+  {
+   "n": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "loss-bpr-pairwise-within-user",
+   "target_component": "loss",
+   "hypothesis": "Replace pointwise logloss with within-user BPR so training directly improves positive-negative ordering while cancelling metric-irrelevant user-constant effects.",
+   "change_summary": "Replace pointwise logloss updates with pure within-user BPR, precomputing mixed-user positive/negative pools and sampling one same-user negative per positive each epoch.",
+   "expected_delta": 0.0022,
+   "metrics": {
+    "gauc": 0.6696755926496497,
+    "ndcg5": 0.5364878968791964,
+    "primary": 0.603081744764423,
+    "ndcg5_disc": 0.7225608839404268
+   },
+   "realized_delta": 0.00161,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.603081744764423,
+     0.6032265276409501,
+     0.6028476475917082
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00161,
+    "se": 0.0002,
+    "t": 8.22,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 14.507008075714111,
+   "curve": [
+    0.594,
+    0.5989,
+    0.6008,
+    0.6019,
+    0.603,
+    0.6024,
+    0.6028,
+    0.6031,
+    0.6026,
+    0.6024,
+    0.6023,
+    0.602
+   ]
+  },
+  {
+   "n": 2,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "hypothesis": "Exponentially downweight early training rows so item and interaction estimates emphasize the late-April regime that most closely matches validation and hidden test.",
+   "change_summary": "Apply normalized exponential recency weights with a fixed seven-day half-life to pointwise training gradients and loss diagnostics.",
+   "expected_delta": 0.002,
+   "metrics": {
+    "gauc": 0.6678403372440794,
+    "ndcg5": 0.5360332110298209,
+    "primary": 0.6019367741369501,
+    "ndcg5_disc": 0.7217739317204969
+   },
+   "realized_delta": 0.00047,
+   "accepted": false,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6019367741369501,
+     0.6020871274532423,
+     0.6013703133923629
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00036,
+    "se": 0.00024,
+    "t": 1.5,
+    "rule": "diff >= 0.001 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 18.048760175704956,
+   "curve": [
+    0.5875,
+    0.5956,
+    0.5995,
+    0.6003,
+    0.6008,
+    0.6012,
+    0.6019,
+    0.6008,
+    0.601,
+    0.6004,
+    0.5989
+   ]
+  },
+  {
+   "n": 3,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "features-duration-unknown-flag",
+   "target_component": "features",
+   "hypothesis": "Assign duration-zero impressions a dedicated category so the FM can push these always-negative rows below genuinely short videos within each user.",
+   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms == 0 as a dedicated UNK0 category.",
+   "expected_delta": 0.0015,
+   "metrics": {
+    "gauc": 0.6671075786876843,
+    "ndcg5": 0.5352102664676806,
+    "primary": 0.6011589225776824,
+    "ndcg5_disc": 0.7203496119380686
+   },
+   "realized_delta": -0.00031,
+   "accepted": false,
+   "seed_confirmation": null,
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 19.833893299102783,
+   "curve": [
+    0.5883,
+    0.5962,
+    0.6,
+    0.5999,
+    0.6006,
+    0.601,
+    0.601,
+    0.601,
+    0.6012,
+    0.5998,
+    0.5993,
+    0.5993,
+    0.5979
+   ]
+  }
+ ]
+}

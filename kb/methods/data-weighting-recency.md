@@ -12,8 +12,8 @@ expected_delta_basis: mechanism-backed by measured drift; the organizers' own va
 cost: ~8 lines (per-row weight from date; weighted gradient); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
-status: untried
-evidence: []
+status: dead_under {run: live_01, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0003}
+evidence: [live_01:node_002, live_01:node_004]
 ---
 ## Claim
 Weight each training row by exp(−age / tau) (half-life 3 / 7 / 14 days from 2022-04-21) so the model fits the recent
@@ -35,4 +35,5 @@ user x video embeddings are otherwise dominated by early traffic.
 - Interacts with early stopping: the effective dataset is smaller, so the peak epoch shifts.
 
 ## Measured
-(none yet)
+- live_01:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005 — rejected; 452 changed lines
+- live_01:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6039, single-seed Δ +0.0003 — rejected; 127 changed lines
