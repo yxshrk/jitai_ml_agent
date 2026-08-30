@@ -598,12 +598,8 @@ class Loop:
 
     @staticmethod
     def _family_of(s):
-        card = (C.KB / 'methods' / f"{s.get('card')}.md") if s.get('card') else None
-        if card and card.exists():
-            fam = P._front_fields(card.read_text()).get('family')
-            if fam:
-                return fam
-        return s.get('target_component')
+        """The card's family (front matter, also for '<card> — <variant>' names), else the candidate's component."""
+        return P.family_of(s.get('card')) or s.get('target_component')
 
     def _screen(self, selections, g):
         """Probe every feature candidate (a Probe-role script computes the signal on the label-stripped valid split), measure it

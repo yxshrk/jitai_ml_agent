@@ -139,3 +139,29 @@ def test_family_closes_after_flat_generations(tmp_path, monkeypatch):
     assert lp.state['campaign'] == 'features'                               # the next family opens
     lp._campaign_update(4, [res(7, 'features-s', True, 0.0009)])
     assert lp.state['families']['features']['flat_streak'] == 0 and lp.state['families']['features']['best_gain'] == 0.0009
+
+
+def test_screen_records_fold_into_cards(tmp_path, monkeypatch):
+    from harness import config as C
+    from harness.distill import distill, summarize
+    _kb(tmp_path, monkeypatch)
+    methods = C.KB / 'methods'; run = tmp_path / 'runs' / 'r'; run.mkdir(parents=True)
+    recs = [{'n': 0, 'action': 'reproduce_baseline', 'metrics': {'primary': 0.6}, 'parent': None},
+            {'n': 3, 'action': 'improve', 'method': 'loss-bpr', 'metrics': {'primary': 0.603}, 'parent': 0, 'accepted': True, 'realized_delta': 0.003},
+            {'n': None, 'generation': 1, 'action': 'generation', 'champion': 3},
+            {'n': None, 'generation': 2, 'action': 'screen', 'kept': False, 'card': 'history-a', 'family': 'history', 'best_gain': 0.0001,
+             'best_column': 'run_len', 'stack_gain': -0.0001, 'columns': {'run_len': {'varies': 0.37, 'gauc': 0.508, 'additive': 0.0001}},
+             'new_signal': 'same-author run length'},
+            {'n': None, 'generation': 2, 'action': 'screen', 'kept': True, 'card': 'features-s', 'family': 'features', 'best_gain': 0.0009,
+             'best_column': 'stack', 'stack_gain': 0.0009, 'columns': {'pos': {'varies': 0.9, 'gauc': 0.52, 'additive': 0.0004}}}]
+    (run / 'journal.jsonl').write_text('\n'.join(json.dumps(r) for r in recs) + '\n')
+    touched = distill('r', methods_dir=methods, log=lambda *a: None)
+    assert touched == {'history-a.md': 'screened', 'features-s.md': 'screened', 'loss-bpr.md': 'proven'}
+    ha = (methods / 'history-a.md').read_text()
+    assert 'r:screen-g02 on [official FM + loss-bpr]: SCREENED DROPPED best_gain +0.0001 (run_len)' in ha
+    assert 'status: untried (screened out on [official FM + loss-bpr]: best_gain +0.0001 on valid, no node built)' in ha
+    assert 'evidence: [r:screen-g02]' in ha
+    fs = (methods / 'features-s.md').read_text()
+    assert 'status: proven — accepted on [official FM]' in fs and 'r:screen-g02 kept +0.0009' in fs   # a screen never changes a trained status
+    assert distill('r', methods_dir=methods, log=lambda *a: None) == {}                                            # idempotent
+    assert summarize(ha) == ha

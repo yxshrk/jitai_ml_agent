@@ -29,6 +29,8 @@ def _stack(nodes, n):
 
 MEASURED_RE = re.compile(r'^- (?P<ref>[\w-]+:node_\d+) on \[(?P<stack>[^\]]+)\]: (?P<rest>.*)$')
 DELTA_RE = re.compile(r'seed-mean Δ ([+-]?\d+\.\d+)|single-seed Δ ([+-]?\d+\.\d+)')
+# ADR-0015: a feature screen measured on valid before any node — evidence, but not a training measurement
+SCREEN_RE = re.compile(r'^- (?P<ref>[\w-]+:screen-g\d+) on \[(?P<stack>[^\]]+)\]: SCREENED (?P<kept>kept|DROPPED) best_gain (?P<gain>[+-]?\d+\.\d+)')
 
 def summarize(text):
     """Recompute `status` and the one-line verdict at the top of ## Measured from all Measured lines."""
@@ -37,8 +39,11 @@ def summarize(text):
         return text
     head, tail = body.split('## Measured', 1)
     lines = [l for l in tail.splitlines() if l.startswith('- ')]
-    per_stack, accepted, failed = {}, [], []
+    per_stack, accepted, failed, screens = {}, [], [], []
     for l in lines:
+        sm_ = SCREEN_RE.match(l)
+        if sm_:
+            screens.append((sm_.group('ref'), sm_.group('stack'), sm_.group('kept'), float(sm_.group('gain')))); continue
         m = MEASURED_RE.match(l)
         if not m:
             continue
@@ -58,10 +63,20 @@ def summarize(text):
         status = 'dead_under [' + '; '.join(parts) + ']'
         verdict = f"never accepted in {sum(len(v) for v in per_stack.values())} measurements on {len(per_stack)} stack(s); " + '; '.join(parts)
     else:
-        status = 'untried' + (f" (implementation failed: {', '.join(failed)})" if failed else '')
-        verdict = 'no measurement yet' + (f"; implementation failed in {', '.join(failed)}" if failed else '')
+        dropped = [s for s in screens if s[2] == 'DROPPED']
+        existing = (re.search(r'^status:\s*(.*)$', fm, flags=re.M) or [None, ''])[1].strip()
+        if existing and not existing.startswith('untried'):
+            status = existing                                     # only screens here: a screen never changes a trained status
+        else:
+            status = 'untried' + (f" (implementation failed: {', '.join(failed)})" if failed else '') + (
+                f" (screened out on [{dropped[-1][1]}]: best_gain {max(s[3] for s in dropped):+.4f} on valid, no node built)" if dropped else '')
+        verdict = ('no measurement yet' if not screens else
+                   f"screened {len(screens)}x before any node (" + ', '.join(f"{r} {k} {g:+.4f}" for r, _, k, g in screens) + ')') \
+            + (f"; implementation failed in {', '.join(failed)}" if failed else '')
     if failed and per_stack:
         verdict += f"; implementation failed in {', '.join(failed)}"
+    if screens and (per_stack or accepted):
+        verdict += f"; screened {len(screens)}x (" + ', '.join(f"{r} {k} {g:+.4f}" for r, _, k, g in screens) + ')'
     fm = re.sub(r'^status:.*$', f'status: {status}', fm, flags=re.M)
     tail_lines = [l for l in tail.splitlines() if not l.startswith('_Verdict:_') and l.strip() != '(none yet)']
     body_tail = '\n_Verdict:_ ' + verdict + '\n' + '\n'.join(l for l in tail_lines if l.strip())
@@ -210,14 +225,34 @@ def rebuild(methods_dir=None, log=print):
         if new != card.read_text():
             card.write_text(new); log(f'  {card.name}: status -> {re.search(r"^status: (.*)$", _front(new)[0], re.M).group(1)[:110]}')
 
+def _screen_line(ref, r, stack):
+    """One evidence line for a feature screen (ADR-0015): what the probe measured on valid against the champion."""
+    bg = r.get('best_gain'); cols = r.get('columns') or {}
+    detail = '; '.join(f"{n}: varies {c.get('varies')}, GAUC {c.get('gauc')}, additive {c.get('additive'):+.4f}" for n, c in cols.items())
+    return (f"- {ref} on [{stack}]: SCREENED {'kept' if r.get('kept') else 'DROPPED'} best_gain {bg:+.4f} ({r.get('best_column')}); "
+            f"stack {r.get('stack_gain') if r.get('stack_gain') is None else format(r.get('stack_gain'), '+.4f')}; {detail}"
+            + (f" — new_signal: {str(r.get('new_signal'))[:100]}" if r.get('new_signal') else ''))
+
 def distill(run_id, methods_dir=None, log=print):
-    """Fold every measured card-node of a run into its card (idempotent per run:node reference)."""
+    """Fold every measured card-node of a run into its card, and every feature screen of a card (ADR-0015) as evidence
+    (idempotent per run:node / run:screen-gN reference)."""
     methods_dir = Path(methods_dir or C.KB / 'methods')
     run_dir = C.RUNS / run_id
     recs = [json.loads(l) for l in (run_dir / 'journal.jsonl').read_text().splitlines() if l.strip()]
     nodes = {str(r['n']): r for r in recs if r.get('n') is not None}
+    champion_at = {r.get('generation'): r.get('champion') for r in recs if r.get('action') == 'generation'}   # after each close
     touched = {}
     for r in recs:
+        if r.get('action') == 'screen' and r.get('card') and r.get('best_gain') is not None:
+            card, variant = _card_for(r['card'], methods_dir)
+            if card is None:
+                continue                                              # a wildcard's screen: the Archivist's business if a node followed
+            g = r.get('generation') or 1
+            stack = _stack(nodes, champion_at.get(g - 1, 0))          # the champion the probe was measured against
+            ref = f"{run_id}:screen-g{g:02d}"
+            if _add_measurement(card, ref, _screen_line(ref, r, stack), None, log):
+                touched[card.name] = 'screened'; log(f"  {card.name}: screen {'kept' if r.get('kept') else 'DROPPED'}  <- {ref}")
+            continue
         if r.get('action') not in ('improve', 'merge', 'retest', 'explore', 'deepen') or not r.get('method'):
             continue
         card, variant = _card_for(r['method'], methods_dir)
