@@ -25,5 +25,7 @@ All decisions below use only the fixed train and validation splits. No test metr
 | 70% Context-FM mean + 30% Context-BPR, seed 3 | **0.60334** | Best observed; validation-selected BPR weight |
 | Same fixed 30% BPR blend, seed 4 | 0.60293 | Confirmation; two-seed mean 0.60314 |
 | Corrected Sequence DeepFM, seeds 5–8 | 0.604735 / 0.604594 / 0.604555 / 0.604551 | Four-seed mean **0.604609** |
+| Four-member Sequence DeepFM ensemble | 0.604483 logits / 0.604559 per-user ranks | Reject: neither improves on member mean |
+| Rolling earlier-validation author metadata, seed 5 | 0.603923 | Reject: causal metadata update is weaker than frozen train history |
 
 The contextual fields only help as a group. The next research iteration should prioritize train-history features with strict time ordering and out-of-fold safeguards; retain the validation-only model-selection rule and record each outer experiment's hypothesis, diff, metrics, and any recovery event.

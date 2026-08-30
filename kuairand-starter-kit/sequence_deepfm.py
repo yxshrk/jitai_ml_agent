@@ -1,8 +1,9 @@
 """Validation-only neural sequence ranker for KuaiRand-Pure.
 
 The model combines FM interactions, a small deep tower, and mean-pooled recent
-author history. Context for both train and validation is strictly causal: a
-record never sees its own outcome, and validation receives only train history.
+author history. Context is strictly causal: a record never sees its own
+outcome. The default validation history is frozen at train end; an explicit
+metadata-only rolling mode can additionally use earlier impressions.
 """
 
 import argparse
@@ -70,7 +71,7 @@ def load_rows(data_dir):
     return rows
 
 
-def add_history(rows, history_length):
+def add_history(rows, history_length, validation_history_mode):
     histories = defaultdict(lambda: deque(maxlen=history_length))
     order = sorted(range(len(rows["train"])), key=lambda index: rows["train"][index]["timestamp"])
     start = 0
@@ -86,8 +87,29 @@ def add_history(rows, history_length):
             row = rows["train"][order[order_index]]
             histories[row["user_id"]].append(rows["train"][order[order_index]]["author_id"])
         start = end
-    for row in rows["valid"]:
-        row["history_authors"] = tuple(histories[row["user_id"]])
+    if validation_history_mode == "frozen_train":
+        for row in rows["valid"]:
+            row["history_authors"] = tuple(histories[row["user_id"]])
+        return
+    if validation_history_mode != "rolling_metadata":
+        raise ValueError(f"Unknown validation history mode: {validation_history_mode}")
+    # The feature history contains only authors from strictly earlier
+    # impressions. Outcomes are never read, and rows at one timestamp are
+    # assigned their histories before any of their authors are appended.
+    order = sorted(range(len(rows["valid"])), key=lambda index: rows["valid"][index]["timestamp"])
+    start = 0
+    while start < len(order):
+        end = start + 1
+        timestamp = rows["valid"][order[start]]["timestamp"]
+        while end < len(order) and rows["valid"][order[end]]["timestamp"] == timestamp:
+            end += 1
+        for order_index in range(start, end):
+            row = rows["valid"][order[order_index]]
+            row["history_authors"] = tuple(histories[row["user_id"]])
+        for order_index in range(start, end):
+            row = rows["valid"][order[order_index]]
+            histories[row["user_id"]].append(row["author_id"])
+        start = end
 
 
 def encode(rows, history_length):
@@ -199,7 +221,7 @@ def run(args):
     np.random.seed(args.seed)
     device = torch.device("cpu")
     rows = load_rows(args.data_dir)
-    add_history(rows, args.history_length)
+    add_history(rows, args.history_length, args.validation_history_mode)
     encoded, field_dimensions, author_padding = encode(rows, args.history_length)
     train_x, train_history, train_y, _ = encoded["train"]
     valid_x, valid_history, valid_y, valid_users = encoded["valid"]
@@ -276,6 +298,10 @@ def parse_args():
     parser.add_argument("--data_dir", default="./KuaiRand-Pure/data")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--history_length", type=int, default=8)
+    parser.add_argument(
+        "--validation_history_mode", choices=("frozen_train", "rolling_metadata"), default="frozen_train",
+        help="Use only train history, or earlier validation/test impression metadata (never labels).",
+    )
     parser.add_argument("--embedding_dim", type=int, default=16)
     parser.add_argument("--hidden_dim", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0.1)

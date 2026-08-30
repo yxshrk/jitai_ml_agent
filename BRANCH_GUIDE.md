@@ -105,6 +105,8 @@ maintained in `runs/RESULTS.md`.
 | Contextual BPR blend | 0.60334 best observed | Provisional; seed-4 fixed-weight confirmation 0.60293 |
 | Sequence DeepFM before init correction | 0.53871 | Diagnosed unstable logit scale |
 | Corrected Sequence DeepFM | 0.604735 / 0.604594 | Current leading architecture |
+| Four-member Sequence DeepFM ensemble | 0.604483 logits / 0.604559 per-user ranks | Reject; averaging did not add signal |
+| Rolling earlier-validation author metadata | 0.603923 (seed 5) | Reject; strictly causal metadata updates were weaker than frozen train history |
 
 ## Commit checkpoints
 
@@ -113,7 +115,9 @@ maintained in `runs/RESULTS.md`.
 | `c76e993` | Recorded causal-history, sequence-FM, and class-weighting negative controls |
 | `765a119` | Added contextual ranking refinements and documented rejected capacity/cross/dropout tests |
 | `26a0dd3` | Added heterogeneous Context-FM/BPR ensemble scoring and its confirmation artifacts |
-| pending next commit | Corrected Sequence DeepFM, its two seed runs, and this branch guide |
+| `aea6dc4` / `d8846c6` | Documented and confirmed corrected Sequence DeepFM across four seeds |
+| `f157ae4` | Added the bounded API-guided configuration-search agent and its pilot artifacts |
+| pending next commit | Record the negative DeepFM ensemble and rolling-metadata controls |
 
 ## Useful answers for team questions
 
