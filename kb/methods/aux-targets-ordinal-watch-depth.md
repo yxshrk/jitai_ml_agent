@@ -14,7 +14,7 @@ cost: ~50 lines; runtime ~1.3x; three auxiliary bias columns and scalar interact
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, data-weighting-recency, features-duration-unknown-flag]
 conflicts_with: [aux-targets-is-click, loss-watchtime-censored]
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ +0.0002)]
-evidence: [live_04:node_014]
+evidence: [live_04:node_014, ceiling:oracle]
 ---
 ## Claim
 Add three binary auxiliary heads predicting whether play time reaches 25%, 50%, and 75% of
@@ -44,3 +44,4 @@ altering the main ranking head.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ +0.0002)
 - live_04:node_014 on [official FM + field-aware FM embeddings]: primary 0.6033, single-seed Δ +0.0002, seed-mean Δ +0.0002 (t 0.6) — rejected; 50 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

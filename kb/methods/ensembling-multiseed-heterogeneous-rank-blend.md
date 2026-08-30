@@ -8,7 +8,7 @@ applies_when:
   - single-seed variance remains material and runtime permits ten independently early-stopped models
   - branch score scales differ, making within-user rank normalization safer than raw-logit averaging
 expected_delta: [0.0, 0.0017]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0014 over 3 measurement(s), so the promise is capped at the record; was: the complete five-seed-per-branch 0.6/0.4 recipe measured +0.00166 seed-mean; the gain cannot
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0017 over 3 measurement(s), so the promise is capped at the record; was: the complete five-seed-per-branch 0.6/0.4 recipe measured +0.00166 seed-mean; the gain cannot
   be assigned separately to seed averaging, heterogeneous blending, or the changed blend weight
 cost: ~120 lines; ten training phases; measured runtime 143 s (~5x the field-aware parent); numpy only
 composes_with: [model-dcn-cross-head, model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user]

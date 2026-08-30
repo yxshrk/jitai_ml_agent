@@ -7,7 +7,7 @@ applies_when:
   - the champion's learning curve shows validation peaking early then falling while training loss keeps dropping (node_000: peak epoch 7 of 11)
   - most parameters are per-id embeddings (27 K users x 16 + 7.6 K videos x 16), the classic overfitting site
 expected_delta: [0.0, 0.0010]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 8 measurement(s), so the promise is capped at the record; was: overfitting is measured, so there is something to regularise, but the user x video memorisation
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 10 measurement(s), so the promise is capped at the record; was: overfitting is measured, so there is something to regularise, but the user x video memorisation
   is also where the signal lives — the sweet spot is narrow; expect small gains, confirm with seeds
 cost: ~15 lines (L2 sweep is a flag; field dropout ~10 lines); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head, training-schedule-lr-decay-early-stop, data-weighting-recency]

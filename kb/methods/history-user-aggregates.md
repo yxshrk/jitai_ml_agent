@@ -7,7 +7,7 @@ applies_when:
   - users have a train history to aggregate (facts §2: median 35 train rows, p10 = 6) — enough for rates, too few for attention models
   - the catalogue is closed (facts §1), so per-user rates by author / tab / duration bucket are well defined on train
 expected_delta: [0.0, 0.0010]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0007 over 6 measurement(s), so the promise is capped at the record; was: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 6 measurement(s), so the promise is capped at the record; was: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
   first-order part of what DIN/SIM learn; histories are short, so cap expectations at 0.006
 cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketised fields); runtime ~1.5x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]

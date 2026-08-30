@@ -8,7 +8,7 @@ applies_when:
   - video tag, music_id, and video_type are legally available from the basic side table
   - candidate attributes vary within users and can therefore change their impression ordering
 expected_delta: [0.0, 0.0009]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 2 measurement(s), so the promise is capped at the record; was: on pointwise official FM, the exact four-field construction measured fresh-seed mean
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0009 over 2 measurement(s), so the promise is capped at the record; was: on pointwise official FM, the exact four-field construction measured fresh-seed mean
   Δ +0.0009 (seed-0 Δ +0.0005, z 3.12); do not attribute more than that confirmed gain
 cost: 86 changed lines; 34 s measured versus 15 s parent (~2.3x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session,

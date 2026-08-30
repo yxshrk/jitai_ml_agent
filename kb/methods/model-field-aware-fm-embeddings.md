@@ -8,7 +8,7 @@ applies_when:
   - the catalogue is closed, so field-specific user, video, and author vectors are estimable
   - a within-user BPR loss is already present, allowing the architecture effect to be tested in isolation
 expected_delta: [0.0, 0.0012]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0016 over 1 measurement(s), so the promise is capped at the record; was: the bundled field-aware+BPR node gained +0.00122 seed-mean over pointwise FM, while the same-parent
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0012 over 1 measurement(s), so the promise is capped at the record; was: the bundled field-aware+BPR node gained +0.00122 seed-mean over pointwise FM, while the same-parent
   BPR sibling gained +0.00114; only about +0.00008 can be attributed to field-aware embeddings
 cost: ~20 model lines; embedding memory ~5x and measured runtime ~2.3x versus standard-FM BPR; numpy only
 composes_with: [loss-bpr-pairwise-within-user, data-weighting-recency, features-duration-unknown-flag, regularization-embedding-dropout-l2, training-schedule-weight-averaging]

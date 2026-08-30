@@ -9,7 +9,7 @@ applies_when:
   - current tab is already modeled but the immediately previous tab and same-tab streak are absent
   - scored splits can initialize each user's transition state from their final strictly earlier training exposure
 expected_delta: [0.0, 0.0000]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0000 over 1 measurement(s), so the promise is capped at the record; was: the originating five-seed FM-BPR probe had seed-0 Δ +0.00003 but fresh-seed mean
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0003 over 1 measurement(s), so the promise is capped at the record; was: the originating five-seed FM-BPR probe had seed-0 Δ +0.00003 but fresh-seed mean
   Δ -0.00032 (z -1.30), so this exact two-field construction has no attributable positive expected gain
 cost: 69 changed lines; preprocessing plus two small categorical fields; measured runtime 86 s versus 51 s
   for the five-member parent; numpy only

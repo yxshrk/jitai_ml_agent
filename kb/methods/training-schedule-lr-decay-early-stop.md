@@ -7,7 +7,7 @@ applies_when:
   - the validation curve is peaked (rises then falls) — a decaying learning rate can hold the peak instead of overshooting it
   - epochs are cheap (~1 s each), so finer checkpoints cost nothing
 expected_delta: [0.0, 0.0004]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 5 measurement(s), so the promise is capped at the record; was: schedule changes usually land inside the 0.002 noise floor on their own; they pay off bundled
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0004 over 5 measurement(s), so the promise is capped at the record; was: schedule changes usually land inside the 0.002 noise floor on their own; they pay off bundled
   with regularisation or a new loss — treat this card as a booster, not a lead
 cost: ~10 lines; runtime 1x; numpy only
 composes_with: [regularization-embedding-dropout-l2, loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head]

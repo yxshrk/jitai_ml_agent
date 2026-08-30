@@ -8,13 +8,13 @@ applies_when:
   - pairwise FM interactions cannot represent a user's duration preference changing by tab
   - same-user BPR training and analytic embedding-gradient updates are available
 expected_delta: [0.0, 0.0000]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated probe gained only +0.00007 on seed 0 and had fresh-seed mean Δ -0.00069,
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0007 over 1 measurement(s), so the promise is capped at the record; was: the isolated probe gained only +0.00007 on seed 0 and had fresh-seed mean Δ -0.00069,
   so no positive attributable gain is supported for this exact rank-k cubic construction
 cost: 27 changed lines; one additional `(dim, k)` table and Adam states; measured runtime 17 s (~1.2x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, features-fine-duration-and-tab-cross, regularization-embedding-dropout-l2, ensembling-seed-average]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0007)]
-evidence: [live_06:node_006]
+evidence: [live_06:node_006, ceiling:oracle]
 ---
 ## Claim
 Add a rank-k CP term `sum(T[user] * T[tab] * T[duration_bucket])` to an FM score, allowing personalized duration
@@ -43,3 +43,4 @@ a user×tab×duration interaction absent from a second-order FM, so it can alter
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0007)
 - live_06:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6029, single-seed Δ +0.0001, seed-mean Δ -0.0007 (z -1.54) — rejected; 27 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'user-context-taste' — facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003 (facts §11, kb/data/screens/CEILING.md)

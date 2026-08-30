@@ -14,7 +14,7 @@ cost: ~20 changed lines; deterministic prediction-time transform; negligible run
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, ensembling-multiseed-heterogeneous-rank-blend]
 conflicts_with: [features-duration-unknown-flag]
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0004)]
-evidence: [live_05:node_008]
+evidence: [live_05:node_008, ceiling:oracle]
 ---
 ## Claim
 Force every zero-duration impression below every known-duration impression for the same user while preserving the
@@ -46,3 +46,4 @@ ordering among known-duration rows or among zero-duration rows.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0004)
 - live_05:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6032, single-seed Δ -0.0004 — rejected; 20 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

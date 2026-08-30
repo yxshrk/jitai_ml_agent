@@ -208,6 +208,7 @@
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging",
    "status": "open",
    "cards": [
+    "ensembling-cohort-gated-session-rank-fusion",
     "ensembling-heterogeneous-rank-average",
     "ensembling-long-duration-slot-specialists",
     "ensembling-multiseed-heterogeneous-rank-blend",
@@ -215,8 +216,27 @@
     "ensembling-seed-average",
     "ensembling-top5-gated-hybrid-rank-fusion"
    ],
-   "screen_gains": [],
+   "screen_gains": [
+    {
+     "run": "kb-screens",
+     "generation": 0,
+     "best_gain": 0.0006,
+     "kept": true,
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "card": "ensembling-heterogeneous-rank-average"
+    }
+   ],
    "measured": [
+    {
+     "run": "live_07",
+     "node": "node_019",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": 0.0005,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "ensembling-cohort-gated-session-rank-fusion"
+    },
     {
      "run": "live_04",
      "node": "node_012",
@@ -328,6 +348,46 @@
      "card": "ensembling-seed-average"
     },
     {
+     "run": "live_07",
+     "node": "node_005",
+     "stack": "official FM",
+     "delta": 0.0013,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "ensembling-seed-average"
+    },
+    {
+     "run": "live_07",
+     "node": "node_009",
+     "stack": "official FM + loss-bpr-pairwise-within-user",
+     "delta": 0.0013,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "ensembling-seed-average"
+    },
+    {
+     "run": "live_07",
+     "node": "node_014",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "ensembling-seed-average"
+    },
+    {
+     "run": "live_07",
+     "node": "node_024",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0001,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "ensembling-seed-average"
+    },
+    {
      "run": "live_04",
      "node": "node_025",
      "stack": "official FM + field-aware FM embeddings + heterogeneous-node-rank-average",
@@ -339,7 +399,7 @@
     }
    ],
    "best_measured": 0.0017,
-   "best_measured_ref": 0.0003
+   "best_measured_ref": 0.0005
   },
   "features": {
    "bound": 0.001,
@@ -352,7 +412,8 @@
     "features-exposure-session",
     "features-field-aware-author-pooling",
     "features-fine-duration-and-tab-cross",
-    "features-upper-tail-tab-duration-cross"
+    "features-online-item-exposure-momentum",
+    "features-previous-tab-transition-state"
    ],
    "screen_gains": [],
    "measured": [
@@ -407,6 +468,36 @@
      "card": "features-duration-zero-lexicographic-demotion"
     },
     {
+     "run": "live_07",
+     "node": "node_002",
+     "stack": "official FM",
+     "delta": -0.0001,
+     "accepted": false,
+     "failed": false,
+     "on_reference": false,
+     "card": "features-exposure-session"
+    },
+    {
+     "run": "live_07",
+     "node": "node_010",
+     "stack": "official FM + loss-bpr-pairwise-within-user",
+     "delta": 0.0009,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "features-exposure-session"
+    },
+    {
+     "run": "live_07",
+     "node": "node_013",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": 0.0003,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "features-exposure-session"
+    },
+    {
      "run": "live_04",
      "node": "node_027",
      "stack": "official FM + field-aware FM embeddings + heterogeneous-node-rank-average",
@@ -444,11 +535,31 @@
      "accepted": false,
      "failed": false,
      "on_reference": true,
-     "card": "features-upper-tail-tab-duration-cross"
+     "card": "features-fine-duration-and-tab-cross"
+    },
+    {
+     "run": "live_07",
+     "node": "node_016",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0001,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "features-online-item-exposure-momentum"
+    },
+    {
+     "run": "live_07",
+     "node": "node_021",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0003,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "features-previous-tab-transition-state"
     }
    ],
-   "best_measured": 0.0002,
-   "best_measured_ref": -0.0006
+   "best_measured": 0.0009,
+   "best_measured_ref": 0.0003
   },
   "history": {
    "bound": 0.001,
@@ -456,14 +567,37 @@
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md); facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR; facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
    "status": "open",
    "cards": [
+    "history-last-positive-attribute-recurrence",
     "history-ordered-user-tag-affinity",
     "history-repeat-exposure-fatigue",
+    "history-rocchio-contrastive-content-affinity",
     "history-same-author-run-features",
+    "history-session-attribute-overlap",
     "history-user-aggregates",
     "history-user-tab-watch-survival-reranker"
    ],
    "screen_gains": [],
    "measured": [
+    {
+     "run": "live_07",
+     "node": "node_001",
+     "stack": "official FM",
+     "delta": 0.0009,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "history-last-positive-attribute-recurrence"
+    },
+    {
+     "run": "live_07",
+     "node": "node_023",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0002,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "history-last-positive-attribute-recurrence"
+    },
     {
      "run": "live_06",
      "node": "node_014",
@@ -483,6 +617,26 @@
      "failed": false,
      "on_reference": false,
      "card": "history-repeat-exposure-fatigue"
+    },
+    {
+     "run": "live_07",
+     "node": "node_018",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0003,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "history-rocchio-contrastive-content-affinity"
+    },
+    {
+     "run": "live_07",
+     "node": "node_011",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": 0.0002,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "history-session-attribute-overlap"
     },
     {
      "run": "live_01",
@@ -566,7 +720,7 @@
     }
    ],
    "best_measured": 0.001,
-   "best_measured_ref": -0.0004
+   "best_measured_ref": 0.0002
   },
   "model": {
    "bound": null,
@@ -574,6 +728,7 @@
    "bound_source": null,
    "status": "open",
    "cards": [
+    "model-attentional-factorization-machine",
     "model-continuous-date-drift-head",
     "model-dcn-cross-head",
     "model-din-history-attention",
@@ -581,10 +736,20 @@
     "model-field-weighted-fm-relation-scalars",
     "model-lightgbm-lambdarank",
     "model-lightgcn-positive-id-propagation",
+    "model-neural-factorization-machine",
     "model-user-tab-duration-cp-interaction",
     "model-user-video-tab-cp-interaction"
    ],
-   "screen_gains": [],
+   "screen_gains": [
+    {
+     "run": "kb-screens",
+     "generation": 0,
+     "best_gain": 0.0006,
+     "kept": true,
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "card": "model-lightgbm-lambdarank"
+    }
+   ],
    "measured": [
     {
      "run": "live_05",
@@ -627,6 +792,16 @@
      "card": "model-dcn-cross-head"
     },
     {
+     "run": "live_07",
+     "node": "node_017",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0001,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "model-din-history-attention"
+    },
+    {
      "run": "live_04",
      "node": "node_001",
      "stack": "official FM",
@@ -645,6 +820,16 @@
      "failed": false,
      "on_reference": false,
      "card": "model-field-weighted-fm-relation-scalars"
+    },
+    {
+     "run": "live_07",
+     "node": "node_007",
+     "stack": "official FM + loss-bpr-pairwise-within-user",
+     "delta": -0.0022,
+     "accepted": false,
+     "failed": false,
+     "on_reference": false,
+     "card": "model-lightgbm-lambdarank"
     },
     {
      "run": "live_04",
@@ -678,7 +863,7 @@
     }
    ],
    "best_measured": 0.0012,
-   "best_measured_ref": -0.0005
+   "best_measured_ref": -0.0001
   },
   "ranking-loss": {
    "bound": null,
@@ -686,19 +871,29 @@
    "bound_source": null,
    "status": "open",
    "cards": [
+    "loss-approxndcg-soft-ranks",
     "loss-bpr-hard-negatives",
     "loss-bpr-pairwise-within-user",
     "loss-context-matched-two-stream-bpr",
     "loss-duration-cohort-weighted-bpr",
     "loss-lambdarank-pairs",
     "loss-listwise-softmax-within-user",
-    "loss-long-duration-matched-bpr",
     "loss-ranksvm-margin-pairs",
-    "loss-same-tab-long-duration-bpr",
-    "loss-tab4-long-duration-bpr"
+    "loss-session-monotonic-auxiliary-pairs",
+    "loss-warp-within-user-rank-weighting"
    ],
    "screen_gains": [],
    "measured": [
+    {
+     "run": "live_07",
+     "node": "node_022",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0005,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "loss-approxndcg-soft-ranks"
+    },
     {
      "run": "live_02",
      "node": "node_005",
@@ -780,6 +975,46 @@
      "card": "loss-bpr-pairwise-within-user"
     },
     {
+     "run": "live_07",
+     "node": "node_003",
+     "stack": "official FM",
+     "delta": 0.0016,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "loss-bpr-pairwise-within-user"
+    },
+    {
+     "run": "live_06",
+     "node": "node_011",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "loss-bpr-pairwise-within-user"
+    },
+    {
+     "run": "live_06",
+     "node": "node_016",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0002,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "loss-bpr-pairwise-within-user"
+    },
+    {
+     "run": "live_06",
+     "node": "node_019",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "loss-bpr-pairwise-within-user"
+    },
+    {
      "run": "live_05",
      "node": "node_006",
      "stack": "official FM + loss-bpr-pairwise-within-user",
@@ -841,16 +1076,6 @@
     },
     {
      "run": "live_06",
-     "node": "node_011",
-     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
-     "delta": -0.0,
-     "accepted": false,
-     "failed": false,
-     "on_reference": true,
-     "card": "loss-long-duration-matched-bpr"
-    },
-    {
-     "run": "live_06",
      "node": "node_008",
      "stack": "official FM + loss-bpr-pairwise-within-user",
      "delta": -0.0003,
@@ -860,24 +1085,14 @@
      "card": "loss-ranksvm-margin-pairs"
     },
     {
-     "run": "live_06",
-     "node": "node_016",
+     "run": "live_07",
+     "node": "node_020",
      "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
-     "delta": -0.0002,
+     "delta": -0.0023,
      "accepted": false,
      "failed": false,
      "on_reference": true,
-     "card": "loss-same-tab-long-duration-bpr"
-    },
-    {
-     "run": "live_06",
-     "node": "node_019",
-     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
-     "delta": -0.0,
-     "accepted": false,
-     "failed": false,
-     "on_reference": true,
-     "card": "loss-tab4-long-duration-bpr"
+     "card": "loss-session-monotonic-auxiliary-pairs"
     }
    ],
    "best_measured": 0.0022,
@@ -891,8 +1106,6 @@
    "cards": [
     "regularization-adversarial-personalized-ranking",
     "regularization-embedding-dropout-l2",
-    "regularization-embedding-only-l2",
-    "regularization-id-field-targeted-l2",
     "training-schedule-lr-decay-early-stop",
     "training-schedule-weight-averaging"
    ],
@@ -969,6 +1182,26 @@
      "card": "regularization-embedding-dropout-l2"
     },
     {
+     "run": "live_07",
+     "node": "node_004",
+     "stack": "official FM",
+     "delta": 0.001,
+     "accepted": true,
+     "failed": false,
+     "on_reference": false,
+     "card": "regularization-embedding-dropout-l2"
+    },
+    {
+     "run": "live_07",
+     "node": "node_008",
+     "stack": "official FM + loss-bpr-pairwise-within-user",
+     "delta": 0.0001,
+     "accepted": false,
+     "failed": false,
+     "on_reference": false,
+     "card": "regularization-embedding-dropout-l2"
+    },
+    {
      "run": "live_06",
      "node": "node_009",
      "stack": "official FM + loss-bpr-pairwise-within-user",
@@ -976,7 +1209,7 @@
      "accepted": false,
      "failed": false,
      "on_reference": false,
-     "card": "regularization-embedding-only-l2"
+     "card": "regularization-embedding-dropout-l2"
     },
     {
      "run": "live_06",
@@ -986,7 +1219,7 @@
      "accepted": false,
      "failed": false,
      "on_reference": true,
-     "card": "regularization-id-field-targeted-l2"
+     "card": "regularization-embedding-dropout-l2"
     },
     {
      "run": "live_03",
@@ -1066,14 +1299,49 @@
    "bound": 0.001,
    "bound_kind": "mixed:structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)",
-   "status": "open",
+   "status": "exhausted",
    "cards": [
     "model-first-order-exposure-transition-fm"
    ],
    "screen_gains": [],
-   "measured": [],
-   "best_measured": null,
-   "best_measured_ref": null
+   "measured": [
+    {
+     "run": "live_07",
+     "node": "node_012",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0005,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "model-first-order-exposure-transition-fm"
+    }
+   ],
+   "best_measured": -0.0005,
+   "best_measured_ref": -0.0005
+  },
+  "training-schedule": {
+   "bound": null,
+   "bound_kind": null,
+   "bound_source": null,
+   "status": "exhausted",
+   "cards": [
+    "training-schedule-cyclic-bpr-pair-coverage"
+   ],
+   "screen_gains": [],
+   "measured": [
+    {
+     "run": "live_07",
+     "node": "node_015",
+     "stack": "official FM + loss-bpr-pairwise-within-user + ensembling-seed-average",
+     "delta": -0.0004,
+     "accepted": false,
+     "failed": false,
+     "on_reference": true,
+     "card": "training-schedule-cyclic-bpr-pair-coverage"
+    }
+   ],
+   "best_measured": -0.0004,
+   "best_measured_ref": -0.0004
   },
   "watch-time": {
    "bound": 0.0003,
@@ -1133,7 +1401,7 @@
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]",
    "expected": [
     0.0,
-    0.005
+    0.0
    ],
    "basis_class": "measured",
    "measured_max": -0.0003,
@@ -1180,8 +1448,8 @@
    "signal_family": "recency-volume",
    "status": "dead_under [official FM x2 (best Δ +0.0005); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0003)]",
    "expected": [
-    0.001,
-    0.006
+    0.0,
+    0.0005
    ],
    "basis_class": "measured",
    "measured_max": 0.0005,
@@ -1223,13 +1491,29 @@
    "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
+  "ensembling-cohort-gated-session-rank-fusion": {
+   "family": "ensembling",
+   "signal_family": "ensembling",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)]",
+   "expected": [
+    0.0,
+    0.0005
+   ],
+   "basis_class": "measured",
+   "measured_max": 0.0005,
+   "measured_max_ref": 0.0005,
+   "accepted": false,
+   "bound": 0.0016,
+   "bound_kind": "ablation",
+   "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
+  },
   "ensembling-heterogeneous-rank-average": {
    "family": "ensembling",
    "signal_family": "ensembling",
    "status": "dead_under [official FM + field-aware FM embeddings x1 (best Δ +0.0006)]",
    "expected": [
     0.0,
-    0.00056
+    0.0006
    ],
    "basis_class": "measured",
    "measured_max": 0.0006,
@@ -1245,7 +1529,7 @@
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)]",
    "expected": [
     0.0,
-    0.00027
+    0.0003
    ],
    "basis_class": "measured",
    "measured_max": 0.0003,
@@ -1260,8 +1544,8 @@
    "signal_family": "ensembling",
    "status": "proven — accepted on [official FM + field-aware FM embeddings]",
    "expected": [
-    0.001,
-    0.00166
+    0.0,
+    0.0017
    ],
    "basis_class": "measured",
    "measured_max": 0.0017,
@@ -1292,12 +1576,12 @@
    "signal_family": "ensembling",
    "status": "proven — accepted on [official FM], [official FM + loss-bpr-pairwise-within-user]",
    "expected": [
-    0.001,
-    0.003
+    0.0,
+    0.0016
    ],
    "basis_class": "measured",
    "measured_max": 0.0016,
-   "measured_max_ref": null,
+   "measured_max_ref": -0.0,
    "accepted": true,
    "bound": 0.0016,
    "bound_kind": "ablation",
@@ -1324,8 +1608,8 @@
    "signal_family": "item-side",
    "status": "dead_under [official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002); official FM + field-aware FM embeddings x1 (best Δ -0.0002)]",
    "expected": [
-    0.001,
-    0.004
+    0.0,
+    0.0002
    ],
    "basis_class": "measured",
    "measured_max": 0.0002,
@@ -1354,15 +1638,15 @@
   "features-exposure-session": {
    "family": "features",
    "signal_family": "session-context",
-   "status": "untried",
+   "status": "proven — accepted on [official FM + loss-bpr-pairwise-within-user]",
    "expected": [
-    0.0005,
-    0.003
+    0.0,
+    0.0009
    ],
-   "basis_class": "oracle",
-   "measured_max": null,
-   "measured_max_ref": null,
-   "accepted": false,
+   "basis_class": "measured",
+   "measured_max": 0.0009,
+   "measured_max_ref": 0.0003,
+   "accepted": true,
    "bound": 0.001,
    "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
@@ -1386,34 +1670,66 @@
   "features-fine-duration-and-tab-cross": {
    "family": "features",
    "signal_family": "item-side",
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0001); official FM x1 (best Δ +0.0001)]",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0001); official FM x1 (best Δ +0.0001); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0006)]",
    "expected": [
     0.0,
-    0.004
+    0.0001
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
-   "measured_max_ref": null,
-   "accepted": false,
-   "bound": 0.0003,
-   "bound_kind": "oracle",
-   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
-  },
-  "features-upper-tail-tab-duration-cross": {
-   "family": "features",
-   "signal_family": "item-side",
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0006)]",
-   "expected": [
-    0.0,
-    0.0
-   ],
-   "basis_class": "measured",
-   "measured_max": -0.0006,
    "measured_max_ref": -0.0006,
    "accepted": false,
    "bound": 0.0003,
    "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+  },
+  "features-online-item-exposure-momentum": {
+   "family": "features",
+   "signal_family": "item-side",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]",
+   "expected": [
+    0.0,
+    0.0
+   ],
+   "basis_class": "measured",
+   "measured_max": -0.0001,
+   "measured_max_ref": -0.0001,
+   "accepted": false,
+   "bound": 0.0003,
+   "bound_kind": "oracle",
+   "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+  },
+  "features-previous-tab-transition-state": {
+   "family": "features",
+   "signal_family": "session-context",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)]",
+   "expected": [
+    0.0,
+    0.0
+   ],
+   "basis_class": "measured",
+   "measured_max": -0.0003,
+   "measured_max_ref": -0.0003,
+   "accepted": false,
+   "bound": 0.001,
+   "bound_kind": "structural",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
+  },
+  "history-last-positive-attribute-recurrence": {
+   "family": "history",
+   "signal_family": "session-context",
+   "status": "proven — accepted on [official FM]",
+   "expected": [
+    0.0,
+    0.0009
+   ],
+   "basis_class": "measured",
+   "measured_max": 0.0009,
+   "measured_max_ref": -0.0002,
+   "accepted": true,
+   "bound": 0.001,
+   "bound_kind": "structural",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "history-ordered-user-tag-affinity": {
    "family": "history",
@@ -1447,17 +1763,49 @@
    "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
+  "history-rocchio-contrastive-content-affinity": {
+   "family": "history",
+   "signal_family": "history-cf",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)]",
+   "expected": [
+    0.0,
+    0.0
+   ],
+   "basis_class": "measured",
+   "measured_max": -0.0003,
+   "measured_max_ref": -0.0003,
+   "accepted": false,
+   "bound": 0.0002,
+   "bound_kind": "screen",
+   "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
+  },
   "history-same-author-run-features": {
    "family": "history",
    "signal_family": "session-context",
    "status": "untried",
    "expected": [
     0.0,
-    0.0008
+    0.0002
    ],
    "basis_class": "oracle",
    "measured_max": null,
    "measured_max_ref": null,
+   "accepted": false,
+   "bound": 0.001,
+   "bound_kind": "structural",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
+  },
+  "history-session-attribute-overlap": {
+   "family": "history",
+   "signal_family": "session-context",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0002)]",
+   "expected": [
+    0.0,
+    0.0002
+   ],
+   "basis_class": "measured",
+   "measured_max": 0.0002,
+   "measured_max_ref": 0.0002,
    "accepted": false,
    "bound": 0.001,
    "bound_kind": "structural",
@@ -1468,8 +1816,8 @@
    "signal_family": "history-cf",
    "status": "proven — accepted on [official FM]",
    "expected": [
-    0.001,
-    0.006
+    0.0,
+    0.001
    ],
    "basis_class": "measured",
    "measured_max": 0.001,
@@ -1495,13 +1843,29 @@
    "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
   },
+  "loss-approxndcg-soft-ranks": {
+   "family": "ranking-loss",
+   "signal_family": null,
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)]",
+   "expected": [
+    0.0,
+    0.0
+   ],
+   "basis_class": "measured",
+   "measured_max": -0.0005,
+   "measured_max_ref": -0.0005,
+   "accepted": false,
+   "bound": null,
+   "bound_kind": null,
+   "bound_source": null
+  },
   "loss-bpr-hard-negatives": {
    "family": "ranking-loss",
    "signal_family": "pair-sampling",
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0001)]",
    "expected": [
     0.0,
-    0.004
+    0.0001
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,
@@ -1516,12 +1880,12 @@
    "signal_family": null,
    "status": "proven — accepted on [official FM]",
    "expected": [
-    0.002,
-    0.01
+    0.0,
+    0.0022
    ],
    "basis_class": "measured",
    "measured_max": 0.0022,
-   "measured_max_ref": null,
+   "measured_max_ref": -0.0,
    "accepted": true,
    "bound": null,
    "bound_kind": null,
@@ -1564,8 +1928,8 @@
    "signal_family": null,
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0005); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0016)]",
    "expected": [
-    0.001,
-    0.006
+    0.0,
+    0.0
    ],
    "basis_class": "measured",
    "measured_max": -0.0005,
@@ -1580,8 +1944,8 @@
    "signal_family": null,
    "status": "dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0029)]",
    "expected": [
-    0.001,
-    0.008
+    0.0,
+    0.0
    ],
    "basis_class": "measured",
    "measured_max": -0.0029,
@@ -1591,29 +1955,13 @@
    "bound_kind": null,
    "bound_source": null
   },
-  "loss-long-duration-matched-bpr": {
-   "family": "ranking-loss",
-   "signal_family": "pair-sampling",
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0000)]",
-   "expected": [
-    0.0,
-    0.0
-   ],
-   "basis_class": "measured",
-   "measured_max": -0.0,
-   "measured_max_ref": -0.0,
-   "accepted": false,
-   "bound": 0.0,
-   "bound_kind": "ablation",
-   "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
-  },
   "loss-ranksvm-margin-pairs": {
    "family": "ranking-loss",
    "signal_family": null,
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]",
    "expected": [
     0.0,
-    0.0015
+    0.0
    ],
    "basis_class": "measured",
    "measured_max": -0.0003,
@@ -1623,33 +1971,33 @@
    "bound_kind": null,
    "bound_source": null
   },
-  "loss-same-tab-long-duration-bpr": {
+  "loss-session-monotonic-auxiliary-pairs": {
    "family": "ranking-loss",
-   "signal_family": "pair-sampling",
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0002)]",
+   "signal_family": "session-context",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0023)]",
    "expected": [
     0.0,
     0.0
    ],
    "basis_class": "measured",
-   "measured_max": -0.0002,
-   "measured_max_ref": -0.0002,
+   "measured_max": -0.0023,
+   "measured_max_ref": -0.0023,
    "accepted": false,
-   "bound": 0.0,
-   "bound_kind": "ablation",
-   "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
+   "bound": 0.001,
+   "bound_kind": "structural",
+   "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
-  "loss-tab4-long-duration-bpr": {
+  "loss-warp-within-user-rank-weighting": {
    "family": "ranking-loss",
    "signal_family": "pair-sampling",
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0000)]",
+   "status": "untried",
    "expected": [
     0.0,
-    0.0
+    0.001
    ],
-   "basis_class": "measured",
-   "measured_max": -0.0,
-   "measured_max_ref": -0.0,
+   "basis_class": "oracle",
+   "measured_max": null,
+   "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
    "bound_kind": "ablation",
@@ -1660,8 +2008,8 @@
    "signal_family": "item-side",
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003); official FM + field-aware FM embeddings x1 (best Δ -0.0021)]",
    "expected": [
-    0.001,
-    0.008
+    0.0,
+    0.0003
    ],
    "basis_class": "measured",
    "measured_max": 0.0003,
@@ -1670,6 +2018,22 @@
    "bound": 0.0003,
    "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+  },
+  "model-attentional-factorization-machine": {
+   "family": "model",
+   "signal_family": null,
+   "status": "untried",
+   "expected": [
+    0.0,
+    0.001
+   ],
+   "basis_class": "paper",
+   "measured_max": null,
+   "measured_max_ref": null,
+   "accepted": false,
+   "bound": null,
+   "bound_kind": null,
+   "bound_source": null
   },
   "model-continuous-date-drift-head": {
    "family": "model",
@@ -1693,7 +2057,7 @@
    "status": "proven — accepted on [official FM + field-aware FM embeddings]",
    "expected": [
     0.0,
-    0.005
+    0.0005
    ],
    "basis_class": "measured",
    "measured_max": 0.0005,
@@ -1706,14 +2070,14 @@
   "model-din-history-attention": {
    "family": "model",
    "signal_family": "history-cf",
-   "status": "untried",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]",
    "expected": [
     0.0,
-    0.004
+    0.0
    ],
-   "basis_class": "oracle",
-   "measured_max": null,
-   "measured_max_ref": null,
+   "basis_class": "measured",
+   "measured_max": -0.0001,
+   "measured_max_ref": -0.0001,
    "accepted": false,
    "bound": 0.0002,
    "bound_kind": "screen",
@@ -1725,7 +2089,7 @@
    "status": "proven — accepted on [official FM]",
    "expected": [
     0.0,
-    0.0001
+    0.0012
    ],
    "basis_class": "measured",
    "measured_max": 0.0012,
@@ -1754,14 +2118,14 @@
   "model-first-order-exposure-transition-fm": {
    "family": "sequential-model",
    "signal_family": "session-context",
-   "status": "untried",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0005)]",
    "expected": [
     0.0,
-    0.001
+    0.0
    ],
-   "basis_class": "oracle",
-   "measured_max": null,
-   "measured_max_ref": null,
+   "basis_class": "measured",
+   "measured_max": -0.0005,
+   "measured_max_ref": -0.0005,
    "accepted": false,
    "bound": 0.001,
    "bound_kind": "structural",
@@ -1770,13 +2134,13 @@
   "model-lightgbm-lambdarank": {
    "family": "model",
    "signal_family": null,
-   "status": "untried",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022)]",
    "expected": [
-    0.001,
-    0.006
+    0.0,
+    0.0
    ],
-   "basis_class": "paper",
-   "measured_max": null,
+   "basis_class": "measured",
+   "measured_max": -0.0022,
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
@@ -1798,6 +2162,22 @@
    "bound": 0.0002,
    "bound_kind": "screen",
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
+  },
+  "model-neural-factorization-machine": {
+   "family": "model",
+   "signal_family": null,
+   "status": "untried",
+   "expected": [
+    0.0,
+    0.0008
+   ],
+   "basis_class": "paper",
+   "measured_max": null,
+   "measured_max_ref": null,
+   "accepted": false,
+   "bound": null,
+   "bound_kind": null,
+   "bound_source": null
   },
   "model-user-tab-duration-cp-interaction": {
    "family": "model",
@@ -1853,43 +2233,27 @@
    "status": "proven — accepted on [official FM]",
    "expected": [
     0.0,
-    0.004
+    0.001
    ],
    "basis_class": "measured",
    "measured_max": 0.001,
-   "measured_max_ref": null,
+   "measured_max_ref": 0.0001,
    "accepted": true,
    "bound": null,
    "bound_kind": null,
    "bound_source": null
   },
-  "regularization-embedding-only-l2": {
-   "family": "regularization",
+  "training-schedule-cyclic-bpr-pair-coverage": {
+   "family": "training-schedule",
    "signal_family": null,
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0002)]",
+   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0004)]",
    "expected": [
     0.0,
     0.0
    ],
    "basis_class": "measured",
-   "measured_max": -0.0002,
-   "measured_max_ref": null,
-   "accepted": false,
-   "bound": null,
-   "bound_kind": null,
-   "bound_source": null
-  },
-  "regularization-id-field-targeted-l2": {
-   "family": "regularization",
-   "signal_family": null,
-   "status": "dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0001)]",
-   "expected": [
-    0.0,
-    0.00015
-   ],
-   "basis_class": "measured",
-   "measured_max": 0.0001,
-   "measured_max_ref": 0.0001,
+   "measured_max": -0.0004,
+   "measured_max_ref": -0.0004,
    "accepted": false,
    "bound": null,
    "bound_kind": null,
@@ -1901,7 +2265,7 @@
    "status": "dead_under [official FM x1 (best Δ -0.0004); official FM + field-aware FM embeddings x1 (best Δ +0.0000); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0004); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0002)]",
    "expected": [
     0.0,
-    0.003
+    0.0004
    ],
    "basis_class": "measured",
    "measured_max": 0.0004,
@@ -1917,7 +2281,7 @@
    "status": "dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0001)]",
    "expected": [
     0.0,
-    0.003
+    0.0001
    ],
    "basis_class": "measured",
    "measured_max": 0.0001,

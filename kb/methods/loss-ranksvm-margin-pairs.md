@@ -9,7 +9,7 @@ applies_when:
   - BPR improves GAUC but its top-list gain is smaller (journal nodes 001/002)
   - LambdaRank, sampled hard negatives, and ListNet have already failed on the relevant FM stacks
 expected_delta: [0.0, 0.0000]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 1 measurement(s), so the promise is capped at the record; was: this changes only the pair surrogate, not information or capacity; BPR is already strong, so
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0003 over 1 measurement(s), so the promise is capped at the record; was: this changes only the pair surrogate, not information or capacity; BPR is already strong, so
   expect at most an acceptance-scale improvement from suppressing updates on comfortably ordered pairs
 cost: ~6 changed lines on the proven BPR edit; runtime 1x; numpy only
 composes_with: [model-field-aware-fm-embeddings, model-dcn-cross-head, ensembling-multiseed-heterogeneous-rank-blend]

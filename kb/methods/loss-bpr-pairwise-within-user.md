@@ -8,7 +8,7 @@ applies_when:
   - most training users have both positives and negatives (facts §7: 92.7 % of train users are discriminative)
   - the model produces a per-row score that can be differenced (any FM/DCN head)
 expected_delta: [0.0, 0.0022]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0022 over 8 measurement(s), so the promise is capped at the record; was: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0022 over 11 measurement(s), so the promise is capped at the record; was: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
   captures the user x video signal, so the gain is in ordering not calibration — do not expect more than 0.01
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]

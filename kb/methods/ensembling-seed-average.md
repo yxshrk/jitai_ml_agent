@@ -7,7 +7,7 @@ applies_when:
   - a champion exists whose remaining error is partly seed variance (std 0.0008 per seed on this dataset)
   - runtime allows N x training (baseline 15 s x 5 = 75 s) — always true here; use as a CLOSING move once the search has plateaued
 expected_delta: [0.0, 0.0016]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0015 over 8 measurement(s), so the promise is capped at the record; was: averaging N seeds removes ~sqrt(N) of the seed noise from the score and slightly improves the
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0016 over 8 measurement(s), so the promise is capped at the record; was: averaging N seeds removes ~sqrt(N) of the seed noise from the score and slightly improves the
   ordering; with std 0.0008 the ceiling is small but nearly free
 cost: ~20 lines (loop over seeds, average logits or within-user ranks); runtime N x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head, regularization-embedding-dropout-l2, training-schedule-lr-decay-early-stop]

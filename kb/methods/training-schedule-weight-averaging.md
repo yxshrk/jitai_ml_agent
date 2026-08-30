@@ -7,7 +7,7 @@ applies_when:
   - the validation curve peaks and then declines while training loss keeps falling (true for every node so far)
   - epochs are cheap enough to keep several checkpoints (FM: ~1 s per epoch)
 expected_delta: [0.0, 0.0001]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0002 over 2 measurement(s), so the promise is capped at the record; was: averaging the last few checkpoints (or an EMA of weights) reduces the seed/epoch variance
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 2 measurement(s), so the promise is capped at the record; was: averaging the last few checkpoints (or an EMA of weights) reduces the seed/epoch variance
   that the seed re-runs exposed (std 0.0004–0.0005 per node); a variance reducer, not new signal
 cost: ~15 lines (keep an EMA of V, W, b; evaluate the EMA copy); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-bpr-hard-negatives, regularization-embedding-dropout-l2, data-weighting-recency, model-dcn-cross-head]

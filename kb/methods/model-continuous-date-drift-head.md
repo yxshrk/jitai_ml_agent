@@ -8,7 +8,7 @@ applies_when:
   - training and evaluation periods exhibit temporal drift in volume or positive rate
   - the ranker supports row-specific numeric terms and gradients, such as same-user BPR
 expected_delta: [0.0, 0.0000]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated date-head probe on standard FM+BPR had fresh-seed mean Δ -0.00001 despite
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: the isolated date-head probe on standard FM+BPR had fresh-seed mean Δ -0.00001 despite
   single-seed Δ +0.00013, providing no attributable positive evidence for this linear extrapolation recipe
 cost: ~61 changed lines; one scalar and one dim-sized slope array with Adam states; measured runtime ~1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, data-weighting-recency, model-field-aware-fm-embeddings,

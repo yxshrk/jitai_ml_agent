@@ -13,7 +13,7 @@ cost: ~120 lines (feature builder + lightgbm.train with a callback that scores v
 composes_with: [features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average, loss-bpr-pairwise-within-user, history-user-aggregates]
 conflicts_with: [model-din-history-attention]
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022)]
-evidence: [live_07:node_007]
+evidence: [live_07:node_007, kb-screens:screen-g00]
 ---
 ## Claim
 A gradient-boosted tree ranker (LightGBM, lambdarank objective, query = user) over engineered row features can
@@ -49,5 +49,6 @@ through per-user target statistics and, in the blend, the BPR FM's rank.
 - Determinism: bagging + multithreading is reproducible only with deterministic = True and fixed num_threads.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0022); screened 1x (kb-screens:screen-g00 kept +0.0006)
 - live_07:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6008, single-seed Δ -0.0022 — rejected; 144 changed lines
+- kb-screens:screen-g00 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: SCREENED kept best_gain +0.0006 (gbdt_member z-blend w=1.0); stack +0.0006; gbdt_member: varies 1.0, GAUC 0.5996, additive +0.0006 (w 0.25/0.5/0.75/1.0 → +0.0000/+0.0002/+0.0005/+0.0006; within-user rank blend +0.0004; against single-seed BPR node_003 the same member gave +0.0021) — new_signal: lambdarank LightGBM on OOF target statistics + session features + tab/dur, blended in z-space with the seed-averaged champion (kb/data/screens/blend009.py, review session, 2026-08-31)

@@ -8,13 +8,13 @@ applies_when:
   - a heterogeneous ensemble contains a field-aware branch and a separate standard-FM branch
   - author identity is already encoded, but extra author-specific capacity is being tested only in the field-aware branch
 expected_delta: [0.0, 0.0000]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated five-seed-per-branch experiment measured seed-mean Δ -0.00002 (t -0.09);
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: the isolated five-seed-per-branch experiment measured seed-mean Δ -0.00002 (t -0.09);
   the positive seed-0 movement was only +0.00012 and provides no attributable evidence above zero
 cost: 26 changed lines; one extra field and author-sized id range in five field-aware members; numpy only
 composes_with: [model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)]
-evidence: [live_04:node_027]
+evidence: [live_04:node_027, ceiling:oracle]
 ---
 ## Claim
 Append a separately encoded copy of `author_id` only to the field-aware ensemble branch, giving that branch
@@ -46,3 +46,4 @@ independent author parameterization that can pool behavior across an author's vi
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0000)
 - live_04:node_027 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6046, single-seed Δ +0.0001, seed-mean Δ -0.0000 (t -0.09) — rejected; 26 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

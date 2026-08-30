@@ -256,3 +256,34 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
 - Open with Yash: the designation rule; the designation-time refit on train + valid (the ≤ 04-14 window experiment:
   0.5999 vs 0.6031 → the last week is worth ~0.003 on valid; likely +0.001–0.003 on the hidden test); whether the
   KuaiRand-27K log may serve as extra history for the Pure model (contains the test period — organizers' question).
+
+### After live_07 — the reviewed stack for live_08 (integration branch `campaigns`, three sessions, reviewed crosswise)
+- **ADR-0015 feature screen** (review session): a Probe role writes a short script computing a proposed signal on a
+  label-stripped valid split; `screen.py` measures within-user varies / GAUC / additive-on-champion / lambdarank stack
+  gain; below 0.0003 the slot is dropped before any node, journaled, and the Selector reads "screened out this run";
+  calibrated on live_07's own nodes (every accepted feature node clears the gate by 4×; probes 14–17 s).
+- **ADR-0016 family campaigns** (this session): from generation 2 one card family per generation, chosen in code by
+  evidence; mechanism-level diversity inside it; a family closes after two flat generations; `--no-campaigns`.
+- **ADR-0012 amendment — designation modes**: strict (default: only accepted nodes can be submitted, the best
+  unaccepted candidate reported) or adaptive (`--designation adaptive`: an unaccepted leader gets five seeds and must
+  beat the champion by ≥ 0.0005 at z ≥ 2). live_07's own designate_final had chosen node_019 (rejected at z 1.94)
+  by fresh-seed mean; under the strict rule the run's designated node is the champion node_009 — recorded as a
+  post-run decision, the run's summary left as written.
+- **Pair-type attribution** in the referee (`by_pair`, research session) and **facts §11** (the information ceiling).
+- **ADR-0018 calibrated cards and the family ledger**: `distill.calibrate()` caps every promise at the record or the
+  oracle bound (LightGBM 0.0000, DIN 0.0000, session features 0.0009, BPR 0.0022, L2 0.0010); six live_06 variant cards
+  merged into their bases (63 → 57 cards); card ids validated in the Selector's parser; the Archivist files variants as
+  `duplicate_of`; `kb/methods/ledger.py` (research session) generates `families.json` — 12 families: bounded 4
+  (aux-targets, data-weighting, encoding, watch-time), exhausted 2 (sequential-model, training-schedule), open 6 — and
+  `_family_score` ranks campaigns from it (reference-stack record, paper promises × 0.3, oracle bounds as ceilings,
+  kept screen gains); the Selector's calibration sentence is generated from the ledger; dead cards are one ledger
+  row in the prefix (menu ≈ 18 K tokens). The review session's blend009 calibration (a lambdarank GBDT member on the
+  seed-averaged champion: +0.0006 single seed at w = 1.0 in z-space; +0.0021 on single-seed BPR) is on the two cards
+  as a kept screen line, so the ensembling family carries the one measured, unbounded lever.
+- Yash's decisions in this window: no web-search agent in the loop (Librarian pre-run only); code review before any
+  run (done: 36c1a3c reviewed GO by the review session, the wiring and ledger commits are the only ones after it);
+  designation strict by default; live_08 = the ensembling campaign on this stack; the Planner merge (ADR-0017) and
+  the diff-returning Implementer deferred to after live_08; the designation-time train + valid refit to be built after
+  the run (facts §11: ≤ +0.001 on valid, the last week worth ~0.003 in the window experiment).
+- Honest expectation for live_08 (both sessions' calibration): +0.0005 realistic (0.605 on valid), 0.606 only with
+  a member carrying information the seed blend does not already remove; 0.61 out of reach with legal data.

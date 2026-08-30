@@ -8,13 +8,13 @@ applies_when:
   - 17.2 % of train rows are completed plays, i.e. censored observations of watch time (facts §3)
   - play_time_ms is available on train rows as a target (task.md: outcome columns are legal targets)
 expected_delta: [0.0, 0.0003]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0004 over 2 measurement(s), so the promise is capped at the record; was: predicting the mechanism that generates the label rather than the label; CWM reports gains on
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0003 over 2 measurement(s), so the promise is capped at the record; was: predicting the mechanism that generates the label rather than the label; CWM reports gains on
   KuaiRand-Pure on its own label, but our FM already sees duration_ms via dur_bucket, so treat 0.008 as the ceiling
 cost: ~90 lines (second head sharing V, censored loss, transform of play time); runtime ~1.3x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003); official FM + field-aware FM embeddings x1 (best Δ -0.0021)]
-evidence: [live_02:node_013, live_04:node_016]
+evidence: [live_02:node_013, live_04:node_016, ceiling:oracle]
 ---
 ## Claim
 Add a second head that regresses (log) watch time with a one-sided loss for completed plays — a completed play only
@@ -41,3 +41,4 @@ information; censoring keeps completed plays from teaching "the user stops at th
 _Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003); official FM + field-aware FM embeddings x1 (best Δ -0.0021)
 - live_02:node_013 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6035, single-seed Δ +0.0004, seed-mean Δ +0.0003 (t 1.85) — rejected; 50 changed lines
 - live_04:node_016 on [official FM + field-aware FM embeddings]: primary 0.6010, single-seed Δ -0.0021 — rejected; 51 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003 (facts §11, kb/data/screens/CEILING.md)

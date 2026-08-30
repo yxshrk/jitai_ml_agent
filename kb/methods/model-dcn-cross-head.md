@@ -7,7 +7,7 @@ applies_when:
   - the loss/feature levers have been tried first (organizers: capacity is not the bottleneck — k = 8/16/32 flat)
   - a head that adds explicit higher-order interactions on the same 5 x 16 embeddings can be back-propagated by hand (numpy only)
 expected_delta: [0.0, 0.0005]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 3 measurement(s), so the promise is capped at the record; was: organizers rank architecture after losses/features and measured embedding size flat; DCN-V2's
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 3 measurement(s), so the promise is capped at the record; was: organizers rank architecture after losses/features and measured embedding size flat; DCN-V2's
   gain in the literature comes from explicit bounded-degree crosses, which an FM lacks — modest here
 cost: ~120 lines (cross layer forward/backward, Adam for new matrices); runtime 2–3x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, regularization-embedding-dropout-l2]

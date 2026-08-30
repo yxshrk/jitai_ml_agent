@@ -14,7 +14,7 @@ cost: ~77 lines; runtime ~1.7x versus the field-aware parent (49 s measured); nu
 composes_with: [ensembling-seed-average, model-field-aware-fm-embeddings, model-dcn-cross-head, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ +0.0006)]
-evidence: [live_04:node_012]
+evidence: [live_04:node_012, kb-screens:screen-g00]
 ---
 ## Claim
 Independently early-stop a field-aware FM and a standard FM trained with the same within-user BPR sampler, then
@@ -44,5 +44,6 @@ can preserve agreements while correcting errors unique to either representation.
 - Rank averaging discards meaningful confidence margins and can create ties; retain a deterministic tiny tie-break.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ +0.0006)
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ +0.0006); screened 1x (kb-screens:screen-g00 kept +0.0006)
 - live_04:node_012 on [official FM + field-aware FM embeddings]: primary 0.6036, single-seed Δ +0.0006, seed-mean Δ +0.0006 (t 2.43) — rejected; 77 changed lines
+- kb-screens:screen-g00 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: SCREENED kept best_gain +0.0006 (gbdt_member z-blend w=1.0); stack +0.0006; gbdt_member: varies 1.0, GAUC 0.5996, additive +0.0006 (w 0.25/0.5/0.75/1.0 → +0.0000/+0.0002/+0.0005/+0.0006; within-user rank blend +0.0004; against single-seed BPR node_003 the same member gave +0.0021) — new_signal: lambdarank LightGBM on OOF target statistics + session features + tab/dur, blended in z-space with the seed-averaged champion (kb/data/screens/blend009.py, review session, 2026-08-31)
