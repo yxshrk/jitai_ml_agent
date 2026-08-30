@@ -64,7 +64,7 @@ class Journal:
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")
         return out
 
-    def digest(self, max_diff_lines=250):
+    def digest(self, max_diff_lines=250, full_diff_nodes=None, stub_lines=10):
         """The exact run record for the LLM roles (nothing summarised): per generation the diagnosis and the
         consolidator's plan; per node the hypothesis, expected vs realised delta, change summary, critic rounds,
         metrics, learning curve, seed confirmation, failure + recovery, and the diff itself."""
@@ -118,9 +118,12 @@ class Journal:
             dp = r.get('diff_path')
             if dp and (self.run_dir / dp).exists():
                 lines = (self.run_dir / dp).read_text().splitlines()
-                shown = lines[:max_diff_lines]
-                out.append(f"- diff ({r.get('diff_lines')} changed lines" + (f", first {max_diff_lines} shown" if len(lines) > max_diff_lines else '') + '):')
-                out.append('```diff\n' + '\n'.join(shown) + '\n```')
+                full = full_diff_nodes is None or r['n'] in full_diff_nodes
+                cap = max_diff_lines if full else stub_lines
+                shown = lines[:cap]
+                label = (f"- diff ({r.get('diff_lines')} changed lines" + (f", first {cap} shown" if len(lines) > cap else '')
+                         + ('' if full else '; stub — the full diff is in the run directory') + '):')
+                out.append(label); out.append('```diff\n' + '\n'.join(shown) + '\n```')
         return '\n'.join(out)
 
     def render_md(self, summary=None):

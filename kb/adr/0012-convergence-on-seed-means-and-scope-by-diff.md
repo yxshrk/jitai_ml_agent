@@ -21,11 +21,16 @@ Rules changed at different times had drifted apart, and live_04 showed the cost:
 - The prompts still told the roles "a node must beat the champion by ≥ 0.002" (the pre-ADR-0010 rule).
 
 ## Decision
-1. **Convergence tracks the champion's seed-mean** (`referee.Convergence`, now used by the loop): early-stopping
-   semantics — `best` is the reference set at the last rise of more than ε; a generation whose champion mean does
-   not exceed `best + ε` adds one to the streak; N = 3 such generations = converged. Small accepted gains accumulate
-   toward ε instead of each being "no improvement"; a rejected node cannot move `best`. The literal single-seed best
-   is still recorded (`best_single_seed`) for the judges.
+1. **Convergence counts generations without a seed-confirmed champion change** (`referee.Convergence`, used by the
+   loop): a generation whose accepted best node replaces the champion resets the streak; any other generation adds
+   one; N = 3 = converged. *Revised the same day by Yash* from a first version that let the reference move only on a
+   > ε rise of the champion's seed-mean: replayed on live_04, every faithful reading of ε stops the run at
+   generation 3, one generation before node_015 (+0.0017 confirmed, t 7.65, the best model of any run) existed. The
+   seed test (mean gain ≥ 0.0005 at ≥ 2.5 standard errors, i.e. several times the seed SD) is a stricter noise
+   filter than a fixed 0.002 on one seed, which is what ε exists for. ε keeps two jobs: the single-seed screen
+   recorded per node (`single_seed_accept`), and `referee.OfficialRule` — the organizers' rule read literally on
+   single-seed bests, tracked every generation and reported in `summary.official_rule` (where it would have
+   stopped) so the judges see both. The caps (50 nodes, 6 h, dollars) bound the extra generations this allows.
 2. **Champion = the accepted node with the largest seed-mean gain** (`pick_champion`), not the best single seed.
 3. **One seed cache** (`state.seed_cache`, keyed `node:seed`, never cleared) serves confirmation, prefetch and the
    final designation. Sample SD (`statistics.stdev`) with the 0.0002 floor; two-sample test kept — seeds are not
@@ -41,7 +46,8 @@ Rules changed at different times had drifted apart, and live_04 showed the cost:
 
 ## Consequences
 Runs stop when the *confirmed* champion stalls, not when a lucky seed happens or fails to happen; live_04 under
-this rule would have converged at generation 3 (champion mean +0.0012 over the baseline mean 0.60144) — and then
-resumed on the corrected reading when generation 4's ensemble rose to +0.0030 cumulative. Attribution in the
+this rule runs on through generation 4's ensemble (streak reset by a confirmed change) and stops after three flat
+generations, while the literal rule is reported to have converged at generation 3. Token accounting (ADR-0013) now
+reports cached and uncached input separately, and the run-journal block goes only to the roles that plan. Attribution in the
 journal and in the cards is trustworthy again: a wildcard's card describes what its diff actually did. Unit tests
 cover `Convergence`, `pick_champion`, `confirm_stats`, the seed-cache migration and `summarize`.

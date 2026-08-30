@@ -38,6 +38,6 @@ def rules_text():
             f"seeds (seeds {DEFAULT_SEED}..{DEFAULT_SEED + CONFIRM_SEEDS}); it is accepted iff its seed-mean gain over the champion "
             f"is >= {MIN_EFFECT} AND >= {T_CRIT} standard errors of the difference (seed-to-seed SD ~ {SEED_SD}); a node whose "
             f"predictions are byte-identical to its parent's is a no-op and is rejected without seeds. "
-            f"CONVERGENCE (code, ADR-0012): the champion's seed-mean validation primary must rise by more than eps = {EPS} "
-            f"(cumulative since the last such rise) within {N_CONVERGE} consecutive generations, else the run stops; "
-            f"the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")
+            f"CONVERGENCE (code, ADR-0012): the run stops after {N_CONVERGE} consecutive generations without a seed-confirmed "
+            f"champion change (the seed test replaces the organizers' single-seed eps = {EPS} as the noise filter; the literal "
+            f"eps rule is tracked and reported alongside); the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")

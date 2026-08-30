@@ -206,6 +206,8 @@ def stable_prefix():
         ])
     return _STABLE
 
+PLANNING_ROLES = ('diagnose', 'select', 'explore', 'consolidate', 'librarian', 'archive')   # roles that read the run journal block
+
 def refresh_menu():
     """Forget the cached prefix so cards added by the Librarian/Archivist appear in the next call."""
     global _STABLE
@@ -218,8 +220,9 @@ def untried_cards():
 def run_block(generation, digest):
     """The exact run journal, frozen at the start of a generation: identical for every call of that generation, so
     it sits right after the stable prefix and the provider's cache serves it after the first call."""
-    return (f'# Run journal so far (frozen at the start of generation {generation}; every node, every diff, every '
-            f'measurement — read it before proposing; nothing here is summarised)\n\n{digest}')
+    return (f'# Run journal so far (frozen at the start of generation {generation}; every node and measurement, with full '
+            f'diffs for the champion lineage, accepted nodes and the last generation, stubs for older rejected nodes — read it '
+            f'before proposing)\n\n{digest}')
 
 def system_text(role, block=''):
     """OpenAI `instructions`: the stable prefix (byte-identical for every role and generation) followed by the

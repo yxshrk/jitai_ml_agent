@@ -66,7 +66,7 @@ class Brain:
     def archive(self, ctx, rec, diff_text, card_ids, example, stack): return None   # wildcard -> card; LLM backends override
     def librarian(self, ctx, example): return []    # web-searched new cards; LLM backends override
     def set_tag(self, tag): pass
-    def set_context_block(self, text): pass       # the generation-stable run journal block
+    def set_context_block(self, text, roles=None): pass   # the generation-stable run journal block
 
 class FakeBrain(Brain):
     """Scripted brain: `generations` is a list (one per generation) of lists of (selection, code) pairs.
@@ -98,10 +98,13 @@ class LLMBrain(Brain):
         self._lock = threading.Lock(); self._tl = threading.local()   # calls may run from parallel branches
         self.models = dict(self.DEFAULT_MODELS, **(models or {}))
         self.efforts = dict(self.DEFAULT_EFFORT, **(efforts or {}))
-        self.budget_usd = budget_usd; self.log = log; self._block = ''
+        self.budget_usd = budget_usd; self.log = log; self._block = ''; self._block_roles = None
 
-    def set_context_block(self, text):
-        self._block = text or ''
+    def set_context_block(self, text, roles=None):
+        self._block = text or ''; self._block_roles = set(roles) if roles else None
+
+    def _block_for(self, role):
+        return self._block if (self._block_roles is None or role in self._block_roles) else ''
 
     def set_tag(self, tag):
         """Tag subsequent calls from this thread (the loop uses the node id) so tokens can be attributed per node."""
@@ -232,7 +235,7 @@ class OpenAIBrain(LLMBrain):
         self._check_budget()
         model = self.models[role]; t0 = time.time()
         text_in = P.user_message(role, user_text) + (f"\n\nFORMAT REMINDER: {retry_note}" if retry_note else '')
-        kw = dict(model=model, instructions=P.system_text(role, self._block), input=text_in,
+        kw = dict(model=model, instructions=P.system_text(role, self._block_for(role)), input=text_in,
                   reasoning={'effort': self.efforts[role]}, max_output_tokens=self.MAX_TOKENS[role])
         tools = self.ROLE_TOOLS.get(role)
         if tools:
@@ -278,7 +281,7 @@ class AnthropicBrain(LLMBrain):
         if self.use_fallbacks and model.startswith('claude-opus-5'):
             extra_body['fallbacks'] = 'default'; extra_headers['anthropic-beta'] = 'server-side-fallback-2026-07-01'
         try:
-            with self.client.messages.stream(model=model, max_tokens=self.MAX_TOKENS[role], system=P.system_blocks(role, self._block),
+            with self.client.messages.stream(model=model, max_tokens=self.MAX_TOKENS[role], system=P.system_blocks(role, self._block_for(role)),
                                              messages=messages, extra_body=extra_body, extra_headers=extra_headers) as s:
                 msg = s.get_final_message()
         except self.anthropic.BadRequestError as e:

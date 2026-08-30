@@ -159,8 +159,9 @@ class Loop:
         g = self.state['generation'] + 1; self.state['generation'] = g
         t_gen = time.time(); snap = self.brain.usage.snapshot()
         self.log(f'=== generation {g}: champion node_{self.champion["n"]:03d} ({self.champion["metrics"]["primary"]:.4f}), streak {self.state["streak"]} ===')
-        # the exact journal so far, frozen for this generation: every role reads it from the cached prompt prefix (ADR-0013)
-        self.brain.set_context_block(P.run_block(g, self.j.digest()))
+        # the exact journal so far, frozen for this generation, in the cached prefix of the roles that PLAN (ADR-0013);
+        # full diffs for the champion lineage, accepted nodes and the last generation, stubs for older rejected nodes
+        self.brain.set_context_block(P.run_block(g, self.j.digest(full_diff_nodes=self._diff_focus())), roles=P.PLANNING_ROLES)
 
         # 1. diagnose + select
         diagnosis, err = self._brain(self.brain.diagnose, self.ctx(), what='diagnose')
@@ -275,9 +276,12 @@ class Loop:
             self.state['champion'] = new_champion
         if ok:                                                      # the literal single-seed best, reported alongside
             self.state['best_single'] = max(self.state.get('best_single') or 0.0, max(r['metrics']['primary'] for r in ok))
-        conv = R.Convergence(self.state['best'], self.state['streak'])
-        improved = conv.update(self.champion_mean())                 # organizers' rule on the champion's seed-mean
-        self.state['best'], self.state['streak'] = conv.best, conv.streak
+        conv = R.Convergence(self.state['streak'])
+        improved = conv.update(new_champion is not None)             # ADR-0012 (revised): a confirmed champion change resets the streak
+        self.state['streak'] = conv.streak; self.state['best'] = round(self.champion_mean(), 5)
+        off = self.state.setdefault('official_rule', {'best_single_seed': self.node(0)['metrics']['primary'], 'streak': 0, 'converged_at_generation': None})
+        o = R.OfficialRule(off['best_single_seed'], off['streak'], off['converged_at_generation'])
+        o.update(max((r['metrics']['primary'] for r in ok), default=None), g); self.state['official_rule'] = o.to_dict()
         self._maybe_librarian(g, improved, results)
         # parked ideas: rejected-but-plausible nodes stay available for a justified retest (ADR-0004)
         for r in results:
@@ -301,6 +305,15 @@ class Loop:
         self.log(f"generation {g} done: champion node_{self.state['champion']:03d} best {self.state['best']:.4f} "
                  f"streak {self.state['streak']} | tokens {tin}/{tout} | {time.time() - t_gen:.0f}s")
         return improved
+
+    def _diff_focus(self):
+        """Nodes whose diffs the planning roles see in full: the champion's lineage, every accepted node, the last generation."""
+        keep = set(); n = self.state['champion']
+        while n is not None:
+            keep.add(n); n = self.node(n).get('parent')
+        keep |= {v['n'] for v in self.state['nodes'].values() if v.get('accepted')}
+        keep |= {r['n'] for r in self.state.get('last_generation', []) if r.get('n') is not None}
+        return keep
 
     def _maybe_librarian(self, g, improved, results):
         """After a flat generation, when fewer than k untried cards remain, ask the Librarian (web search) for two
@@ -327,7 +340,14 @@ class Loop:
                 res = (f"primary {m['primary']:.4f}, Δ {r.get('realized_delta'):+.4f}" + (f", seed-mean {c['delta_mean']:+.4f}" if c else '')
                        + f", {'accepted' if r.get('accepted') else 'rejected'}") if m else f"FAILED: {str(r.get('error'))[:100]}"
                 out.append(f"- node_{r['n']:03d} [{r.get('target_component')}] {r.get('method')}: {str(r.get('change_summary') or r.get('hypothesis'))[:160]} -> {res}")
-        return out[-limit:]
+                if r.get('diff_path') and (self.run_dir / r['diff_path']).exists():
+                    out.append((r['n'], self.run_dir / r['diff_path']))
+        lines = [x for x in out if isinstance(x, str)][-limit:]
+        diffs = [x for x in out if not isinstance(x, str)][-2:]      # the two most recent relevant diffs, in full (<= 120 lines)
+        for n, dp in diffs:
+            body = dp.read_text().splitlines()[:120]
+            lines.append(f"diff of node_{n:03d} (what that attempt changed):\n```diff\n" + '\n'.join(body) + '\n```')
+        return lines
 
     def _prefetch_seeds(self, node_ids):
         """Run all missing confirmation seeds (nodes + champion) in parallel; _confirm_with_seeds then reads the cache."""
@@ -467,7 +487,7 @@ class Loop:
         self.start()
         while True:
             if self.state['streak'] >= C.N_CONVERGE:
-                self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without > {C.EPS} rise of the champion seed-mean (ADR-0012)'; break
+                self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without a seed-confirmed champion change (ADR-0012)'; break
             if self.iteration_unit == 'node' and self.state['n_next'] + self.k > self.max_nodes:
                 self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting nodes)'; break
             if self.iteration_unit == 'generation' and self.state['generation'] >= self.max_nodes:
@@ -531,7 +551,10 @@ class Loop:
                    'designated': self.state.get('designated'), 'final_ranking': ranking,
                    'usage': self.brain.usage.snapshot(), 'wall_clock_s': round(self.elapsed(), 1),
                    'champion_seed_mean': round(self.champion_mean(), 5), 'best_single_seed': self.state.get('best_single'),
-                   'convergence_rule': 'ADR-0012: champion seed-mean must rise > eps within N generations',
+                   'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
+                   'official_rule': self.state.get('official_rule'),
+                   'tokens': {'in_uncached': self.brain.usage.snapshot().get('tokens_in'), 'in_cached': self.brain.usage.snapshot().get('cache_read'),
+                              'out': self.brain.usage.snapshot().get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
                    'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))

@@ -25,7 +25,7 @@ flowchart TD
         B3["branch 5<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
         B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>md5 identical to the parent → NO-OP, rejected<br/>Δ > 0 → 2 more seeds in parallel (all seeds cached)<br/>accept iff seed-mean gain ≥ 0.0005 and ≥ 2.5 standard errors"]
         REF --> J["JOURNAL (code)<br/>hypothesis · diff · metrics · curve · seeds · critic rounds · errors · recovery · tokens · time"]
-        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged when the champion's seed-mean has not risen > 0.002 in 3 generations"]
+        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged after 3 generations without a seed-confirmed champion change<br/>(the literal single-seed ε rule is tracked and reported alongside)"]
         CH --> LIB["LIBRARIAN (LLM + web search), only after a flat generation<br/>when < k untried cards remain (≤ 2× per run): n new cards, validated by code"]
         LIB --> CONS["CONSOLIDATOR (LLM)<br/>reads the verdicts → next generation's slots:<br/>merge orthogonal winners · retest a parked idea · explore after a flat generation"]
     end
@@ -85,10 +85,15 @@ referee measures that), and it judges scope from the diff against the parent's *
 
 **Context discipline — nothing summarised, everything cached.** The provider `instructions` are two blocks:
 (1) the *stable prefix* — task spec, scoring, **foundations** (the task-specific mathematics, ADR-0013), script
-contract, measured data facts, the card status table and all cards (≈ 16 K tokens), byte-identical for every role
-and generation; (2) the *run block* — `Journal.digest()`, the exact record of every node so far including its diff,
-frozen at the start of the generation (≈ 23 K tokens at 14 nodes). Both are served by the prompt cache after the
-first call of a generation (live_02: 682 K of 866 K input tokens cached). The role text and the per-call state go in
+contract, measured data facts, the card status table and all cards (≈ 17 K tokens), byte-identical for every role
+and generation; (2) the *run block* — `Journal.digest()`, the exact record of every node so far, frozen at the start
+of the generation, with full diffs for the champion lineage, accepted nodes and the last generation and 10-line
+stubs for older rejected nodes. The run block goes only to the roles that plan (Diagnostician, Selector, Explorer,
+Consolidator, Librarian, Archivist — four or five calls per generation); the Implementer receives the diffs of the
+nodes relevant to its component in its own message and the Critic reviews a diff and needs no journal, so the
+block does not multiply the input-token count the organizers tier Feasibility on. Both blocks are served by the
+prompt cache after the first call of a generation (live_02: 682 K of 866 K input tokens cached); the summary
+reports cached and uncached input separately. The role text and the per-call state go in
 the user message. Never a growing transcript. The rules the roles read are generated from `config.py`
 (`rules_text()`), so the text cannot drift from the code (ADR-0012).
 
@@ -107,10 +112,11 @@ the user message. Never a growing transcript. The rules the roles read are gener
    +0.0005 were +0.0000/+0.0001/+0.0002.
 5. **Champion (ADR-0012).** The accepted node with the largest seed-mean gain this generation; it parents the next
    generation. A rejected node's lucky single seed cannot block it. Rejected ideas are parked.
-6. **Convergence (ADR-0012).** The organizers' rule on the champion's seed-mean with early-stopping semantics:
-   the reference `best` moves only when the champion's mean exceeds it by more than ε = 0.002; a generation that
-   does not adds one to the streak; three → converged. Small accepted gains accumulate toward ε; the literal
-   single-seed best is reported alongside. Also stops at 50 nodes (or 50 generations with
+6. **Convergence (ADR-0012, revised).** The streak counts consecutive generations without a seed-confirmed
+   champion change; three → converged. The seed test is a stricter noise filter than the organizers' fixed
+   ε = 0.002 on one seed, so a confirmed gain of any size keeps the run alive; ε remains the per-node single-seed
+   screen, and `referee.OfficialRule` tracks the literal rule (single-seed best, > ε, N = 3) every generation and
+   reports where it would have stopped. Also stops at 50 nodes (or 50 generations with
    `--iteration-unit generation`), 6 h of running time, or the dollar budget.
 7. **Final designation.** Top-3 nodes by validation primary re-ranked by 3-seed mean; the winner is submitted
    (`submit.py`: one run on `private/test_features.csv`, validated by the organizers' `submit.py --check`; no test

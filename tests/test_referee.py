@@ -10,13 +10,15 @@ def test_static_check_flags_forbidden_paths():
 def test_accept_and_convergence():
     assert R.accept(0.6015, 0.6040) == (True, pytest.approx(0.0025))
     assert R.accept(0.6015, 0.6030)[0] is False
-    c = R.Convergence(0.6015)                                    # ADR-0012: on the champion's seed-mean, patience semantics
-    assert c.update(0.6027) is False and c.streak == 1           # +0.0012: not > eps -> non-improving, reference unchanged
-    assert c.update(0.6027) is False and c.streak == 2           # same champion again
-    assert c.update(0.6036) is True and c.streak == 0            # cumulative +0.0021 > eps: small accepted gains add up
-    assert c.best == pytest.approx(0.6036)
-    assert c.update(None) is False and c.update(0.6036) is False and not c.converged
-    assert c.update(0.6040) is False and c.converged             # third consecutive non-improving generation
+    c = R.Convergence()                                          # ADR-0012 (revised): confirmed champion changes reset the streak
+    assert c.update(True) is True and c.streak == 0
+    assert c.update(False) is False and c.update(False) is False and c.streak == 2 and not c.converged
+    assert c.update(True) is True and c.streak == 0              # a +0.0006 confirmed gain keeps the run alive
+    assert all(c.update(False) is False for _ in range(3)) and c.converged
+    o = R.OfficialRule(0.6015)                                   # the literal single-seed rule, tracked for reporting
+    o.update(0.6030, 1); o.update(0.6032, 2); o.update(0.6033, 3)
+    assert o.converged_at == 3 and o.best == 0.6015              # would have stopped at generation 3
+    o.update(0.6045, 4); assert o.streak == 0 and o.best == 0.6045
 
 def test_pick_champion_and_confirm_stats():
     from harness.loop import pick_champion, confirm_stats

@@ -152,17 +152,16 @@ def accept(champion_primary, new_primary):
     return delta >= C.EPS, delta
 
 class Convergence:
-    """The organizers' rule applied to the statistic acceptance trusts (ADR-0012): the champion's seed-mean
-    validation primary. Early-stopping semantics (min_delta = EPS, patience = N_CONVERGE): `best` is the reference
-    set at the last rise of more than EPS; a generation whose champion mean does not exceed best + EPS adds one to
-    the streak; N_CONVERGE consecutive such generations = converged. Small accepted gains therefore accumulate
-    toward EPS instead of each being 'no improvement', and a rejected node's lucky seed can never move `best`."""
-    def __init__(self, best, streak=0):
-        self.best, self.streak = best, streak
-    def update(self, champion_mean):
-        """Returns True iff this generation counts as an improvement (> EPS over the reference)."""
-        if champion_mean is not None and champion_mean > self.best + C.EPS:
-            self.best, self.streak = champion_mean, 0
+    """ADR-0012 (revised by Yash): the streak counts consecutive generations WITHOUT a seed-confirmed champion change;
+    N_CONVERGE such generations = converged. The seed test (mean gain >= MIN_EFFECT at >= T_CRIT standard errors) is
+    a stronger noise filter than a fixed eps on one seed, so a confirmed improvement of any size keeps the run alive.
+    The organizers' literal rule is tracked alongside by OfficialRule and reported, never used to stop."""
+    def __init__(self, streak=0):
+        self.streak = streak
+    def update(self, champion_changed):
+        """Returns True iff this generation produced a seed-confirmed champion change."""
+        if champion_changed:
+            self.streak = 0
             return True
         self.streak += 1
         return False
@@ -172,3 +171,20 @@ class Convergence:
     @property
     def iters_left_before_convergence(self):
         return max(0, C.N_CONVERGE - self.streak)
+
+class OfficialRule:
+    """The organizers' rule read literally on single-seed validation primaries (best of any node): the reference
+    moves only on a rise of more than EPS; N_CONVERGE generations without one = 'converged'. Kept for reporting so
+    the judges can see where the literal rule would have stopped each run (summary.official_rule)."""
+    def __init__(self, best, streak=0, converged_at=None):
+        self.best, self.streak, self.converged_at = best, streak, converged_at
+    def update(self, gen_best_single, generation):
+        if gen_best_single is not None and gen_best_single > self.best + C.EPS:
+            self.best, self.streak = gen_best_single, 0
+        else:
+            self.streak += 1
+            if self.streak >= C.N_CONVERGE and self.converged_at is None:
+                self.converged_at = generation
+        return self.streak
+    def to_dict(self):
+        return {'best_single_seed': self.best, 'streak': self.streak, 'converged_at_generation': self.converged_at}

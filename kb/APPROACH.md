@@ -145,9 +145,10 @@ agent reasons about effect sizes rather than guessing.
 
 ## 11. One statistic for acceptance and convergence; scope judged from the diff
 
-**What we did (ADR-0012).** Acceptance, champion selection and the convergence rule all read the same number — the
-champion's seed-mean validation primary — with early-stopping semantics for ε (the reference moves only on a rise
-of more than 0.002; small accepted gains accumulate toward it). The Critic reviews the unified diff against the
+**What we did (ADR-0012).** Acceptance, champion selection and the convergence rule all read the same evidence —
+the seed-confirmed gain of the champion: the streak counts generations without a confirmed champion change, and the
+organizers' ε = 0.002 stays as the per-node single-seed screen and as a literal-rule tracker reported in every
+summary. The Critic reviews the unified diff against the
 parent's *actual* stack; a change whose predictions are byte-identical to the parent's is a no-op, not a data point.
 
 **Why.** Rules changed at different times had diverged: in live_04 four seed-confirmed acceptances were logged as
@@ -158,9 +159,9 @@ twice until BPR was added — the wildcard's +0.0012 was mostly the BPR gain mea
 the proposal must be what it says it is, acceptance must be seed-robust, and the stopping rule must not fire while
 the climb is going up — or keep going because of noise.
 
-**Measured here.** Under the corrected rule live_04 converges at generation 3 with champion mean +0.0012 and would
-have resumed on generation 4's +0.0030 cumulative; the Archivist's card for the wildcard states expected Δ
-[0, 0.0001] with the attribution written out.
+**Measured here.** Every faithful reading of ε stops live_04 at generation 3, one generation before node_015
+(+0.0017 confirmed, t 7.65) existed — which is why Yash chose the confirmed-change rule; the Archivist's card for
+the wildcard states expected Δ [0, 0.0001] with the attribution written out.
 
 ## 12. The menu grows; the roles read everything
 
