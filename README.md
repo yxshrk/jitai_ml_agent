@@ -17,7 +17,7 @@ hyperparameter sweeps, 7 seed-member fits, and 6 candidate ensemble designs, all
 recorded in probe logs — we report both the decision count and the internal work,
 and the validation set was used adaptively for those selections, so hidden-test
 performance is the decisive generalization test.
-Bonus: KuaiRand-1K **0.63874** (agent-designated, `logs/run_desig_1k_01`);
+Bonus: KuaiRand-1K **0.6524 designated ({{TBD: 0.66892 pending audit}})
 KuaiRand-27K 0.67263 (out-of-protocol GPU scaling demo).
 
 ## How the agent works
