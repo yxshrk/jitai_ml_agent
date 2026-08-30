@@ -23,7 +23,10 @@ from evaluate import evaluate
 
 
 SPLITS = {"train": (20220408, 20220421), "valid": (20220422, 20220428)}
-FIELDS = ("user_id", "video_id", "author_id", "tab", "dur_bucket", "hour", "weekday", "is_rand")
+FIELDS = (
+    "user_id", "video_id", "author_id", "tab", "dur_bucket", "hour", "weekday", "is_rand",
+    "positive_tag_overlap", "positive_music_overlap",
+)
 AUXILIARY_TASKS = ("is_click", "is_profile_enter", "is_like", "is_follow")
 HYPOTHESIS = (
     "A pooled causal author-history representation will capture short-term user "
@@ -44,10 +47,12 @@ def weekday(date_value):
 
 
 def load_rows(data_dir):
-    authors = {}
+    videos = {}
     with open(Path(data_dir) / "video_features_basic_pure.csv", newline="") as handle:
         for row in csv.DictReader(handle):
-            authors[row["video_id"]] = row["author_id"]
+            videos[row["video_id"]] = (
+                row["author_id"], frozenset(tag for tag in row.get("tag", "").split(",") if tag), row.get("music_id", "UNK")
+            )
     rows = {"train": [], "valid": []}
     for filename in ("log_standard_4_08_to_4_21_pure.csv", "log_standard_4_22_to_5_08_pure.csv"):
         with open(Path(data_dir) / filename, newline="") as handle:
@@ -60,7 +65,9 @@ def load_rows(data_dir):
                         "timestamp": int(source_row["time_ms"]),
                         "user_id": source_row["user_id"],
                         "video_id": source_row["video_id"],
-                        "author_id": authors.get(source_row["video_id"], "UNK"),
+                        "author_id": videos.get(source_row["video_id"], ("UNK", frozenset(), "UNK"))[0],
+                        "tags": videos.get(source_row["video_id"], ("UNK", frozenset(), "UNK"))[1],
+                        "music_id": videos.get(source_row["video_id"], ("UNK", frozenset(), "UNK"))[2],
                         "tab": source_row["tab"],
                         "duration_ms": float(source_row["duration_ms"]),
                         "hour": str(int(source_row["hourmin"]) // 100),
@@ -71,6 +78,43 @@ def load_rows(data_dir):
                     }
                 )
     return rows
+
+
+def add_positive_content_features(rows, enabled):
+    """Causal match features from earlier train long-view content only."""
+    if not enabled:
+        for split_rows in rows.values():
+            for row in split_rows:
+                row["positive_tag_overlap"] = "0"
+                row["positive_music_overlap"] = "0"
+        return
+    tag_profiles = defaultdict(lambda: defaultdict(int))
+    music_profiles = defaultdict(lambda: defaultdict(int))
+
+    def assign(row):
+        tag_hits = sum(tag_profiles[row["user_id"]][tag] for tag in row["tags"])
+        music_hits = music_profiles[row["user_id"]][row["music_id"]]
+        row["positive_tag_overlap"] = str(min(7, int(np.log2(1 + tag_hits))))
+        row["positive_music_overlap"] = str(min(4, int(np.log2(1 + music_hits))))
+
+    order = sorted(range(len(rows["train"])), key=lambda index: rows["train"][index]["timestamp"])
+    start = 0
+    while start < len(order):
+        end = start + 1
+        timestamp = rows["train"][order[start]]["timestamp"]
+        while end < len(order) and rows["train"][order[end]]["timestamp"] == timestamp:
+            end += 1
+        for order_index in range(start, end):
+            assign(rows["train"][order[order_index]])
+        for order_index in range(start, end):
+            row = rows["train"][order[order_index]]
+            if row["label"]:
+                for tag in row["tags"]:
+                    tag_profiles[row["user_id"]][tag] += 1
+                music_profiles[row["user_id"]][row["music_id"]] += 1
+        start = end
+    for row in rows["valid"]:
+        assign(row)
 
 
 def add_history(rows, history_length, validation_history_mode, history_source):
@@ -153,6 +197,7 @@ def encode(rows, history_length):
         return (
             row["user_id"], row["video_id"], row["author_id"], row["tab"],
             str(int(np.searchsorted(duration_edges, row["duration_ms"]))), row["hour"], row["weekday"], row["is_rand"],
+            row["positive_tag_overlap"], row["positive_music_overlap"],
         )
 
     vocabularies = [dict() for _ in FIELDS]
@@ -283,6 +328,7 @@ def run(args):
     np.random.seed(args.seed)
     device = torch.device("cpu")
     rows = load_rows(args.data_dir)
+    add_positive_content_features(rows, args.positive_content_features)
     add_history(rows, args.history_length, args.validation_history_mode, args.history_source)
     encoded, field_dimensions, author_padding = encode(rows, args.history_length)
     train_x, train_history, train_y, train_auxiliary, train_users = encoded["train"]
@@ -384,6 +430,7 @@ def run(args):
         "fields": FIELDS,
         "history_length": args.history_length,
         "history_encoder": args.history_encoder,
+        "positive_content_features": args.positive_content_features,
         "best": best_event,
         "trajectory": trajectory,
         "error_or_recovery": None,
@@ -409,6 +456,10 @@ def parse_args():
     parser.add_argument(
         "--history_source", choices=("all_exposures", "positive_long_view"), default="all_exposures",
         help="Retain all causal train impressions, or only earlier train long-view authors.",
+    )
+    parser.add_argument(
+        "--positive_content_features", action="store_true",
+        help="Use causal train-long-view tag/music overlap features; validation receives frozen train profiles.",
     )
     parser.add_argument("--embedding_dim", type=int, default=16)
     parser.add_argument("--hidden_dim", type=int, default=64)
