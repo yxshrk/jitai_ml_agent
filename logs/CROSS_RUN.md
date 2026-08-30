@@ -1189,3 +1189,117 @@ What the next run should try first
 4. Audit feature timing and censoring definitions for leakage, then report performance by completion status, session length, item duration, and user activity.
 
 The strongest lead is the censor-aware watch-time auxiliary objective, but the immediate priority is validating and isolating its effect rather than adding another model package.
+
+## Run logs/run_unseeded_24
+dataset: pure
+stop_reason: converged
+best_primary: 0.603041
+- node_001 | method: package-dial-sweep | hypothesis: Because the parent validation curve peaks at epoch | primary: 0.603041 | verdict: accepted
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Repairing the failed proposal with an executable validation-selected | primary: 0.603380 | verdict: rejected
+self_critique:
+The run found a small improvement, but the search process was inefficient and the evidence is weaker than the drafts imply.
+
+What was suboptimal
+
+- Node 001 bundled architecture, loss, optimizer, dropout, LR schedule, recency weighting, and checkpoint timing into one package. The +0.00124 gain over baseline cannot be attributed to any component.
+- The proposal predicted roughly +0.0029, but the accepted gain was only about +0.0012. Node 003 repeated the same unsupported estimate instead of updating expectations from observed results.
+- An “internal sweep” plus validation-selected checkpointing risks overfitting the validation set, especially for such a small gain. No untouched holdout or repeated-seed confirmation is reported.
+- Node 002 failed operationally. The harness then created node 003 as a child of the failed node rather than cleanly rebasing the repair on the last accepted executable node.
+- Node 003’s point estimate (0.6034) exceeded the recorded incumbent (0.603041) but was rejected. That may be statistically correct, but the journal should record the rejection criterion, uncertainty, and paired delta explicitly; otherwise the decision is opaque.
+- Stopping as “converged” after one accepted improvement, one proposal failure, and one rejected repair is premature. This is not enough exploration to establish a local optimum.
+- Recency weighting is not obviously justified for the “pure” dataset and may introduce a temporal prior without demonstrated temporal drift.
+
+Scaffold changes
+
+- Require proposals to change one factor at a time, or use a small declared factorial design.
+- Separate model changes from training/checkpoint-selection changes.
+- Validate proposal executability before consuming a trial; automatically rebase failed proposals on the last accepted node.
+- Record incumbent delta, seed-wise scores, uncertainty, acceptance threshold, and rejection reason for every node.
+- Use repeated paired seeds for gains near 0.001 and reserve a final untouched evaluation split.
+- Calibrate predicted improvements from prior outcomes rather than repeating the original estimate.
+- Do not declare convergence until a minimum exploration budget and several distinct hypotheses have been tested.
+
+What the next run should try first
+
+Reproduce node 001 across multiple paired seeds, then ablate the package against the baseline. Start with the cheapest and most plausible explanation for the gain: early stopping/half-epoch checkpointing plus dropout/AdamW, while keeping the FM architecture, loss, and data weighting fixed. If that holds, test DCN-lite, hybrid BCE/BPR, and recency weighting separately. Recency weighting should be last and should only be retained if temporal-stratified validation shows a consistent benefit.
+
+## Run logs/run_unseeded_27
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Increasing the FM latent rank from 16 to | primary: 0.599839 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run assessment
+
+The run did not meaningfully converge; it stalled. Of four nodes, two were proposal-generation failures, one was the baseline, and only one real alternative was evaluated. The best score therefore remained the baseline at 0.601838.
+
+Suboptimal harness/policy behavior
+
+- It declared convergence with only one completed challenger. Failed proposals should not count as evidence of search-space convergence.
+- node_002 descended from failed node_001 rather than explicitly rebasing on the last valid checkpoint, node_000. Failed nodes should never be treated as executable parents.
+- The sole experiment changed both latent rank (16→20) and embedding weight decay (to 3e-4). Its roughly 0.002 regression cannot be attributed to either change.
+- The claimed baseline sigma of 0.0001 is not credible without repeated seeded evaluations, especially in an “unseeded” run. Acceptance/rejection decisions may be overconfident.
+- The search budget was too small and too fragile: proposal failures consumed half the run and apparently triggered premature stopping.
+- The journal lacks diagnostics such as per-seed scores, train/validation gap, loss curves, and runtime, which would help determine whether rank or regularization caused the regression.
+
+Scaffold changes
+
+- Add proposal validation and automatic retries, followed by a deterministic fallback experiment if generation repeatedly fails.
+- Rebase every experiment on the latest valid ancestor; failed nodes should be metadata-only.
+- Require a minimum number of successful experiments before convergence can be declared.
+- Estimate noise using fixed seeds and repeated baseline runs; use that empirical uncertainty for acceptance.
+- Enforce one-factor-at-a-time changes initially, or explicitly schedule a small factorial ablation when interactions are hypothesized.
+- Preserve full configuration diffs and basic overfitting diagnostics for every node.
+
+What the next run should try first
+
+First, rerun the rank-16 baseline across at least 3–5 fixed seeds to establish variance. Then isolate the failed proposal with a 2×2 ablation:
+
+- rank 16, baseline weight decay
+- rank 20, baseline weight decay
+- rank 16, weight decay 3e-4
+- rank 20, weight decay 3e-4
+
+If only one challenger can be run initially, use rank 16 with weight decay 3e-4. That directly tests the regularization component without confounding it with added capacity.
+
+## Run logs/run_chain_25b
+dataset: pure
+stop_reason: converged
+best_primary: 0.604431
+- node_001 | method: none | hypothesis: seed script (disclosed initial draft): self_seed_25.py | primary: 0.604431 | verdict: accepted
+- node_002 | method: seed-ensemble | hypothesis: Increasing the champion’s seed-only ensemble from three to | primary: 0.604477 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_004 | method: none | hypothesis: Adding a low-weight CWM-style censor-aware watch-time regression auxiliary | primary: 0.600396 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a real improvement over baseline, from 0.6018 to 0.604431, but nearly all value came from the disclosed seed script. The autonomous search added little evidence of effective hypothesis generation or iteration.
+
+What the harness/policy did suboptimally
+
+- It converged too early. After the seed, only two substantive ideas were evaluated: a larger same-model ensemble and a censor-aware auxiliary. That is insufficient to establish search exhaustion.
+- The five-member ensemble hypothesis was poorly calibrated. It predicted roughly +0.0014 but delivered less than +0.0001. The policy should have recognized diminishing returns from additional identical-config seeds.
+- Reporting is ambiguous: node_002 rounds to 0.6045, above the stated best of 0.604431, yet was rejected. Exact scores, uncertainty, runtime/cost, and the acceptance rule should be logged.
+- A failed proposal became a parent, and node_004 was labeled “debug” despite being a new modeling experiment. Failed administrative nodes should not alter lineage; recovery should branch from the current champion.
+- The censor-aware auxiliary changed several conceptual elements at once and apparently received only one shot. Without weight sweeps or ablations, its rejection says little about whether the auxiliary was bad or merely misweighted.
+- Uncertainty was only reported for the baseline. Seed variance or paired-run uncertainty for the champion and challengers is needed to distinguish noise from improvement.
+- The duplicated node_001 seed/child entries obscure provenance and budget accounting.
+
+What I would change in the scaffold
+
+- Keep failed proposals outside the experiment DAG and always branch subsequent experiments from the best valid node.
+- Add proposal validation and automatic repair before consuming a node.
+- Log full-precision metrics, paired deltas, seed variance, compute cost, and explicit rejection reasons.
+- Use staged evaluation: cheap single-seed screening, then repeated seeds only for promising changes.
+- Require atomic hypotheses and small sweeps for sensitive coefficients such as auxiliary-loss weights.
+- Allocate budget explicitly between local optimization and diverse exploration rather than stopping after one failed idea in each category.
+- Calibrate predicted gains using prior observed deltas; large claims for seed-only ensembling should be penalized.
+
+What the next run should try first
+
+First test a validation-prediction blend of the node_001 champion with the baseline FM over a small weight grid. This is cheap and tests cross-model error diversity, which is more promising than adding further identical-config seeds. If predictions are unavailable, regenerate them once and retain them as artifacts.
+
+After that, run a compact one-factor-at-a-time sweep around node_001, prioritizing the BCE/BPR mixing weight and regularization strength. Only revisit the censor-aware objective as a low-weight auxiliary with several weights including zero, so its effect can be isolated.
