@@ -28,3 +28,4 @@ logs/k1_*/
 logs/bonus_1k_*/predictions.csv
 logs/seedext/
 evidence/test_submission_1k.csv
+MACHINES.local.md

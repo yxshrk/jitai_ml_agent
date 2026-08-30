@@ -27,9 +27,10 @@ attribution in commits.
 - `tools/fleet_status.sh` — live view of runs on laptop + coral + ruby.
 
 ## Machines
-laptop (M2 Max); coral = pallav@coral.local (~/techjam/mle-agent, ./.venv312/bin/python);
-ruby = gpubox ssh alias (~/mle-agent, ~/techjam27k/.venv/bin/python, RTX 4090 CUDA).
-Sync with rsync (NOT git) to coral/ruby, excluding .git logs data/real_ws* evidence .venv*.
+Runs execute on the primary laptop plus two optional helper machines reachable over
+ssh (aliases and paths are user-local — see the untracked `MACHINES.local.md` if
+present, or ask). Sync helper copies with rsync (NOT git), excluding
+.git logs data/real_ws* evidence .venv*.
 
 ## Conventions
 - Python: uv on laptop. Every run costs $ — ledger cap in .env (BUDGET_USD).
