@@ -1,6 +1,6 @@
 /* Flight Recorder — mle-agent scrollytelling site.
-   2D mission-log replay of the designated run (rundata.js) with one 3D garnish:
-   the scroll-morphed embedding starscape (space.js). No frameworks. */
+   2D mission-log replay of the designated run (rundata.js) plus the instrumented
+   rare-video-memorization evidence charts (weights.js). No frameworks. */
 (function(){
 'use strict';
 const D=window.RUNDATA||{}, N=D.nodes||[], M=D.meta||{};
@@ -18,7 +18,7 @@ addEventListener('scroll',()=>{
 
 /* ---------- hero chart: the whole run, self-drawing ---------------------- */
 (function hero(){
-  const svg=$('#herochart'), W=760, Hh=190, P=34;
+  const svg=$('#herochart'), W=640, Hh=420, P=52;
   const S0=0.6005,S1=0.6062;
   const xs=i=>P+i/(N.length-1||1)*(W-2*P);
   const ys=v=>Hh-P-(Math.min(S1,Math.max(S0,v))-S0)/(S1-S0)*(Hh-2*P);
@@ -29,14 +29,14 @@ addEventListener('scroll',()=>{
   const pts=acc.map(o=>xs(o.i)+','+ys(o.n.primary)).join(' ');
   h+='<polyline id="heroline" class="trace" points="'+pts+'"/>';
   N.forEach((n,i)=>{if(n.primary==null)return;
-    h+='<circle r="4" cx="'+xs(i)+'" cy="'+ys(n.primary)+'" fill="'
+    h+='<circle r="6" cx="'+xs(i)+'" cy="'+ys(n.primary)+'" fill="'
       +(n.accepted?css('--go'):css('--no'))+'" opacity="'+(n.accepted?1:.65)+'"/>';});
   h+='<text class="axistext" x="'+xs(acc[acc.length-1].i)+'" y="'
     +(ys(BEST)-10)+'" text-anchor="end" fill="'+css('--go')+'">'+BEST.toFixed(4)+'</text>';
   svg.innerHTML=h;
   const line=$('#heroline'), len=line.getTotalLength();
   line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
-  requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';
+  requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';line.style.strokeWidth=3;
     line.style.strokeDashoffset=0;});
 })();
 
@@ -187,66 +187,53 @@ document.querySelectorAll('.entry').forEach(el=>io.observe(el));
     +'</div><div class="k">'+c[1]+'</div></div>').join('');
 })();
 
-/* ---------- starscape (scroll-morphed) ----------------------------------- */
-(function space(){
-  const SP=window.SPACE;const canvas=$('#spacecanvas');
-  if(!SP||!window.THREE){$('#spacetall').style.height='auto';
-    $('#spacecaption').textContent='(embedding visual unavailable — run tools/build_space.py)';return;}
-  const n=SP.meta.n,dec=SP.decile;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
-  renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
-  const scene=new THREE.Scene();scene.background=new THREE.Color(css('--bg'));
-  const camera=new THREE.PerspectiveCamera(50,2,0.1,400);
-  const R=30;
-  const A=new Float32Array(n*3),B=new Float32Array(n*3),pos=new Float32Array(n*3);
-  for(let i=0;i<n;i++)for(let a=0;a<3;a++){
-    A[i*3+a]=(SP.base[i][a]/1000-0.5)*R;B[i*3+a]=(SP.treat[i][a]/1000-0.5)*R;pos[i*3+a]=A[i*3+a];
-  }
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  const col=new Float32Array(n*3);
-  const cGo=new THREE.Color(css('--go')),cNo=new THREE.Color(css('--no')),cDim=new THREE.Color(css('--dim'));
-  for(let i=0;i<n;i++){
-    const c=dec[i]<=2?cNo.clone().lerp(cDim,0.25):cDim.clone().lerp(cGo,dec[i]/9*0.7);
-    col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
-  }
-  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  const dotTex=(function(){const cv=document.createElement('canvas');cv.width=cv.height=64;
-    const g=cv.getContext('2d');g.beginPath();g.arc(32,32,26,0,7);g.fillStyle='#fff';g.fill();
-    return new THREE.CanvasTexture(cv);})();
-  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({size:0.32,map:dotTex,
-    vertexColors:true,transparent:true,opacity:0.85,alphaTest:0.4})));
-  let morph=-1;
-  const tall=$('#spacetall'),cap=$('#spacecaption'),lbl=$('#morphlbl');
-  const CAPS=[[0,'the baseline\'s space — memorized red outliers everywhere (score 0.6015)'],
-              [0.45,'the agent\'s treatments applying: regularization + recency + ensemble…'],
-              [0.85,'the champion\'s space — tighter, structured, rare videos reined in (score 0.6045)']];
-  function setMorph(m){
-    if(Math.abs(m-morph)<0.004)return;morph=m;
-    for(let i=0;i<n*3;i++)pos[i]=A[i]+(B[i]-A[i])*m;
-    geo.attributes.position.needsUpdate=true;
-    lbl.textContent='morph '+(m*100).toFixed(0)+'%';
-    cap.textContent=CAPS.filter(c=>m>=c[0]).pop()[1];
-  }
-  function resize(){const r=canvas.parentElement.getBoundingClientRect();
-    renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;
-    camera.updateProjectionMatrix();}
-  addEventListener('resize',resize);resize();
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let theta=0;
-  function frame(){
-    const r=tall.getBoundingClientRect();
-    const vis=r.top<innerHeight&&r.bottom>0;
-    if(vis){
-      const p=Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)));
-      setMorph(p);
-      if(!reduced)theta+=0.0012;
-      camera.position.set(Math.sin(theta)*54,10,Math.cos(theta)*54);
-      camera.lookAt(0,0,0);
-      renderer.render(scene,camera);
+
+/* ---------- evidence: rare-video memorization, baseline vs treated -------- */
+(function evidence(){
+  const Wt=window.WEIGHTS;const grid=document.getElementById('evgrid');
+  if(!grid)return;
+  if(!Wt){grid.innerHTML='<p class="lede">(instrumented data missing — run tools/instrument_weights.py)</p>';return;}
+  const panels=[['baseline','BASELINE','memorizes what it barely saw'],
+                ['treated','AGENT-TREATED','rare videos stay grounded']];
+  const PW=520,PH=300,P=40;
+  grid.innerHTML=panels.map(([key,title,subtitle])=>{
+    const snaps=Wt[key];
+    const maxN=Math.max(...Wt.baseline.concat(Wt.treated).flatMap(s=>s.norms));
+    const xs=i=>P+i/(snaps.length-1)*(PW-2*P);
+    const ys=v=>PH-P-(v/maxN)*(PH-2*P);
+    let h='<div class="evpanel"><div class="t"><b>'+title+'</b> · '+subtitle+'</div>'
+      +'<svg viewBox="0 0 '+PW+' '+PH+'">';
+    h+='<line class="axis" x1="'+P+'" y1="'+(PH-P)+'" x2="'+(PW-P)+'" y2="'+(PH-P)+'"/>';
+    h+='<text class="axistext" x="'+P+'" y="'+(PH-P+18)+'">training →</text>';
+    h+='<text class="axistext" x="'+P+'" y="'+(P-10)+'">embedding size</text>';
+    for(let d=9;d>=0;d--){
+      const pts=snaps.map((s,i)=>xs(i)+','+ys(s.norms[d])).join(' ');
+      const rare=d<=2;
+      h+='<polyline class="evline" data-key="'+key+'" points="'+pts+'" stroke="'
+        +(rare?'var(--no)':'var(--faint)')+'" stroke-width="'+(rare?2:1.2)+'" opacity="'+(rare?0.95:0.8)+'"/>';
     }
-    requestAnimationFrame(frame);
-  }
-  setMorph(0);requestAnimationFrame(frame);
+    const last=snaps[snaps.length-1];
+    if(key==='baseline'){
+      h+='<text class="evnote" x="'+(PW-P-6)+'" y="'+(ys(Math.max(...last.norms.slice(0,3)))-14)
+        +'" text-anchor="end">rare videos ballooning ↑</text>';
+    }else{
+      h+='<text class="evnote" x="'+(PW-P)+'" y="'+(ys(Math.max(...last.norms.slice(0,3)))-10)
+        +'" text-anchor="end" fill="var(--go)">held down by the treatments</text>';
+    }
+    h+='<text class="axistext" x="'+(PW-P)+'" y="'+(PH-P+18)+'" text-anchor="end">final valid '
+      +last.primary.toFixed(4)+'</text>';
+    h+='</svg></div>';
+    return h;
+  }).join('');
+  // draw-in on first view
+  const io2=new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting)return;io2.disconnect();
+    grid.querySelectorAll('.evline').forEach((ln,i)=>{
+      const len=ln.getTotalLength();
+      ln.style.strokeDasharray=len;ln.style.strokeDashoffset=len;
+      setTimeout(()=>{ln.style.strokeDashoffset=0;},60*(i%12));
+    });
+  }),{threshold:0.3});
+  io2.observe(grid);
 })();
 })();
