@@ -48,6 +48,12 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
   next play, BEFORE the ensemble close. The record run skipped it — do not.
 
 ## Depth policy (overrides brevity instincts)
+- PROBE PARALLELISM: probes are small models — run them CONCURRENTLY, not one at a
+  time. On CUDA, train 4-6 probe variants in parallel (separate processes via
+  multiprocessing spawn, or interleaved in one process); on CPU, use one process per
+  probe across cores (each with a bounded thread count). A sequential sweep on an
+  idle device wastes most of the budget; measure per-probe wall time in progress.log.
+
 Searches must be EXHAUSTIVE, not token gestures. Hard minimums when a search card is
 played with a generous timeout: stage-1 coarse pass >= 16 probe trainings; stage-2
 refine >= 10 probes on a denser grid around the winner; probes at FULL training length
