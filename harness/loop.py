@@ -121,10 +121,15 @@ class Loop:
         diagnosis, err = self._brain(self.brain.diagnose, self.ctx(), what='diagnose')
         diagnosis = diagnosis or f'(diagnosis unavailable: {err})'
         n_sel = self.k - 1 if self.wildcard else self.k
-        selections, err = self._brain(self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel), n_sel, what='select')
+        # Selector and Explorer both depend only on the diagnosis, so they run concurrently (each is ~1 min at xhigh).
+        with ThreadPoolExecutor(max_workers=2) as ex:
+            f_sel = ex.submit(self._brain, self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel), n_sel, what='select')
+            f_wild = (ex.submit(self._brain, self.brain.explore, self.ctx(diagnosis=diagnosis), what='explore', attempts=1)
+                      if self.wildcard else None)
+            selections, err = f_sel.result()
+            wild, werr = f_wild.result() if f_wild else (None, None)
         selections = selections or []
         if self.wildcard:
-            wild, werr = self._brain(self.brain.explore, self.ctx(diagnosis=diagnosis), what='explore', attempts=1)
             if wild:
                 wild['type'] = 'explore'; wild['wildcard'] = True
                 selections = [wild] + selections          # first, so _diversify keeps it
