@@ -1,10 +1,10 @@
 {
  "run_id": "live_01",
- "n_next": 4,
- "generation": 1,
+ "n_next": 7,
+ "generation": 2,
  "champion": 1,
  "best": 0.6036463694691105,
- "streak": 0,
+ "streak": 1,
  "nodes": {
   "0": {
    "n": 0,
@@ -546,17 +546,433 @@
    "realized_delta": -0.00031,
    "accepted": false,
    "grey_confirmation": null
+  },
+  "4": {
+   "n": 4,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "hypothesis": "Apply seven-day exponential recency weighting to within-user BPR pairs so metric-aligned learning emphasizes the late-training regime most similar to validation.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The pointwise three-seed test was consistently positive by +0.00036, and the menu notes that pairwise weighting can interact differently with measured temporal drift.",
+   "rejected_alternative": {
+    "card": "features-duration-unknown-flag",
+    "reason": "Its prior pointwise result was negative and the affected duration-zero rows comprise only 1.9% of impressions."
+   },
+   "change_summary": "Added fixed seven-day exponential recency weighting to BPR, weighting each sampled pair by the geometric mean of its positive and negative impression weights while keeping the parent model and training loop unchanged.",
+   "code_path": "nodes/004.py",
+   "diff_path": "diffs/004.patch",
+   "diff_lines": 127,
+   "metrics": {
+    "gauc": 0.670699457737707,
+    "ndcg5": 0.5371501427826096,
+    "primary": 0.6039248002601583,
+    "ndcg5_disc": 0.7237070728630564
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6751595202912676,
+     "val_gauc": 0.6569969145189029,
+     "val_ndcg5": 0.5297754002740361,
+     "val_primary": 0.5933861573964695
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6179297312777093,
+     "val_gauc": 0.6652702247649509,
+     "val_ndcg5": 0.533795249023346,
+     "val_primary": 0.5995327368941484
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5738276268573518,
+     "val_gauc": 0.6683210611738163,
+     "val_ndcg5": 0.5354948777157359,
+     "val_primary": 0.6019079694447761
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5580535936862865,
+     "val_gauc": 0.6693968055540469,
+     "val_ndcg5": 0.5360091631959731,
+     "val_primary": 0.60270298437501
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5498481976225021,
+     "val_gauc": 0.6709332574372313,
+     "val_ndcg5": 0.5371501427826096,
+     "val_primary": 0.6040417001099205
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.544126735088673,
+     "val_gauc": 0.6697337482806885,
+     "val_ndcg5": 0.5369796941105661,
+     "val_primary": 0.6033567211956273
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5381105986047299,
+     "val_gauc": 0.6697066024769427,
+     "val_ndcg5": 0.5365314739791089,
+     "val_primary": 0.6031190382280258
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5336260389774403,
+     "val_gauc": 0.6706018127307843,
+     "val_ndcg5": 0.5371915997951818,
+     "val_primary": 0.6038967062629831
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5285945357160365,
+     "val_gauc": 0.669783973267212,
+     "val_ndcg5": 0.5367165665625838,
+     "val_primary": 0.6032502699148978
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 12.433297872543335,
+   "tokens_in": 67125,
+   "tokens_out": 12840,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "No leakage or test access detected: outcome columns are used only as training labels or validation evaluation labels, and date is used only for legal training weighting.",
+      "SMOKE_EPOCHS caps the sole training phase, pair sampling is vectorized, outputs preserve input row order, and runtime appears feasible.",
+      "The FM can emit exact ties for repeated rows with identical user, video, author, tab, and duration bucket. The task explicitly requires avoiding ties, while formatting scores with nine significant digits can also create additional ties.",
+      "The expected +0.001 delta is below the 0.002 noise and acceptance floor; this is reasonable only as a diagnostic retest and should not be interpreted as a reliable win without multi-seed evidence."
+     ],
+     "instructions": "Before writing either predictions file, convert raw scores to unique within-user rank scores. For each user, stably sort that user's row indices by descending raw score, preserving input order for raw ties, then assign distinct integer scores such as `group_size-rank`. Write those integers for predictions.csv and predictions_extra.csv. This preserves exactly the ordering evaluate.py currently obtains, including its stable tie behavior, while guaranteeing no emitted ties within a user. Keep raw model scores for early stopping and metrics computation."
+    },
+    {
+     "round": 1,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access: outcome columns are used only as training labels or validation labels for evaluation; recency weights depend only on train dates, and only the legal basic video table is joined.",
+      "The seven-day recency-weighted BPR implementation matches the stated hypothesis, including same-user negative sampling and geometric-mean pair weights.",
+      "SMOKE_EPOCHS caps the sole training phase, randomness is seed-controlled, outputs preserve input row order and identifiers, and predictions_extra.csv is handled consistently.",
+      "Pair sampling and training are vectorized/batched; the limited per-user loops used only for final rank conversion pose no material runtime risk.",
+      "The requested unique within-user rank conversion is implemented for both prediction files while raw scores are retained for early stopping and diagnostic metrics. Raw-score ties would receive average-rank GAUC whereas emitted unique ranks deterministically break them, but this is an unavoidable consequence of the explicit no-ties instruction rather than leakage or a contract failure.",
+      "The expected +0.001 is below the 0.002 acceptance/noise floor, so acceptance is unlikely without a larger interaction effect, but this is not grounds for veto."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00028,
+   "accepted": false,
+   "grey_confirmation": {
+    "node_seeds": [
+     0.6039248002601583,
+     0.6029761772835946,
+     0.6026772156077824
+    ],
+    "champion_seeds": [
+     0.6036463694691105,
+     0.6031184279276939,
+     0.6027235946155616
+    ],
+    "delta_mean": 3e-05
+   }
+  },
+  "5": {
+   "n": 5,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "hypothesis": "Weight the champion's BPR gradients by each pair's current nDCG@5 swap impact so learning concentrates on positive-negative errors near the top of each user's ranking.",
+   "expected_delta": 0.003,
+   "expected_delta_basis": "The LambdaRank menu entry expects +0.001 to +0.006, and the champion's smaller nDCG gain (+0.0012) than GAUC gain (+0.0032) leaves a clear top-ranking weakness to target.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "It would replace the accepted BPR objective rather than refine it and lacks LambdaRank's explicit top-five weighting."
+   },
+   "change_summary": "Refine the parent BPR objective with epoch-wise LambdaRank weights from each sampled pair's current nDCG@5 swap impact, using one plain-BPR warm-up epoch and mean-normalized weights.",
+   "code_path": "nodes/005.py",
+   "diff_path": "diffs/005.patch",
+   "diff_lines": 112,
+   "metrics": {
+    "gauc": 0.6698541090576378,
+    "ndcg5": 0.5364245878659257,
+    "primary": 0.6031393484617817,
+    "ndcg5_disc": 0.7224513112132277
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749902304182661,
+     "val_gauc": 0.6565640683867514,
+     "val_ndcg5": 0.5295667881131589,
+     "val_primary": 0.5930654282499552
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6074198864875956,
+     "val_gauc": 0.6644931351189225,
+     "val_ndcg5": 0.533612564871924,
+     "val_primary": 0.5990528499954233
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5576246532988041,
+     "val_gauc": 0.6662246151333618,
+     "val_ndcg5": 0.5346338983022833,
+     "val_primary": 0.6004292567178225
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5386785687284267,
+     "val_gauc": 0.6675979649033279,
+     "val_ndcg5": 0.53531913047049,
+     "val_primary": 0.601458547686909
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5272766618018455,
+     "val_gauc": 0.6687531759132648,
+     "val_ndcg5": 0.5367172393101896,
+     "val_primary": 0.6027352076117272
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5183535712830564,
+     "val_gauc": 0.6685209708519734,
+     "val_ndcg5": 0.5366456106682447,
+     "val_primary": 0.602583290760109
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.50929187269921,
+     "val_gauc": 0.6692635721754535,
+     "val_ndcg5": 0.5365747946749839,
+     "val_primary": 0.6029191834252188
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5022982416000772,
+     "val_gauc": 0.6690392290303807,
+     "val_ndcg5": 0.5364842507644352,
+     "val_primary": 0.6027617398974079
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.49479853599629503,
+     "val_gauc": 0.6698541090576378,
+     "val_ndcg5": 0.5364245878659257,
+     "val_primary": 0.6031393484617817
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.48819865001008866,
+     "val_gauc": 0.668357442465175,
+     "val_ndcg5": 0.5363120564641332,
+     "val_primary": 0.602334749464654
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.47916493327059645,
+     "val_gauc": 0.6674763804515422,
+     "val_ndcg5": 0.5353807790112137,
+     "val_primary": 0.601428579731378
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.47124514871455253,
+     "val_gauc": 0.6671470165454493,
+     "val_ndcg5": 0.5350883953042986,
+     "val_primary": 0.601117705924874
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.4603742050363662,
+     "val_gauc": 0.6668259672103632,
+     "val_ndcg5": 0.5347809700088345,
+     "val_primary": 0.6008034686095989
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 17.975809812545776,
+   "tokens_in": 33592,
+   "tokens_out": 5426,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access: outcome columns are used only as training labels and validation targets, while scored-row features are show-time fields plus the legal author join.",
+      "The LambdaRank swap weights are computed only from training labels, training-user IDCG, and current training scores; pair sampling remains strictly within user.",
+      "The script preserves validation row order and identifiers, writes all required outputs, supports score-extra without labels, is deterministic from the seed, and caps the sole training phase with SMOKE_EPOCHS.",
+      "The implementation matches the hypothesis: one plain-BPR warm-up epoch followed by mean-normalized nDCG@5 swap-impact weighting with a nonzero floor.",
+      "Runtime is plausible: pair construction is vectorized, training uses minibatches, and the additional per-epoch full-score computation and O(N log N) ranking avoid quadratic pair enumeration.",
+      "The expected +0.003 is plausible but near the noise floor and should require the harness acceptance rule and multi-seed confirmation."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00051,
+   "accepted": false,
+   "grey_confirmation": null
+  },
+  "6": {
+   "n": 6,
+   "generation": 2,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Add leakage-safe historical user rates by author, tab, and duration bucket to BPR so rows are ordered using each user's prior response to similar impressions.",
+   "expected_delta": 0.004,
+   "expected_delta_basis": "The history menu entry expects +0.001 to +0.006 because users have a median 35 training interactions and these row-varying aggregates provide personalization not captured reliably by sparse embeddings alone.",
+   "rejected_alternative": {
+    "card": "training-schedule-lr-decay-early-stop",
+    "reason": "Although the curve overfits, best-checkpoint early stopping already captures epoch 8, while the schedule card's expected gain is mostly within the 0.002 noise floor."
+   },
+   "change_summary": "Added leakage-safe categorical user-history rates for author, tab, and duration bucket to the parent BPR model, with strictly-earlier timestamp aggregation for training, train-only totals for validation/extra scoring, and deterministic unique within-user output ranks.",
+   "code_path": "nodes/006.py",
+   "diff_path": "diffs/006.patch",
+   "diff_lines": 792,
+   "metrics": {
+    "gauc": 0.6681047558591618,
+    "ndcg5": 0.5364066264182966,
+    "primary": 0.6022556911387292,
+    "ndcg5_disc": 0.7224202242526278
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6632121776012664,
+     "val_gauc": 0.65916266439275,
+     "val_ndcg5": 0.5313308502537645,
+     "val_primary": 0.5952467573232572
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5825325567671593,
+     "val_gauc": 0.665939761102483,
+     "val_ndcg5": 0.5349653471740441,
+     "val_primary": 0.6004525541382635
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5550734502203921,
+     "val_gauc": 0.6677754823898512,
+     "val_ndcg5": 0.5359249410990047,
+     "val_primary": 0.601850211744428
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5498071782132412,
+     "val_gauc": 0.6679958840822563,
+     "val_ndcg5": 0.5358233453840665,
+     "val_primary": 0.6019096147331614
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.546105922536647,
+     "val_gauc": 0.6681047558591618,
+     "val_ndcg5": 0.5364066264182966,
+     "val_primary": 0.6022556911387292
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5427335792399467,
+     "val_gauc": 0.6671519900456405,
+     "val_ndcg5": 0.5360923444094337,
+     "val_primary": 0.601622167227537
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5385984359903538,
+     "val_gauc": 0.6680636277913262,
+     "val_ndcg5": 0.5360791357882764,
+     "val_primary": 0.6020713817898014
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5353417193635981,
+     "val_gauc": 0.6678637844203275,
+     "val_ndcg5": 0.5355166851581205,
+     "val_primary": 0.6016902347892239
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5310889812225991,
+     "val_gauc": 0.6676098976826083,
+     "val_ndcg5": 0.5358536293484144,
+     "val_primary": 0.6017317635155113
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 13.268921136856079,
+   "tokens_in": 71905,
+   "tokens_out": 25618,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "No prohibited test access or scored-row outcome feature is present; validation and extra history values use training totals only, and training history excludes rows sharing or following the current time_ms.",
+      "The script can emit exact ties for repeated rows with identical base and history fields. It also writes scores with only 9 significant digits, which can introduce additional ties, contrary to the task requirement.",
+      "The preprocessing path is heavy for the mandatory 120-second smoke test: it retains more than one million rows as Python lists, loops over them multiple times, and performs four million-row lexsort operations even when SMOKE_EPOCHS=1. This is a contract/runtime risk that should be verified or reduced.",
+      "The expected +0.004 is plausible but close enough to the noise floor that acceptance should rely on the harness rule and multi-seed confirmation if the observed gain is marginal."
+     ],
+     "instructions": "Add deterministic tie-breaking before every prediction file is written, including predictions_extra.csv. Prefer resolving ties within each user using a tiny deterministic row_id-based perturbation, and serialize scores with at least 17 significant digits (for example, '.17g') so the perturbation survives CSV output; verify that each user's emitted scores are unique. Preserve the original model ordering for unequal scores. Also ensure the full preprocessing completes under the 120-second smoke timeout; if it does not, replace Python row lists/repeated encoding loops with compact typed arrays and reuse a single key/time ordering where possible. Do not weaken the strictly-earlier timestamp rule or use validation/extra outcomes in history construction."
+    },
+    {
+     "round": 1,
+     "verdict": "ok",
+     "reasons": [
+      "No scored-row outcome is used as a feature; training labels only construct histories that exclude all rows at the same or later timestamp.",
+      "Validation and extra scoring use train-only totals, with no test-data access or leaky statistic-table join.",
+      "SMOKE_EPOCHS caps the sole training phase, outputs satisfy the contract, and prediction row order and identifiers are preserved.",
+      "Tie handling produces deterministic, unique within-user ranks for both prediction files while preserving every unequal model ordering.",
+      "Pair sampling and history construction are vectorized; no quadratic pair generation or per-row Python loop occurs inside the epoch loop.",
+      "The isolated history change matches the stated hypothesis, and an expected delta of 0.004 is plausible relative to the 0.002 noise floor."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": -0.00139,
+   "accepted": false,
+   "grey_confirmation": null
   }
  },
  "plan": {
-  "note": "BPR produced the only acceptance and a clear +0.0022 gain; no two distinct target components improved by at least +0.001, so no merge is justified.\nRecency showed a small but seed-consistent +0.00036 on pointwise FM and merits one retest because the champion now uses a materially different pairwise loss; leave two slots to the Selector.",
+  "note": "No merge qualifies: recency was seed-confirmed neutral, while LambdaRank and history aggregates both reduced primary.\nUse the changed BPR stack to retest the mechanism-backed duration flag, and explore auxiliary click supervision as a new family.",
   "plan": [
    {
     "type": "retest",
     "parent": "champion",
-    "card": "data-weighting-recency",
-    "hypothesis": "Applying seven-day exponential recency weighting to within-user BPR pairs may combine metric-aligned ordering with adaptation to the late-training regime.",
-    "reason": "The original pointwise test was below acceptance but positive across three paired seeds; replacing logloss with BPR changes how row weights affect sampled positive-negative comparisons, so the prior evidence does not settle performance on the champion stack."
+    "card": "features-duration-unknown-flag",
+    "hypothesis": "A dedicated duration-zero category will let BPR directly push always-negative unknown-duration impressions below positives within the same user.",
+    "reason": "The original test was only on pointwise FM and had weak single-seed evidence (-0.0003); the accepted BPR objective changes how this rare but deterministic feature affects ordering."
+   },
+   {
+    "type": "explore",
+    "parent": 1,
+    "card": "aux-targets-is-click",
+    "hypothesis": "Adding a modest pointwise is_click auxiliary head with shared embeddings will regularize sparse user/item representations while BPR remains the primary ranking objective."
    }
   ]
  },
@@ -574,146 +990,176 @@
    "target_component": "features",
    "delta": -0.00031,
    "on_champion": 0
+  },
+  {
+   "node": 4,
+   "card": "data-weighting-recency",
+   "target_component": "data-weighting",
+   "delta": 0.00028,
+   "on_champion": 1
+  },
+  {
+   "node": 5,
+   "card": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "delta": -0.00051,
+   "on_champion": 1
+  },
+  {
+   "node": 6,
+   "card": "history-user-aggregates",
+   "target_component": "history",
+   "delta": -0.00139,
+   "on_champion": 1
   }
  ],
  "start": 1788083477.987963,
  "interventions": 0,
- "stop_reason": null,
+ "stop_reason": "generation cap 2",
  "usage": {
-  "calls": 10,
-  "tokens_in": 153708,
-  "tokens_out": 18058,
-  "cache_read": 65574,
+  "calls": 23,
+  "tokens_in": 370499,
+  "tokens_out": 63719,
+  "cache_read": 236071,
   "cache_write": 0,
-  "cost_usd": 1.0151970000000001
+  "cost_usd": 2.7017455
  },
- "champion_seeds": {},
+ "champion_seeds": {
+  "4:1": 0.6029761772835946,
+  "4:2": 0.6026772156077824,
+  "1:1": 0.6031184279276939,
+  "1:2": 0.6027235946155616
+ },
  "last_generation": [
   {
-   "n": 1,
-   "parent": 0,
+   "n": 4,
+   "parent": 1,
    "merge_parents": null,
-   "action": "improve",
-   "method": "loss-bpr-pairwise-within-user",
-   "target_component": "loss",
-   "hypothesis": "Replace pointwise logloss with within-user BPR so training directly improves positive-negative ordering and avoids spending capacity on user-level calibration that cannot affect either metric.",
-   "change_summary": "Replace pointwise logloss batches with vectorized within-user BPR pairs, sampling one same-user negative per positive each epoch while retaining the parent FM, optimizer, validation early stopping, and outputs.",
-   "expected_delta": 0.006,
-   "metrics": {
-    "gauc": 0.6703073475190711,
-    "ndcg5": 0.5369853914191499,
-    "primary": 0.6036463694691105,
-    "ndcg5_disc": 0.7234219277427735
-   },
-   "realized_delta": 0.00218,
-   "accepted": true,
-   "grey_confirmation": null,
-   "failure_stage": null,
-   "error": null,
-   "recovery": null,
-   "duration_s": 14.089723110198975,
-   "curve": [
-    0.5931,
-    0.5996,
-    0.6015,
-    0.6027,
-    0.6033,
-    0.6034,
-    0.6031,
-    0.6036,
-    0.6029,
-    0.6026,
-    0.6016,
-    0.6006
-   ]
-  },
-  {
-   "n": 2,
-   "parent": 0,
-   "merge_parents": null,
-   "action": "improve",
+   "action": "retest",
    "method": "data-weighting-recency",
    "target_component": "data-weighting",
-   "hypothesis": "Apply exponential recency weights with a seven-day half-life so the FM learns more from the late-training regime that most closely resembles validation and test.",
-   "change_summary": "Added normalized exponential training-row recency weights with a fixed seven-day half-life, applied to both FM logloss gradients and diagnostic training loss.",
-   "expected_delta": 0.004,
+   "hypothesis": "Apply seven-day exponential recency weighting to within-user BPR pairs so metric-aligned learning emphasizes the late-training regime most similar to validation.",
+   "change_summary": "Added fixed seven-day exponential recency weighting to BPR, weighting each sampled pair by the geometric mean of its positive and negative impression weights while keeping the parent model and training loop unchanged.",
+   "expected_delta": 0.001,
    "metrics": {
-    "gauc": 0.6678403372440794,
-    "ndcg5": 0.5360332110298209,
-    "primary": 0.6019367741369501,
-    "ndcg5_disc": 0.7217739317204969
+    "gauc": 0.670699457737707,
+    "ndcg5": 0.5371501427826096,
+    "primary": 0.6039248002601583,
+    "ndcg5_disc": 0.7237070728630564
    },
-   "realized_delta": 0.00047,
+   "realized_delta": 0.00028,
    "accepted": false,
    "grey_confirmation": {
     "node_seeds": [
-     0.6019367741369501,
-     0.6020871274532423,
-     0.6013703133923629
+     0.6039248002601583,
+     0.6029761772835946,
+     0.6026772156077824
     ],
     "champion_seeds": [
-     0.6014687563529677,
-     0.6017609746263709,
-     0.6010899806390073
+     0.6036463694691105,
+     0.6031184279276939,
+     0.6027235946155616
     ],
-    "delta_mean": 0.00036
+    "delta_mean": 3e-05
    },
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 18.189987897872925,
+   "duration_s": 12.433297872543335,
    "curve": [
-    0.5875,
-    0.5956,
+    0.5934,
     0.5995,
-    0.6003,
-    0.6008,
-    0.6012,
     0.6019,
-    0.6008,
-    0.601,
-    0.6004,
-    0.5989
+    0.6027,
+    0.604,
+    0.6034,
+    0.6031,
+    0.6039,
+    0.6033
    ]
   },
   {
-   "n": 3,
-   "parent": 0,
+   "n": 5,
+   "parent": 1,
    "merge_parents": null,
    "action": "improve",
-   "method": "features-duration-unknown-flag",
-   "target_component": "features",
-   "hypothesis": "Encode duration_ms=0 in a dedicated category so the model can consistently rank these always-negative impressions below genuinely short videos.",
-   "change_summary": "Compute duration quantiles from positive durations only and encode duration_ms=0 as a dedicated trained UNK0 category, leaving the baseline FM and training procedure unchanged.",
+   "method": "loss-lambdarank-pairs",
+   "target_component": "loss",
+   "hypothesis": "Weight the champion's BPR gradients by each pair's current nDCG@5 swap impact so learning concentrates on positive-negative errors near the top of each user's ranking.",
+   "change_summary": "Refine the parent BPR objective with epoch-wise LambdaRank weights from each sampled pair's current nDCG@5 swap impact, using one plain-BPR warm-up epoch and mean-normalized weights.",
    "expected_delta": 0.003,
    "metrics": {
-    "gauc": 0.6671075786876843,
-    "ndcg5": 0.5352102664676806,
-    "primary": 0.6011589225776824,
-    "ndcg5_disc": 0.7203496119380686
+    "gauc": 0.6698541090576378,
+    "ndcg5": 0.5364245878659257,
+    "primary": 0.6031393484617817,
+    "ndcg5_disc": 0.7224513112132277
    },
-   "realized_delta": -0.00031,
+   "realized_delta": -0.00051,
    "accepted": false,
    "grey_confirmation": null,
    "failure_stage": null,
    "error": null,
    "recovery": null,
-   "duration_s": 19.71098804473877,
+   "duration_s": 17.975809812545776,
    "curve": [
-    0.5883,
-    0.5962,
-    0.6,
-    0.5999,
-    0.6006,
-    0.601,
-    0.601,
-    0.601,
-    0.6012,
-    0.5998,
-    0.5993,
-    0.5993,
-    0.5979
+    0.5931,
+    0.5991,
+    0.6004,
+    0.6015,
+    0.6027,
+    0.6026,
+    0.6029,
+    0.6028,
+    0.6031,
+    0.6023,
+    0.6014,
+    0.6011,
+    0.6008
+   ]
+  },
+  {
+   "n": 6,
+   "parent": 1,
+   "merge_parents": null,
+   "action": "improve",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Add leakage-safe historical user rates by author, tab, and duration bucket to BPR so rows are ordered using each user's prior response to similar impressions.",
+   "change_summary": "Added leakage-safe categorical user-history rates for author, tab, and duration bucket to the parent BPR model, with strictly-earlier timestamp aggregation for training, train-only totals for validation/extra scoring, and deterministic unique within-user output ranks.",
+   "expected_delta": 0.004,
+   "metrics": {
+    "gauc": 0.6681047558591618,
+    "ndcg5": 0.5364066264182966,
+    "primary": 0.6022556911387292,
+    "ndcg5_disc": 0.7224202242526278
+   },
+   "realized_delta": -0.00139,
+   "accepted": false,
+   "grey_confirmation": null,
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 13.268921136856079,
+   "curve": [
+    0.5952,
+    0.6005,
+    0.6019,
+    0.6019,
+    0.6023,
+    0.6016,
+    0.6021,
+    0.6017,
+    0.6017
    ]
   }
- ]
+ ],
+ "final_seeds": {
+  "4:1": 0.6029761772835946,
+  "4:2": 0.6026772156077824,
+  "1:1": 0.6031184279276939,
+  "1:2": 0.6027235946155616,
+  "5:1": 0.6026377747156546,
+  "5:2": 0.6020181854925893
+ },
+ "designated": 4
 }

@@ -80,9 +80,10 @@ call so the provider's prompt cache serves it; only the role block and the user 
    for the score — only for the learning curve.
 2. **Delta.** `Δ = node primary − champion primary` (the champion at the moment of scoring; all branches of a generation
    are compared with the same champion).
-3. **Acceptance.** `Δ ≥ ε = 0.002` (2.5 σ of the baseline's seed noise) → accepted. `0 < Δ < ε` → grey zone: the node
-   and the champion are each re-run with two more seeds; accepted only if the difference of 3-seed means is ≥ ε.
-   `Δ ≤ 0` or errored → rejected.
+3. **Acceptance (ADR-0010).** A candidate whose single-seed Δ is positive is re-run with 2 more seeds (the champion's
+   seeds are cached). It is accepted iff the difference of seed means is ≥ 0.001 **and** ≥ 2.5 standard errors.
+   Δ ≤ 0 or errored → rejected without extra seeds. Rejected ideas are parked. (Measured reason: the best of k
+   single-seed branches is biased upward — live_01's +0.0022 was +0.0017 over three seeds.)
 4. **Champion.** After all k branches are scored, the accepted node with the highest primary becomes the champion
    (if it beats the current one). Rejected nodes are parked. The champion is the parent of the next generation.
 5. **Convergence.** Per generation: if the generation's best primary exceeds `best-so-far + ε`, best-so-far moves and

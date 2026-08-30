@@ -80,3 +80,20 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   `kb/methods/validate.py` checks fields, target components, cross-references and length: 13 cards, 0 problems.
   Paper text extracted to `kb/literature/text/` (`extract_text.py`, pypdf; ignored by git). Stable prompt prefix
   is now ~11.8 K tokens (served from cache on every call).
+- **First live run (`live_01`, GPT-5.6-sol, k = 3, 2 generations, $2.70, 16 min, 370 K in / 64 K out tokens):**
+  node_000 baseline 0.6015 → node_001 within-user BPR **0.6036 (+0.0022, accepted)**; recency +0.0005 (grey, rejected
+  on seeds), duration-unknown flag −0.0003; generation 2 on the BPR champion: recency retest +0.0003 (seed-confirmed
+  neutral), LambdaRank pairs −0.0005, history aggregates −0.0014; streak 1 at the generation cap. Final designation
+  (3-seed re-rank of the top-3) picked node_004 (BPR + recency, mean 0.60319) over node_001 (0.60316) — a tie within
+  noise. The Selector chose the organizers' lead #1 first; the Consolidator applied the ADR-0004 retest rule unprompted.
+- **Reproducibility check of +0.0022:** deterministic given the seed (node_000 reproduces exactly); across seeds
+  {0, 1, 2} the BPR node scores [0.60365, 0.60312, 0.60272] vs baseline [0.60147, 0.60176, 0.60109] — every BPR seed
+  beats every baseline seed, but the mean gain is **+0.0017**, not 0.0022: the winner's curse of picking the best
+  single-seed branch. Every top-3 node shrank on re-seeding.
+- **Acceptance v2 (ADR-0010):** every positive-delta candidate is confirmed with 2 extra seeds; accepted iff the
+  seed-mean gain ≥ 0.001 and ≥ 2.5 standard errors. `p_accept` removed from the Selector prompt (an LLM's stated
+  probability is not calibrated; expected-vs-realised Δ already measures calibration). Two cards added from the
+  run's lessons: `loss-bpr-hard-negatives`, `training-schedule-weight-averaging` (15 cards, validator clean).
+- Prompt calibration evidence: expected Δ 0.006 / 0.004 / 0.003 / 0.003 / 0.004 vs realised +0.0022 / +0.0005 /
+  −0.0003 / −0.0005 / −0.0014; diffs 433 / 452 / 275 / 112 / 792 lines (the Implementer rewrote files) → prompts
+  sharpened and a 200-line diff guard added (commit 3378f1b).

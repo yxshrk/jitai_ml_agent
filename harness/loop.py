@@ -17,11 +17,11 @@ from .journal import Journal, diff_lines
 
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
-                 wall_clock_s=C.WALL_CLOCK_S, parallel=True, reseed_grey=True, seed_script=None, log=print, final_reseed=True,
+                 wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
                  iteration_unit='node'):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         self.max_nodes, self.max_generations = max_nodes, max_generations or max_nodes
-        self.wall_clock_s, self.parallel, self.reseed_grey = wall_clock_s, parallel, reseed_grey
+        self.wall_clock_s, self.parallel, self.confirm_seeds = wall_clock_s, parallel, confirm_seeds
         self.final_reseed = final_reseed
         assert iteration_unit in ('node', 'generation'); self.iteration_unit = iteration_unit   # ADR-0006: what the 50 cap counts
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
@@ -105,7 +105,7 @@ class Loop:
                'log_tail': (res.log_tail[-800:] if res and not res.ok else ''),
                'duration_s': res.duration_s if res else 0.0, 'tokens_in': tokens[0], 'tokens_out': tokens[1],
                'critic': critic, 'recovery': recovery, 'intervention': False,
-               'realized_delta': None, 'accepted': False, 'grey_confirmation': None}
+               'realized_delta': None, 'accepted': False, 'seed_confirmation': None}
         self.state['nodes'][str(n)] = {k: v for k, v in rec.items() if k not in ('log_tail',)}
         return rec
 
@@ -166,14 +166,15 @@ class Loop:
             rec = self._record(nd['n'], g, nd['parent'], nd['sel'], nd['res'], nd['diff'], tuple(nd['tokens']),
                                nd['critic'], nd['recovery'], merge_parents=nd['merge_parents'])
             if nd['res'] is not None and nd['res'].ok:
-                accepted, delta = R.accept(self.champion['metrics']['primary'], nd['res'].metrics['primary'])
-                rec['realized_delta'] = round(delta, 5)
-                if not accepted and 0 < delta < C.EPS and self.reseed_grey:
-                    accepted, conf = self._confirm_grey(nd['n']); rec['grey_confirmation'] = conf
+                single_ok, delta = R.accept(self.champion['metrics']['primary'], nd['res'].metrics['primary'])
+                rec['realized_delta'] = round(delta, 5); rec['single_seed_accept'] = single_ok
+                accepted = single_ok
+                if delta > 0 and self.confirm_seeds:   # the best of k branches on one seed is biased upward: confirm with more seeds
+                    accepted, conf = self._confirm_with_seeds(nd['n']); rec['seed_confirmation'] = conf
                 rec['accepted'] = accepted
             else:
                 rec['error'] = rec['error'] or nd['error']
-            self.state['nodes'][str(nd['n'])].update({k: rec[k] for k in ('realized_delta', 'accepted', 'grey_confirmation', 'error')})
+            self.state['nodes'][str(nd['n'])].update({k: rec.get(k) for k in ('realized_delta', 'accepted', 'seed_confirmation', 'single_seed_accept', 'error')})
             self.j.append(rec); results.append(self._result_view(rec))
             self.log(f"node_{nd['n']:03d} [{rec['target_component']}] " + (
                 f"primary {rec['metrics']['primary']:.4f} (Δ{rec['realized_delta']:+.4f}) {'ACCEPTED' if rec['accepted'] else 'rejected'}"
@@ -296,30 +297,39 @@ class Loop:
         if not nd['res'].ok:
             nd['recovery'] += ' -> abandoned'
 
-    def _confirm_grey(self, n):
-        """Grey zone (0 < delta < EPS): compare 3-seed means of the node and the champion."""
-        seeds = [self.seed + 1, self.seed + 2]
-        def mean_for(m, cache):
+    def _confirm_with_seeds(self, n):
+        """Run CONFIRM_SEEDS extra seeds of the node (and of the champion, cached) and accept on the seed means:
+        improvement >= MIN_EFFECT and >= T_CRIT standard errors. Selecting the best of k single-seed branches is
+        biased upward (winner's curse) — measured in live_01: +0.0022 on one seed was +0.0017 over three."""
+        seeds = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
+        cache = self.state['champion_seeds']
+        def vals_for(m):
             vals = [self.node(m)['metrics']['primary']]
-            for s in seeds:
-                key = f'{m}:{s}'
+            for sd in seeds:
+                key = f'{m}:{sd}'
                 if key not in cache:
-                    r = R.run_script(self.j.node_path(m), self.j.out_dir(m, f'_seed{s}'), seed=s, threads=os.cpu_count() or 2)
+                    r = R.run_script(self.j.node_path(m), self.j.out_dir(m, f'_seed{sd}'), seed=sd, threads=os.cpu_count() or 2)
                     cache[key] = r.metrics['primary'] if r.ok else None
                 if cache[key] is not None:
                     vals.append(cache[key])
-            return statistics.mean(vals), vals
-        cache = self.state['champion_seeds']
-        m_node, v_node = mean_for(n, cache); m_ch, v_ch = mean_for(self.state['champion'], cache)
-        accepted = (m_node - m_ch) >= C.EPS
-        self.log(f"node_{n:03d}: grey-zone confirmation — node mean {m_node:.4f} {v_node} vs champion {m_ch:.4f} {v_ch} -> {'ACCEPTED' if accepted else 'rejected'}")
-        return accepted, {'node_seeds': v_node, 'champion_seeds': v_ch, 'delta_mean': round(m_node - m_ch, 5)}
+            return vals
+        v_node, v_ch = vals_for(n), vals_for(self.state['champion'])
+        m_node, m_ch = statistics.mean(v_node), statistics.mean(v_ch)
+        sd_node = max(statistics.pstdev(v_node) if len(v_node) > 1 else C.STD_FLOOR, C.STD_FLOOR)
+        sd_ch = max(statistics.pstdev(v_ch) if len(v_ch) > 1 else C.STD_FLOOR, C.STD_FLOOR)
+        se = (sd_node ** 2 / len(v_node) + sd_ch ** 2 / len(v_ch)) ** 0.5
+        diff = m_node - m_ch; t = diff / se if se else float('inf')
+        accepted = diff >= C.MIN_EFFECT and t >= C.T_CRIT
+        self.log(f"node_{n:03d}: seed confirmation — node {[round(v, 5) for v in v_node]} mean {m_node:.5f} vs champion "
+                 f"{[round(v, 5) for v in v_ch]} mean {m_ch:.5f}: diff {diff:+.5f}, t {t:.1f} -> {'ACCEPTED' if accepted else 'rejected'}")
+        return accepted, {'node_seeds': v_node, 'champion_seeds': v_ch, 'delta_mean': round(diff, 5), 'se': round(se, 5),
+                          't': round(t, 2), 'rule': f'diff >= {C.MIN_EFFECT} and t >= {C.T_CRIT}'}
 
     @staticmethod
     def _result_view(rec):
         return {k: rec.get(k) for k in ('n', 'parent', 'merge_parents', 'action', 'method', 'target_component', 'hypothesis',
                                         'change_summary', 'expected_delta', 'metrics', 'realized_delta', 'accepted',
-                                        'grey_confirmation', 'failure_stage', 'error', 'recovery', 'duration_s')} | \
+                                        'seed_confirmation', 'failure_stage', 'error', 'recovery', 'duration_s')} | \
                {'curve': [round(h.get('val_primary', 0), 4) for h in rec.get('history', [])][:40]}
 
     # ---------------- driver ----------------

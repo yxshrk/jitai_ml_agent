@@ -1,0 +1,888 @@
+"""Within-user BPR with leakage-safe user history aggregates.
+
+Reads:
+  data/train.csv
+  data/valid.csv
+  data/video_features_basic.csv
+
+Writes:
+  <out>/predictions.csv
+  <out>/metrics.json
+  optionally <out>/predictions_extra.csv
+
+The parent five-field factorization machine is extended with categorical
+historical long-view rates for:
+  (user, author), (user, tab), and (user, duration bucket).
+
+Training history excludes every row at the current timestamp, not merely the
+current row. Validation and extra rows use aggregates computed from train only.
+"""
+import argparse
+import csv
+import json
+import os
+import time
+
+import numpy as np
+from evaluate import evaluate
+
+
+BASE_FIELDS = [
+    'user_id',
+    'video_id',
+    'author_id',
+    'tab',
+    'dur_bucket',
+]
+HISTORY_FIELDS = [
+    'hist_user_author',
+    'hist_user_tab',
+    'hist_user_duration',
+]
+FIELDS = BASE_FIELDS + HISTORY_FIELDS
+HISTORY_DIMENSION = 11  # no-history plus ten quantile buckets
+
+
+def read_rows(path, cols):
+    """Read selected columns as strings while preserving file order."""
+    with open(path, newline='') as fh:
+        reader = csv.reader(fh)
+        header = next(reader)
+        indices = [header.index(c) for c in cols]
+        return [[record[i] for i in indices] for record in reader]
+
+
+def sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+
+
+def strict_prior_counts_and_totals(keys, times, labels):
+    """Return key counts/positives strictly before each row's timestamp.
+
+    Rows sharing both a key and timestamp receive identical history which
+    excludes all labels at that timestamp. Sparse key totals are also returned
+    for train-only lookup when scoring validation or extra rows.
+    """
+    keys = np.asarray(keys, dtype=np.int64)
+    times = np.asarray(times, dtype=np.int64)
+    labels = np.asarray(labels, dtype=np.int8)
+    n = len(keys)
+
+    order = np.lexsort((times, keys))
+    sorted_keys = keys[order]
+    sorted_times = times[order]
+    sorted_labels = labels[order].astype(np.int64, copy=False)
+
+    new_key = np.empty(n, dtype=bool)
+    new_key[0] = True
+    new_key[1:] = sorted_keys[1:] != sorted_keys[:-1]
+    key_starts = np.flatnonzero(new_key)
+
+    new_time_group = new_key.copy()
+    new_time_group[1:] |= sorted_times[1:] != sorted_times[:-1]
+    group_starts = np.flatnonzero(new_time_group)
+
+    # For each key/timestamp group, identify where its key began.
+    group_key_starts = np.maximum.accumulate(
+        np.where(new_key[group_starts], group_starts, 0)
+    )
+
+    prefix_positive = np.empty(n + 1, dtype=np.int64)
+    prefix_positive[0] = 0
+    np.cumsum(sorted_labels, out=prefix_positive[1:])
+
+    group_prior_counts = group_starts - group_key_starts
+    group_prior_positive = (
+        prefix_positive[group_starts]
+        - prefix_positive[group_key_starts]
+    )
+
+    group_ends = np.empty_like(group_starts)
+    group_ends[:-1] = group_starts[1:]
+    group_ends[-1] = n
+    group_lengths = group_ends - group_starts
+
+    sorted_prior_counts = np.repeat(group_prior_counts, group_lengths)
+    sorted_prior_positive = np.repeat(group_prior_positive, group_lengths)
+
+    prior_counts = np.empty(n, dtype=np.int32)
+    prior_positive = np.empty(n, dtype=np.int32)
+    prior_counts[order] = sorted_prior_counts
+    prior_positive[order] = sorted_prior_positive
+
+    key_ends = np.empty_like(key_starts)
+    key_ends[:-1] = key_starts[1:]
+    key_ends[-1] = n
+
+    total_keys = sorted_keys[key_starts].copy()
+    total_counts = (key_ends - key_starts).astype(np.int32)
+    total_positive = np.add.reduceat(
+        sorted_labels, key_starts
+    ).astype(np.int32)
+
+    return (
+        prior_counts,
+        prior_positive,
+        total_keys,
+        total_counts,
+        total_positive,
+    )
+
+
+def sparse_total_lookup(query_keys, total_keys, total_counts, total_positive):
+    """Look up sparse train totals for integer keys."""
+    query_keys = np.asarray(query_keys, dtype=np.int64)
+    positions = np.searchsorted(total_keys, query_keys)
+
+    counts = np.zeros(len(query_keys), dtype=np.int32)
+    positive = np.zeros(len(query_keys), dtype=np.int32)
+
+    in_range = positions < len(total_keys)
+    if np.any(in_range):
+        rows = np.flatnonzero(in_range)
+        matched = total_keys[positions[rows]] == query_keys[rows]
+        rows = rows[matched]
+        source = positions[rows]
+        counts[rows] = total_counts[source]
+        positive[rows] = total_positive[source]
+
+    return counts, positive
+
+
+def history_bucket_codes(rates, counts, edges):
+    """Map smoothed rates to no-history/decile categorical codes."""
+    result = np.zeros(len(counts), dtype=np.int32)
+    has_history = counts > 0
+    result[has_history] = 1 + np.searchsorted(
+        edges, rates[has_history], side='right'
+    ).astype(np.int32)
+    return result
+
+
+def build_train_history_field(
+    user_codes,
+    sub_codes,
+    sub_dimension,
+    times,
+    labels,
+    user_prior_counts,
+    user_prior_positive,
+    smoothing=5.0,
+):
+    """Build one leakage-safe train history field and its scoring metadata."""
+    keys = (
+        user_codes.astype(np.int64) * int(sub_dimension)
+        + sub_codes.astype(np.int64)
+    )
+
+    (
+        key_prior_counts,
+        key_prior_positive,
+        total_keys,
+        total_counts,
+        total_positive,
+    ) = strict_prior_counts_and_totals(keys, times, labels)
+
+    user_prior_rate = np.zeros(len(user_codes), dtype=np.float64)
+    np.divide(
+        user_prior_positive,
+        user_prior_counts,
+        out=user_prior_rate,
+        where=user_prior_counts > 0,
+    )
+
+    smoothed_rate = (
+        key_prior_positive.astype(np.float64)
+        + smoothing * user_prior_rate
+    ) / (key_prior_counts.astype(np.float64) + smoothing)
+
+    observed = key_prior_counts > 0
+    if np.any(observed):
+        edges = np.quantile(
+            smoothed_rate[observed],
+            np.linspace(0.0, 1.0, 11)[1:-1],
+        )
+    else:
+        edges = np.linspace(0.1, 0.9, 9)
+
+    codes = history_bucket_codes(
+        smoothed_rate, key_prior_counts, edges
+    )
+
+    metadata = {
+        'sub_dimension': int(sub_dimension),
+        'edges': np.asarray(edges, dtype=np.float64),
+        'total_keys': total_keys,
+        'total_counts': total_counts,
+        'total_positive': total_positive,
+        'smoothing': float(smoothing),
+    }
+    return codes, metadata
+
+
+def score_history_field(
+    user_codes,
+    sub_codes,
+    user_total_counts,
+    user_total_positive,
+    metadata,
+):
+    """Apply train-only history totals to validation or extra rows."""
+    sub_dimension = metadata['sub_dimension']
+    keys = (
+        user_codes.astype(np.int64) * sub_dimension
+        + sub_codes.astype(np.int64)
+    )
+
+    key_counts, key_positive = sparse_total_lookup(
+        keys,
+        metadata['total_keys'],
+        metadata['total_counts'],
+        metadata['total_positive'],
+    )
+
+    user_rate = np.zeros(len(user_codes), dtype=np.float64)
+    counts_for_user = user_total_counts[user_codes]
+    positive_for_user = user_total_positive[user_codes]
+    np.divide(
+        positive_for_user,
+        counts_for_user,
+        out=user_rate,
+        where=counts_for_user > 0,
+    )
+
+    smoothing = metadata['smoothing']
+    smoothed_rate = (
+        key_positive.astype(np.float64) + smoothing * user_rate
+    ) / (key_counts.astype(np.float64) + smoothing)
+
+    return history_bucket_codes(
+        smoothed_rate, key_counts, metadata['edges']
+    )
+
+
+def factorize_values(values):
+    """Deterministically factorize strings in first-occurrence order."""
+    mapping = {}
+    codes = np.empty(len(values), dtype=np.int32)
+    for i, value in enumerate(values):
+        code = mapping.get(value)
+        if code is None:
+            code = len(mapping)
+            mapping[value] = code
+        codes[i] = code
+    return codes
+
+
+def unique_within_user_scores(user_codes, row_ids, raw_scores):
+    """Create unique order-preserving scores within each evaluation user.
+
+    Scores are canonical within-user ranks. Unequal model scores retain their
+    exact ordering. Exact ties are resolved by ascending row_id in the final
+    descending ranking, matching stable file-order semantics.
+    """
+    user_codes = np.asarray(user_codes, dtype=np.int32)
+    row_ids = np.asarray(row_ids, dtype=np.int64)
+    raw_scores = np.asarray(raw_scores, dtype=np.float64)
+
+    if not np.all(np.isfinite(raw_scores)):
+        raise ValueError('model produced NaN or infinite scores')
+
+    # Ascending raw score; within a tie, larger row_id is placed first so the
+    # smaller row_id receives the larger final rank/score.
+    order = np.lexsort((-row_ids, raw_scores, user_codes))
+    sorted_users = user_codes[order]
+
+    new_user = np.empty(len(order), dtype=bool)
+    new_user[0] = True
+    new_user[1:] = sorted_users[1:] != sorted_users[:-1]
+
+    positions = np.arange(len(order), dtype=np.int64)
+    starts = np.maximum.accumulate(np.where(new_user, positions, 0))
+    ranks = positions - starts
+
+    # Every adjacent row within a sorted user block must receive a new rank.
+    if len(ranks) > 1:
+        same_user = sorted_users[1:] == sorted_users[:-1]
+        if np.any(ranks[1:][same_user] == ranks[:-1][same_user]):
+            raise RuntimeError('failed to make within-user scores unique')
+
+    result = np.empty(len(order), dtype=np.float64)
+    result[order] = ranks.astype(np.float64)
+    return result
+
+
+class FM:
+    """Factorization machine optimized with within-user BPR and Adam."""
+
+    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+        rng = np.random.default_rng(seed)
+        self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)
+        self.W = np.zeros(dim, dtype=np.float32)
+        self.b = np.float32(0.0)
+        self.lr = lr
+        self.l2 = l2
+
+        self.mV = np.zeros_like(self.V)
+        self.vV = np.zeros_like(self.V)
+        self.mW = np.zeros_like(self.W)
+        self.vW = np.zeros_like(self.W)
+        self.t = 0
+
+    def logits(self, X):
+        embeddings = self.V[X]
+        summed = embeddings.sum(axis=1)
+        interaction = 0.5 * (
+            (summed ** 2).sum(axis=1)
+            - (embeddings ** 2).sum(axis=(1, 2))
+        )
+        logits = (
+            self.b
+            + self.W[X].sum(axis=1)
+            + interaction
+        )
+        return logits, embeddings, summed
+
+    def step_pair(self, X_pos, X_neg):
+        """Apply one Adam update for -mean(log sigmoid(s_pos-s_neg))."""
+        batch_size = len(X_pos)
+
+        z_pos, E_pos, S_pos = self.logits(X_pos)
+        z_neg, E_neg, S_neg = self.logits(X_neg)
+        difference = z_pos - z_neg
+
+        # d[-log(sigmoid(d))]/dd = -sigmoid(-d)
+        gradient_difference = (
+            -sigmoid(-difference) / batch_size
+        ).astype(np.float32)
+
+        gradient_V = np.zeros_like(self.V)
+        gradient_W = np.zeros_like(self.W)
+
+        np.add.at(
+            gradient_W,
+            X_pos,
+            gradient_difference[:, None],
+        )
+        np.add.at(
+            gradient_W,
+            X_neg,
+            -gradient_difference[:, None],
+        )
+
+        np.add.at(
+            gradient_V,
+            X_pos,
+            gradient_difference[:, None, None]
+            * (S_pos[:, None, :] - E_pos),
+        )
+        np.add.at(
+            gradient_V,
+            X_neg,
+            -gradient_difference[:, None, None]
+            * (S_neg[:, None, :] - E_neg),
+        )
+
+        gradient_V += self.l2 * self.V
+        gradient_W += self.l2 * self.W
+
+        self.t += 1
+        beta1, beta2, epsilon = 0.9, 0.999, 1e-8
+
+        for parameter, gradient, first, second in (
+            (self.V, gradient_V, self.mV, self.vV),
+            (self.W, gradient_W, self.mW, self.vW),
+        ):
+            first *= beta1
+            first += (1.0 - beta1) * gradient
+            second *= beta2
+            second += (1.0 - beta2) * (gradient * gradient)
+
+            first_hat = first / (1.0 - beta1 ** self.t)
+            second_hat = second / (1.0 - beta2 ** self.t)
+            parameter -= (
+                self.lr
+                * first_hat
+                / (np.sqrt(second_hat) + epsilon)
+            )
+
+        return float(np.mean(np.logaddexp(0.0, -difference)))
+
+    def predict(self, X, bs=200_000):
+        return np.concatenate([
+            self.logits(X[i:i + bs])[0]
+            for i in range(0, len(X), bs)
+        ])
+
+
+def write_predictions(path, rows, raw_scores, user_group_codes):
+    """Tie-break, verify, and write one prediction file."""
+    row_ids = np.fromiter(
+        (int(row[0]) for row in rows),
+        dtype=np.int64,
+        count=len(rows),
+    )
+    scores = unique_within_user_scores(
+        user_group_codes, row_ids, raw_scores
+    )
+
+    with open(path, 'w', newline='') as fh:
+        writer = csv.writer(fh)
+        writer.writerow(['row_id', 'user_id', 'video_id', 'score'])
+        for row, score in zip(rows, scores):
+            writer.writerow([
+                row[0],
+                row[1],
+                row[2],
+                format(float(score), '.17g'),
+            ])
+
+    return scores
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data-dir', required=True)
+    parser.add_argument('--out-dir', required=True)
+    parser.add_argument('--seed', type=int, default=0)
+    parser.add_argument('--score-extra', default=None)
+    parser.add_argument('--k', type=int, default=16)
+    parser.add_argument('--lr', type=float, default=1e-3)
+    parser.add_argument('--epochs', type=int, default=40)
+    parser.add_argument('--batch', type=int, default=8192)
+    parser.add_argument('--patience', type=int, default=4)
+    args = parser.parse_args()
+
+    smoke_epochs = int(os.environ.get('SMOKE_EPOCHS', '0') or 0)
+    epochs = (
+        min(args.epochs, smoke_epochs)
+        if smoke_epochs > 0
+        else args.epochs
+    )
+
+    os.makedirs(args.out_dir, exist_ok=True)
+    start_time = time.time()
+
+    # ---- load ----
+    video_to_author = dict(read_rows(
+        os.path.join(args.data_dir, 'video_features_basic.csv'),
+        ['video_id', 'author_id'],
+    ))
+
+    train_rows = read_rows(
+        os.path.join(args.data_dir, 'train.csv'),
+        [
+            'user_id',
+            'video_id',
+            'tab',
+            'duration_ms',
+            'time_ms',
+            'long_view',
+        ],
+    )
+    valid_rows = read_rows(
+        os.path.join(args.data_dir, 'valid.csv'),
+        [
+            'row_id',
+            'user_id',
+            'video_id',
+            'tab',
+            'duration_ms',
+            'long_view',
+        ],
+    )
+
+    print(
+        f'loaded rows in {time.time() - start_time:.0f}s: '
+        f'train {len(train_rows):,} valid {len(valid_rows):,}',
+        flush=True,
+    )
+
+    train_duration = np.fromiter(
+        (float(row[3]) for row in train_rows),
+        dtype=np.float64,
+        count=len(train_rows),
+    )
+    duration_edges = np.quantile(
+        train_duration,
+        np.linspace(0.0, 1.0, 11)[1:-1],
+    )
+    train_duration_bucket = np.searchsorted(
+        duration_edges, train_duration
+    ).astype(np.int32)
+
+    train_times = np.fromiter(
+        (int(row[4]) for row in train_rows),
+        dtype=np.int64,
+        count=len(train_rows),
+    )
+    y_train = np.fromiter(
+        (1 if row[5] != '0' else 0 for row in train_rows),
+        dtype=np.int8,
+        count=len(train_rows),
+    )
+
+    # Encode the five parent fields in one pass, constructing vocabularies
+    # from train only.
+    base_vocabs = [dict() for _ in BASE_FIELDS]
+    X_train_base = np.empty(
+        (len(train_rows), len(BASE_FIELDS)),
+        dtype=np.int32,
+    )
+
+    for i, row in enumerate(train_rows):
+        values = (
+            row[0],
+            row[1],
+            video_to_author.get(row[1], 'UNK'),
+            row[2],
+            int(train_duration_bucket[i]),
+        )
+        for field, value in enumerate(values):
+            vocab = base_vocabs[field]
+            code = vocab.get(value)
+            if code is None:
+                code = len(vocab)
+                vocab[value] = code
+            X_train_base[i, field] = code
+
+    base_unknown = [len(vocab) for vocab in base_vocabs]
+    base_dimensions = [
+        len(vocab) + 1 for vocab in base_vocabs
+    ]
+
+    def encode_base(rows, user_col, video_col, tab_col, duration_col):
+        durations = np.fromiter(
+            (float(row[duration_col]) for row in rows),
+            dtype=np.float64,
+            count=len(rows),
+        )
+        duration_buckets = np.searchsorted(
+            duration_edges, durations
+        ).astype(np.int32)
+
+        encoded = np.empty(
+            (len(rows), len(BASE_FIELDS)),
+            dtype=np.int32,
+        )
+        for i, row in enumerate(rows):
+            values = (
+                row[user_col],
+                row[video_col],
+                video_to_author.get(row[video_col], 'UNK'),
+                row[tab_col],
+                int(duration_buckets[i]),
+            )
+            for field, value in enumerate(values):
+                encoded[i, field] = base_vocabs[field].get(
+                    value, base_unknown[field]
+                )
+        return encoded
+
+    X_valid_base = encode_base(valid_rows, 1, 2, 3, 4)
+    y_valid = [
+        1 if row[5] != '0' else 0
+        for row in valid_rows
+    ]
+    valid_users = [row[1] for row in valid_rows]
+    valid_group_codes = factorize_values(valid_users)
+    valid_row_ids = np.fromiter(
+        (int(row[0]) for row in valid_rows),
+        dtype=np.int64,
+        count=len(valid_rows),
+    )
+
+    # String train rows are no longer needed. Releasing them lowers peak
+    # memory while the history sorts are being constructed.
+    del train_rows
+    del train_duration
+    del train_duration_bucket
+
+    train_user_codes = X_train_base[:, 0]
+    valid_user_codes = X_valid_base[:, 0]
+    number_of_user_values = base_dimensions[0]
+
+    # User-level priors are also strictly earlier than each training timestamp.
+    (
+        user_prior_counts,
+        user_prior_positive,
+        _,
+        _,
+        _,
+    ) = strict_prior_counts_and_totals(
+        train_user_codes.astype(np.int64),
+        train_times,
+        y_train,
+    )
+
+    user_total_counts = np.bincount(
+        train_user_codes,
+        minlength=number_of_user_values,
+    ).astype(np.int32)
+    user_total_positive = np.bincount(
+        train_user_codes,
+        weights=y_train,
+        minlength=number_of_user_values,
+    ).astype(np.int32)
+
+    train_history_columns = []
+    valid_history_columns = []
+    history_metadata = []
+
+    history_specs = (
+        ('author', 2),
+        ('tab', 3),
+        ('duration', 4),
+    )
+
+    for history_name, base_field in history_specs:
+        train_codes, metadata = build_train_history_field(
+            train_user_codes,
+            X_train_base[:, base_field],
+            base_dimensions[base_field],
+            train_times,
+            y_train,
+            user_prior_counts,
+            user_prior_positive,
+            smoothing=5.0,
+        )
+        valid_codes = score_history_field(
+            valid_user_codes,
+            X_valid_base[:, base_field],
+            user_total_counts,
+            user_total_positive,
+            metadata,
+        )
+
+        train_history_columns.append(train_codes)
+        valid_history_columns.append(valid_codes)
+        history_metadata.append(metadata)
+
+        print(
+            f'history {history_name}: '
+            f'{np.count_nonzero(train_codes):,} train rows and '
+            f'{np.count_nonzero(valid_codes):,} valid rows with history',
+            flush=True,
+        )
+
+    del user_prior_counts
+    del user_prior_positive
+    del train_times
+
+    X_train_local = np.column_stack(
+        [X_train_base] + train_history_columns
+    ).astype(np.int32, copy=False)
+    X_valid_local = np.column_stack(
+        [X_valid_base] + valid_history_columns
+    ).astype(np.int32, copy=False)
+
+    dimensions = base_dimensions + [
+        HISTORY_DIMENSION
+        for _ in HISTORY_FIELDS
+    ]
+    offsets = np.cumsum(
+        [0] + dimensions[:-1]
+    ).astype(np.int32)
+    total_dimension = int(sum(dimensions))
+
+    X_train = X_train_local + offsets[None, :]
+    X_valid = X_valid_local + offsets[None, :]
+
+    del X_train_local
+    del X_valid_local
+    del train_history_columns
+    del valid_history_columns
+
+    # ---- vectorized same-user BPR pair-sampling structures ----
+    # The encoded user field has offset zero.
+    train_user_codes_global = X_train[:, 0]
+    positive_indices = np.flatnonzero(y_train > 0)
+    negative_indices = np.flatnonzero(y_train == 0)
+
+    negative_order = np.argsort(
+        train_user_codes_global[negative_indices],
+        kind='stable',
+    )
+    negatives_by_user = negative_indices[negative_order]
+
+    number_of_users = dimensions[0]
+    negative_counts = np.bincount(
+        train_user_codes_global[negative_indices],
+        minlength=number_of_users,
+    ).astype(np.int64)
+
+    negative_starts = np.empty(number_of_users, dtype=np.int64)
+    negative_starts[0] = 0
+    if number_of_users > 1:
+        negative_starts[1:] = np.cumsum(negative_counts[:-1])
+
+    positive_users = train_user_codes_global[positive_indices]
+    eligible = negative_counts[positive_users] > 0
+    pair_positive_indices = positive_indices[eligible]
+    pair_users = train_user_codes_global[pair_positive_indices]
+    pair_negative_starts = negative_starts[pair_users]
+    pair_negative_counts = negative_counts[pair_users]
+
+    print(
+        f'preprocessing complete in {time.time() - start_time:.0f}s: '
+        f'{len(FIELDS)} fields dim {total_dimension:,} '
+        f'BPR anchors {len(pair_positive_indices):,}',
+        flush=True,
+    )
+
+    # ---- train with parent BPR setup and validation early stopping ----
+    model = FM(
+        total_dimension,
+        k=args.k,
+        lr=args.lr,
+        seed=args.seed,
+    )
+    rng = np.random.default_rng(args.seed)
+
+    best = -1.0
+    best_state = None
+    bad_epochs = 0
+    history = []
+
+    for epoch in range(1, epochs + 1):
+        sampled_offsets = (
+            rng.random(len(pair_positive_indices))
+            * pair_negative_counts
+        ).astype(np.int64)
+        sampled_negative_indices = negatives_by_user[
+            pair_negative_starts + sampled_offsets
+        ]
+
+        order = rng.permutation(len(pair_positive_indices))
+        epoch_positive = pair_positive_indices[order]
+        epoch_negative = sampled_negative_indices[order]
+
+        losses = []
+        for begin in range(0, len(epoch_positive), args.batch):
+            end = begin + args.batch
+            losses.append(model.step_pair(
+                X_train[epoch_positive[begin:end]],
+                X_train[epoch_negative[begin:end]],
+            ))
+
+        raw_valid_scores = model.predict(X_valid)
+        valid_scores = unique_within_user_scores(
+            valid_group_codes,
+            valid_row_ids,
+            raw_valid_scores,
+        )
+        result = evaluate(valid_users, y_valid, valid_scores)
+        mean_loss = float(np.mean(losses))
+
+        history.append({
+            'epoch': epoch,
+            'train_loss': mean_loss,
+            'val_gauc': result['GAUC'],
+            'val_ndcg5': result['nDCG@5'],
+            'val_primary': result['primary'],
+        })
+
+        print(
+            f"epoch {epoch:2d} | BPR loss {mean_loss:.4f} | "
+            f"valid GAUC {result['GAUC']:.4f} "
+            f"nDCG@5 {result['nDCG@5']:.4f} "
+            f"primary {result['primary']:.4f}",
+            flush=True,
+        )
+
+        if result['primary'] > best + 1e-5:
+            best = result['primary']
+            bad_epochs = 0
+            best_state = (
+                model.V.copy(),
+                model.W.copy(),
+                np.float32(model.b),
+            )
+        else:
+            bad_epochs += 1
+            if bad_epochs >= args.patience:
+                break
+
+    model.V, model.W, model.b = best_state
+
+    # ---- validation outputs ----
+    raw_valid_scores = model.predict(X_valid)
+    valid_scores = write_predictions(
+        os.path.join(args.out_dir, 'predictions.csv'),
+        valid_rows,
+        raw_valid_scores,
+        valid_group_codes,
+    )
+    result = evaluate(valid_users, y_valid, valid_scores)
+
+    best_epoch = history[int(np.argmax([
+        item['val_primary'] for item in history
+    ]))]['epoch']
+
+    with open(
+        os.path.join(args.out_dir, 'metrics.json'),
+        'w',
+    ) as fh:
+        json.dump({
+            'gauc': result['GAUC'],
+            'ndcg5': result['nDCG@5'],
+            'primary': result['primary'],
+            'best_epoch': int(best_epoch),
+            'history': history,
+            'seed': args.seed,
+            'duration_s': time.time() - start_time,
+        }, fh, indent=1)
+
+    # ---- optional hidden-feature scoring using train-only history ----
+    if args.score_extra:
+        extra_rows = read_rows(
+            args.score_extra,
+            [
+                'row_id',
+                'user_id',
+                'video_id',
+                'tab',
+                'duration_ms',
+            ],
+        )
+        X_extra_base = encode_base(extra_rows, 1, 2, 3, 4)
+        extra_user_codes = X_extra_base[:, 0]
+
+        extra_history_columns = []
+        for metadata, (_, base_field) in zip(
+            history_metadata, history_specs
+        ):
+            extra_history_columns.append(score_history_field(
+                extra_user_codes,
+                X_extra_base[:, base_field],
+                user_total_counts,
+                user_total_positive,
+                metadata,
+            ))
+
+        X_extra_local = np.column_stack(
+            [X_extra_base] + extra_history_columns
+        ).astype(np.int32, copy=False)
+        X_extra = X_extra_local + offsets[None, :]
+
+        extra_actual_users = [row[1] for row in extra_rows]
+        extra_group_codes = factorize_values(extra_actual_users)
+
+        write_predictions(
+            os.path.join(
+                args.out_dir, 'predictions_extra.csv'
+            ),
+            extra_rows,
+            model.predict(X_extra),
+            extra_group_codes,
+        )
+
+    print(
+        f"done: valid primary {result['primary']:.4f} "
+        f"in {time.time() - start_time:.0f}s",
+        flush=True,
+    )
+
+
+if __name__ == '__main__':
+    main()

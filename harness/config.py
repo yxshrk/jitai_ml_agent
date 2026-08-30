@@ -13,7 +13,11 @@ KB = ROOT / 'kb'
 
 SPLITS = {'train': (20220408, 20220421), 'valid': (20220422, 20220428), 'test': (20220429, 20220508)}
 BASELINE_VALID_PRIMARY = 0.6016   # official FM, 5-seed mean
-EPS = 0.002                       # official convergence epsilon
+EPS = 0.002                       # official convergence epsilon (single-seed rule, used for convergence)
+CONFIRM_SEEDS = 2                 # extra seeds run for every candidate with a positive single-seed delta
+MIN_EFFECT = 0.001                # acceptance: the seed-mean improvement must be at least this ...
+T_CRIT = 2.5                      # ... and at least T_CRIT standard errors (guards against the winner's curse)
+STD_FLOOR = 0.0002                # floor on a per-node seed std estimate (3 seeds is a small sample)
 N_CONVERGE = 3                    # official N
 MAX_ITERS = 50                    # official cap
 WALL_CLOCK_S = 6 * 3600           # official backstop

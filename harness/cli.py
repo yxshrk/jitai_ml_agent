@@ -19,7 +19,7 @@ def main():
     r.add_argument('--budget-usd', type=float, default=25.0)
     r.add_argument('--seed', type=int, default=C.DEFAULT_SEED)
     r.add_argument('--no-parallel', action='store_true')
-    r.add_argument('--no-reseed', action='store_true', help='skip the grey-zone multi-seed confirmation')
+    r.add_argument('--no-confirm', action='store_true', help='skip the multi-seed confirmation of positive deltas (not recommended)')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
     s.add_argument('--out', default='submission.csv')
@@ -43,7 +43,7 @@ def main():
             from .brain import AnthropicBrain
             brain = AnthropicBrain(models={r: a.model for r in AnthropicBrain.DEFAULT_MODELS} if a.model else None, budget_usd=a.budget_usd)
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
-                    parallel=not a.no_parallel, reseed_grey=not a.no_reseed, final_reseed=not a.no_final_reseed,
+                    parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
                     iteration_unit=a.iteration_unit)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':

@@ -76,7 +76,7 @@ class Journal:
             d = r.get('realized_delta')
             result = (f"**Result:** GAUC {m.get('gauc', 0):.4f} \u00b7 nDCG@5 {m.get('ndcg5', 0):.4f} \u00b7 primary {m.get('primary', 0):.4f}"
                       + (f" \u00b7 realized \u0394 {d:+.4f} \u00b7 {'ACCEPTED' if r.get('accepted') else 'rejected'}" if d is not None else '')
-                      + (f" \u00b7 grey-zone confirmation {r.get('grey_confirmation')}" if r.get('grey_confirmation') else '')
+                      + (f" \u00b7 seed confirmation {r.get('seed_confirmation')}" if r.get('seed_confirmation') else '')
                       + (f" \u00b7 recovery: {r.get('recovery')}" if r.get('recovery') else '')) if m else \
                      f"**Result:** ERROR at stage `{r.get('failure_stage')}`: {r.get('error')} \u2014 recovery: {r.get('recovery')}"
             L += [f"### n={r['n']} \u2014 node_{r['n']:03d} ({a}, parent {r.get('parent')}{', merge of ' + str(r.get('merge_parents')) if r.get('merge_parents') else ''})",

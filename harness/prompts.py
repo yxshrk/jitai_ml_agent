@@ -62,12 +62,12 @@ ranking-aligned loss (organizers' lead #1).
 CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
 state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the card's range unless the
 diagnosis gives specific evidence for more. Seed noise is 0.0008; the acceptance floor is 0.002; the entire
-remaining headroom is ~0.25. Give `p_accept`, your probability that the node clears 0.002 on one seed.
+remaining headroom is ~0.25.
 Output exactly one fenced block:
 ```json
 {"selections": [{"type": "improve|merge|retest|explore", "card": "<card id or method name>",
   "target_component": "<one of the list>", "hypothesis": "<one sentence: what changes and why it should help>",
-  "expected_delta": 0.002, "p_accept": 0.4, "expected_delta_basis": "<one sentence citing a card range, a numbered data fact or a journal line>",
+  "expected_delta": 0.002, "expected_delta_basis": "<one sentence citing a card range, a numbered data fact or a journal line>",
   "cheapest_test": "<the smallest code change that tests the hypothesis>",
   "rejected_alternative": {"card": "...", "reason": "..."},
   "parent": "champion", "merge_parents": [<node ids, only for merge>]}]}
