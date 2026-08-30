@@ -120,7 +120,10 @@ class Loop:
         # 1. diagnose + select
         diagnosis, err = self._brain(self.brain.diagnose, self.ctx(), what='diagnose')
         diagnosis = diagnosis or f'(diagnosis unavailable: {err})'
-        n_sel = self.k - 1 if self.wildcard else self.k
+        # With the wildcard on, the Selector still lists k candidates in priority order: the last is a reserve that
+        # fills the slot only if one of its own collides with the Explorer's target_component (live_04 lost one
+        # branch per generation to that collision when it asked for k-1).
+        n_sel = self.k
         # Selector and Explorer both depend only on the diagnosis, so they run concurrently (each is ~1 min at xhigh).
         with ThreadPoolExecutor(max_workers=2) as ex:
             f_sel = ex.submit(self._brain, self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel), n_sel, what='select')

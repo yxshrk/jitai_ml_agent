@@ -201,7 +201,9 @@ def user_select(ctx):
     return (_state(ctx) + f"\n\nDiagnosis:\n{ctx.get('diagnosis', '(none)')}\n\n"
             f"Consolidator plan for this generation: {json.dumps(plan, default=str)}\n"
             f"Parked ideas (measured before, retest only with a reason): {json.dumps(ctx.get('parked', []), default=str)}\n"
-            f"Choose exactly k = {ctx['k']} candidates.")
+            f"Choose exactly k = {ctx['k']} candidates, in priority order. One generation slot belongs to an Explorer role "
+            f"whose target_component you cannot see: if it collides with one of yours, that one is dropped and your last "
+            f"candidate takes the slot — so make the last one a genuine reserve, not a throwaway.")
 
 def user_explore(ctx):
     cards = sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []
