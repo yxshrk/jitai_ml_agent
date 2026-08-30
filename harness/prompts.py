@@ -72,6 +72,15 @@ Output exactly one fenced block:
   "rejected_alternative": {"card": "...", "reason": "..."},
   "parent": "champion", "merge_parents": [<node ids, only for merge>]}]}
 ```""" % TARGET_COMPONENTS,
+ 'explore': """Role: EXPLORER (the wildcard slot). Propose exactly ONE candidate that is NOT a card on the menu as it stands:
+(a) a combination of two mechanisms the cards treat separately, (b) a technique from ranking / recommendation
+research that no card covers (cite the paper or the idea by name), or (c) an unconventional idea grounded in a
+numbered data fact — the tab x duration structure, the repeated (user, video) pairs, the 18-second threshold, the
+volume collapse after 04-12, the closed catalogue. Constraints: one target_component; implementable in numpy in
+under 120 changed lines starting from the champion; not a hyper-parameter tweak; not something the journal already
+measured. Prefer mechanisms orthogonal to a within-user pairwise loss, since that is the champion. Be bold on the
+idea, honest on expected_delta (same calibration as the Selector). Output the same fenced json block as the Selector
+with exactly one selection and "type": "explore".""",
  'implement': """Role: IMPLEMENTER. EDIT the parent script; do not rewrite it. Return the parent script with ONLY the lines the
 hypothesis requires changed, added or removed — keep every other line byte-for-byte, including the module
 docstring (you may append one line to it), comments, import order, function names and the output code. The diff is
@@ -160,6 +169,12 @@ def user_select(ctx):
             f"Consolidator plan for this generation: {json.dumps(plan, default=str)}\n"
             f"Parked ideas (measured before, retest only with a reason): {json.dumps(ctx.get('parked', []), default=str)}\n"
             f"Choose exactly k = {ctx['k']} candidates.")
+
+def user_explore(ctx):
+    cards = sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []
+    return (_state(ctx) + f"\n\nDiagnosis:\n{ctx.get('diagnosis', '(none)')}\n\n"
+            f"Cards already on the menu (do not propose these as they stand): {', '.join(cards)}\n"
+            f"Propose exactly one wildcard candidate.")
 
 def user_implement(ctx, selection, parent_code, extra_parent_code=None):
     s = (f"Candidate to implement:\n{json.dumps(selection, indent=1, default=str)}\n\n"

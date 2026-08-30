@@ -62,6 +62,7 @@ class Brain:
     def critique(self, ctx, code, selection) -> dict: raise NotImplementedError
     def fix(self, ctx, code, error, log_tail) -> dict: raise NotImplementedError
     def consolidate(self, ctx, results) -> dict: raise NotImplementedError
+    def explore(self, ctx): return None          # wildcard slot; backends may override
 
 class FakeBrain(Brain):
     """Scripted brain: `generations` is a list (one per generation) of lists of (selection, code) pairs.
@@ -82,9 +83,10 @@ class FakeBrain(Brain):
 
 class LLMBrain(Brain):
     """Shared role logic (prompt -> call -> parse -> validate, one format-reminder retry). Backends implement _call."""
-    DEFAULT_EFFORT = {'diagnose': 'medium', 'select': 'high', 'implement': 'high', 'critique': 'medium',
-                      'fix': 'medium', 'consolidate': 'medium'}
-    MAX_TOKENS = {'diagnose': 3000, 'select': 8000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000}
+    DEFAULT_EFFORT = {'diagnose': 'medium', 'select': 'xhigh', 'implement': 'xhigh', 'critique': 'medium',
+                      'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh'}
+    MAX_TOKENS = {'diagnose': 3000, 'select': 8000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000,
+                  'explore': 8000}
 
     def __init__(self, models=None, efforts=None, budget_usd=None, log=print):
         super().__init__()
@@ -122,6 +124,21 @@ class LLMBrain(Brain):
                 s['expected_delta'] = float(s['expected_delta'])
             return sels[:k]
         return self._with_retry('select', P.user_select(ctx), parse)
+
+    def explore(self, ctx):
+        def parse(t):
+            sels = parse_header(t).get('selections')
+            if not isinstance(sels, list) or not sels:
+                raise ParseError('"selections" must contain exactly one wildcard candidate')
+            s = sels[0]
+            for f in ('card', 'target_component', 'hypothesis', 'expected_delta', 'expected_delta_basis'):
+                if f not in s:
+                    raise ParseError(f'wildcard missing field "{f}"')
+            if s['target_component'] not in P.TARGET_COMPONENTS:
+                raise ParseError(f'unknown target_component {s["target_component"]!r}')
+            s['expected_delta'] = float(s['expected_delta']); s['type'] = 'explore'
+            return s
+        return self._with_retry('explore', P.user_explore(ctx), parse)
 
     def implement(self, ctx, selection, parent_code, extra_parent_code=None):
         def parse(t):

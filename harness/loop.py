@@ -18,12 +18,13 @@ from .journal import Journal, diff_lines
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
-                 iteration_unit='node'):
+                 iteration_unit='node', wildcard=True):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         self.max_nodes, self.max_generations = max_nodes, max_generations or max_nodes
         self.wall_clock_s, self.parallel, self.confirm_seeds = wall_clock_s, parallel, confirm_seeds
         self.final_reseed = final_reseed
         assert iteration_unit in ('node', 'generation'); self.iteration_unit = iteration_unit   # ADR-0006: what the 50 cap counts
+        self.wildcard = wildcard     # ADR-0011: one slot per generation goes to the Explorer role
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
         self.run_dir = C.RUNS / run_id; self.j = Journal(self.run_dir); self._log = log
         self.state_path = self.run_dir / 'state.json'
@@ -97,6 +98,7 @@ class Loop:
                'target_component': selection.get('target_component'), 'hypothesis': selection.get('hypothesis'),
                'expected_delta': selection.get('expected_delta'), 'expected_delta_basis': selection.get('expected_delta_basis'),
                'rejected_alternative': selection.get('rejected_alternative'), 'change_summary': selection.get('change_summary'),
+               'wildcard': bool(selection.get('wildcard', False)),
                'code_path': str(self.j.node_path(n).relative_to(self.run_dir)),
                'diff_path': diff[0] if diff else None, 'diff_lines': diff[1] if diff else None,
                'metrics': res.metrics if res else None, 'history': res.history if res else [],
@@ -118,7 +120,17 @@ class Loop:
         # 1. diagnose + select
         diagnosis, err = self._brain(self.brain.diagnose, self.ctx(), what='diagnose')
         diagnosis = diagnosis or f'(diagnosis unavailable: {err})'
-        selections, err = self._brain(self.brain.select, self.ctx(diagnosis=diagnosis), self.k, what='select')
+        n_sel = self.k - 1 if self.wildcard else self.k
+        selections, err = self._brain(self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel), n_sel, what='select')
+        selections = selections or []
+        if self.wildcard:
+            wild, werr = self._brain(self.brain.explore, self.ctx(diagnosis=diagnosis), what='explore')
+            if wild:
+                wild['type'] = 'explore'; wild['wildcard'] = True
+                selections = [wild] + selections          # first, so _diversify keeps it
+                self.log(f"  wildcard: [{wild.get('target_component')}] {str(wild.get('hypothesis'))[:120]}")
+            elif werr:
+                self.log(f'  wildcard unavailable: {werr}')
         if not selections:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: selector failed ({err})'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)

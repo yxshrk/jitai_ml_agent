@@ -53,7 +53,7 @@ class Journal:
                 tail = (f"primary {m.get('primary', 0):.4f} GAUC {m.get('gauc', 0):.4f} nDCG@5 {m.get('ndcg5', 0):.4f}"
                         + (f" (\u0394{d:+.4f} vs champion, {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else ''))
             parent = r.get('parent'); parent = f"node_{parent:03d}" if isinstance(parent, int) else 'root'
-            out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}] {r.get('method') or ''}: "
+            out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] {r.get('method') or ''}: "
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")
         return out
 
