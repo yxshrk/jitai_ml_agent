@@ -337,6 +337,17 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_1k: untried
 
 ### ensemble-design-sweep: Ensemble configuration search at close
+- GATE (measured + reviewed): seed-ensembling pays only when members are competent
+  AND usefully diverse. Before accepting any ensemble: (1) drop any member >0.0010
+  primary below the median member or with anomalous tie/quantization rates;
+  (2) compute rescue-vs-harm on validation pairs (consensus corrects anchor-wrong
+  pairs = rescue; overturns anchor-right pairs = harm), weighted per GAUC user
+  weighting; require rescue/harm > 1.2 and positive net rescue; (3) prefer a
+  best-anchored soft combination (anchor weight ~0.6 to the best member, soft
+  pairwise votes with per-member margin temperature, exact ties = 0.5 votes) over
+  raw hard rank averaging — 5-item slates make hard ranks brittle (measured: 4 of
+  5 hard-rank closes on strong singles SUBTRACTED). Never select members by the
+  candidate ensembles' own validation scores.
 - mechanism: The closing ensemble node probes its own design instead of assuming it: member count {3,5,7}, combination rule {per-user rank average, probability average}, optionally member diversity (consecutive seeds vs seeds+dial-jitter). Short-probe the options where affordable, pick on validation, produce the final ensemble. Log all probed designs.
 - treats: overfit
 - preconditions: Apply to the best accepted single-model champion. This is the canonical last node of a run.
