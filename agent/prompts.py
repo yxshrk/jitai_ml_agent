@@ -47,9 +47,12 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
   and never read from val.csv except long_view for the metrics computation.
 - Allowed libraries: numpy, torch, stdlib only.
 
-Propose exactly ONE atomic, falsifiable change per iteration relative to the
-parent script, and state it as a hypothesis. Do not re-try ideas the journal
-shows were rejected.
+Propose ONE falsifiable change per iteration relative to the parent script,
+stated as a hypothesis. Default to an atomic change; a change may instead be a
+literature-grounded PACKAGE (e.g. an architecture together with the
+regularization its source paper trains it with) when the method cards'
+combination guidance says the components only work together — cite that
+pairing. Do not re-try ideas the journal shows were rejected.
 
 Respond with a single JSON object and nothing else:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
@@ -137,6 +140,38 @@ CONVERGENCE_PRESSURE = (
 )
 
 
+
+DATASET_CONTEXT = {
+    "pure": (
+        "## Benchmark context (reason with these facts)\n"
+        "KuaiRand-Pure: SMALL data — 1.14M train rows, 27K users x 7.6K items, 5 ID fields.\n"
+        "Split is TEMPORAL (train Apr 8-21, valid Apr 22-28): the task is forecasting the\n"
+        "next week, so recency of behavior matters and stale patterns decay.\n"
+        "The official baseline is STRONG (0.6016 of a 0.8645 ceiling): remaining true\n"
+        "gains are small (typically +0.0005..+0.002 each), near the seed-noise floor.\n"
+        "Implications: (1) small data + added capacity => memorization; any architecture\n"
+        "upgrade (cross layers, MLPs) must ship WITH strong regularization (dropout,\n"
+        "weight decay, LR decay) in the same node, as its source paper does; (2) small\n"
+        "per-step effects => confirm with multiple seeds and prefer literature packages\n"
+        "over atoms; (3) temporal split => recency weighting and early checkpointing are\n"
+        "plausible riders on a regularized stack."
+    ),
+    "1k": (
+        "## Benchmark context (reason with these facts)\n"
+        "KuaiRand-1K: MEDIUM data — ~5M usable train rows, ~1K core users, temporal split.\n"
+        "Baseline here is weaker relative to headroom: single-method gains can exceed\n"
+        "epsilon; seed variance is LARGE (singles spread ~0.01), so seed ensembling of a\n"
+        "good stack pays more than on Pure. Capacity (larger k) helps more before\n"
+        "overfitting; still pair capacity with regularization."
+    ),
+    "27k": (
+        "## Benchmark context (reason with these facts)\n"
+        "KuaiRand-27K: LARGE data — ~200M train rows. Compute dominates: prefer\n"
+        "throughput-conscious changes, subsampling for probes, and few well-chosen\n"
+        "full trainings. Regularization pressure is lower at this scale."
+    ),
+}
+
 def _streak_section(streak_state: dict) -> str:
     return (
         "## Convergence pressure\n"
@@ -179,6 +214,7 @@ def selector_user_prompt(
         )
     parts = [
         f"## Active dataset\n{dataset}",
+        DATASET_CONTEXT.get(dataset, ""),
         (
             "## Prior runs (do not repeat failed openings)\n"
             + (prior_runs or "(none recorded)")
