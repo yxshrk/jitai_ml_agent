@@ -657,9 +657,18 @@ class Loop:
             return []
         return sorted(f"{c} [{v['status'].split(' ')[0]}]" for c, v in P.card_index().items() if v['family'] == fam)
 
+    def _ledger(self):
+        """The family ledger built from the cards at the start of each generation (ADR-0018; never a stale file)."""
+        g = self.state.get('generation')
+        if getattr(self, '_ledger_cache', (None, None))[0] != g:
+            self._ledger_cache = (g, P.ledger())
+        return self._ledger_cache[1]
+
     def _family_score(self, fam):
-        """Ordering key of an open family: (not a last family, has a measured screen gain, that gain or else the highest card
-        expected_delta among the family's cards still measurable on this stack); None when nothing is left to measure."""
+        """Ordering key of an open family (ADR-0016 + ADR-0018): (not a last family, has a kept screen gain, value) where
+        value = a kept screen gain if any, else the best card_value() among the family's cards still measurable on this
+        stack — the record for measured cards, the discounted promise capped by an ORACLE bound for unmeasured ones;
+        None when nothing is left to measure. Falls back to the cards' own expected_delta without a ledger."""
         idx = P.card_index(); stack = _stack_key(self.stack_of(self.state['champion']))
         kept = [s['best_gain'] for s in (self.state.get('screened') or [])
                 if s.get('family') == fam and s.get('best_gain') is not None and s.get('kept')]   # dropped screens are evidence AGAINST
@@ -672,8 +681,22 @@ class Loop:
             if v['status'].startswith('dead_under'):
                 return stack not in {_stack_key(s) for s in _dead_stacks(v['status'])}
             return True
-        hi = [v['expected_hi'] for c, v in idx.items() if v['family'] == fam and measurable(c, v) and v['expected_hi'] is not None]
-        return (last, 0, max(hi)) if hi else None
+        led = self._ledger(); rows = (led or {}).get('cards', {})
+        if led is not None:                   # with a ledger, evidence orders every family (no forced-last family)
+            last = 1
+            fam_screens = [s.get('best_gain') for s in (led.get('families', {}).get(fam, {}).get('screen_gains') or [])
+                           if s.get('kept') and s.get('best_gain') is not None]
+            if fam_screens:
+                return (last, 1, max(fam_screens))
+        vals = []
+        for c, v in idx.items():
+            if v['family'] != fam or not measurable(c, v):
+                continue
+            if c in rows:
+                vals.append(P.card_value(rows[c]))
+            elif v['expected_hi'] is not None:
+                vals.append(v['expected_hi'])
+        return (last, 0, max(vals)) if vals else None
 
     def _campaign_family(self, g):
         """The family this generation's Selector slots belong to: the current one while it is open, else the best-scoring
@@ -931,9 +954,11 @@ class Loop:
             ranking += [entry(v, False) for v in unacc_top]
         ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
         events = []
-        unacc = [r for r in ranking if not r['accepted']]
-        self.state['best_unaccepted'] = ({'n': unacc[0]['n'], 'mean': round(unacc[0]['mean'], 5), 'valid_primary': unacc[0]['valid_primary']}
-                                         if unacc else None)
+        for r in ranking:
+            r['n_seeds'] = len(self.fresh_seeds(r['n']))
+        unacc = [r for r in ranking if not r['accepted'] and r['n_seeds'] >= 2]      # a single seed is not a fresh-seed mean
+        self.state['best_unaccepted'] = ({'n': unacc[0]['n'], 'mean': round(unacc[0]['mean'], 5), 'valid_primary': unacc[0]['valid_primary'],
+                                          'n_seeds': unacc[0]['n_seeds']} if unacc else None)
         if self.designation == 'strict':
             for r in unacc:
                 r['excluded'] = 'not accepted (strict designation: the run never submits a node it rejected)'

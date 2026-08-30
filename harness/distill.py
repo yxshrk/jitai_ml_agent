@@ -260,10 +260,13 @@ def calibrate(methods_dir=None, bounds_path=None, log=print):
             hi = round(max(0.0, max(gains)), 4)
             new_fm = re.sub(r'^expected_delta:.*$', f'expected_delta: [0.0, {hi:.4f}]', new_fm, flags=re.M)
             tag = f'measured (ADR-0018): best seed-mean gain {max(gains):+.4f} over {len(gains)} measurement(s), so the promise is capped at the record'
-            if basis and 'measured (ADR-0018)' not in basis.group(1):
-                new_fm = re.sub(r'^expected_delta_basis:.*$', f'expected_delta_basis: {tag}; was: ' + basis.group(1).strip(), new_fm, count=1, flags=re.M)
+            if basis:
+                was = basis.group(1).strip()
+                if 'measured (ADR-0018)' in was:                   # refresh a stale tag: keep only the original promise after '; was:'
+                    was = was.split('; was:', 1)[1].strip() if '; was:' in was else ''
+                new_fm = re.sub(r'^expected_delta_basis:.*$', f'expected_delta_basis: {tag}' + (f'; was: {was}' if was else ''), new_fm, count=1, flags=re.M)
         sig = bounds.get('cards', {}).get(cid)
-        if sig and sig in bounds.get('bounds', {}):
+        if sig and sig in bounds.get('bounds', {}) and bounds['bounds'][sig].get('kind', 'oracle') == 'oracle':   # measured headroom never caps a promise
             b = bounds['bounds'][sig]
             if not gains and ed:
                 nums = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?', ed.group(1))]
@@ -273,7 +276,7 @@ def calibrate(methods_dir=None, bounds_path=None, log=print):
                         new_fm = re.sub(r'^expected_delta_basis:.*$', f"expected_delta_basis: bounded (ADR-0018) at {b['bound']:+.4f} by the oracle for '{sig}' — {b['source']}; was: " + basis.group(1).strip(), new_fm, count=1, flags=re.M)
         if new_fm != fm:
             card.write_text(f'---\n{new_fm}\n---\n{body}'); changed[card.name] = 'calibrated'
-        if sig and sig in bounds.get('bounds', {}):
+        if sig and sig in bounds.get('bounds', {}) and bounds['bounds'][sig].get('kind', 'oracle') == 'oracle':
             b = bounds['bounds'][sig]
             line = (f"- ceiling:oracle on [{bounds.get('stack', 'official FM')}]: BOUNDED <= {b['bound']:+.4f} for the signal family '{sig}' — "
                     f"{b['source']} (facts §11, kb/data/screens/CEILING.md)")

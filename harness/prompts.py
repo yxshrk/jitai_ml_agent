@@ -57,13 +57,23 @@ def menu():
               "a retest needs a stack not listed AND a stated reason (ADR-0004); `untried` = never measured. In stacks, FM = the "
               "official FM baseline and BPR = loss-bpr-pairwise-within-user. Each card's `## Measured` section has the per-node "
               "evidence: single-seed and seed-mean Δ, t statistic, verdict, diff size.")
+    led = ledger() or {}; lrows = led.get('cards', {})
     def render(p):
-        """Proven and untried cards in full; a card dead on every stack it was measured on is shown as front matter +
-        claim (the Selector needs its status and mechanism to argue a retest; the Implementer receives the full card
-        of the candidate it builds). Keeps the cached prefix bounded as the Archivist and Librarian add cards."""
+        """Proven and untried cards in full; a card dead on every stack it was measured on is ONE ledger row (ADR-0018
+        rule 7: id, component, family, status, record, bound) — the Selector needs its status and record to argue a
+        retest, the Implementer receives the full card of the candidate it builds. Keeps the cached prefix bounded."""
         text = p.read_text()
-        if not _front_fields(text).get('status', '').startswith('dead_under'):
+        f = _front_fields(text)
+        if not f.get('status', '').startswith('dead_under'):
             return text
+        if lrows:
+            e = lrows.get(f.get('id', p.stem), {})
+            rec = e.get('measured_max'); b = e.get('bound')
+            return (f"- DEAD `{f.get('id', p.stem)}` [{f.get('target_component')}/{e.get('family', f.get('family'))}]: {f.get('status', '')[:120]}; "
+                    f"record {rec:+.4f}" + (f"; oracle bound {b:+.4f}" if b is not None and e.get('bound_kind') == 'oracle' else '')
+                    + " — full card on request (a retest needs a new stack and a reason, ADR-0004)") if rec is not None else \
+                   f"- DEAD `{f.get('id', p.stem)}` [{f.get('target_component')}]: {f.get('status', '')[:120]}"
+        
         fm_end = text.index('\n---\n', 4) + 5
         body = text[fm_end:]
         claim = body[body.index('## Claim'):] if '## Claim' in body else body
@@ -132,9 +142,8 @@ without an accepted node from it and the next family opens — spend the generat
 mechanisms, not on one mechanism at three doses;
 prefer the cheaper implementation when expected gains tie; in generation 1 at least one candidate must be a
 ranking-aligned loss (organizers' lead #1).
-CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003. Cards
-state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the card's range unless the
-diagnosis gives specific evidence for more. Seed-to-seed SD is ~0.0003; acceptance needs a seed-mean gain of at least
+CALIBRATION_SENTENCE Cards state ranges for the whole family; a single first attempt lands in the LOWER THIRD of the
+card's range unless the diagnosis gives specific evidence for more. Seed-to-seed SD is ~0.0003; acceptance needs a seed-mean gain of at least
 MIN_EFFECT on fresh seeds at z >= Z_CRIT with the pooled seed SD, so real +0.0008 effects pass and single-seed flukes do not; the entire
 remaining headroom is ~0.25.
 Output exactly one fenced block:
@@ -261,6 +270,11 @@ ROLE_SYSTEM['select'] = (ROLE_SYSTEM['select'].replace('MIN_EFFECT', str(C.MIN_E
                         .replace('FREE_SLOT_FROM_GENERATION', str(C.FREE_SLOT_FROM_GENERATION))
                         .replace('CAMPAIGN_FLAT_GENERATIONS', str(C.CAMPAIGN_FLAT_GENERATIONS)))
 ROLE_SYSTEM['diagnose'] = ROLE_SYSTEM['diagnose'].replace('HARD_GROUP_REJECTS', str(C.HARD_GROUP_REJECTS))
+_SELECT_TEMPLATE = ROLE_SYSTEM['select']
+
+def refresh_calibration():
+    """Regenerate the Selector's calibration sentence from the ledger (called with refresh_menu, ADR-0018)."""
+    ROLE_SYSTEM['select'] = _SELECT_TEMPLATE.replace('CALIBRATION_SENTENCE', calibration_text())
 ROLE_SYSTEM['librarian'] = ROLE_SYSTEM['librarian'] % (TARGET_COMPONENTS,)
 ROLE_SYSTEM['probe'] = """Role: PROBE (ADR-0015). Before a feature hypothesis gets a node, the harness measures the proposed signal on
 the valid split against the champion's own predictions. Write the PROBE SCRIPT that computes that signal: a short standalone
@@ -298,9 +312,11 @@ def stable_prefix():
 PLANNING_ROLES = ('diagnose', 'select', 'explore', 'consolidate', 'librarian', 'archive')   # roles that read the run journal block
 
 def refresh_menu():
-    """Forget the cached prefix so cards added by the Librarian/Archivist appear in the next call."""
+    """Forget the cached prefix so cards added by the Librarian/Archivist appear in the next call; regenerate the
+    calibration sentence from the ledger (ADR-0018)."""
     global _STABLE
     _STABLE = None
+    refresh_calibration()
 
 def untried_cards():
     return sorted(p.stem for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md'
@@ -321,6 +337,50 @@ def card_index():
         out[f.get('id', p.stem)] = {'family': f.get('family') or 'other', 'target_component': f.get('target_component'),
                                     'status': f.get('status', 'untried'), 'expected_hi': max(float(x) for x in nums) if nums else None}
     return out
+
+PROMISE_DISCOUNT = 0.3      # ADR-0018 rule 6b: a paper/analogy promise counts at the realised/predicted ratio measured over five runs
+
+def ledger():
+    """The family ledger (ADR-0018, kb/methods/ledger.py, research session) built from the cards NOW — never a stale file.
+    None when the generator is not present (older checkouts)."""
+    import importlib.util
+    path = C.KB / 'methods' / 'ledger.py'
+    if not path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location('kb_ledger', path); mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.build(C.KB / 'methods')
+
+def card_value(entry):
+    """What a card may still be worth, from its ledger row: the record when measured (0 if never positive), else the
+    promise — discounted for paper/analogy bases and never above an ORACLE bound (ADR-0018 rules 6a/6b)."""
+    rec = entry.get('measured_max_ref') if entry.get('measured_max_ref') is not None else entry.get('measured_max')
+    if rec is not None:                    # the record on the reference stack when there is one, else on any stack
+        return max(0.0, float(rec))
+    hi = (entry.get('expected') or [None, None])[1]
+    v = float(hi) if hi is not None else 0.0
+    if entry.get('basis_class') in ('paper', 'analogy'):
+        v *= PROMISE_DISCOUNT
+    if entry.get('bound_kind') == 'oracle' and entry.get('bound') is not None:
+        v = min(v, float(entry['bound']))
+    return v
+
+def calibration_text(led=None):
+    """The Selector's calibration sentence, generated from the ledger like rules_text() from config (ADR-0018 rule 6c)."""
+    led = led if led is not None else ledger()
+    if not led:
+        return ('CALIBRATION (measured in this project): predicted 0.006 / 0.004 / 0.003 realised +0.0022 / +0.0005 / -0.0003; '
+                'every accepted gain so far was +0.0009 to +0.0022 on fresh seeds.')
+    cards = led.get('cards', {})
+    acc = sorted(float(v['measured_max']) for v in cards.values() if v.get('accepted') and v.get('measured_max') is not None)
+    n_meas = sum(1 for v in cards.values() if v.get('measured_max') is not None)
+    never = sum(1 for v in cards.values() if v.get('measured_max') is not None and v['measured_max'] <= 0)
+    fams = led.get('families', {})
+    bounded = [f for f, v in fams.items() if v.get('status') == 'bounded']; exhausted = [f for f, v in fams.items() if v.get('status') == 'exhausted']
+    return (f"CALIBRATION (generated from the ledger, ADR-0018): {n_meas} cards measured, {never} never positive; every ACCEPTED gain was "
+            + (f"{acc[0]:+.4f} to {acc[-1]:+.4f}" if acc else 'none yet') + " on fresh seeds; a card's expected_delta upper IS its record once measured "
+            f"(0 if never positive), an unmeasured paper/analogy promise counts x{PROMISE_DISCOUNT} and never above its family's oracle bound; "
+            f"bounded families (nothing in them can clear acceptance): {', '.join(bounded) or 'none'}; exhausted: {', '.join(exhausted) or 'none'}.")
 
 def family_of(card, index=None):
     """The family of a card id, also for a deepen named '<card id> — <variant>'; None for an unknown name."""
@@ -493,3 +553,5 @@ def user_librarian(ctx, example_card):
             f"Run journal: {'in the # Run journal section of your instructions' if ctx.get('has_digest') else '(no run yet)'}\n"
             + (f"Latest results (after the frozen journal):\n{ctx['extra']}\n" if ctx.get('extra') else '') + "\n"
             f"Example card (format to copy exactly):\n```card\n{example_card}\n```")
+
+refresh_calibration()      # ADR-0018: the Selector's calibration sentence comes from the ledger (after every def above)

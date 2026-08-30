@@ -26,7 +26,7 @@ def test_strict_never_submits_a_rejected_node(tmp_path, monkeypatch):
     ranking = lp.designate_final()
     assert lp.state['designated'] == 9                                        # the accepted champion, not the 0.6049 leader
     assert ranking[0]['n'] == 9 and ranking[0]['accepted']
-    assert lp.state['best_unaccepted'] == {'n': 19, 'mean': 0.60486, 'valid_primary': 0.6046}
+    assert lp.state['best_unaccepted'] == {'n': 19, 'mean': 0.60486, 'valid_primary': 0.6046, 'n_seeds': 3}
     assert all(r.get('excluded') for r in ranking if not r['accepted'])
     assert lp.state['designation_events'] and 'node_019 leads on fresh-seed mean' in lp.state['designation_events'][0]
 
