@@ -94,6 +94,9 @@ Interaction facts, each replicated across >= 3 seeds unless noted:
 - dcn-lite ALONE from baseline: ~0.6014 (WORSE). dcn-lite + regularization-schedule +
   bpr-hybrid + recency-weighting as one package: 0.6047 +/- 0.0003. The package is the
   unit that works; the atoms measure at or below baseline.
+- NEW (measured in-run): the package PLUS a click auxiliary BCE head at weight 0.1
+  scored 0.60477 single-model (exp_anthropic node_003) — the click aux, dead in
+  isolation, is a live rider ON the full package. Untested with an ensemble close.
 - bpr-hybrid ALONE: ~0.6003 (worse). Inside the package: contributes ~+0.001.
 - recency-weighting (7d) on the regularized package: +0.001 mean (+0.004 at best seed);
   on a weak parent its grey-zone confirms fail — needs >= 3 seeds to detect.
