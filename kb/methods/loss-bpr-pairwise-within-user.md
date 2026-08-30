@@ -14,7 +14,7 @@ cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of posi
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
 status: proven — accepted on [official FM]
-evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006]
+evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006, live_05:node_002]
 ---
 ## Claim
 Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
@@ -45,9 +45,10 @@ user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
   add a tiny logloss term or a small L2 to avoid exact ties.
 
 ## Measured
-_Verdict:_ ACCEPTED 4x (live_01:node_001 on [official FM] Δ +0.0022; live_02:node_001 on [official FM] Δ +0.0016; live_03:node_001 on [official FM] Δ +0.0017; live_04:node_002 on [official FM] Δ +0.0011)
+_Verdict:_ ACCEPTED 5x (live_01:node_001 on [official FM] Δ +0.0022; live_02:node_001 on [official FM] Δ +0.0016; live_03:node_001 on [official FM] Δ +0.0017; live_04:node_002 on [official FM] Δ +0.0011; live_05:node_002 on [official FM] Δ +0.0017)
 - live_01:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022 — ACCEPTED; 433 changed lines
 - live_02:node_001 on [official FM]: primary 0.6031, single-seed Δ +0.0016, seed-mean Δ +0.0016 (t 8.22) — ACCEPTED; 34 changed lines
 - live_03:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (t 6.39) — ACCEPTED; 37 changed lines
 - live_04:node_002 on [official FM]: primary 0.6028, single-seed Δ +0.0014, seed-mean Δ +0.0011 (t 3.83) — ACCEPTED; 37 changed lines
 - live_04:node_006 on [official FM + field-aware FM embeddings]: primary 0.6030, single-seed Δ +0.0000 — rejected; 3 changed lines
+- live_05:node_002 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (z 6.49) — ACCEPTED; 34 changed lines

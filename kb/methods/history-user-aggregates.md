@@ -13,7 +13,7 @@ cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketise
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: proven — accepted on [official FM]
-evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011]
+evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -44,3 +44,4 @@ _Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010)
 - live_02:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6030, single-seed Δ -0.0001 — rejected; 70 changed lines
 - live_04:node_003 on [official FM]: primary 0.6021, single-seed Δ +0.0007, seed-mean Δ +0.0010 (t 4.83) — ACCEPTED; 128 changed lines
 - live_04:node_011 on [official FM + field-aware FM embeddings]: primary 0.6017, single-seed Δ -0.0014 — rejected; 69 changed lines
+- live_05:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0006 (z 1.89) — rejected; 87 changed lines

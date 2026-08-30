@@ -1,0 +1,168 @@
+{
+ "run_id": "live_05",
+ "stop_reason": "converged: 3 generations without a >= 0.001 cumulative rise of the champion fresh-seed mean (ADR-0012)",
+ "generations": 4,
+ "nodes": 16,
+ "champion": 2,
+ "champion_metrics": {
+  "gauc": 0.6703073475190711,
+  "ndcg5": 0.5369853914191499,
+  "primary": 0.6036463694691105,
+  "ndcg5_disc": 0.7234219277427735,
+  "by_group": {
+   "dur18-60s": {
+    "rows": 33235,
+    "gauc": 0.6445,
+    "ndcg5": 0.4601,
+    "primary": 0.5523
+   },
+   "dur60-180s": {
+    "rows": 46565,
+    "gauc": 0.6481,
+    "ndcg5": 0.4874,
+    "primary": 0.5677
+   },
+   "dur<18s": {
+    "rows": 20101,
+    "gauc": 0.7021,
+    "ndcg5": 0.4054,
+    "primary": 0.5538
+   },
+   "dur=0": {
+    "rows": 2107,
+    "gauc": 0.6512,
+    "ndcg5": 0.0867,
+    "primary": 0.3689
+   },
+   "dur>180s": {
+    "rows": 22901,
+    "gauc": 0.6321,
+    "ndcg5": 0.3784,
+    "primary": 0.5052
+   },
+   "tab=0": {
+    "rows": 13726,
+    "gauc": 0.5501,
+    "ndcg5": 0.0625,
+    "primary": 0.3063
+   },
+   "tab=1": {
+    "rows": 92672,
+    "gauc": 0.6202,
+    "ndcg5": 0.5407,
+    "primary": 0.5805
+   },
+   "tab=2": {
+    "rows": 3834,
+    "gauc": 0.6414,
+    "ndcg5": 0.516,
+    "primary": 0.5787
+   },
+   "tab=4": {
+    "rows": 7877,
+    "gauc": 0.5831,
+    "ndcg5": 0.5477,
+    "primary": 0.5654
+   },
+   "tab=6": {
+    "rows": 5170,
+    "gauc": 0.6416,
+    "ndcg5": 0.1059,
+    "primary": 0.3738
+   }
+  }
+ },
+ "baseline_valid_primary": 0.6014687563529677,
+ "delta_vs_baseline_valid": 0.00218,
+ "top3_valid": [
+  {
+   "n": 15,
+   "primary": 0.6041063837624581
+  },
+  {
+   "n": 9,
+   "primary": 0.6040371716770998
+  },
+  {
+   "n": 12,
+   "primary": 0.6039854360682793
+  }
+ ],
+ "designated": 12,
+ "final_ranking": [
+  {
+   "n": 12,
+   "valid_primary": 0.6039854360682793,
+   "fresh_seeds": [
+    0.6035553784688616,
+    0.6038930832904412,
+    0.6035371886526912
+   ],
+   "accepted": false,
+   "mean": 0.6036618834706647,
+   "std": 0.00020043137192465713
+  },
+  {
+   "n": 15,
+   "valid_primary": 0.6041063837624581,
+   "fresh_seeds": [
+    0.6036108420918753,
+    0.6033562758628401,
+    0.6037692631098412
+   ],
+   "accepted": false,
+   "mean": 0.6035787936881856,
+   "std": 0.0002083505259909047
+  },
+  {
+   "n": 9,
+   "valid_primary": 0.6040371716770998,
+   "fresh_seeds": [
+    0.6035478025962604,
+    0.6030966080689154,
+    0.6037692631098412
+   ],
+   "accepted": false,
+   "mean": 0.6034712245916724,
+   "std": 0.0003428036524174605
+  }
+ ],
+ "usage": {
+  "calls": 54,
+  "tokens_in": 1799295,
+  "tokens_out": 165173,
+  "cache_read": 946243,
+  "cache_write": 0,
+  "cost_usd": 9.693571500000003
+ },
+ "wall_clock_s": 2072.2,
+ "champion_seed_mean": 0.60313,
+ "best_single_seed": 0.6041063837624581,
+ "convergence_rule": "ADR-0012 (revised): 3 generations without a seed-confirmed champion change",
+ "official_rule": {
+  "best_single_seed": 0.6036463694691105,
+  "streak": 3,
+  "converged_at_generation": 4,
+  "champion_at_stop": 2
+ },
+ "official_rule_submission": {
+  "node": 2,
+  "generation": 4,
+  "valid_primary": 0.6036463694691105,
+  "fresh_seed_mean": 0.60313,
+  "fresh_seeds": 3
+ },
+ "convergence_switch": "confirmed",
+ "tokens": {
+  "in_uncached": 1799295,
+  "in_cached": 946243,
+  "out": 165173
+ },
+ "interventions": 0,
+ "k": 5,
+ "k_later": 3,
+ "eps": 0.002,
+ "n_converge": 3,
+ "iteration_unit": "node",
+ "iterations_used": 16
+}

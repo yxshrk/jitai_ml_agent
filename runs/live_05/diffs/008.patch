@@ -1,0 +1,57 @@
+--- node_002.py
++++ node_008.py
+@@ -22,6 +22,15 @@
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
++
++def demote_duration_zero(scores, user_groups, duration_zero):
++    scores = np.asarray(scores, dtype=np.float64).copy()
++    lo = np.full(int(user_groups.max()) + 1, np.inf)
++    hi = np.full(int(user_groups.max()) + 1, -np.inf)
++    np.minimum.at(lo, user_groups, scores)
++    np.maximum.at(hi, user_groups, scores)
++    scores[duration_zero] -= (hi - lo + 1.0)[user_groups[duration_zero]]
++    return scores
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+@@ -104,6 +113,8 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    _, va_user_groups = np.unique(np.asarray(uva), return_inverse=True)
++    va_duration_zero = np.array([float(x[4]) == 0.0 for x in va], dtype=bool)
+     train_users = Xtr[:, 0]
+     negative_pool = np.flatnonzero(ytr == 0)
+     negative_pool = negative_pool[np.argsort(train_users[negative_pool], kind='stable')]
+@@ -122,7 +133,7 @@
+         idx = rng.permutation(len(positive_rows))
+         losses = [m.step(Xtr[positive_rows[idx[i:i + a.batch]]], Xtr[sampled_negatives[idx[i:i + a.batch]]])
+                   for i in range(0, len(idx), a.batch)]
+-        r = evaluate(uva, yva, m.predict(Xva))
++        r = evaluate(uva, yva, demote_duration_zero(m.predict(Xva), va_user_groups, va_duration_zero))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+@@ -136,7 +147,7 @@
+     m.V, m.W, m.b = best_state
+ 
+     # ---- outputs ----
+-    sva = m.predict(Xva); r = evaluate(uva, yva, sva)
++    sva = demote_duration_zero(m.predict(Xva), va_user_groups, va_duration_zero); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -144,7 +155,10 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        _, ex_user_groups = np.unique(np.asarray([x[1] for x in ex]), return_inverse=True)
++        ex_duration_zero = np.array([float(x[4]) == 0.0 for x in ex], dtype=bool)
++        ex_scores = demote_duration_zero(m.predict(encode(ex, 1, 2, 3, 4)), ex_user_groups, ex_duration_zero)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, ex_scores)
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

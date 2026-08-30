@@ -148,7 +148,7 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
 
 ## 2026-08-30 (evening) — live_04 finished; statistics, breadth and diagnostics revised with the review session
 - **live_04 final:** converged under its (pre-ADR-0012) rule after 6 generations / 28 nodes, 97 min, $14.77, 99 LLM
-  calls, 1.92 M uncached + 1.47 M cached input tokens / 393 K output, 0 interventions. Champion node_015 (5-seed
+  calls, 1.92 M input tokens (1.47 M of them cached) / 393 K output, 0 interventions. Champion node_015 (5-seed
   rank-average ensemble, 0.6 field-aware(+BPR) / 0.4 BPR lineage): valid 0.6045, seeds 0.60447 / 0.60450 / 0.60399,
   **3-seed mean 0.6043 = +0.0029 over the baseline's mean 0.60144**; +0.0017 over its parent at t 7.65 (z ≈ 6.8 under
   the new test). Generations 5–6 were flat (LightGCN wildcard, gated rank fusion, watch-survival reranker, field-aware
@@ -176,4 +176,21 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   `eda.py`; cards `history-same-author-run-features` (new) and a tab-aware retest note on `history-repeat-exposure-fatigue`.
 - KB after live_04: 23 cards (6 archived from wildcards/un-carded candidates, 1 from the Librarian's web search);
   `kb/spec/foundations.md` in the prefix.
+- **live_05** (first run on the corrected harness; k = 5 → 3, deepen slots, z-test on fresh seeds, cumulative rule,
+  per-group breakdown, Librarian, auto-distill): **converged after 4 generations / 16 nodes, 34.5 min, $9.69**, 54
+  LLM calls, 1.80 M input tokens (0.95 M cached) / 165 K output, 0 interventions. Generation 1 (k = 5): BPR
+  +0.0017 on fresh seeds (z 6.5) → champion; L2 +0.0010 (z 3.5, adaptive) accepted; history aggregates +0.0006 at
+  z 1.9 and the seed-average ensemble +0.0008 at z 2.85 rejected — borderline cases the old t-test would have
+  passed. Generations 2–4 (k = 3–4, deepen slots on the BPR champion) were flat: BPR+L2 merge +0.0003, lr decay
+  +0.0003/+0.0004, two-stream BPR and field-weighted FM wildcards, duration-cohort BPR −0.0020, multiseed rank blend
+  +0.0005 at z 1.8, timeSVD drift head ≈ 0. The 5-member blend deepen (node_014) was built on the wrong parent — the
+  Selector wrote `"parent": "node_012"` and `_resolve_parents` only accepted integers — and the Critic rejected it
+  three times (198 K tokens); fixed in `c78c1fe` with a test. The Librarian's first call lost both cards to mutual
+  `composes_with` references (fixed, `5697942`); its second added `regularization-adversarial-personalized-ranking`
+  and `model-first-order-exposure-transition-fm`. Designated node_012 (fresh-seed mean 0.6037; the champion node_002
+  0.6031 is now always a designation candidate). The literal ε rule converged at the same generation and would have
+  submitted node_002. **Submission unchanged: live_04's node_015 (fresh-seed mean 0.6043) remains the best model.**
+- Token accounting corrected: `Usage.tokens_in` is total input (cached included); live_04 = 1.92 M input (1.47 M
+  cached), not 3.39 M as first written. Per-role in live_05: the Diagnostician (first call of each generation) and
+  the Librarian (called after ~10 min of training, when the provider cache has expired) pay the uncached prefix.
 

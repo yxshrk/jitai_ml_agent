@@ -604,6 +604,8 @@ class Loop:
         near-no-op variant of the champion on a 0.0000045 gap."""
         nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
+        if self.state.get('champion') is not None and all(v['n'] != self.state['champion'] for v in top):
+            top.append(self.node(self.state['champion']))          # the confirmed champion is always a candidate
         ranking = []
         for v in top:
             if self.final_reseed and len(self.fresh_seeds(v['n'])) < 2:
@@ -649,7 +651,8 @@ class Loop:
                    'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
                    'official_rule': self.state.get('official_rule'), 'official_rule_submission': self._official_submission(),
                    'convergence_switch': self.convergence,
-                   'tokens': {'in_uncached': usage.get('tokens_in'), 'in_cached': usage.get('cache_read'), 'out': usage.get('tokens_out')},
+                   'tokens': {'in_total': usage.get('tokens_in'), 'in_cached': usage.get('cache_read'),
+                              'in_uncached': (usage.get('tokens_in') or 0) - (usage.get('cache_read') or 0), 'out': usage.get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k_first, 'k_later': self.k_later, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
                    'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))

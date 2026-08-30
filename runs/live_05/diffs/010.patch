@@ -1,0 +1,75 @@
+--- node_002.py
++++ node_010.py
+@@ -13,6 +13,7 @@
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+ FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELD_PAIRS = [(i, j) for i in range(len(FIELDS)) for j in range(i + 1, len(FIELDS))]
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -24,21 +25,25 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
++    """score = b + sum_i w[x_i] + sum_{i<j} R[i,j]<V[x_i], V[x_j]>, trained with BPR + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
++        self.R = np.ones(len(FIELD_PAIRS), dtype=np.float32)
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mR = np.zeros_like(self.R); self.vR = np.zeros_like(self.R)
+         self.t = 0
+ 
+     def logits(self, X):
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+-        inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
++        inter = np.zeros(len(X), dtype=np.float32)
++        for p, (i, j) in enumerate(FIELD_PAIRS):
++            inter += self.R[p] * (E[:, i] * E[:, j]).sum(1)
+         return self.b + self.W[X].sum(1) + inter, E, S
+ 
+     def step(self, Xp, Xn):
+@@ -46,14 +51,18 @@
+         zp, Ep, Sp = self.logits(Xp)
+         zn, En, Sn = self.logits(Xn)
+         g = (-sigmoid(-(zp - zn)) / B).astype(np.float32)          # d(BPR loss)/d(positive logit)
+-        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
++        gV = np.zeros_like(self.V); gW = np.zeros_like(self.W); gR = np.zeros_like(self.R)
+         for X, E, S, h in ((Xp, Ep, Sp, g), (Xn, En, Sn, -g)):
+             np.add.at(gW, X, h[:, None])
+-            np.add.at(gV, X, h[:, None, None] * (S[:, None, :] - E))
++            for p, (i, j) in enumerate(FIELD_PAIRS):
++                gR[p] += np.dot(h, (E[:, i] * E[:, j]).sum(1))
++                np.add.at(gV, X[:, i], (h * self.R[p])[:, None] * E[:, j])
++                np.add.at(gV, X[:, j], (h * self.R[p])[:, None] * E[:, i])
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.R, gR, self.mR, self.vR)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -128,12 +137,12 @@
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b), m.R.copy())
+         else:
+             bad += 1
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++    m.V, m.W, m.b, m.R = best_state
+ 
+     # ---- outputs ----
+     sva = m.predict(Xva); r = evaluate(uva, yva, sva)
