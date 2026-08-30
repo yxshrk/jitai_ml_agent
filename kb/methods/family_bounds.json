@@ -3,43 +3,53 @@
   "signal_families": {
     "item-side": {
       "bound": 0.0003,
-      "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+      "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
+      "kind": "oracle"
     },
     "day-state": {
       "bound": 0.0,
-      "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002"
+      "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002",
+      "kind": "oracle"
     },
     "random-log": {
       "bound": 0.0001,
-      "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001"
+      "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001",
+      "kind": "oracle"
     },
     "user-context-taste": {
       "bound": 0.0003,
-      "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
+      "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
+      "kind": "oracle"
     },
     "history-cf": {
       "bound": 0.0002,
-      "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
+      "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR",
+      "kind": "screen"
     },
     "creator-affinity": {
       "bound": 0.0021,
-      "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001"
+      "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001",
+      "kind": "oracle"
     },
     "recency-volume": {
       "bound": 0.0,
-      "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
+      "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency",
+      "kind": "ablation"
     },
     "pair-sampling": {
       "bound": 0.0,
-      "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
+      "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001",
+      "kind": "ablation"
     },
     "ensembling": {
       "bound": 0.0016,
-      "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
+      "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging",
+      "kind": "ablation"
     },
     "session-context": {
       "bound": 0.001,
-      "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
+      "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)",
+      "kind": "structural"
     }
   },
   "cards": {
@@ -86,14 +96,19 @@
     "history-rocchio-contrastive-content-affinity": "history-cf",
     "history-session-attribute-overlap": "session-context",
     "loss-session-monotonic-auxiliary-pairs": "session-context",
-    "loss-warp-within-user-rank-weighting": "pair-sampling",
-    "training-schedule-cyclic-bpr-pair-coverage": "pair-sampling"
+    "loss-warp-within-user-rank-weighting": "pair-sampling"
   },
   "reference_stack": [
     "loss-bpr-pairwise-within-user",
     "ensembling-seed-average"
   ],
   "_unmapped_by_design": [
-    "loss-approxndcg-soft-ranks, model-attentional-factorization-machine, model-neural-factorization-machine and the BPR / capacity / regularisation cards: objectives and capacity over the same inputs have no oracle — judged by record only"
-  ]
+    "loss-approxndcg-soft-ranks, model-attentional-factorization-machine, model-neural-factorization-machine and the BPR / capacity / regularisation cards: objectives and capacity over the same inputs have no oracle — judged by record only; training schedules (cyclic pair coverage, lr decay, weight averaging) carry no signal — their record closes them"
+  ],
+  "_kinds": {
+    "oracle": "measured with information no legal model has (valid-week labels LOO / split-half, the random log, the leaky statistics file) — a true ceiling for the family",
+    "screen": "the family's legal features measured additively on the reference stack (kNN, aggregates, repeats) — a ceiling for that feature construction, not for the information",
+    "ablation": "the family's mechanism varied directly on the reference stack (window, pair sampler, seeds, members) — a measured headroom, not an information bound",
+    "structural": "from the scorer's pair mass: pairs within a session are 2 % of what GAUC counts; the measured +0.0009 on BPR is the record"
+  }
 }

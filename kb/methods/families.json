@@ -6,48 +6,59 @@
  "signal_families": {
   "item-side": {
    "bound": 0.0003,
-   "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
+   "source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
+   "kind": "oracle"
   },
   "day-state": {
    "bound": 0.0,
-   "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002"
+   "source": "facts §11.2 row 'user state that day': other-half user × date +0.0000; label-free day context ≤ +0.0002",
+   "kind": "oracle"
   },
   "random-log": {
    "bound": 0.0001,
-   "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001"
+   "source": "facts §11.2 row 'random-exposure log': user-day / user-week / video-week ≤ +0.0001",
+   "kind": "oracle"
   },
   "user-context-taste": {
    "bound": 0.0003,
-   "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
+   "source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
+   "kind": "oracle"
   },
   "history-cf": {
    "bound": 0.0002,
-   "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
+   "source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR",
+   "kind": "screen"
   },
   "creator-affinity": {
    "bound": 0.0021,
-   "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001"
+   "source": "facts §11.2 row 'user × author, user × music': +0.0021 / +0.0016 with same-week labels at 3 % coverage — unobservable at scoring time; from train history ≤ +0.0001",
+   "kind": "oracle"
   },
   "recency-volume": {
    "bound": 0.0,
-   "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
+   "source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency",
+   "kind": "ablation"
   },
   "pair-sampling": {
    "bound": 0.0,
-   "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
+   "source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001",
+   "kind": "ablation"
   },
   "ensembling": {
    "bound": 0.0016,
-   "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
+   "source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging",
+   "kind": "ablation"
   },
   "session-context": {
    "bound": 0.001,
-   "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
+   "source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)",
+   "kind": "structural"
   }
  },
  "families": {
   "aux-targets": {
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
@@ -93,6 +104,7 @@
   },
   "data-weighting": {
    "bound": 0.0,
+   "bound_kind": "mixed:ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001; facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency",
    "status": "bounded",
    "cards": [
@@ -168,6 +180,7 @@
   },
   "encoding": {
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
@@ -191,6 +204,7 @@
   },
   "ensembling": {
    "bound": 0.0016,
+   "bound_kind": "mixed:ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging",
    "status": "open",
    "cards": [
@@ -329,6 +343,7 @@
   },
   "features": {
    "bound": 0.001,
+   "bound_kind": "mixed:oracle,structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md); facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "open",
    "cards": [
@@ -437,6 +452,7 @@
   },
   "history": {
    "bound": 0.001,
+   "bound_kind": "mixed:oracle,screen,structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md); facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR; facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003",
    "status": "open",
    "cards": [
@@ -554,6 +570,7 @@
   },
   "model": {
    "bound": null,
+   "bound_kind": null,
    "bound_source": null,
    "status": "open",
    "cards": [
@@ -665,6 +682,7 @@
   },
   "ranking-loss": {
    "bound": null,
+   "bound_kind": null,
    "bound_source": null,
    "status": "open",
    "cards": [
@@ -867,6 +885,7 @@
   },
   "regularization": {
    "bound": null,
+   "bound_kind": null,
    "bound_source": null,
    "status": "open",
    "cards": [
@@ -1045,6 +1064,7 @@
   },
   "sequential-model": {
    "bound": 0.001,
+   "bound_kind": "mixed:structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)",
    "status": "open",
    "cards": [
@@ -1057,6 +1077,7 @@
   },
   "watch-time": {
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003",
    "status": "bounded",
    "cards": [
@@ -1103,6 +1124,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "aux-targets-is-click": {
@@ -1118,6 +1140,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "aux-targets-ordinal-watch-depth": {
@@ -1133,6 +1156,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "data-weighting-inverse-day-volume": {
@@ -1148,6 +1172,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
   },
   "data-weighting-recency": {
@@ -1163,6 +1188,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
   },
   "data-weighting-user-balanced-bpr-pairs": {
@@ -1178,6 +1204,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "encoding-ordered-item-context-target-statistics": {
@@ -1193,6 +1220,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "ensembling-heterogeneous-rank-average": {
@@ -1208,6 +1236,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-long-duration-slot-specialists": {
@@ -1223,6 +1252,7 @@
    "measured_max_ref": 0.0003,
    "accepted": false,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-multiseed-heterogeneous-rank-blend": {
@@ -1238,6 +1268,7 @@
    "measured_max_ref": -0.0006,
    "accepted": true,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-reciprocal-rank-fusion": {
@@ -1253,6 +1284,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-seed-average": {
@@ -1268,6 +1300,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "ensembling-top5-gated-hybrid-rank-fusion": {
@@ -1283,6 +1316,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0016,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3 + blend009 calibration: seed averaging +0.0013–0.0016 over a single model (live_06 node_005/007); on the seed-averaged champion 20 seeds 0.6044, two lineages 0.6047, a GBDT member +0.0006 — re-weightings of the same information add ≤ +0.0006 beyond seed averaging"
   },
   "features-duration-unknown-flag": {
@@ -1298,6 +1332,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-duration-zero-lexicographic-demotion": {
@@ -1313,6 +1348,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-exposure-session": {
@@ -1328,6 +1364,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
+   "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "features-field-aware-author-pooling": {
@@ -1343,6 +1380,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-fine-duration-and-tab-cross": {
@@ -1358,6 +1396,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "features-upper-tail-tab-duration-cross": {
@@ -1373,6 +1412,7 @@
    "measured_max_ref": -0.0006,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "history-ordered-user-tag-affinity": {
@@ -1388,6 +1428,7 @@
    "measured_max_ref": -0.0004,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
   },
   "history-repeat-exposure-fatigue": {
@@ -1403,6 +1444,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
+   "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "history-same-author-run-features": {
@@ -1418,6 +1460,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
+   "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "history-user-aggregates": {
@@ -1433,6 +1476,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": 0.0002,
+   "bound_kind": "screen",
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
   },
   "history-user-tab-watch-survival-reranker": {
@@ -1448,6 +1492,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
   },
   "loss-bpr-hard-negatives": {
@@ -1463,6 +1508,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-bpr-pairwise-within-user": {
@@ -1478,6 +1524,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "loss-context-matched-two-stream-bpr": {
@@ -1493,6 +1540,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-duration-cohort-weighted-bpr": {
@@ -1508,6 +1556,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-lambdarank-pairs": {
@@ -1523,6 +1572,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "loss-listwise-softmax-within-user": {
@@ -1538,6 +1588,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "loss-long-duration-matched-bpr": {
@@ -1553,6 +1604,7 @@
    "measured_max_ref": -0.0,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-ranksvm-margin-pairs": {
@@ -1568,6 +1620,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "loss-same-tab-long-duration-bpr": {
@@ -1583,6 +1636,7 @@
    "measured_max_ref": -0.0002,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-tab4-long-duration-bpr": {
@@ -1598,6 +1652,7 @@
    "measured_max_ref": -0.0,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: same-tab negatives at 30 / 70 / 100 % 0.6030 / 0.6024 / 0.5880 vs 0.6031; matched / hard / cohort pair cards measured ≤ +0.0001"
   },
   "loss-watchtime-censored": {
@@ -1613,6 +1668,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'video / author side, any period': valid-week LOO video rate +0.0003, leaky month statistics +0.0000; the auxiliary outcomes measured directly as target statistics on node_003 (kb/data/screens/RESULTS.md): video click rate −0.0004, play-through +0.0003; the aux-target cards' own records +0.0002 / +0.0003"
   },
   "model-continuous-date-drift-head": {
@@ -1628,6 +1684,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0,
+   "bound_kind": "ablation",
    "bound_source": "facts §11.3: train + half of valid on the other half 0.5821 vs 0.5826; windows from 04-12 / 04-14 / 04-15 lose 0.003–0.008 — volume, not recency"
   },
   "model-dcn-cross-head": {
@@ -1643,6 +1700,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "model-din-history-attention": {
@@ -1658,6 +1716,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0002,
+   "bound_kind": "screen",
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
   },
   "model-field-aware-fm-embeddings": {
@@ -1673,6 +1732,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "model-field-weighted-fm-relation-scalars": {
@@ -1688,6 +1748,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "model-first-order-exposure-transition-fm": {
@@ -1703,6 +1764,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.001,
+   "bound_kind": "structural",
    "bound_source": "facts §11.1: pairs within 10 min are 2 % of the GAUC pair mass; measured +0.0009 on BPR (z 3.1), +0.0002 on the seed blend; attribute continuation from the most recent earlier positive (history-last-positive-attribute-recurrence) +0.0009 on the plain FM (live_07 node_001), additive 0 on node_009 (kb/data/screens/BEHAVIOUR.md)"
   },
   "model-lightgbm-lambdarank": {
@@ -1718,6 +1780,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "model-lightgcn-positive-id-propagation": {
@@ -1733,6 +1796,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0002,
+   "bound_kind": "screen",
    "bound_source": "facts §11.2 row 'train-history taste, item-kNN, repeats': ≤ +0.0002 each; history-user-aggregates measured 0 on BPR"
   },
   "model-user-tab-duration-cp-interaction": {
@@ -1748,6 +1812,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": 0.0003,
+   "bound_kind": "oracle",
    "bound_source": "facts §11.2 row 'user × tab / duration / tag / type taste': other-half rates ≤ +0.0003"
   },
   "model-user-video-tab-cp-interaction": {
@@ -1763,6 +1828,7 @@
    "measured_max_ref": -0.0005,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "regularization-adversarial-personalized-ranking": {
@@ -1778,6 +1844,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "regularization-embedding-dropout-l2": {
@@ -1793,6 +1860,7 @@
    "measured_max_ref": null,
    "accepted": true,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "regularization-embedding-only-l2": {
@@ -1808,6 +1876,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "regularization-id-field-targeted-l2": {
@@ -1823,6 +1892,7 @@
    "measured_max_ref": 0.0001,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "training-schedule-lr-decay-early-stop": {
@@ -1838,6 +1908,7 @@
    "measured_max_ref": -0.0002,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   },
   "training-schedule-weight-averaging": {
@@ -1853,6 +1924,7 @@
    "measured_max_ref": null,
    "accepted": false,
    "bound": null,
+   "bound_kind": null,
    "bound_source": null
   }
  }
