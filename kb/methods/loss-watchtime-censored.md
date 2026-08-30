@@ -13,8 +13,8 @@ expected_delta_basis: predicting the mechanism that generates the label rather t
 cost: ~90 lines (second head sharing V, censored loss, transform of play time); runtime ~1.3x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003)]
-evidence: [live_02:node_013]
+status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003); official FM + field-aware FM embeddings x1 (best Δ -0.0021)]
+evidence: [live_02:node_013, live_04:node_016]
 ---
 ## Claim
 Add a second head that regresses (log) watch time with a one-sided loss for completed plays — a completed play only
@@ -38,5 +38,6 @@ information; censoring keeps completed plays from teaching "the user stops at th
 - duration_ms = 0 rows have no meaningful threshold — exclude them from loss2.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003)
+_Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0003); official FM + field-aware FM embeddings x1 (best Δ -0.0021)
 - live_02:node_013 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6035, single-seed Δ +0.0004, seed-mean Δ +0.0003 (t 1.85) — rejected; 50 changed lines
+- live_04:node_016 on [official FM + field-aware FM embeddings]: primary 0.6010, single-seed Δ -0.0021 — rejected; 51 changed lines

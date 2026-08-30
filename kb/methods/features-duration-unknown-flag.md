@@ -12,8 +12,8 @@ expected_delta_basis: mechanism-backed but small — it only reorders rows for u
 cost: 2 lines in raw(); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under [official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002)]
-evidence: [live_01:node_003, live_02:node_003, live_02:node_007]
+status: dead_under [official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002); official FM + field-aware FM embeddings x1 (best Δ -0.0002)]
+evidence: [live_01:node_003, live_02:node_003, live_02:node_007, live_04:node_018]
 ---
 ## Claim
 Give unknown-duration rows their own categorical value so the model can learn they are never long views, instead of
@@ -34,7 +34,8 @@ model is currently denied.
 - Combine with features-fine-duration-and-tab-cross in a later node; keep this one isolated to measure it.
 
 ## Measured
-_Verdict:_ never accepted in 3 measurements on 2 stack(s); official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002)
+_Verdict:_ never accepted in 4 measurements on 3 stack(s); official FM x2 (best Δ -0.0003); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0002); official FM + field-aware FM embeddings x1 (best Δ -0.0002)
 - live_01:node_003 on [official FM]: primary 0.6012, single-seed Δ -0.0003 — rejected; 275 changed lines
 - live_02:node_003 on [official FM]: primary 0.6012, single-seed Δ -0.0003 — rejected; 4 changed lines
 - live_02:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ +0.0000, seed-mean Δ +0.0002 (t 1.11) — rejected; 4 changed lines
+- live_04:node_018 on [official FM + field-aware FM embeddings]: primary 0.6028, single-seed Δ -0.0002 — rejected; 5 changed lines

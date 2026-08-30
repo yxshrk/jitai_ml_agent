@@ -12,8 +12,8 @@ expected_delta_basis: organizers' lead #2 (history is entirely unused by the bas
 cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketised fields); runtime ~1.5x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0001)]
-evidence: [live_01:node_006, live_02:node_008]
+status: proven — accepted on [official FM]
+evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -39,6 +39,8 @@ action — in its simplest, leakage-safe form.
 - Using a row's own label in its rate is target leakage — the shift-by-one is mandatory (Critic checks this).
 
 ## Measured
-_Verdict:_ never accepted in 2 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0001)
+_Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010)
 - live_01:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6023, single-seed Δ -0.0014 — rejected; 792 changed lines
 - live_02:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6030, single-seed Δ -0.0001 — rejected; 70 changed lines
+- live_04:node_003 on [official FM]: primary 0.6021, single-seed Δ +0.0007, seed-mean Δ +0.0010 (t 4.83) — ACCEPTED; 128 changed lines
+- live_04:node_011 on [official FM + field-aware FM embeddings]: primary 0.6017, single-seed Δ -0.0014 — rejected; 69 changed lines

@@ -12,8 +12,8 @@ expected_delta_basis: schedule changes usually land inside the 0.002 noise floor
 cost: ~10 lines; runtime 1x; numpy only
 composes_with: [regularization-embedding-dropout-l2, loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under [official FM x1 (best Δ -0.0004)]
-evidence: [live_03:node_002]
+status: dead_under [official FM x1 (best Δ -0.0004); official FM + field-aware FM embeddings x1 (best Δ +0.0000)]
+evidence: [live_03:node_002, live_04:node_008]
 ---
 ## Claim
 Decay the learning rate once validation stops improving (x0.5 per stalled epoch), evaluate every half epoch, and
@@ -33,5 +33,6 @@ Half-epoch checkpoints reduce the chance that the best state falls between two e
 - Halving lr too early (patience 0) freezes training before the true peak — decay only after a stalled epoch.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM x1 (best Δ -0.0004)
+_Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM x1 (best Δ -0.0004); official FM + field-aware FM embeddings x1 (best Δ +0.0000)
 - live_03:node_002 on [official FM]: primary 0.6011, single-seed Δ -0.0004 — rejected; 1 changed lines
+- live_04:node_008 on [official FM + field-aware FM embeddings]: primary 0.6030, single-seed Δ +0.0000 — rejected; 4 changed lines

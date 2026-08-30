@@ -12,8 +12,8 @@ expected_delta_basis: organizers list listwise next to pairwise as lead #1; List
 cost: ~70 lines (per-user grouping + softmax gradient); runtime ~1x if segment ops are vectorised; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-bpr-pairwise-within-user, loss-lambdarank-pairs]
-status: untried
-evidence: []
+status: dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0029)]
+evidence: [live_04:node_010]
 ---
 ## Claim
 For each user, turn the row scores into a probability distribution with a softmax and minimise the cross-entropy
@@ -38,5 +38,5 @@ top-one probability loss is a proper surrogate for the permutation-level objecti
 - Plain softmax rewards ordering deep in the list too; nDCG@5 only cares about the top — see loss-lambdarank-pairs.
 
 ## Measured
-_Verdict:_ no measurement yet
-
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0029)
+- live_04:node_010 on [official FM + field-aware FM embeddings]: primary 0.6002, single-seed Δ -0.0029 — rejected; 64 changed lines

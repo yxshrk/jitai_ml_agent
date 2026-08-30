@@ -12,8 +12,8 @@ expected_delta_basis: organizers rank architecture after losses/features and mea
 cost: ~120 lines (cross layer forward/backward, Adam for new matrices); runtime 2–3x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, regularization-embedding-dropout-l2]
 conflicts_with: []
-status: untried
-evidence: []
+status: proven — accepted on [official FM + field-aware FM embeddings]
+evidence: [live_04:node_013, live_04:node_017, live_04:node_020]
 ---
 ## Claim
 Concatenate the field embeddings (x0, 80-d), apply one DCN-V2 cross layer x1 = x0 * (W x0 + b) + x0, and score with
@@ -37,5 +37,7 @@ representable without a deep net that would overfit 1.1 M rows.
 - 2–3x runtime: still ~40 s, but keep SMOKE_EPOCHS honoured.
 
 ## Measured
-_Verdict:_ no measurement yet
-
+_Verdict:_ ACCEPTED 1x (live_04:node_017 on [official FM + field-aware FM embeddings] Δ +0.0005)
+- live_04:node_013 on [official FM + field-aware FM embeddings]: primary 0.6025, single-seed Δ -0.0006 — rejected; 50 changed lines
+- live_04:node_017 on [official FM + field-aware FM embeddings]: primary 0.6032, single-seed Δ +0.0001, seed-mean Δ +0.0005 (t 2.63) — ACCEPTED; 62 changed lines
+- live_04:node_020 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6042, single-seed Δ -0.0003 — rejected; 52 changed lines

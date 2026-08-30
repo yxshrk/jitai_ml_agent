@@ -12,8 +12,8 @@ expected_delta_basis: the metric's nDCG half rewards top positions; LambdaRank's
 cost: ~40 lines on top of the BPR card (per-user ranks each step via lexsort); runtime ~1.5x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user]
-status: dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0005)]
-evidence: [live_01:node_005, live_02:node_009]
+status: dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0005); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0016)]
+evidence: [live_01:node_005, live_02:node_009, live_04:node_021]
 ---
 ## Claim
 Keep the BPR pair loss but multiply each pair's gradient by how much nDCG would change if the two rows swapped
@@ -37,6 +37,7 @@ learning where the metric is measured (Burges §3). Within-user ranks are cheap 
 - Truncating weights to the top-5 only starves users whose positives start deep; use the floor.
 
 ## Measured
-_Verdict:_ never accepted in 2 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0005)
+_Verdict:_ never accepted in 3 measurements on 2 stack(s); official FM + loss-bpr-pairwise-within-user x2 (best Δ -0.0005); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0016)
 - live_01:node_005 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ -0.0005 — rejected; 112 changed lines
 - live_02:node_009 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6021, single-seed Δ -0.0010 — rejected; 36 changed lines
+- live_04:node_021 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6028, single-seed Δ -0.0016 — rejected; 33 changed lines
