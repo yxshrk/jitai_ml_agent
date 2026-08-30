@@ -1338,3 +1338,90 @@ Next run:
 4. Only combine factors that show repeatable gains.
 
 The strongest first hypothesis is that training duration or capacity, not a large regularization package, is causing the observed memorization.
+
+## Run logs/run_bigclock_01
+dataset: pure
+stop_reason: converged
+best_primary: 0.604247
+- node_001 | method: package-dial-sweep | hypothesis: Because the parent validation curve peaks and then | primary: 0.604247 | verdict: accepted
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Because the validation curve peaks while training loss | primary: 0.602390 | verdict: rejected
+- node_004 | method: seed-ensemble | hypothesis: Because validation primary peaks near epoch 5 and | primary: 0.602767 | verdict: rejected
+self_critique:
+Run assessment
+
+What the harness/policy did suboptimally
+
+- It declared convergence after very little evidence: one improvement, one failed proposal, one weaker retry, and one failed ensemble. That is insufficient to establish a local optimum.
+- Node_001 changed many things simultaneously—architecture, BCE/BPR objective, dropout, AdamW decay, schedule, and recency weighting. The gain is real within this run, but its cause is unidentified and the search may have overfit validation.
+- Robustness was not established. Node_003’s similar package scored 0.6024 versus 0.6042 for node_001, suggesting sensitivity to seed, exact settings, or search procedure. A single champion score should not be treated as stable.
+- The recovery lineage was poor: node_003 descended from failed node_002 rather than cleanly restarting from the last valid champion with a recorded, executable configuration.
+- The ensemble experiment was weakly motivated and apparently lacked useful diversity. Consecutive seeds of nearly identical models will have correlated errors; rank averaging can also hurt calibration-sensitive metrics. It should not have been prioritized before validating and understanding the single-model gain.
+- The reported baseline sigma of 0.0001 is not enough evidence unless it came from multiple full retrains. Comparisons should use paired seeds and report mean, standard deviation, and confidence intervals.
+- The journal does not preserve enough detail about node_002’s failure or the exact difference between nodes 001 and 003, limiting diagnosis and reproducibility.
+
+What I would change in the scaffold
+
+- Require every proposal to specify an exact executable delta from a valid parent, fixed seeds, budget, and expected mechanism.
+- Separate exploration from confirmation: use validation for tuning, then confirm finalists over several paired seeds or on a held-out confirmation split.
+- Allow broad packages only as probes. After a successful package, automatically schedule component ablations and small local sweeps.
+- Never inherit from a failed/no-metric node unless it contains a valid recoverable artifact; otherwise roll back to the last successful parent.
+- Record failure class, traceback, configuration diff, best epoch, and metric trajectory.
+- Use stopping criteria based on exhausted targeted neighborhoods and uncertainty-aware improvement, not merely several unsuccessful children.
+- Gate ensembles on measured prediction diversity and compare raw averaging, logit averaging, and rank averaging.
+
+What the next run should try first
+
+First, reproduce node_001 exactly with 3–5 paired seeds against node_000 and report mean lift and uncertainty. If the gain remains robust, run a compact ablation around node_001:
+
+1. DCN-lite only.
+2. BCE/BPR mixture only.
+3. Regularization/schedule changes only.
+4. Recency weighting only.
+5. Full node_001 package.
+
+Then perform a narrow local search around the best epoch, dropout, weight decay, and recency half-life while keeping architecture and objective fixed. Prioritize checkpoint averaging or early stopping before another seed ensemble. The immediate goal should be to determine whether 0.604247 is a reproducible modeling improvement or a validation/search outlier.
+
+## Run logs/run_bigclock_03
+dataset: pure
+stop_reason: converged
+best_primary: 0.604658
+- node_001 | method: regularization-schedule | hypothesis: Because validation peaks around epoch 8 and then | primary: 0.601322 | verdict: rejected
+- node_002 | method: seed-ensemble | hypothesis: Because validation peaks around epoch 8 and then | primary: 0.602811 | verdict: accepted
+- node_003 | method: duration-regime-heads | hypothesis: Because validation peaks early and then falls, indicating | primary: 0.604658 | verdict: accepted
+self_critique:
+The run found a real-looking gain, but converged prematurely after only four evaluations.
+
+What was suboptimal
+
+- The search was too shallow. It stopped immediately after one successful architectural change, without replicating or decomposing the +0.0019 gain from node_002 to node_003.
+- Changes were bundled. Node_001 simultaneously altered dropout, accessed-row L2, AdamW decay, and the LR schedule. Its rejection says little about which component helped or hurt.
+- Node_003 also combined routing, residual heads, and strong shrinkage. There is no ablation establishing whether the gain came from the duration split, extra capacity, regularization, or their interaction.
+- The stated uncertainty was not credible. A baseline sigma of 0.0001 is inconsistent with the apparent seed sensitivity that motivated a three-model ensemble. Acceptance decisions should use repeated seeds or bootstrap uncertainty on score differences.
+- The policy spent compute on an ensemble before testing cheaper single-model improvements. Ensembling raised 0.6018 to 0.6028, but the journal does not report member-level scores, variance, or whether averaging predictions rather than ranks would be better.
+- The overfitting diagnosis was plausible but weakly tested. The aggressive regularization package failed, yet the harness moved directly to a segmented architecture rather than testing early stopping, rank, or individual regularizers.
+- The claim that duration regimes reflect a “label-definition shift” was not supported by slice metrics. Routing on an impression-known feature is valid only if it is available identically at inference and the split was chosen without validation-set overfitting.
+
+Scaffold changes
+
+- Require one-change-at-a-time ablations before accepting a causal explanation.
+- After any material gain, automatically run at least three seeds and report mean, standard deviation, and paired deltas against the parent.
+- Separate model-search and ensemble-search stages; retain individual member predictions for blending comparisons.
+- Add slice reporting around routed features: sample count, target rate, per-regime score, and boundary sensitivity.
+- Replace “converged” with a budget-aware criterion requiring replication plus at least one ablation and one local refinement of the incumbent.
+- Track train/validation curves and best epochs consistently, then let early stopping be a controlled hyperparameter rather than relying on narrative inspection.
+
+What the next run should try first
+
+Start by validating node_003 rather than introducing another idea:
+
+1. Train node_003 across multiple matched seeds and compare paired results with single-model node_000 and node_002’s individual members.
+2. Ablate:
+   - routed heads without residualization,
+   - residual heads without duration routing,
+   - routing with weak/no shrinkage,
+   - a single duration feature or interaction in the base FM instead of separate heads.
+3. Sweep the duration boundary around 18 seconds and test a smooth gate or small number of predeclared bins. A sharp optimum exactly at the selected threshold would suggest validation tuning.
+4. If the gain survives, ensemble several node_003 replicas and compare raw-probability averaging, logit averaging, and rank averaging.
+
+The highest-priority question is whether node_003’s gain is stable and specifically attributable to duration-conditioned structure. Until that is established, 0.604658 should be treated as a promising validation result, not a confirmed improvement.

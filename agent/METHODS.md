@@ -12,6 +12,17 @@ default, seed 42).
 
 
 
+
+## Depth policy (overrides brevity instincts)
+Searches must be EXHAUSTIVE, not token gestures. Hard minimums when a search card is
+played with a generous timeout: stage-1 coarse pass >= 16 probe trainings; stage-2
+refine >= 10 probes on a denser grid around the winner; probes at FULL training length
+on the full data whenever the device is fast (GPU) or the timeout is in hours — short
+subsampled probes are a last resort and mis-rank configs near the optimum. Never stop
+a search early because it "seems long enough"; stop when the grid is covered. Reserve
+time only for the final training + ensemble close. Depth is free under the rules;
+shallow searches are the known cause of the remaining score gap.
+
 ## Clock policy (read this)
 The wall-clock ceiling is 6 HOURS per run and feasibility is graded in coarse tiers —
 spending clock on deeper search is the cheapest resource trade available. When the node
