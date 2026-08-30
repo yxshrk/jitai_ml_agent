@@ -610,3 +610,13 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: +0.0018-0.0032 est. (consult); session-alone est +0.0014 — composite needed to clear eps / medium.
 - status_pure: untried
 - status_1k: variant measured-win
+
+### context-stratified-pairs: Same-context BPR negative stratification
+- mechanism: Draw a fraction of BPR negatives from the SAME (user, date, hour) or (user, date, tab) context as the positive (~30% same-context on Pure — sparser sessions than 1K; fall back same-day, then uniform). Pairs the model must separate are the ones the metric actually scores: contemporaneous impressions in one slate. Distinct from temporal-pair-kernel (soft day-distance kernel); this is hard context stratification.
+- treats: ranking-mismatch | data-shift
+- reference_primary: none on Pure
+- preconditions: Contexts with no opposite-label row need a fallback tier; keep total negatives per positive unchanged.
+- citation: convergent recommendation of two independent reviews (gpt-5.6-sol consult; external playbook §4.2), both from this campaign's own journals.
+- expected_gain / cost: +0.0005-0.0015 est / low.
+- status_pure: untried
+- status_1k: untried
