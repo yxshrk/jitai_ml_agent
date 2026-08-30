@@ -27,6 +27,20 @@ The public data download is about 45 MB, is stored under `kuairand-starter-kit/K
 
 The organizer's baseline also prints a score for its bundled public test split. Do not use that output to select changes: iterate and compare models using validation results only.
 
+## Current validation leader
+
+The first validated improvement is a small contextual FM that adds `hour`, `weekday`, and `is_rand` to the organizer's five fields. Across seeds 0-2, its mean best validation primary is **0.60236**, above the organizer reference of **0.6016**. Averaging the three validation-selected members reaches **0.60289** on validation.
+
+Run the reproducible validation-only ensemble from `kuairand-starter-kit/`:
+
+```bash
+python ensemble_validation.py \
+  --run_dir ../runs/temporal_context_ensemble \
+  --seeds 0,1,2
+```
+
+The command writes per-seed JSONL logs and a `summary.json` without accessing test metrics. See `runs/RESULTS.md` for the decision log and rejected candidates.
+
 ## Important brief discrepancy
 
 One line in the supplied PDF names a different task (`click`, NDCG@10, and Recall@50). The starter kit's executable evaluator and the later starter-kit section of the brief instead specify `long_view`, GAUC, and nDCG@5. This repository follows the executable `evaluate.py` contract; confirm the discrepancy with the organizers before final submission rather than changing the evaluator.
