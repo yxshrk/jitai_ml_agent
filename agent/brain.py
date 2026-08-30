@@ -234,6 +234,16 @@ class _AnthropicBackend:
             + (getattr(usage, "cache_read_input_tokens", 0) or 0)
         )
         text = "".join(block.text for block in response.content if block.type == "text")
+        try:
+            with open("logs/anthropic_debug.log", "a") as fh:
+                fh.write(f"{model} stop={response.stop_reason} out={usage.output_tokens} "
+                         f"len={len(text)} blocks={[b.type for b in response.content]}\n")
+        except OSError:
+            pass
+        if not text.strip():
+            raise RuntimeError(
+                f"anthropic returned no text (stop={response.stop_reason}, "
+                f"blocks={[b.type for b in response.content]}, out={usage.output_tokens})")
         return text, tokens_in, usage.output_tokens
 
 
