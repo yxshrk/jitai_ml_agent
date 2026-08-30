@@ -632,3 +632,93 @@ What the next run should try first
 First, reproduce node_004 under identical deterministic settings while saving all ten member predictions and per-member metrics. Then train seeds 11–15 individually, cache them, and evaluate each incremental prefix offline. This will determine whether further same-model ensembling actually helps and diagnose node_007 without another all-or-nothing batch.
 
 If the curve has plateaued, stop adding identical seeds. Use the remaining budget on a small set of complementary frozen-stack variants—changing one parameter at a time, such as latent dimension, MLP width, or mild dropout—and blend their rank predictions with node_004. Diversity across well-performing configurations is more likely to help than moving from 10 to 15 nearly identical initializations.
+
+## Run logs/run_unseeded_05
+dataset: pure
+stop_reason: converged
+best_primary: 0.603006
+- node_001 | method: swa-ema | hypothesis: Because validation peaks around epochs 5-8 and then | primary: 0.602084 | verdict: rejected
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Replacing the baseline FM interaction with a two-branch | primary: 0.603006 | verdict: accepted
+self_critique:
+Run assessment
+
+The run found a modest improvement, from 0.6018 to 0.603006 (+0.0012), but the evidence is too thin to call the result robust. Stopping as “converged” after only two metric-bearing alternatives and one failed proposal was premature, especially for an unseeded run.
+
+Harness/policy issues
+
+- The search lineage is incoherent: node_003 is attached to failed node_002, yet it makes a large architecture change. Failed nodes should not serve as executable parents; recovery should branch from the last valid checkpoint, node_000.
+- A “debug” action effectively became the most ambitious research proposal. Debugging should repair execution while preserving the intended hypothesis, not silently replace an FM with FinalMLP.
+- Node_001 improved the reported primary from 0.6018 to 0.6021 but was rejected. That may be correct under a significance threshold, but the journal should record the acceptance rule, paired deltas, variance, and why the gain was insufficient.
+- The EMA hypothesis claimed reduced checkpoint variance, but the run appears to report only one aggregate primary. It did not directly test variance reduction or show per-checkpoint/per-seed results.
+- The accepted gain is small and no uncertainty is reported for node_003. The baseline sigma of 0.0001 is insufficient unless measured under the same repeat protocol.
+- “Unseeded” undermines reproducibility and makes comparisons vulnerable to initialization and data-order noise.
+- The search was too shallow to justify convergence. There were no ablations establishing whether FinalMLP’s gain came from feature selection, bilinear fusion, parameter count, or incidental training changes.
+
+Scaffold changes
+
+- Require explicit seeds and paired repeated evaluations for baseline and candidates.
+- Log mean, standard deviation, individual runs, parameter count, runtime, and the exact acceptance threshold.
+- On proposal failure, retry a bounded repair or branch from the last valid accepted node; never inherit experimental state from a failed node.
+- Separate debug and research actions. If a repair changes the architecture or hypothesis materially, create a new draft node.
+- Require accepted architecture changes to pass a confirmation stage before updating the incumbent.
+- Do not declare convergence until a minimum exploration budget is exhausted and at least the incumbent has been replicated.
+- Add automatic component ablations for compound proposals.
+
+What the next run should try first
+
+First, reproduce node_003 against node_000 using identical data splits and at least 3–5 fixed, paired seeds. If the gain persists, ablate FinalMLP into: feature-selection only, bilinear-fusion only, and both, while matching parameter count where possible. Then tune only the winning component’s width, regularization, and early-stopping schedule. EMA is lower priority unless checkpoint-level predictions are retained and its benefit can be evaluated across seeds.
+
+## Run logs/run_unseeded_06
+dataset: pure
+stop_reason: converged
+best_primary: 0.604238
+- node_001 | method: seed-ensemble | hypothesis: The parent mildly overfits after epoch 8, and | primary: 0.602885 | verdict: accepted
+- node_002 | method: duration-regime-heads | hypothesis: Adding strongly regularized short-versus-long duration residual heads at | primary: 0.604238 | verdict: accepted
+- node_003 | method: embedding-dim-down | hypothesis: Reducing the FM embedding dimension from k=16 to | primary: 0.604446 | verdict: rejected
+self_critique:
+Overall
+
+The run found a modest improvement from 0.6018 to 0.604238, mainly through ensembling and one targeted duration interaction. However, the evidence is weaker than the linear ACCEPTED history suggests because the run was unseeded, explored only one branch, and stopped after a single rejected compression change.
+
+What the harness/policy did suboptimally
+
+- It followed a narrow greedy chain. Every proposal modified the latest accepted node, with no sibling ablations or alternative model families. This makes it hard to distinguish genuine mechanism improvements from interactions or validation noise.
+- The first improvement came from a five-model ensemble. That is a useful score gain, but it consumes substantial inference/training budget without improving the underlying learner. The harness should report both quality and compute-normalized quality.
+- The duration-head change was not adequately decomposed. There is no comparison of:
+  - shared model versus residual heads at equal ensemble size,
+  - hard 18-second split versus duration as a continuous/log-transformed feature,
+  - one global head versus short/long heads,
+  - different regularization strengths or thresholds.
+- “Unseeded” conflicts with strong conclusions about small gains. Improvements of roughly 0.001–0.003 need paired multi-seed or resampling evidence. The reported baseline sigma=0.0001 is not credible or interpretable without the number of repetitions and how sigma was calculated.
+- Acceptance reporting is opaque. Node 003 is displayed as 0.6044 yet was rejected while the best is 0.604238. More precision, uncertainty, acceptance thresholds, and paired deltas should be logged.
+- Stopping as “converged” after one rejected child was premature. The rejection only weakens the k=8 hypothesis; it does not indicate that nearby modeling directions are exhausted.
+- Repeated decisions on one validation target risk adaptive validation overfitting. A second fixed validation slice, cross-validation, or a final untouched confirmation set would make the result more trustworthy.
+
+What I would change in the scaffold
+
+- Require each hypothesis to specify:
+  - the claimed mechanism,
+  - a minimal ablation,
+  - expected gain,
+  - added training/inference cost,
+  - a paired-seed acceptance rule.
+- Separate architectural gains from ensemble gains. Maintain a single-model leaderboard and an ensemble leaderboard.
+- Evaluate promising changes with shared seeds and paired differences rather than comparing unrelated runs.
+- Log full-precision metrics, per-seed scores, mean delta, uncertainty, runtime, parameter count, and the exact reason for acceptance or rejection.
+- Branch from strong parents instead of terminating a direction after one failed mutation. At minimum, test one capacity change, one feature/interaction change, and one optimization or regularization change.
+- Reserve an untouched confirmation split and use it only for finalists.
+- Cache per-model predictions so ensemble size and weighting can be studied cheaply.
+
+What the next run should try first
+
+First, verify that the duration residual heads are a real single-model improvement. Run a paired-seed ablation at fixed k=16:
+
+1. Shared FM only.
+2. Shared FM plus the existing 18-second residual heads.
+3. Shared FM plus a smooth log-duration interaction or duration bins.
+4. Optionally tune the head regularization on a small grid.
+
+Use the same five seeds for every variant and compare both individual-model means and equal-size ensembles. This directly tests whether node 002 added transferable structure or merely benefited from noise and ensemble interaction.
+
+If the residual-head gain survives, the next priority should be replacing the arbitrary hard threshold with a smoother duration-conditioned interaction. If it does not, return to the shared FM and explore regularization/capacity using paired seeds rather than adding further specialized heads.

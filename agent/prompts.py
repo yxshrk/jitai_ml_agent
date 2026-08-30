@@ -123,10 +123,17 @@ expected gain. Return one JSON object only:
 """
 
 CONVERGENCE_PRESSURE = (
-    "If streak is N-1 of N, this may be the final iteration — prefer the "
-    "highest-expected-gain untried card, not a small dose adjustment. When the "
-    "current streak is N-1 of N and no untried single-model card remains promising, "
-    "the seed-ensemble card is the canonical closing move."
+    "The run ends after N consecutive iterations whose best-so-far improvement is "
+    "<= epsilon = 0.002 — an ACCEPTED gain below epsilon still burns a strike. "
+    "Therefore, when your expected gain for a single change is below 0.002, prefer "
+    "a BUNDLE: combine 2-3 well-evidenced components (each backed by a card or an "
+    "accepted ancestor) in one proposal so the joint gain can clear epsilon and "
+    "reset the streak. Keep genuinely novel/unproven ideas atomic — bundle only "
+    "proven parts. If streak is N-1 of N, this may be the final iteration — prefer "
+    "the highest-expected-gain untried card or the strongest proven bundle, not a "
+    "small dose adjustment. When the current streak is N-1 of N and no untried "
+    "single-model card remains promising, the seed-ensemble card applied to the "
+    "current champion is the canonical closing move."
 )
 
 
