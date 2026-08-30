@@ -1,0 +1,5112 @@
+{
+  "run_dir": "logs/run_novel_r1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "max_hours",
+  "iterations": 5,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.67082450524762,
+    "ndcg5": 0.5381180629624307,
+    "primary": 0.6044712841050254,
+    "selected_config": {
+      "ensemble_family": "gauge_fixed_bce",
+      "member_count": 32
+    },
+    "history": [
+      {
+        "probe": 1,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 42,
+          "epochs_cap": 12
+        },
+        "primary": 0.602044,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.638009,
+            "val_gauc": 0.647557,
+            "val_primary": 0.58732
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.549004,
+            "val_gauc": 0.660656,
+            "val_primary": 0.596753
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.51208,
+            "val_gauc": 0.664952,
+            "val_primary": 0.599729
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.49942,
+            "val_gauc": 0.66677,
+            "val_primary": 0.60093
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493438,
+            "val_gauc": 0.667418,
+            "val_primary": 0.601465
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489189,
+            "val_gauc": 0.666932,
+            "val_primary": 0.601232
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485463,
+            "val_gauc": 0.668113,
+            "val_primary": 0.602044
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481756,
+            "val_gauc": 0.667522,
+            "val_primary": 0.601625
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.477989,
+            "val_gauc": 0.666294,
+            "val_primary": 0.60051
+          }
+        ]
+      },
+      {
+        "probe": 2,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 42,
+          "epochs_cap": 12
+        },
+        "primary": 0.603407,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663074,
+            "val_gauc": 0.667504,
+            "val_primary": 0.601297
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627289,
+            "val_gauc": 0.66962,
+            "val_primary": 0.603323
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.61239,
+            "val_gauc": 0.669738,
+            "val_primary": 0.603407
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601815,
+            "val_gauc": 0.668365,
+            "val_primary": 0.602625
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593936,
+            "val_gauc": 0.668806,
+            "val_primary": 0.603055
+          }
+        ]
+      },
+      {
+        "probe": 3,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 10015,
+          "epochs_cap": 12
+        },
+        "primary": 0.60198,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636672,
+            "val_gauc": 0.649365,
+            "val_primary": 0.588805
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547629,
+            "val_gauc": 0.660214,
+            "val_primary": 0.596394
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512021,
+            "val_gauc": 0.664467,
+            "val_primary": 0.599632
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499134,
+            "val_gauc": 0.664449,
+            "val_primary": 0.599442
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492672,
+            "val_gauc": 0.666129,
+            "val_primary": 0.600722
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488017,
+            "val_gauc": 0.668084,
+            "val_primary": 0.60198
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483799,
+            "val_gauc": 0.666756,
+            "val_primary": 0.600935
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.479606,
+            "val_gauc": 0.665845,
+            "val_primary": 0.60046
+          }
+        ]
+      },
+      {
+        "probe": 4,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 10015,
+          "epochs_cap": 12
+        },
+        "primary": 0.603575,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663777,
+            "val_gauc": 0.667345,
+            "val_primary": 0.601568
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627302,
+            "val_gauc": 0.669693,
+            "val_primary": 0.603364
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612048,
+            "val_gauc": 0.669696,
+            "val_primary": 0.603572
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601181,
+            "val_gauc": 0.669767,
+            "val_primary": 0.603575
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.59293,
+            "val_gauc": 0.669043,
+            "val_primary": 0.602958
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586325,
+            "val_gauc": 0.668694,
+            "val_primary": 0.602642
+          }
+        ]
+      },
+      {
+        "probe": 5,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 19988,
+          "epochs_cap": 12
+        },
+        "primary": 0.600891,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636078,
+            "val_gauc": 0.652077,
+            "val_primary": 0.590702
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545978,
+            "val_gauc": 0.659663,
+            "val_primary": 0.59619
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512277,
+            "val_gauc": 0.663533,
+            "val_primary": 0.598824
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500217,
+            "val_gauc": 0.665351,
+            "val_primary": 0.600162
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493946,
+            "val_gauc": 0.665621,
+            "val_primary": 0.600588
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489461,
+            "val_gauc": 0.666186,
+            "val_primary": 0.600891
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485509,
+            "val_gauc": 0.665895,
+            "val_primary": 0.600596
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481746,
+            "val_gauc": 0.666315,
+            "val_primary": 0.600789
+          }
+        ]
+      },
+      {
+        "probe": 6,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 19988,
+          "epochs_cap": 12
+        },
+        "primary": 0.603708,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663681,
+            "val_gauc": 0.665798,
+            "val_primary": 0.600144
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627491,
+            "val_gauc": 0.669585,
+            "val_primary": 0.603294
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612206,
+            "val_gauc": 0.66921,
+            "val_primary": 0.603396
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601349,
+            "val_gauc": 0.669799,
+            "val_primary": 0.603708
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593092,
+            "val_gauc": 0.669554,
+            "val_primary": 0.603432
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586455,
+            "val_gauc": 0.668322,
+            "val_primary": 0.602647
+          }
+        ]
+      },
+      {
+        "probe": 7,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 29961,
+          "epochs_cap": 12
+        },
+        "primary": 0.601749,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636344,
+            "val_gauc": 0.647353,
+            "val_primary": 0.587503
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547623,
+            "val_gauc": 0.660156,
+            "val_primary": 0.596433
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512163,
+            "val_gauc": 0.664577,
+            "val_primary": 0.599614
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499299,
+            "val_gauc": 0.666486,
+            "val_primary": 0.601313
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492733,
+            "val_gauc": 0.666828,
+            "val_primary": 0.601261
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487932,
+            "val_gauc": 0.66803,
+            "val_primary": 0.601749
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48358,
+            "val_gauc": 0.666279,
+            "val_primary": 0.600653
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.479233,
+            "val_gauc": 0.667058,
+            "val_primary": 0.601096
+          }
+        ]
+      },
+      {
+        "probe": 8,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 29961,
+          "epochs_cap": 12
+        },
+        "primary": 0.603567,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663972,
+            "val_gauc": 0.665781,
+            "val_primary": 0.600261
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.62751,
+            "val_gauc": 0.669278,
+            "val_primary": 0.603064
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612214,
+            "val_gauc": 0.669814,
+            "val_primary": 0.603452
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601325,
+            "val_gauc": 0.669831,
+            "val_primary": 0.603521
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593121,
+            "val_gauc": 0.669879,
+            "val_primary": 0.603567
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586538,
+            "val_gauc": 0.669663,
+            "val_primary": 0.603472
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.580727,
+            "val_gauc": 0.667827,
+            "val_primary": 0.601911
+          }
+        ]
+      },
+      {
+        "probe": 9,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 39934,
+          "epochs_cap": 12
+        },
+        "primary": 0.601886,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636341,
+            "val_gauc": 0.650631,
+            "val_primary": 0.589528
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544837,
+            "val_gauc": 0.660696,
+            "val_primary": 0.596876
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.510977,
+            "val_gauc": 0.663703,
+            "val_primary": 0.598892
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499827,
+            "val_gauc": 0.666143,
+            "val_primary": 0.601
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494293,
+            "val_gauc": 0.666474,
+            "val_primary": 0.601103
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.490246,
+            "val_gauc": 0.667629,
+            "val_primary": 0.60179
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486626,
+            "val_gauc": 0.667828,
+            "val_primary": 0.601886
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482923,
+            "val_gauc": 0.666932,
+            "val_primary": 0.601018
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.479155,
+            "val_gauc": 0.667083,
+            "val_primary": 0.60109
+          }
+        ]
+      },
+      {
+        "probe": 10,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 39934,
+          "epochs_cap": 12
+        },
+        "primary": 0.603632,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662955,
+            "val_gauc": 0.666441,
+            "val_primary": 0.600745
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627596,
+            "val_gauc": 0.669602,
+            "val_primary": 0.6034
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612645,
+            "val_gauc": 0.669846,
+            "val_primary": 0.603632
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.602161,
+            "val_gauc": 0.669351,
+            "val_primary": 0.603377
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.594525,
+            "val_gauc": 0.669041,
+            "val_primary": 0.603233
+          }
+        ]
+      },
+      {
+        "probe": 11,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 49907,
+          "epochs_cap": 12
+        },
+        "primary": 0.600974,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636385,
+            "val_gauc": 0.652042,
+            "val_primary": 0.590631
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544842,
+            "val_gauc": 0.66199,
+            "val_primary": 0.597579
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511009,
+            "val_gauc": 0.664557,
+            "val_primary": 0.599526
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499479,
+            "val_gauc": 0.666516,
+            "val_primary": 0.600886
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493578,
+            "val_gauc": 0.666689,
+            "val_primary": 0.600974
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489302,
+            "val_gauc": 0.666146,
+            "val_primary": 0.600633
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485436,
+            "val_gauc": 0.666889,
+            "val_primary": 0.600721
+          }
+        ]
+      },
+      {
+        "probe": 12,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 49907,
+          "epochs_cap": 12
+        },
+        "primary": 0.604115,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662974,
+            "val_gauc": 0.667227,
+            "val_primary": 0.601273
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627379,
+            "val_gauc": 0.67069,
+            "val_primary": 0.604115
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612249,
+            "val_gauc": 0.670275,
+            "val_primary": 0.604037
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601534,
+            "val_gauc": 0.669817,
+            "val_primary": 0.603491
+          }
+        ]
+      },
+      {
+        "probe": 13,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 59880,
+          "epochs_cap": 12
+        },
+        "primary": 0.601771,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636905,
+            "val_gauc": 0.646778,
+            "val_primary": 0.587194
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547669,
+            "val_gauc": 0.659018,
+            "val_primary": 0.595437
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512068,
+            "val_gauc": 0.664481,
+            "val_primary": 0.599398
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499776,
+            "val_gauc": 0.666386,
+            "val_primary": 0.600639
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493819,
+            "val_gauc": 0.667055,
+            "val_primary": 0.601327
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489636,
+            "val_gauc": 0.666954,
+            "val_primary": 0.601226
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485915,
+            "val_gauc": 0.667749,
+            "val_primary": 0.601771
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.4823,
+            "val_gauc": 0.666876,
+            "val_primary": 0.601065
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.478602,
+            "val_gauc": 0.666045,
+            "val_primary": 0.600464
+          }
+        ]
+      },
+      {
+        "probe": 14,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 59880,
+          "epochs_cap": 12
+        },
+        "primary": 0.603639,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663571,
+            "val_gauc": 0.667153,
+            "val_primary": 0.601246
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627549,
+            "val_gauc": 0.669318,
+            "val_primary": 0.603214
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612387,
+            "val_gauc": 0.670022,
+            "val_primary": 0.603639
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601664,
+            "val_gauc": 0.668529,
+            "val_primary": 0.603035
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.59337,
+            "val_gauc": 0.66813,
+            "val_primary": 0.602544
+          }
+        ]
+      },
+      {
+        "probe": 15,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 69853,
+          "epochs_cap": 12
+        },
+        "primary": 0.601338,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637894,
+            "val_gauc": 0.644783,
+            "val_primary": 0.585855
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.550231,
+            "val_gauc": 0.659574,
+            "val_primary": 0.595884
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513325,
+            "val_gauc": 0.664283,
+            "val_primary": 0.599356
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499696,
+            "val_gauc": 0.664594,
+            "val_primary": 0.599656
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492794,
+            "val_gauc": 0.665553,
+            "val_primary": 0.600163
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487793,
+            "val_gauc": 0.66711,
+            "val_primary": 0.601338
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483189,
+            "val_gauc": 0.666814,
+            "val_primary": 0.601111
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.478639,
+            "val_gauc": 0.664899,
+            "val_primary": 0.599735
+          }
+        ]
+      },
+      {
+        "probe": 16,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 69853,
+          "epochs_cap": 12
+        },
+        "primary": 0.604165,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.664054,
+            "val_gauc": 0.665495,
+            "val_primary": 0.599881
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627404,
+            "val_gauc": 0.669941,
+            "val_primary": 0.60376
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612109,
+            "val_gauc": 0.670508,
+            "val_primary": 0.604165
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601212,
+            "val_gauc": 0.669909,
+            "val_primary": 0.603702
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.592893,
+            "val_gauc": 0.668915,
+            "val_primary": 0.603151
+          }
+        ]
+      },
+      {
+        "probe": 17,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 79826,
+          "epochs_cap": 12
+        },
+        "primary": 0.601289,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636258,
+            "val_gauc": 0.649909,
+            "val_primary": 0.589243
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546793,
+            "val_gauc": 0.660261,
+            "val_primary": 0.596755
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512466,
+            "val_gauc": 0.664745,
+            "val_primary": 0.599797
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500022,
+            "val_gauc": 0.665784,
+            "val_primary": 0.600546
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493749,
+            "val_gauc": 0.666699,
+            "val_primary": 0.601003
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489249,
+            "val_gauc": 0.666973,
+            "val_primary": 0.601289
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485274,
+            "val_gauc": 0.665586,
+            "val_primary": 0.600315
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481375,
+            "val_gauc": 0.666635,
+            "val_primary": 0.601119
+          }
+        ]
+      },
+      {
+        "probe": 18,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 79826,
+          "epochs_cap": 12
+        },
+        "primary": 0.603966,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663364,
+            "val_gauc": 0.667417,
+            "val_primary": 0.601168
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627371,
+            "val_gauc": 0.670182,
+            "val_primary": 0.603966
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.61231,
+            "val_gauc": 0.669307,
+            "val_primary": 0.603338
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601562,
+            "val_gauc": 0.669422,
+            "val_primary": 0.603386
+          }
+        ]
+      },
+      {
+        "probe": 19,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 89799,
+          "epochs_cap": 12
+        },
+        "primary": 0.600918,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637269,
+            "val_gauc": 0.649167,
+            "val_primary": 0.588773
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.548701,
+            "val_gauc": 0.6606,
+            "val_primary": 0.596728
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512657,
+            "val_gauc": 0.664412,
+            "val_primary": 0.599454
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.49969,
+            "val_gauc": 0.665323,
+            "val_primary": 0.600276
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.49323,
+            "val_gauc": 0.666253,
+            "val_primary": 0.600918
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488558,
+            "val_gauc": 0.666291,
+            "val_primary": 0.600902
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484404,
+            "val_gauc": 0.665481,
+            "val_primary": 0.600228
+          }
+        ]
+      },
+      {
+        "probe": 20,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 89799,
+          "epochs_cap": 12
+        },
+        "primary": 0.603642,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663939,
+            "val_gauc": 0.665333,
+            "val_primary": 0.599926
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627396,
+            "val_gauc": 0.66971,
+            "val_primary": 0.603431
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612399,
+            "val_gauc": 0.669816,
+            "val_primary": 0.603642
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601385,
+            "val_gauc": 0.669554,
+            "val_primary": 0.603426
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.592936,
+            "val_gauc": 0.668682,
+            "val_primary": 0.602839
+          }
+        ]
+      },
+      {
+        "probe": 21,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 99772,
+          "epochs_cap": 12
+        },
+        "primary": 0.600703,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636883,
+            "val_gauc": 0.647345,
+            "val_primary": 0.587649
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546166,
+            "val_gauc": 0.658948,
+            "val_primary": 0.595561
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511426,
+            "val_gauc": 0.662655,
+            "val_primary": 0.598233
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499016,
+            "val_gauc": 0.665395,
+            "val_primary": 0.600248
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492702,
+            "val_gauc": 0.665694,
+            "val_primary": 0.600703
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488123,
+            "val_gauc": 0.665749,
+            "val_primary": 0.600512
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484113,
+            "val_gauc": 0.66563,
+            "val_primary": 0.600509
+          }
+        ]
+      },
+      {
+        "probe": 22,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 99772,
+          "epochs_cap": 12
+        },
+        "primary": 0.60354,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.66378,
+            "val_gauc": 0.666416,
+            "val_primary": 0.600567
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627168,
+            "val_gauc": 0.669705,
+            "val_primary": 0.60354
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.611986,
+            "val_gauc": 0.668912,
+            "val_primary": 0.60299
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601126,
+            "val_gauc": 0.669281,
+            "val_primary": 0.603278
+          }
+        ]
+      },
+      {
+        "probe": 23,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 109745,
+          "epochs_cap": 12
+        },
+        "primary": 0.601752,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636236,
+            "val_gauc": 0.651553,
+            "val_primary": 0.590488
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545271,
+            "val_gauc": 0.660106,
+            "val_primary": 0.59644
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511567,
+            "val_gauc": 0.664195,
+            "val_primary": 0.599507
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499726,
+            "val_gauc": 0.664917,
+            "val_primary": 0.599818
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493499,
+            "val_gauc": 0.667401,
+            "val_primary": 0.601752
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488863,
+            "val_gauc": 0.667387,
+            "val_primary": 0.601408
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484612,
+            "val_gauc": 0.666587,
+            "val_primary": 0.601254
+          }
+        ]
+      },
+      {
+        "probe": 24,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 109745,
+          "epochs_cap": 12
+        },
+        "primary": 0.603405,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663694,
+            "val_gauc": 0.665415,
+            "val_primary": 0.599896
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627544,
+            "val_gauc": 0.669587,
+            "val_primary": 0.603405
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612368,
+            "val_gauc": 0.669812,
+            "val_primary": 0.6034
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601453,
+            "val_gauc": 0.669329,
+            "val_primary": 0.603175
+          }
+        ]
+      },
+      {
+        "probe": 25,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 119718,
+          "epochs_cap": 12
+        },
+        "primary": 0.600619,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636697,
+            "val_gauc": 0.648859,
+            "val_primary": 0.588439
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54613,
+            "val_gauc": 0.65929,
+            "val_primary": 0.596017
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511375,
+            "val_gauc": 0.665054,
+            "val_primary": 0.600084
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499607,
+            "val_gauc": 0.665157,
+            "val_primary": 0.600147
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493775,
+            "val_gauc": 0.666146,
+            "val_primary": 0.600619
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489585,
+            "val_gauc": 0.666036,
+            "val_primary": 0.600474
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485928,
+            "val_gauc": 0.665607,
+            "val_primary": 0.600443
+          }
+        ]
+      },
+      {
+        "probe": 26,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 119718,
+          "epochs_cap": 12
+        },
+        "primary": 0.60325,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663723,
+            "val_gauc": 0.66521,
+            "val_primary": 0.599691
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627402,
+            "val_gauc": 0.668424,
+            "val_primary": 0.60261
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612171,
+            "val_gauc": 0.669131,
+            "val_primary": 0.603106
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601327,
+            "val_gauc": 0.669265,
+            "val_primary": 0.60325
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.592994,
+            "val_gauc": 0.668377,
+            "val_primary": 0.602575
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586249,
+            "val_gauc": 0.668845,
+            "val_primary": 0.602864
+          }
+        ]
+      },
+      {
+        "probe": 27,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 129691,
+          "epochs_cap": 12
+        },
+        "primary": 0.601379,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636883,
+            "val_gauc": 0.650066,
+            "val_primary": 0.58945
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546455,
+            "val_gauc": 0.660105,
+            "val_primary": 0.596398
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511545,
+            "val_gauc": 0.664462,
+            "val_primary": 0.59948
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499333,
+            "val_gauc": 0.665045,
+            "val_primary": 0.599989
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493243,
+            "val_gauc": 0.665992,
+            "val_primary": 0.600452
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488792,
+            "val_gauc": 0.667219,
+            "val_primary": 0.601379
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484853,
+            "val_gauc": 0.666707,
+            "val_primary": 0.601242
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480996,
+            "val_gauc": 0.665124,
+            "val_primary": 0.599669
+          }
+        ]
+      },
+      {
+        "probe": 28,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 129691,
+          "epochs_cap": 12
+        },
+        "primary": 0.604156,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663475,
+            "val_gauc": 0.666965,
+            "val_primary": 0.601278
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627262,
+            "val_gauc": 0.669897,
+            "val_primary": 0.603711
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612237,
+            "val_gauc": 0.670573,
+            "val_primary": 0.604156
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601481,
+            "val_gauc": 0.669683,
+            "val_primary": 0.603599
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593285,
+            "val_gauc": 0.669406,
+            "val_primary": 0.603387
+          }
+        ]
+      },
+      {
+        "probe": 29,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 139664,
+          "epochs_cap": 12
+        },
+        "primary": 0.601555,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637586,
+            "val_gauc": 0.647976,
+            "val_primary": 0.5878
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.550326,
+            "val_gauc": 0.660466,
+            "val_primary": 0.596437
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513392,
+            "val_gauc": 0.664196,
+            "val_primary": 0.59909
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499538,
+            "val_gauc": 0.665701,
+            "val_primary": 0.600308
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492527,
+            "val_gauc": 0.667678,
+            "val_primary": 0.601555
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487405,
+            "val_gauc": 0.666919,
+            "val_primary": 0.601291
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48275,
+            "val_gauc": 0.666479,
+            "val_primary": 0.600643
+          }
+        ]
+      },
+      {
+        "probe": 30,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 139664,
+          "epochs_cap": 12
+        },
+        "primary": 0.602954,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663053,
+            "val_gauc": 0.666785,
+            "val_primary": 0.601261
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627173,
+            "val_gauc": 0.668603,
+            "val_primary": 0.602665
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612172,
+            "val_gauc": 0.668721,
+            "val_primary": 0.602707
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601572,
+            "val_gauc": 0.66878,
+            "val_primary": 0.602954
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593688,
+            "val_gauc": 0.668235,
+            "val_primary": 0.602413
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587576,
+            "val_gauc": 0.66744,
+            "val_primary": 0.601953
+          }
+        ]
+      },
+      {
+        "probe": 31,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 149637,
+          "epochs_cap": 12
+        },
+        "primary": 0.601526,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637161,
+            "val_gauc": 0.652218,
+            "val_primary": 0.591005
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545857,
+            "val_gauc": 0.66142,
+            "val_primary": 0.597498
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511447,
+            "val_gauc": 0.665118,
+            "val_primary": 0.600171
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500169,
+            "val_gauc": 0.6662,
+            "val_primary": 0.600862
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494475,
+            "val_gauc": 0.666748,
+            "val_primary": 0.60109
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.49033,
+            "val_gauc": 0.666971,
+            "val_primary": 0.601526
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486665,
+            "val_gauc": 0.665634,
+            "val_primary": 0.600187
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.483114,
+            "val_gauc": 0.664682,
+            "val_primary": 0.599549
+          }
+        ]
+      },
+      {
+        "probe": 32,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 149637,
+          "epochs_cap": 12
+        },
+        "primary": 0.603495,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663122,
+            "val_gauc": 0.66579,
+            "val_primary": 0.600305
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627094,
+            "val_gauc": 0.668562,
+            "val_primary": 0.60273
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612224,
+            "val_gauc": 0.669507,
+            "val_primary": 0.603494
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601647,
+            "val_gauc": 0.66965,
+            "val_primary": 0.603495
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593806,
+            "val_gauc": 0.66892,
+            "val_primary": 0.603081
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587532,
+            "val_gauc": 0.667866,
+            "val_primary": 0.602322
+          }
+        ]
+      },
+      {
+        "probe": 33,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 159610,
+          "epochs_cap": 12
+        },
+        "primary": 0.601119,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637493,
+            "val_gauc": 0.648806,
+            "val_primary": 0.58851
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54755,
+            "val_gauc": 0.659338,
+            "val_primary": 0.595886
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511868,
+            "val_gauc": 0.664866,
+            "val_primary": 0.599927
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499829,
+            "val_gauc": 0.6653,
+            "val_primary": 0.600219
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493991,
+            "val_gauc": 0.666624,
+            "val_primary": 0.601119
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489919,
+            "val_gauc": 0.665938,
+            "val_primary": 0.600684
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486322,
+            "val_gauc": 0.666819,
+            "val_primary": 0.601101
+          }
+        ]
+      },
+      {
+        "probe": 34,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 159610,
+          "epochs_cap": 12
+        },
+        "primary": 0.603875,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663582,
+            "val_gauc": 0.667626,
+            "val_primary": 0.601501
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627368,
+            "val_gauc": 0.669617,
+            "val_primary": 0.603214
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612244,
+            "val_gauc": 0.669108,
+            "val_primary": 0.603082
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601556,
+            "val_gauc": 0.669824,
+            "val_primary": 0.603875
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593522,
+            "val_gauc": 0.669119,
+            "val_primary": 0.603208
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587158,
+            "val_gauc": 0.668016,
+            "val_primary": 0.602437
+          }
+        ]
+      },
+      {
+        "probe": 35,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 169583,
+          "epochs_cap": 12
+        },
+        "primary": 0.601538,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637495,
+            "val_gauc": 0.64795,
+            "val_primary": 0.587672
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.549748,
+            "val_gauc": 0.660372,
+            "val_primary": 0.596481
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513241,
+            "val_gauc": 0.664084,
+            "val_primary": 0.599332
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499747,
+            "val_gauc": 0.665616,
+            "val_primary": 0.600316
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492935,
+            "val_gauc": 0.666674,
+            "val_primary": 0.601152
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487978,
+            "val_gauc": 0.667389,
+            "val_primary": 0.601538
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483549,
+            "val_gauc": 0.66707,
+            "val_primary": 0.601367
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.479223,
+            "val_gauc": 0.666656,
+            "val_primary": 0.600891
+          }
+        ]
+      },
+      {
+        "probe": 36,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 169583,
+          "epochs_cap": 12
+        },
+        "primary": 0.603637,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663326,
+            "val_gauc": 0.66686,
+            "val_primary": 0.600941
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627269,
+            "val_gauc": 0.668922,
+            "val_primary": 0.602964
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612188,
+            "val_gauc": 0.670115,
+            "val_primary": 0.603637
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601399,
+            "val_gauc": 0.669331,
+            "val_primary": 0.60335
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593303,
+            "val_gauc": 0.668014,
+            "val_primary": 0.602414
+          }
+        ]
+      },
+      {
+        "probe": 37,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 179556,
+          "epochs_cap": 12
+        },
+        "primary": 0.60125,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635676,
+            "val_gauc": 0.650899,
+            "val_primary": 0.589995
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54473,
+            "val_gauc": 0.660282,
+            "val_primary": 0.596485
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511368,
+            "val_gauc": 0.66509,
+            "val_primary": 0.599905
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499525,
+            "val_gauc": 0.666233,
+            "val_primary": 0.600909
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493386,
+            "val_gauc": 0.666484,
+            "val_primary": 0.600823
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488916,
+            "val_gauc": 0.666994,
+            "val_primary": 0.601204
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484843,
+            "val_gauc": 0.666989,
+            "val_primary": 0.60125
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480889,
+            "val_gauc": 0.665461,
+            "val_primary": 0.600224
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.47683,
+            "val_gauc": 0.664539,
+            "val_primary": 0.599531
+          }
+        ]
+      },
+      {
+        "probe": 38,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 179556,
+          "epochs_cap": 12
+        },
+        "primary": 0.603687,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663372,
+            "val_gauc": 0.666504,
+            "val_primary": 0.600736
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627372,
+            "val_gauc": 0.669152,
+            "val_primary": 0.603139
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612267,
+            "val_gauc": 0.669864,
+            "val_primary": 0.603687
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601549,
+            "val_gauc": 0.669436,
+            "val_primary": 0.603405
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593379,
+            "val_gauc": 0.668587,
+            "val_primary": 0.602626
+          }
+        ]
+      },
+      {
+        "probe": 39,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 189529,
+          "epochs_cap": 12
+        },
+        "primary": 0.601838,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637611,
+            "val_gauc": 0.64948,
+            "val_primary": 0.589011
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547365,
+            "val_gauc": 0.661533,
+            "val_primary": 0.597467
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511928,
+            "val_gauc": 0.66485,
+            "val_primary": 0.599859
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499798,
+            "val_gauc": 0.664955,
+            "val_primary": 0.600018
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493696,
+            "val_gauc": 0.667035,
+            "val_primary": 0.601254
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489258,
+            "val_gauc": 0.667993,
+            "val_primary": 0.601838
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485252,
+            "val_gauc": 0.667545,
+            "val_primary": 0.601458
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481196,
+            "val_gauc": 0.666665,
+            "val_primary": 0.600868
+          }
+        ]
+      },
+      {
+        "probe": 40,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 189529,
+          "epochs_cap": 12
+        },
+        "primary": 0.603998,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662928,
+            "val_gauc": 0.666238,
+            "val_primary": 0.600591
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627401,
+            "val_gauc": 0.670395,
+            "val_primary": 0.603998
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612341,
+            "val_gauc": 0.669431,
+            "val_primary": 0.603279
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.60183,
+            "val_gauc": 0.669436,
+            "val_primary": 0.603403
+          }
+        ]
+      },
+      {
+        "probe": 41,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 199502,
+          "epochs_cap": 12
+        },
+        "primary": 0.600664,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637521,
+            "val_gauc": 0.647554,
+            "val_primary": 0.587641
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54751,
+            "val_gauc": 0.658323,
+            "val_primary": 0.595258
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512075,
+            "val_gauc": 0.66467,
+            "val_primary": 0.599687
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499817,
+            "val_gauc": 0.664873,
+            "val_primary": 0.599674
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493663,
+            "val_gauc": 0.665963,
+            "val_primary": 0.600607
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489175,
+            "val_gauc": 0.666276,
+            "val_primary": 0.600664
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485147,
+            "val_gauc": 0.665702,
+            "val_primary": 0.600408
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481234,
+            "val_gauc": 0.665788,
+            "val_primary": 0.600234
+          }
+        ]
+      },
+      {
+        "probe": 42,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 199502,
+          "epochs_cap": 12
+        },
+        "primary": 0.603738,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663232,
+            "val_gauc": 0.666168,
+            "val_primary": 0.600531
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.62737,
+            "val_gauc": 0.668902,
+            "val_primary": 0.602904
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612355,
+            "val_gauc": 0.668893,
+            "val_primary": 0.602927
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601815,
+            "val_gauc": 0.670062,
+            "val_primary": 0.603738
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593891,
+            "val_gauc": 0.66881,
+            "val_primary": 0.603078
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587613,
+            "val_gauc": 0.668658,
+            "val_primary": 0.602701
+          }
+        ]
+      },
+      {
+        "probe": 43,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 209475,
+          "epochs_cap": 12
+        },
+        "primary": 0.600581,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636313,
+            "val_gauc": 0.649672,
+            "val_primary": 0.589375
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546319,
+            "val_gauc": 0.659547,
+            "val_primary": 0.595953
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511742,
+            "val_gauc": 0.664204,
+            "val_primary": 0.599296
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499426,
+            "val_gauc": 0.665763,
+            "val_primary": 0.600308
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493104,
+            "val_gauc": 0.66595,
+            "val_primary": 0.600415
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488383,
+            "val_gauc": 0.666276,
+            "val_primary": 0.600581
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484133,
+            "val_gauc": 0.665742,
+            "val_primary": 0.5999
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480008,
+            "val_gauc": 0.665436,
+            "val_primary": 0.599553
+          }
+        ]
+      },
+      {
+        "probe": 44,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 209475,
+          "epochs_cap": 12
+        },
+        "primary": 0.603487,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663581,
+            "val_gauc": 0.666492,
+            "val_primary": 0.600592
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627423,
+            "val_gauc": 0.669699,
+            "val_primary": 0.603096
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612212,
+            "val_gauc": 0.669328,
+            "val_primary": 0.602937
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601342,
+            "val_gauc": 0.669557,
+            "val_primary": 0.603487
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593023,
+            "val_gauc": 0.668415,
+            "val_primary": 0.60258
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586314,
+            "val_gauc": 0.66744,
+            "val_primary": 0.601837
+          }
+        ]
+      },
+      {
+        "probe": 45,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 219448,
+          "epochs_cap": 12
+        },
+        "primary": 0.602142,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637163,
+            "val_gauc": 0.643892,
+            "val_primary": 0.585232
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.548426,
+            "val_gauc": 0.660104,
+            "val_primary": 0.596377
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512434,
+            "val_gauc": 0.665984,
+            "val_primary": 0.600608
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499744,
+            "val_gauc": 0.666758,
+            "val_primary": 0.60086
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493654,
+            "val_gauc": 0.667901,
+            "val_primary": 0.601827
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489424,
+            "val_gauc": 0.667386,
+            "val_primary": 0.601616
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485758,
+            "val_gauc": 0.668217,
+            "val_primary": 0.602142
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482138,
+            "val_gauc": 0.667095,
+            "val_primary": 0.601357
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.478409,
+            "val_gauc": 0.667579,
+            "val_primary": 0.601514
+          }
+        ]
+      },
+      {
+        "probe": 46,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 219448,
+          "epochs_cap": 12
+        },
+        "primary": 0.603677,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663259,
+            "val_gauc": 0.66642,
+            "val_primary": 0.600526
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627309,
+            "val_gauc": 0.669313,
+            "val_primary": 0.603326
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612183,
+            "val_gauc": 0.670006,
+            "val_primary": 0.603677
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601682,
+            "val_gauc": 0.669429,
+            "val_primary": 0.603378
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593696,
+            "val_gauc": 0.668918,
+            "val_primary": 0.602854
+          }
+        ]
+      },
+      {
+        "probe": 47,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 229421,
+          "epochs_cap": 12
+        },
+        "primary": 0.601375,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.63767,
+            "val_gauc": 0.650654,
+            "val_primary": 0.590023
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546901,
+            "val_gauc": 0.660601,
+            "val_primary": 0.596719
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511977,
+            "val_gauc": 0.664714,
+            "val_primary": 0.599749
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500625,
+            "val_gauc": 0.665829,
+            "val_primary": 0.600608
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.495062,
+            "val_gauc": 0.666325,
+            "val_primary": 0.601043
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.49125,
+            "val_gauc": 0.666663,
+            "val_primary": 0.601236
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48795,
+            "val_gauc": 0.667161,
+            "val_primary": 0.601373
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.48483,
+            "val_gauc": 0.666438,
+            "val_primary": 0.600956
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.481741,
+            "val_gauc": 0.667156,
+            "val_primary": 0.601375
+          },
+          {
+            "epoch": 10,
+            "train_loss": 0.478557,
+            "val_gauc": 0.665758,
+            "val_primary": 0.600532
+          },
+          {
+            "epoch": 11,
+            "train_loss": 0.475268,
+            "val_gauc": 0.664792,
+            "val_primary": 0.599724
+          }
+        ]
+      },
+      {
+        "probe": 48,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 229421,
+          "epochs_cap": 12
+        },
+        "primary": 0.603573,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663444,
+            "val_gauc": 0.667248,
+            "val_primary": 0.601274
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627334,
+            "val_gauc": 0.669044,
+            "val_primary": 0.602865
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612295,
+            "val_gauc": 0.669762,
+            "val_primary": 0.603453
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601539,
+            "val_gauc": 0.669577,
+            "val_primary": 0.603573
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593299,
+            "val_gauc": 0.668958,
+            "val_primary": 0.603011
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586769,
+            "val_gauc": 0.667354,
+            "val_primary": 0.601963
+          }
+        ]
+      },
+      {
+        "probe": 49,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 239394,
+          "epochs_cap": 12
+        },
+        "primary": 0.601161,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636066,
+            "val_gauc": 0.652164,
+            "val_primary": 0.590899
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544896,
+            "val_gauc": 0.660785,
+            "val_primary": 0.596984
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511752,
+            "val_gauc": 0.664522,
+            "val_primary": 0.599449
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499943,
+            "val_gauc": 0.665251,
+            "val_primary": 0.600255
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493931,
+            "val_gauc": 0.666729,
+            "val_primary": 0.600973
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489565,
+            "val_gauc": 0.667151,
+            "val_primary": 0.601161
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485791,
+            "val_gauc": 0.66621,
+            "val_primary": 0.600256
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482098,
+            "val_gauc": 0.666091,
+            "val_primary": 0.600287
+          }
+        ]
+      },
+      {
+        "probe": 50,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 239394,
+          "epochs_cap": 12
+        },
+        "primary": 0.603508,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663266,
+            "val_gauc": 0.665979,
+            "val_primary": 0.600773
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627273,
+            "val_gauc": 0.669188,
+            "val_primary": 0.603138
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.61242,
+            "val_gauc": 0.669701,
+            "val_primary": 0.603508
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601931,
+            "val_gauc": 0.669569,
+            "val_primary": 0.603451
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.594112,
+            "val_gauc": 0.669071,
+            "val_primary": 0.603031
+          }
+        ]
+      },
+      {
+        "probe": 51,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 249367,
+          "epochs_cap": 12
+        },
+        "primary": 0.601843,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637074,
+            "val_gauc": 0.650267,
+            "val_primary": 0.589228
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546843,
+            "val_gauc": 0.661584,
+            "val_primary": 0.597375
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511433,
+            "val_gauc": 0.664935,
+            "val_primary": 0.599728
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.498839,
+            "val_gauc": 0.666712,
+            "val_primary": 0.601101
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492526,
+            "val_gauc": 0.667916,
+            "val_primary": 0.601843
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487833,
+            "val_gauc": 0.666378,
+            "val_primary": 0.600677
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483587,
+            "val_gauc": 0.667356,
+            "val_primary": 0.601262
+          }
+        ]
+      },
+      {
+        "probe": 52,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 249367,
+          "epochs_cap": 12
+        },
+        "primary": 0.603807,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663309,
+            "val_gauc": 0.666773,
+            "val_primary": 0.60088
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627433,
+            "val_gauc": 0.669216,
+            "val_primary": 0.60313
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612257,
+            "val_gauc": 0.670029,
+            "val_primary": 0.603656
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601533,
+            "val_gauc": 0.670255,
+            "val_primary": 0.603807
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.59338,
+            "val_gauc": 0.669413,
+            "val_primary": 0.603214
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.58668,
+            "val_gauc": 0.668423,
+            "val_primary": 0.602818
+          }
+        ]
+      },
+      {
+        "probe": 53,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 259340,
+          "epochs_cap": 12
+        },
+        "primary": 0.602048,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636543,
+            "val_gauc": 0.650093,
+            "val_primary": 0.589095
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545426,
+            "val_gauc": 0.660184,
+            "val_primary": 0.596294
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511324,
+            "val_gauc": 0.665373,
+            "val_primary": 0.600299
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499193,
+            "val_gauc": 0.665423,
+            "val_primary": 0.600265
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492881,
+            "val_gauc": 0.667879,
+            "val_primary": 0.602048
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488067,
+            "val_gauc": 0.667463,
+            "val_primary": 0.601661
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483656,
+            "val_gauc": 0.666545,
+            "val_primary": 0.60078
+          }
+        ]
+      },
+      {
+        "probe": 54,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 259340,
+          "epochs_cap": 12
+        },
+        "primary": 0.603831,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663673,
+            "val_gauc": 0.666472,
+            "val_primary": 0.6007
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627511,
+            "val_gauc": 0.670271,
+            "val_primary": 0.603831
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.61234,
+            "val_gauc": 0.66943,
+            "val_primary": 0.603376
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601559,
+            "val_gauc": 0.669793,
+            "val_primary": 0.60368
+          }
+        ]
+      },
+      {
+        "probe": 55,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 269313,
+          "epochs_cap": 12
+        },
+        "primary": 0.601572,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637563,
+            "val_gauc": 0.647141,
+            "val_primary": 0.586967
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.550738,
+            "val_gauc": 0.660547,
+            "val_primary": 0.59659
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513831,
+            "val_gauc": 0.663956,
+            "val_primary": 0.599092
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500089,
+            "val_gauc": 0.666281,
+            "val_primary": 0.601026
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493312,
+            "val_gauc": 0.667255,
+            "val_primary": 0.601572
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488432,
+            "val_gauc": 0.666859,
+            "val_primary": 0.601072
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483967,
+            "val_gauc": 0.667437,
+            "val_primary": 0.601356
+          }
+        ]
+      },
+      {
+        "probe": 56,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 269313,
+          "epochs_cap": 12
+        },
+        "primary": 0.603858,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663429,
+            "val_gauc": 0.666559,
+            "val_primary": 0.600888
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627394,
+            "val_gauc": 0.669264,
+            "val_primary": 0.603208
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612247,
+            "val_gauc": 0.670229,
+            "val_primary": 0.603858
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601436,
+            "val_gauc": 0.66849,
+            "val_primary": 0.602698
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593322,
+            "val_gauc": 0.669177,
+            "val_primary": 0.603156
+          }
+        ]
+      },
+      {
+        "probe": 57,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 279286,
+          "epochs_cap": 12
+        },
+        "primary": 0.601483,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.6367,
+            "val_gauc": 0.647815,
+            "val_primary": 0.587716
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546592,
+            "val_gauc": 0.660083,
+            "val_primary": 0.596286
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511478,
+            "val_gauc": 0.665516,
+            "val_primary": 0.600123
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499211,
+            "val_gauc": 0.6652,
+            "val_primary": 0.600031
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493108,
+            "val_gauc": 0.665357,
+            "val_primary": 0.60026
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488675,
+            "val_gauc": 0.667159,
+            "val_primary": 0.601483
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484765,
+            "val_gauc": 0.666443,
+            "val_primary": 0.600902
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480921,
+            "val_gauc": 0.665342,
+            "val_primary": 0.600139
+          }
+        ]
+      },
+      {
+        "probe": 58,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 279286,
+          "epochs_cap": 12
+        },
+        "primary": 0.603353,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.66327,
+            "val_gauc": 0.667078,
+            "val_primary": 0.601035
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627025,
+            "val_gauc": 0.669186,
+            "val_primary": 0.603071
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.611892,
+            "val_gauc": 0.669357,
+            "val_primary": 0.603353
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601072,
+            "val_gauc": 0.668827,
+            "val_primary": 0.603193
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.592953,
+            "val_gauc": 0.66939,
+            "val_primary": 0.603287
+          }
+        ]
+      },
+      {
+        "probe": 59,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 289259,
+          "epochs_cap": 12
+        },
+        "primary": 0.601551,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636598,
+            "val_gauc": 0.648251,
+            "val_primary": 0.58784
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546458,
+            "val_gauc": 0.660126,
+            "val_primary": 0.596321
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511646,
+            "val_gauc": 0.664954,
+            "val_primary": 0.599792
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499463,
+            "val_gauc": 0.666,
+            "val_primary": 0.600588
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493384,
+            "val_gauc": 0.667243,
+            "val_primary": 0.601551
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489032,
+            "val_gauc": 0.66587,
+            "val_primary": 0.600701
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484945,
+            "val_gauc": 0.666464,
+            "val_primary": 0.600945
+          }
+        ]
+      },
+      {
+        "probe": 60,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 289259,
+          "epochs_cap": 12
+        },
+        "primary": 0.603498,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662976,
+            "val_gauc": 0.665922,
+            "val_primary": 0.600457
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627311,
+            "val_gauc": 0.669597,
+            "val_primary": 0.603366
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612457,
+            "val_gauc": 0.66957,
+            "val_primary": 0.603467
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601985,
+            "val_gauc": 0.669642,
+            "val_primary": 0.603498
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.594277,
+            "val_gauc": 0.669352,
+            "val_primary": 0.603464
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.588392,
+            "val_gauc": 0.668284,
+            "val_primary": 0.602651
+          }
+        ]
+      },
+      {
+        "probe": 61,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 299232,
+          "epochs_cap": 12
+        },
+        "primary": 0.600436,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636584,
+            "val_gauc": 0.648439,
+            "val_primary": 0.588339
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546273,
+            "val_gauc": 0.658282,
+            "val_primary": 0.595267
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512508,
+            "val_gauc": 0.663171,
+            "val_primary": 0.598748
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500332,
+            "val_gauc": 0.665729,
+            "val_primary": 0.60042
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493963,
+            "val_gauc": 0.665877,
+            "val_primary": 0.600436
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489429,
+            "val_gauc": 0.665758,
+            "val_primary": 0.600296
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485472,
+            "val_gauc": 0.665486,
+            "val_primary": 0.600191
+          }
+        ]
+      },
+      {
+        "probe": 62,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 299232,
+          "epochs_cap": 12
+        },
+        "primary": 0.60343,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663237,
+            "val_gauc": 0.665518,
+            "val_primary": 0.600184
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627348,
+            "val_gauc": 0.669569,
+            "val_primary": 0.603253
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612308,
+            "val_gauc": 0.669428,
+            "val_primary": 0.60343
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601725,
+            "val_gauc": 0.669531,
+            "val_primary": 0.603412
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593756,
+            "val_gauc": 0.668826,
+            "val_primary": 0.602981
+          }
+        ]
+      },
+      {
+        "probe": 63,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 309205,
+          "epochs_cap": 12
+        },
+        "primary": 0.601275,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636721,
+            "val_gauc": 0.650997,
+            "val_primary": 0.590026
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546493,
+            "val_gauc": 0.660931,
+            "val_primary": 0.596932
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511791,
+            "val_gauc": 0.663921,
+            "val_primary": 0.599301
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499829,
+            "val_gauc": 0.666853,
+            "val_primary": 0.601275
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493684,
+            "val_gauc": 0.665928,
+            "val_primary": 0.60068
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489127,
+            "val_gauc": 0.666378,
+            "val_primary": 0.601
+          }
+        ]
+      },
+      {
+        "probe": 64,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 309205,
+          "epochs_cap": 12
+        },
+        "primary": 0.603617,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.66327,
+            "val_gauc": 0.665369,
+            "val_primary": 0.600046
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627097,
+            "val_gauc": 0.668401,
+            "val_primary": 0.602514
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612072,
+            "val_gauc": 0.668771,
+            "val_primary": 0.602841
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601424,
+            "val_gauc": 0.669823,
+            "val_primary": 0.603617
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593417,
+            "val_gauc": 0.668576,
+            "val_primary": 0.602902
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587121,
+            "val_gauc": 0.668422,
+            "val_primary": 0.602841
+          }
+        ]
+      },
+      {
+        "probe": 65,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 319178,
+          "epochs_cap": 12
+        },
+        "primary": 0.601136,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636679,
+            "val_gauc": 0.650116,
+            "val_primary": 0.589484
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547069,
+            "val_gauc": 0.658874,
+            "val_primary": 0.595431
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512146,
+            "val_gauc": 0.664738,
+            "val_primary": 0.59955
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499636,
+            "val_gauc": 0.666743,
+            "val_primary": 0.601136
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493206,
+            "val_gauc": 0.666454,
+            "val_primary": 0.600946
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488473,
+            "val_gauc": 0.666148,
+            "val_primary": 0.600821
+          }
+        ]
+      },
+      {
+        "probe": 66,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 319178,
+          "epochs_cap": 12
+        },
+        "primary": 0.603464,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663357,
+            "val_gauc": 0.667843,
+            "val_primary": 0.602028
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627247,
+            "val_gauc": 0.668866,
+            "val_primary": 0.602775
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612234,
+            "val_gauc": 0.669145,
+            "val_primary": 0.603136
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601564,
+            "val_gauc": 0.669244,
+            "val_primary": 0.603181
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593544,
+            "val_gauc": 0.669361,
+            "val_primary": 0.603464
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587117,
+            "val_gauc": 0.669254,
+            "val_primary": 0.603234
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.581555,
+            "val_gauc": 0.667937,
+            "val_primary": 0.602308
+          }
+        ]
+      },
+      {
+        "probe": 67,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 329151,
+          "epochs_cap": 12
+        },
+        "primary": 0.601366,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636074,
+            "val_gauc": 0.650666,
+            "val_primary": 0.589979
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545797,
+            "val_gauc": 0.660826,
+            "val_primary": 0.596867
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511765,
+            "val_gauc": 0.663521,
+            "val_primary": 0.599071
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499275,
+            "val_gauc": 0.665868,
+            "val_primary": 0.60057
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492609,
+            "val_gauc": 0.66727,
+            "val_primary": 0.601316
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487664,
+            "val_gauc": 0.665726,
+            "val_primary": 0.600682
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.483106,
+            "val_gauc": 0.667171,
+            "val_primary": 0.601366
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.47865,
+            "val_gauc": 0.665856,
+            "val_primary": 0.600235
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.474108,
+            "val_gauc": 0.665044,
+            "val_primary": 0.599996
+          }
+        ]
+      },
+      {
+        "probe": 68,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 329151,
+          "epochs_cap": 12
+        },
+        "primary": 0.603548,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663379,
+            "val_gauc": 0.666632,
+            "val_primary": 0.601141
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627337,
+            "val_gauc": 0.669385,
+            "val_primary": 0.60335
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612282,
+            "val_gauc": 0.669994,
+            "val_primary": 0.603473
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601608,
+            "val_gauc": 0.669798,
+            "val_primary": 0.603548
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.59354,
+            "val_gauc": 0.669203,
+            "val_primary": 0.603049
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.587088,
+            "val_gauc": 0.667942,
+            "val_primary": 0.602009
+          }
+        ]
+      },
+      {
+        "probe": 69,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 339124,
+          "epochs_cap": 12
+        },
+        "primary": 0.602157,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635725,
+            "val_gauc": 0.650652,
+            "val_primary": 0.589871
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.54457,
+            "val_gauc": 0.660181,
+            "val_primary": 0.59643
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.510994,
+            "val_gauc": 0.664261,
+            "val_primary": 0.59945
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499571,
+            "val_gauc": 0.667044,
+            "val_primary": 0.601413
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493875,
+            "val_gauc": 0.668023,
+            "val_primary": 0.602157
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489799,
+            "val_gauc": 0.667285,
+            "val_primary": 0.60146
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486145,
+            "val_gauc": 0.667489,
+            "val_primary": 0.601492
+          }
+        ]
+      },
+      {
+        "probe": 70,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 339124,
+          "epochs_cap": 12
+        },
+        "primary": 0.603079,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663514,
+            "val_gauc": 0.666703,
+            "val_primary": 0.600943
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.62749,
+            "val_gauc": 0.66904,
+            "val_primary": 0.603079
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612231,
+            "val_gauc": 0.66896,
+            "val_primary": 0.603024
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601426,
+            "val_gauc": 0.668458,
+            "val_primary": 0.602832
+          }
+        ]
+      },
+      {
+        "probe": 71,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 349097,
+          "epochs_cap": 12
+        },
+        "primary": 0.600668,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637127,
+            "val_gauc": 0.647704,
+            "val_primary": 0.587933
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547203,
+            "val_gauc": 0.658807,
+            "val_primary": 0.595408
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512113,
+            "val_gauc": 0.663275,
+            "val_primary": 0.598871
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500017,
+            "val_gauc": 0.665714,
+            "val_primary": 0.600222
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494029,
+            "val_gauc": 0.665687,
+            "val_primary": 0.600336
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489752,
+            "val_gauc": 0.666183,
+            "val_primary": 0.600668
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485971,
+            "val_gauc": 0.666012,
+            "val_primary": 0.600633
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482261,
+            "val_gauc": 0.665645,
+            "val_primary": 0.600181
+          }
+        ]
+      },
+      {
+        "probe": 72,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 349097,
+          "epochs_cap": 12
+        },
+        "primary": 0.603804,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663502,
+            "val_gauc": 0.666577,
+            "val_primary": 0.600715
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627379,
+            "val_gauc": 0.669616,
+            "val_primary": 0.603486
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612224,
+            "val_gauc": 0.669925,
+            "val_primary": 0.603653
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601379,
+            "val_gauc": 0.670138,
+            "val_primary": 0.603804
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593122,
+            "val_gauc": 0.668722,
+            "val_primary": 0.602806
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586381,
+            "val_gauc": 0.667933,
+            "val_primary": 0.602289
+          }
+        ]
+      },
+      {
+        "probe": 73,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 359070,
+          "epochs_cap": 12
+        },
+        "primary": 0.601926,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637477,
+            "val_gauc": 0.64562,
+            "val_primary": 0.586403
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.548991,
+            "val_gauc": 0.659719,
+            "val_primary": 0.596082
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512746,
+            "val_gauc": 0.664228,
+            "val_primary": 0.599285
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499475,
+            "val_gauc": 0.66733,
+            "val_primary": 0.601926
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492743,
+            "val_gauc": 0.666679,
+            "val_primary": 0.601249
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.487826,
+            "val_gauc": 0.666223,
+            "val_primary": 0.600873
+          }
+        ]
+      },
+      {
+        "probe": 74,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 359070,
+          "epochs_cap": 12
+        },
+        "primary": 0.603597,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.66335,
+            "val_gauc": 0.666707,
+            "val_primary": 0.601245
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627483,
+            "val_gauc": 0.668932,
+            "val_primary": 0.602888
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612478,
+            "val_gauc": 0.669625,
+            "val_primary": 0.603597
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601763,
+            "val_gauc": 0.668192,
+            "val_primary": 0.602471
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593756,
+            "val_gauc": 0.668293,
+            "val_primary": 0.602754
+          }
+        ]
+      },
+      {
+        "probe": 75,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 369043,
+          "epochs_cap": 12
+        },
+        "primary": 0.600536,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635709,
+            "val_gauc": 0.65068,
+            "val_primary": 0.589943
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544637,
+            "val_gauc": 0.660177,
+            "val_primary": 0.596518
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511745,
+            "val_gauc": 0.664056,
+            "val_primary": 0.599339
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.50025,
+            "val_gauc": 0.664406,
+            "val_primary": 0.599463
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494321,
+            "val_gauc": 0.664914,
+            "val_primary": 0.599741
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.490096,
+            "val_gauc": 0.66598,
+            "val_primary": 0.600536
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486364,
+            "val_gauc": 0.665691,
+            "val_primary": 0.600241
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482766,
+            "val_gauc": 0.664628,
+            "val_primary": 0.599563
+          }
+        ]
+      },
+      {
+        "probe": 76,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 369043,
+          "epochs_cap": 12
+        },
+        "primary": 0.603746,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.66307,
+            "val_gauc": 0.666824,
+            "val_primary": 0.60111
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627324,
+            "val_gauc": 0.67012,
+            "val_primary": 0.603746
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612281,
+            "val_gauc": 0.66933,
+            "val_primary": 0.603285
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601677,
+            "val_gauc": 0.669114,
+            "val_primary": 0.603007
+          }
+        ]
+      },
+      {
+        "probe": 77,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 379016,
+          "epochs_cap": 12
+        },
+        "primary": 0.601968,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637296,
+            "val_gauc": 0.651974,
+            "val_primary": 0.590538
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546343,
+            "val_gauc": 0.661852,
+            "val_primary": 0.59741
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511232,
+            "val_gauc": 0.665062,
+            "val_primary": 0.600039
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499608,
+            "val_gauc": 0.66661,
+            "val_primary": 0.601008
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493911,
+            "val_gauc": 0.667975,
+            "val_primary": 0.601968
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.48975,
+            "val_gauc": 0.667681,
+            "val_primary": 0.601778
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486036,
+            "val_gauc": 0.66778,
+            "val_primary": 0.601588
+          }
+        ]
+      },
+      {
+        "probe": 78,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 379016,
+          "epochs_cap": 12
+        },
+        "primary": 0.603255,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663629,
+            "val_gauc": 0.665478,
+            "val_primary": 0.60013
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627491,
+            "val_gauc": 0.669642,
+            "val_primary": 0.603255
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612378,
+            "val_gauc": 0.669495,
+            "val_primary": 0.603182
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601523,
+            "val_gauc": 0.669049,
+            "val_primary": 0.603024
+          }
+        ]
+      },
+      {
+        "probe": 79,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 388989,
+          "epochs_cap": 12
+        },
+        "primary": 0.601509,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635946,
+            "val_gauc": 0.651106,
+            "val_primary": 0.590321
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544312,
+            "val_gauc": 0.66097,
+            "val_primary": 0.597153
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.51124,
+            "val_gauc": 0.664596,
+            "val_primary": 0.599831
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499953,
+            "val_gauc": 0.665783,
+            "val_primary": 0.600445
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494193,
+            "val_gauc": 0.666668,
+            "val_primary": 0.601182
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.490044,
+            "val_gauc": 0.666662,
+            "val_primary": 0.600994
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486335,
+            "val_gauc": 0.667345,
+            "val_primary": 0.601509
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.482707,
+            "val_gauc": 0.66629,
+            "val_primary": 0.600698
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.479009,
+            "val_gauc": 0.666717,
+            "val_primary": 0.600674
+          }
+        ]
+      },
+      {
+        "probe": 80,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 388989,
+          "epochs_cap": 12
+        },
+        "primary": 0.603122,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662818,
+            "val_gauc": 0.66666,
+            "val_primary": 0.600975
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627356,
+            "val_gauc": 0.668374,
+            "val_primary": 0.602562
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612373,
+            "val_gauc": 0.668918,
+            "val_primary": 0.603122
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601852,
+            "val_gauc": 0.668966,
+            "val_primary": 0.603116
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593965,
+            "val_gauc": 0.669021,
+            "val_primary": 0.603109
+          }
+        ]
+      },
+      {
+        "probe": 81,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 398962,
+          "epochs_cap": 12
+        },
+        "primary": 0.600654,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636783,
+            "val_gauc": 0.651523,
+            "val_primary": 0.590457
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.545907,
+            "val_gauc": 0.660366,
+            "val_primary": 0.596715
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511538,
+            "val_gauc": 0.664509,
+            "val_primary": 0.599593
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499453,
+            "val_gauc": 0.665159,
+            "val_primary": 0.599865
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493171,
+            "val_gauc": 0.666022,
+            "val_primary": 0.600571
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488507,
+            "val_gauc": 0.666192,
+            "val_primary": 0.600525
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484325,
+            "val_gauc": 0.666165,
+            "val_primary": 0.600654
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480199,
+            "val_gauc": 0.66576,
+            "val_primary": 0.600282
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.47605,
+            "val_gauc": 0.665565,
+            "val_primary": 0.59996
+          }
+        ]
+      },
+      {
+        "probe": 82,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 398962,
+          "epochs_cap": 12
+        },
+        "primary": 0.60332,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663585,
+            "val_gauc": 0.665114,
+            "val_primary": 0.599809
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627326,
+            "val_gauc": 0.668724,
+            "val_primary": 0.602634
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612043,
+            "val_gauc": 0.669266,
+            "val_primary": 0.60332
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601263,
+            "val_gauc": 0.668567,
+            "val_primary": 0.602875
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593053,
+            "val_gauc": 0.668464,
+            "val_primary": 0.602497
+          }
+        ]
+      },
+      {
+        "probe": 83,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 408935,
+          "epochs_cap": 12
+        },
+        "primary": 0.600987,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636721,
+            "val_gauc": 0.652829,
+            "val_primary": 0.591261
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547192,
+            "val_gauc": 0.660451,
+            "val_primary": 0.596731
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.51229,
+            "val_gauc": 0.664833,
+            "val_primary": 0.59982
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499732,
+            "val_gauc": 0.666206,
+            "val_primary": 0.600735
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.49342,
+            "val_gauc": 0.665858,
+            "val_primary": 0.600558
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.488776,
+            "val_gauc": 0.666837,
+            "val_primary": 0.600987
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.484557,
+            "val_gauc": 0.665295,
+            "val_primary": 0.599861
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.480449,
+            "val_gauc": 0.665327,
+            "val_primary": 0.600011
+          }
+        ]
+      },
+      {
+        "probe": 84,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 408935,
+          "epochs_cap": 12
+        },
+        "primary": 0.603545,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663424,
+            "val_gauc": 0.667084,
+            "val_primary": 0.601375
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627519,
+            "val_gauc": 0.669978,
+            "val_primary": 0.603519
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612316,
+            "val_gauc": 0.668852,
+            "val_primary": 0.603053
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601484,
+            "val_gauc": 0.669698,
+            "val_primary": 0.603545
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593317,
+            "val_gauc": 0.668826,
+            "val_primary": 0.60301
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.586724,
+            "val_gauc": 0.667748,
+            "val_primary": 0.602254
+          }
+        ]
+      },
+      {
+        "probe": 85,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 418908,
+          "epochs_cap": 12
+        },
+        "primary": 0.601162,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.636193,
+            "val_gauc": 0.64808,
+            "val_primary": 0.58813
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544961,
+            "val_gauc": 0.659808,
+            "val_primary": 0.596335
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.510903,
+            "val_gauc": 0.66255,
+            "val_primary": 0.598396
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.498657,
+            "val_gauc": 0.66653,
+            "val_primary": 0.601162
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.492244,
+            "val_gauc": 0.666178,
+            "val_primary": 0.60072
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.4875,
+            "val_gauc": 0.666112,
+            "val_primary": 0.600868
+          }
+        ]
+      },
+      {
+        "probe": 86,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 418908,
+          "epochs_cap": 12
+        },
+        "primary": 0.603446,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663737,
+            "val_gauc": 0.6665,
+            "val_primary": 0.600723
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627317,
+            "val_gauc": 0.669193,
+            "val_primary": 0.603113
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612227,
+            "val_gauc": 0.669363,
+            "val_primary": 0.603446
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601447,
+            "val_gauc": 0.669346,
+            "val_primary": 0.60329
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593368,
+            "val_gauc": 0.668912,
+            "val_primary": 0.603024
+          }
+        ]
+      },
+      {
+        "probe": 87,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 428881,
+          "epochs_cap": 12
+        },
+        "primary": 0.601533,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635513,
+            "val_gauc": 0.6506,
+            "val_primary": 0.58982
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.543129,
+            "val_gauc": 0.660846,
+            "val_primary": 0.596868
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.510522,
+            "val_gauc": 0.664871,
+            "val_primary": 0.59986
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499884,
+            "val_gauc": 0.666124,
+            "val_primary": 0.600815
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494605,
+            "val_gauc": 0.666604,
+            "val_primary": 0.600961
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.490712,
+            "val_gauc": 0.667141,
+            "val_primary": 0.601533
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.487125,
+            "val_gauc": 0.667427,
+            "val_primary": 0.601523
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.483438,
+            "val_gauc": 0.666035,
+            "val_primary": 0.600541
+          }
+        ]
+      },
+      {
+        "probe": 88,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 428881,
+          "epochs_cap": 12
+        },
+        "primary": 0.603436,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.662856,
+            "val_gauc": 0.666782,
+            "val_primary": 0.601107
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627339,
+            "val_gauc": 0.669221,
+            "val_primary": 0.603143
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612526,
+            "val_gauc": 0.669665,
+            "val_primary": 0.603436
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.602146,
+            "val_gauc": 0.669407,
+            "val_primary": 0.603349
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.594446,
+            "val_gauc": 0.66852,
+            "val_primary": 0.602743
+          }
+        ]
+      },
+      {
+        "probe": 89,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 438854,
+          "epochs_cap": 12
+        },
+        "primary": 0.601023,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637361,
+            "val_gauc": 0.648698,
+            "val_primary": 0.588601
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.547903,
+            "val_gauc": 0.661092,
+            "val_primary": 0.59702
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.512044,
+            "val_gauc": 0.664272,
+            "val_primary": 0.599538
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499805,
+            "val_gauc": 0.665951,
+            "val_primary": 0.600608
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493898,
+            "val_gauc": 0.666309,
+            "val_primary": 0.601023
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489727,
+            "val_gauc": 0.665665,
+            "val_primary": 0.600385
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.486128,
+            "val_gauc": 0.666088,
+            "val_primary": 0.600841
+          }
+        ]
+      },
+      {
+        "probe": 90,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 438854,
+          "epochs_cap": 12
+        },
+        "primary": 0.603895,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663566,
+            "val_gauc": 0.666489,
+            "val_primary": 0.60072
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627096,
+            "val_gauc": 0.669137,
+            "val_primary": 0.602994
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.611976,
+            "val_gauc": 0.670176,
+            "val_primary": 0.603895
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601318,
+            "val_gauc": 0.669727,
+            "val_primary": 0.603306
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593095,
+            "val_gauc": 0.669215,
+            "val_primary": 0.603033
+          }
+        ]
+      },
+      {
+        "probe": 91,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 448827,
+          "epochs_cap": 12
+        },
+        "primary": 0.601636,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.635809,
+            "val_gauc": 0.649076,
+            "val_primary": 0.58847
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.544132,
+            "val_gauc": 0.660029,
+            "val_primary": 0.59648
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511295,
+            "val_gauc": 0.664061,
+            "val_primary": 0.599344
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499785,
+            "val_gauc": 0.665706,
+            "val_primary": 0.600556
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493758,
+            "val_gauc": 0.666683,
+            "val_primary": 0.601031
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489289,
+            "val_gauc": 0.666547,
+            "val_primary": 0.601092
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485321,
+            "val_gauc": 0.667094,
+            "val_primary": 0.601304
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481425,
+            "val_gauc": 0.667683,
+            "val_primary": 0.601636
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.477436,
+            "val_gauc": 0.667502,
+            "val_primary": 0.601419
+          },
+          {
+            "epoch": 10,
+            "train_loss": 0.473359,
+            "val_gauc": 0.665752,
+            "val_primary": 0.60003
+          }
+        ]
+      },
+      {
+        "probe": 92,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 448827,
+          "epochs_cap": 12
+        },
+        "primary": 0.603487,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663467,
+            "val_gauc": 0.665966,
+            "val_primary": 0.600318
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627458,
+            "val_gauc": 0.669784,
+            "val_primary": 0.603364
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612344,
+            "val_gauc": 0.669833,
+            "val_primary": 0.603487
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601585,
+            "val_gauc": 0.668971,
+            "val_primary": 0.602957
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.593452,
+            "val_gauc": 0.669466,
+            "val_primary": 0.603432
+          }
+        ]
+      },
+      {
+        "probe": 93,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 458800,
+          "epochs_cap": 12
+        },
+        "primary": 0.602287,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637325,
+            "val_gauc": 0.649751,
+            "val_primary": 0.589268
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.549577,
+            "val_gauc": 0.660644,
+            "val_primary": 0.596702
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.513044,
+            "val_gauc": 0.665394,
+            "val_primary": 0.600061
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.500122,
+            "val_gauc": 0.666923,
+            "val_primary": 0.601367
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.493887,
+            "val_gauc": 0.668013,
+            "val_primary": 0.602051
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.489519,
+            "val_gauc": 0.668065,
+            "val_primary": 0.602081
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.485632,
+            "val_gauc": 0.668436,
+            "val_primary": 0.602287
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.481851,
+            "val_gauc": 0.667896,
+            "val_primary": 0.601793
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.478002,
+            "val_gauc": 0.666086,
+            "val_primary": 0.600465
+          }
+        ]
+      },
+      {
+        "probe": 94,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 458800,
+          "epochs_cap": 12
+        },
+        "primary": 0.603513,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663138,
+            "val_gauc": 0.666304,
+            "val_primary": 0.600627
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.62733,
+            "val_gauc": 0.669768,
+            "val_primary": 0.603513
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612388,
+            "val_gauc": 0.669555,
+            "val_primary": 0.603499
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.60184,
+            "val_gauc": 0.669559,
+            "val_primary": 0.603134
+          }
+        ]
+      },
+      {
+        "probe": 95,
+        "config": {
+          "loss": "pointwise_bce_control",
+          "seed": 468773,
+          "epochs_cap": 12
+        },
+        "primary": 0.601965,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.637295,
+            "val_gauc": 0.651893,
+            "val_primary": 0.590589
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.546288,
+            "val_gauc": 0.661448,
+            "val_primary": 0.597334
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.511291,
+            "val_gauc": 0.666307,
+            "val_primary": 0.600875
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.499779,
+            "val_gauc": 0.666661,
+            "val_primary": 0.601198
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.494215,
+            "val_gauc": 0.667028,
+            "val_primary": 0.601481
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.490187,
+            "val_gauc": 0.667867,
+            "val_primary": 0.601965
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.48657,
+            "val_gauc": 0.667094,
+            "val_primary": 0.601353
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.483013,
+            "val_gauc": 0.667777,
+            "val_primary": 0.601634
+          }
+        ]
+      },
+      {
+        "probe": 96,
+        "config": {
+          "loss": "gauge_fixed_bce",
+          "seed": 468773,
+          "epochs_cap": 12
+        },
+        "primary": 0.604014,
+        "curve": [
+          {
+            "epoch": 1,
+            "train_loss": 0.663056,
+            "val_gauc": 0.667034,
+            "val_primary": 0.601
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.627047,
+            "val_gauc": 0.670307,
+            "val_primary": 0.603848
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.612042,
+            "val_gauc": 0.670274,
+            "val_primary": 0.604014
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.601509,
+            "val_gauc": 0.670293,
+            "val_primary": 0.603915
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.59366,
+            "val_gauc": 0.669017,
+            "val_primary": 0.603167
+          }
+        ]
+      }
+    ],
+    "ensemble_history": [
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 1
+        },
+        "gauc": 0.669972,
+        "ndcg5": 0.537249,
+        "primary": 0.60361
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 1
+        },
+        "gauc": 0.668346,
+        "ndcg5": 0.536173,
+        "primary": 0.60226
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 1
+        },
+        "gauc": 0.669867,
+        "ndcg5": 0.536856,
+        "primary": 0.603362
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 2
+        },
+        "gauc": 0.669998,
+        "ndcg5": 0.537122,
+        "primary": 0.60356
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 2
+        },
+        "gauc": 0.668449,
+        "ndcg5": 0.536095,
+        "primary": 0.602272
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 2
+        },
+        "gauc": 0.670692,
+        "ndcg5": 0.537428,
+        "primary": 0.60406
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 3
+        },
+        "gauc": 0.670248,
+        "ndcg5": 0.537807,
+        "primary": 0.604027
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 3
+        },
+        "gauc": 0.668269,
+        "ndcg5": 0.536493,
+        "primary": 0.602381
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 3
+        },
+        "gauc": 0.670508,
+        "ndcg5": 0.537489,
+        "primary": 0.603999
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 5
+        },
+        "gauc": 0.670557,
+        "ndcg5": 0.537851,
+        "primary": 0.604204
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 5
+        },
+        "gauc": 0.66895,
+        "ndcg5": 0.53673,
+        "primary": 0.60284
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 5
+        },
+        "gauc": 0.670828,
+        "ndcg5": 0.537475,
+        "primary": 0.604151
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 8
+        },
+        "gauc": 0.670844,
+        "ndcg5": 0.537953,
+        "primary": 0.604398
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 8
+        },
+        "gauc": 0.668812,
+        "ndcg5": 0.536523,
+        "primary": 0.602667
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 8
+        },
+        "gauc": 0.671107,
+        "ndcg5": 0.537451,
+        "primary": 0.604279
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 12
+        },
+        "gauc": 0.670698,
+        "ndcg5": 0.537871,
+        "primary": 0.604285
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 12
+        },
+        "gauc": 0.668852,
+        "ndcg5": 0.536884,
+        "primary": 0.602868
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 12
+        },
+        "gauc": 0.671013,
+        "ndcg5": 0.537808,
+        "primary": 0.60441
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 16
+        },
+        "gauc": 0.670418,
+        "ndcg5": 0.537946,
+        "primary": 0.604182
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 16
+        },
+        "gauc": 0.66895,
+        "ndcg5": 0.536783,
+        "primary": 0.602866
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 16
+        },
+        "gauc": 0.670949,
+        "ndcg5": 0.537764,
+        "primary": 0.604357
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 24
+        },
+        "gauc": 0.670469,
+        "ndcg5": 0.537965,
+        "primary": 0.604217
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 24
+        },
+        "gauc": 0.668747,
+        "ndcg5": 0.536487,
+        "primary": 0.602617
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 24
+        },
+        "gauc": 0.670858,
+        "ndcg5": 0.537846,
+        "primary": 0.604352
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 32
+        },
+        "gauc": 0.670825,
+        "ndcg5": 0.538118,
+        "primary": 0.604471
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 32
+        },
+        "gauc": 0.668744,
+        "ndcg5": 0.53659,
+        "primary": 0.602667
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 32
+        },
+        "gauc": 0.670843,
+        "ndcg5": 0.537729,
+        "primary": 0.604286
+      },
+      {
+        "config": {
+          "ensemble_family": "gauge_fixed_bce",
+          "member_count": 48
+        },
+        "gauc": 0.67067,
+        "ndcg5": 0.537856,
+        "primary": 0.604263
+      },
+      {
+        "config": {
+          "ensemble_family": "pointwise_bce_control",
+          "member_count": 48
+        },
+        "gauc": 0.668604,
+        "ndcg5": 0.536479,
+        "primary": 0.602541
+      },
+      {
+        "config": {
+          "ensemble_family": "half_gauge_half_control",
+          "member_count": 48
+        },
+        "gauc": 0.670779,
+        "ndcg5": 0.537851,
+        "primary": 0.604315
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 57027,
+      "out": 5367,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 39606,
+      "out": 39251,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 556,
+      "out": 899,
+      "calls": 1
+    }
+  },
+  "tokens_total": 142706,
+  "wall_s": 25591.6,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally\n\n- It explored only six nodes before max_hours, so throughput was poor. Several proposals were broad package searches rather than cheap, falsifiable edits.\n- It repeatedly reused the same diagnosis\u2014\u201cearly validation peak implies overfit\u201d\u2014without gathering evidence about whether the cause was sparse IDs, temporal shift, loss mismatch, or ordinary optimization. The proposed mechanisms therefore outran the diagnostics.\n- Nodes 001, 003, and 005 bundled multiple changes. In particular, node_003 combined complete-slate user-centered BCE with validation-selected seed rank ensembling. Its +0.0027 accepted gain cannot be attributed to either component, and seed selection may itself overfit validation.\n- Node_005 was especially inefficient: DCN-lite, BPR, AdamW, dropout, step decay, recency weighting, checkpointing, and seed averaging form too large a joint search space for the remaining budget.\n- The policy kept branching from node_003 but did not first ablate its winning ingredients. That sacrificed the most valuable follow-up information.\n- Nodes 004 and 005 reported higher raw primary (~0.6049) than the archived best (0.604471) but were rejected. If this was due to uncertainty, acceptance penalties, or failure on secondary criteria, the journal should expose those quantities. Otherwise the decision is hard to audit and may discard genuine improvements.\n- Validation was used for checkpointing, hyperparameter selection, combination selection, and seed selection. Without a second holdout or nested protocol, repeated adaptive search risks validation overfitting.\n- Numeric effect-size claims were mostly unsupported and did not guide explicit power calculations or stopping rules.\n\nWhat I would change in the scaffold\n\n- Enforce one conceptual change per node. Treat ensembles and seed selection as evaluation procedures, not as part of a model hypothesis.\n- After every accepted compound node, automatically schedule ablations: loss only, ensemble only, and their combination under identical seeds and checkpoints.\n- Add a diagnostic stage before mechanism search: per-user metric decomposition, early/late validation slices, ID-frequency buckets, calibration, train\u2013validation feature drift, and seed/checkpoint variance.\n- Use a fixed seed panel and report mean, standard error, per-seed deltas, and paired significance against the parent. Do not select the best seed on validation.\n- Reserve a small untouched confirmation split, or rotate multiple temporal validation folds. Use the ordinary validation split for search and the confirmation split only for promotion.\n- Make acceptance records explicit: raw primary, uncertainty, secondary metrics, complexity/resource penalty, and exact rejection reason.\n- Allocate budget in phases: cheap single-factor screens, replication of promising deltas, then limited interaction tests. Stop large package sweeps unless individual components already show signal.\n- Improve runtime discipline with cached data/features, shared parent checkpoints where valid, early termination, and a cap on configurations per hypothesis.\n\nWhat the next run should try first\n\nFirst, reproduce and decompose node_003 using the same fixed seeds:\n\n1. Baseline FM with the original BCE.\n2. Baseline FM with complete-slate user-centered BCE only.\n3. Original BCE with seed rank averaging only, using all predetermined seeds rather than validation-selected seeds.\n4. User-centered BCE plus the same fixed-seed rank averaging.\n\nEvaluate paired deltas across seeds and across temporal, user-activity, and slate-size slices. This establishes whether the accepted gain is a real loss-alignment improvement or mostly an ensemble/selection artifact.\n\nIf user-centered BCE independently survives confirmation, the next focused experiment should tune only its centering/weighting formulation or blend it with pointwise BCE. If it does not, prioritize a simple fixed-seed ensemble baseline. Do not begin another DCN/BPR/regularization/recency package sweep until node_003\u2019s source of gain is identified."
+}

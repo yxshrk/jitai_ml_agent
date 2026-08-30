@@ -23,3 +23,10 @@ Champion candidate: run_real_01 node_002 (0.6042). Manual 3-seed best: zoo/best.
 | deep/anthropic/multidraft | 6 | 0.60462 (g1) | sonnet thinking-starvation measured |
 | max wave + experiments | 12 | in flight | honest-clock depth, 1K deep runs, clean A/B |
 All journals in logs/run_*/; cross-machine copies rsynced back on completion.
+
+## Late harvest (31 Aug)
+| run | machine | stop | iters | best | note |
+|---|---|---|---|---|---|
+| qb_b | coral | converged | 4 | 0.60466 | decayed-positive sampling; below champion, no re-designation |
+| novel_r1 | ruby | max_hours | 5 | 0.60447 | pair-kernel line on ruby; below champion, no re-designation |
+| final_f1 | ruby | max_hours | 4 | 0.60403 | dial-jitter member-bank close (GPU); below champion, no re-designation |

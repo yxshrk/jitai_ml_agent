@@ -1,0 +1,3 @@
+{"config": {"dropout": 0.24, "gamma": 0.55, "half_life": 7.0, "lr": 0.0008, "step_halves": 2, "weight_decay": 0.0003}, "primary": 0.60175, "probe": 1, "stage": 1}
+{"config": {"dropout": 0.24, "gamma": 0.55, "half_life": 7.0, "lr": 0.0008, "step_halves": 2, "weight_decay": 0.0003}, "primary": 0.60175, "probe": 1, "stage": 2}
+{"member": 1, "primary": 0.60175, "seed": 42, "stage": "final"}

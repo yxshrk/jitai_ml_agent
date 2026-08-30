@@ -1,199 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>The Agent's Lab Notebook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mle-agent — flight recorder</title>
 <style>
-:root{--paper:#f7f3e9;--ink:#2b2a26;--dim:#7a7466;--line:#d9d2bf;--gold:#a8842c;--good:#3c7a3c;--bad:#a84c3c;--blue:#3c5f9e;--dark:#171512}
-*{box-sizing:border-box}
-body{margin:0;background:#e9e3d3;color:var(--ink);font:16px/1.6 Georgia,'Times New Roman',serif;min-height:100vh}
-#wrap{max-width:820px;margin:0 auto;padding:34px 18px 110px}
-.page{background:var(--paper);border:1px solid var(--line);border-radius:4px;box-shadow:0 14px 40px rgba(40,30,10,.14), 0 2px 0 var(--line);padding:44px 52px;position:relative;min-height:70vh}
-.page:before{content:'';position:absolute;left:40px;top:0;bottom:0;width:1px;background:rgba(168,76,60,.25)}
-h1{font-size:44px;margin:.2em 0;letter-spacing:.01em}
-h2{font-size:24px;margin:0 0 14px;border-bottom:2px solid var(--line);padding-bottom:8px}
-.kicker{font:600 12px system-ui;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-.lede{font-size:19px;color:#4a463c}
-.dim{color:var(--dim);font-size:14px}
-.mono{font-family:ui-monospace,Menlo,monospace;font-size:13.5px}
-.cover{text-align:center;padding:60px 10px}
-.loopstrip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:22px 0;font:600 13px system-ui;color:var(--dim)}
-.loopstrip span{background:#efe9d8;border:1px solid var(--line);border-radius:99px;padding:5px 13px;color:var(--ink)}
-svg.curve{width:100%;height:auto;margin:12px 0;background:#fbf8f0;border:1px solid var(--line);border-radius:6px}
-.gl{stroke:#e4ddc9;stroke-width:1}
-.axis{font:11px ui-monospace,monospace;fill:#9a927e}
-.anno{font:italic 13px Georgia;fill:var(--bad)}
-.clabel{font:600 12px system-ui}
-.peak{fill:none;stroke:var(--bad);stroke-width:2}
-.stamp{position:absolute;right:44px;top:38px;transform:rotate(8deg);border:3px solid;border-radius:8px;padding:6px 16px;font:800 20px system-ui;letter-spacing:.08em;opacity:.85}
-.stamp.good{color:var(--good);border-color:var(--good)}
-.stamp.bad{color:var(--bad);border-color:var(--bad)}
-.cards{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
-.mcard{font:12.5px ui-monospace,monospace;border:1px solid var(--line);border-radius:6px;padding:4px 10px;background:#efe9d8;color:var(--dim)}
-.mcard.pick{border-color:var(--gold);color:var(--gold);font-weight:700;background:#f6efdb}
-.why{font-style:italic;color:#5a5346;font-size:14.5px;border-left:3px solid var(--gold);padding-left:12px;margin:8px 0}
-.ok{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
-.netwrap{background:var(--dark);border-radius:8px;padding:14px;margin:14px 0}
-.nettitle{font:600 11px system-ui;letter-spacing:.1em;color:#8b95ad;text-transform:uppercase;margin-bottom:6px}
-svg.net{width:100%;height:auto}
-svg.net .axis{fill:#8b95ad}
-svg.net .anno{fill:#c9a24a;font:italic 12px Georgia}
-svg.net .edge{stroke:#31406b;stroke-width:1.5}
-.slates{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.slate{display:flex;gap:6px;background:#fbf8f0;border:1px solid var(--line);border-radius:8px;padding:8px}
-.scol{flex:1}
-.stit{font:600 10px system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
-.chip{font:11px system-ui;border-radius:5px;padding:3px 6px;margin:3px 0;background:#efe9d8;color:var(--dim)}
-.chip.w{background:#e3ecd9;color:var(--good);font-weight:700}
-#controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;background:#fffdf6;border:1px solid var(--line);border-radius:99px;padding:8px 14px;box-shadow:0 8px 26px rgba(40,30,10,.18)}
-#controls button{background:var(--ink);color:var(--paper);border:none;border-radius:99px;padding:9px 20px;font:600 14px system-ui;cursor:pointer}
-#controls button:disabled{opacity:.3;cursor:default}
-#step-label{color:var(--dim);font:600 13px ui-monospace,monospace}
-@media(max-width:700px){.page{padding:30px 22px}.slates{grid-template-columns:1fr}}
+:root{
+  --bg:#0A0E12; --bg2:#0E141B; --line:#1D2833;
+  --fg:#C8D6DE; --dim:#5C6E7A; --faint:#2C3A46;
+  --go:#54E6B4;            /* phosphor green: accepted / gains */
+  --no:#FF5D5D;            /* dead ends */
+  --amber:#FFC86B;         /* highlights, stamps */
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);
+  font:14px/1.65 ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+::selection{background:var(--go);color:var(--bg)}
+a{color:var(--go)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.dim{color:var(--dim)}
+.go{color:var(--go)} .no{color:var(--no)} .amber{color:var(--amber)}
+
+/* status bar */
+#bar{position:fixed;top:0;left:0;right:0;z-index:10;background:rgba(10,14,18,.92);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(4px)}
+#bar .wrap{display:flex;justify-content:space-between;align-items:center;height:44px}
+#bar .l{font-size:12px;letter-spacing:.14em}
+#bar .r{font-size:12px;font-variant-numeric:tabular-nums}
+#bar .r b{color:var(--go)}
+#prog{position:fixed;top:44px;left:0;height:2px;background:var(--go);width:0;z-index:10}
+
+/* hero */
+#hero{min-height:92vh;display:flex;align-items:center;padding-top:44px;position:relative}
+#hero .kicker{font-size:12px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;margin-bottom:18px}
+#hero h1{font-size:clamp(26px,4.6vw,52px);line-height:1.2;font-weight:700;max-width:20ch}
+#hero h1 .go{white-space:nowrap}
+#hero .sub{margin-top:20px;max-width:62ch;color:var(--dim)}
+#hero .cursor{display:inline-block;width:.6em;height:1.1em;background:var(--go);
+  vertical-align:text-bottom;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#herochart{margin-top:38px;width:100%;max-width:760px}
+.scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  color:var(--dim);font-size:11px;letter-spacing:.18em;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateX(-50%) translateY(6px)}}
+
+/* generic section */
+section{padding:110px 0;border-top:1px solid var(--line)}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+h2{font-size:clamp(20px,2.6vw,30px);font-weight:700;margin-bottom:14px}
+.lede{color:var(--dim);max-width:64ch}
+
+/* the loop diagram */
+#loop svg{width:100%;max-width:820px;margin-top:34px;display:block}
+#loop text{font:600 13px ui-monospace,Menlo,monospace;fill:var(--fg)}
+#loop .boxr{fill:var(--bg2);stroke:var(--faint)}
+#loop .arrow{stroke:var(--dim);fill:none;marker-end:url(#arr)}
+#loop .pulse{fill:var(--go)}
+
+/* mission log: pinned chart + cards */
+#log .cols{display:grid;grid-template-columns:minmax(380px,1fr) minmax(340px,520px);gap:56px}
+#chartpin{position:sticky;top:96px;align-self:start}
+#chartpin svg{width:100%}
+.axis{stroke:var(--faint)} .axistext{font:11px ui-monospace,monospace;fill:var(--dim)}
+.baseline-l{stroke:var(--no);stroke-dasharray:5 4;opacity:.8}
+.trace{stroke:var(--go);stroke-width:2.5;fill:none;stroke-linecap:round;
+  transition:stroke-dashoffset 1.1s ease}
+.dead{fill:none;stroke:var(--no);stroke-width:1.6;opacity:0;transition:opacity .5s}
+.dead.onn{opacity:.85}
+.nodedot{fill:var(--go);opacity:0;transition:opacity .5s} .nodedot.onn{opacity:1}
+.epsband{fill:var(--go);opacity:0;transition:opacity .8s} .epsband.onn{opacity:.08}
+
+.entries{display:flex;flex-direction:column;gap:26vh;padding:14vh 0 30vh}
+.entry{border:1px solid var(--line);background:var(--bg2);padding:22px 24px;
+  opacity:.25;transform:translateY(8px);transition:opacity .5s,transform .5s,border-color .5s}
+.entry.onn{opacity:1;transform:none;border-color:var(--faint)}
+.entry .stamp{float:right;font-size:10.5px;letter-spacing:.14em;padding:2px 8px;border:1px solid}
+.stamp.acc{color:var(--go);border-color:var(--go)}
+.stamp.rej{color:var(--no);border-color:var(--no)}
+.stamp.void{color:var(--amber);border-color:var(--amber)}
+.entry h3{font-size:12px;letter-spacing:.18em;color:var(--dim);margin-bottom:12px}
+.entry .quote{border-left:2px solid var(--faint);padding:2px 0 2px 14px;margin:12px 0;color:var(--fg)}
+.entry .quote .typed::after{content:"▌";color:var(--go);animation:blink 1.1s steps(1) infinite}
+.entry .quote.done .typed::after{content:""}
+.entry .meas{margin-top:12px;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{border:1px solid var(--faint);color:var(--dim);padding:2px 9px;font-size:11.5px}
+.chip.pick{color:var(--go);border-color:var(--go)}
+.chip.pick::after{content:" ✓"}
+.chip.rej{color:var(--no);border-color:var(--no);text-decoration:line-through}
+details{margin-top:12px}
+summary{cursor:pointer;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+details .full{margin-top:10px;color:var(--dim);white-space:pre-wrap;font-size:12.5px}
+
+/* starscape section */
+#space{padding:0;border-top:1px solid var(--line)}
+#spacetall{height:340vh;position:relative}
+#spacestick{position:sticky;top:0;height:100vh;overflow:hidden}
+#spacecanvas{position:absolute;inset:0;width:100%;height:100%}
+#spacehud{position:absolute;left:0;right:0;top:0;padding:96px 28px 0;pointer-events:none}
+#spacehud .inner{max-width:1180px;margin:0 auto}
+#spacecap{position:absolute;left:0;right:0;bottom:40px;text-align:center;pointer-events:none}
+#spacecap .cap{display:inline-block;background:rgba(10,14,18,.85);border:1px solid var(--line);
+  padding:10px 18px;font-size:13px;max-width:70ch}
+#morphlbl{font-variant-numeric:tabular-nums}
+
+/* receipts */
+#receipts .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);margin-top:34px}
+#receipts .cell{background:var(--bg2);padding:22px 20px}
+#receipts .v{font-size:26px;font-weight:700;color:var(--go);font-variant-numeric:tabular-nums}
+#receipts .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+#receipts .note{margin-top:26px;color:var(--dim);max-width:70ch}
+footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);font-size:12px}
+
+@media (max-width:900px){
+  #receipts .grid{grid-template-columns:1fr 1fr}
+  #log .cols{grid-template-columns:1fr}
+  #chartpin{position:static}
+  .entries{gap:40px;padding:30px 0}
+  .entry{opacity:1;transform:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .trace{transition:none}.scrollhint{animation:none}
+}
 </style>
-<div id="wrap"><div id="pages"></div></div>
-<div id="controls"><button id="prev">← Back</button><span id="step-label"></span><button id="next">Next →</button></div>
-<script>window.RUNDATA={"meta": {"run": "run_bigclock_07", "stop": "converged", "iterations": 6, "best": 0.605575, "tokens": 115315, "wall_s": 1019}, "nodes": [{"id": "node_000", "accepted": true, "primary": 0.601838, "summary": "baseline seeds [42, 43, 44]: primaries [0.6018, 0.6019, 0.6017], mean 0.6018, sigma 0.0001", "error": false, "probes": [], "members": [], "selected_ensemble": null, "selection": null, "curve": [{"ck": "1", "p": 0.58888, "tl": 0.57954}, {"ck": "2", "p": 0.59691, "tl": 0.52013}, {"ck": "3", "p": 0.59987, "tl": 0.50487}, {"ck": "4", "p": 0.60091, "tl": 0.50204}, {"ck": "5", "p": 0.60145, "tl": 0.49487}, {"ck": "6", "p": 0.60164, "tl": 0.48704}, {"ck": "7", "p": 0.60138, "tl": 0.4904}, {"ck": "8", "p": 0.60184, "tl": 0.46744}, {"ck": "9", "p": 0.60106, "tl": 0.49261}, {"ck": "10", "p": 0.60069, "tl": 0.46233}]}, {"id": "node_001", "accepted": false, "primary": 0.601962, "summary": "Because the parent validation curve peaks and then declines while training continues, indicating overfit, a factorial cross-stage search over FM versus DCN-lite, logloss versus 0.5-BPR hybrid, uniform versus 7-day recency weighting, and mild versus strong regularization will identify an interaction that improves validation primary by approximately 0.0029. [grey-zone confirm failed (mean delta +0.0006)]", "error": false, "probes": [], "members": [], "selected_ensemble": null, "selection": {"diagnosis": "overfit", "chosen_method_id": "stage-matrix-sweep", "citation": "factorial experiment design (Fisher; standard DOE practice); ablation-study methodology.", "why": "Validation peaks at epoch 8 and then declines while training loss continues downward, indicating overfit. A cross-stage matrix directly addresses the prior run's attribution failure by testing architecture, loss, recency weighting, and regularization combinations under comparable probes. It preserves the required capacity-plus-regularization interaction, adds half-epoch checkpointing, and has an honest best-known target near 0.6047, about +0.0029 over the 0.6018 baseline\u2014large enough to clear epsilon.", "rejected": [{"method_id": "package-dial-sweep", "reason": "Promising, but it repeats the previously tried compound opening and tunes its dials without first resolving which bundled stages actually contributed."}, {"method_id": "regularization-schedule", "reason": "It matches the overfit curve, but its standalone measured gain is about +0.0015, below the +0.002 convergence threshold."}, {"method_id": "seed-ensemble", "reason": "Premature on a baseline parent, and a prior three-seed ensemble was already rejected; individual competitive configurations should be established first."}]}, "curve": [], "fixed": 13560, "broken": 13742}, {"id": "node_002", "accepted": false, "primary": 0.601681, "summary": "Because validation primary peaks around epoch 8 and then declines, indicating overfit to older training behavior under temporal shift, normalized 7-day exponential recency weighting alone will improve validation primary by approximately 0.0015 relative to the parent FM.", "error": false, "probes": [], "members": [], "selected_ensemble": null, "selection": {"diagnosis": "overfit", "chosen_method_id": "recency-weighting", "citation": "standard temporal covariate-shift weighting; KuaiRand date-split research notes", "why": "Validation peaks at epoch 8 and declines through epoch 10 while training loss generally falls, diagnosing overfit. However, overfit and underfit families are portfolio-excluded, and recency-weighting is the eligible active data-shift method. The temporal next-week split makes recent behavior more predictive than stale rows. Expected gain is honestly only about +0.001 on average, so this is exploratory rather than likely to clear epsilon; normalize weights, preserve effective sample size, checkpoint early, and confirm across seeds.", "rejected": [{"method_id": "regularization-schedule", "reason": "It directly fits the overfit curve and is well evidenced, but the overfit family is explicitly excluded by portfolio diversity."}, {"method_id": "package-dial-sweep", "reason": "Its overfit and underfit treatment families are excluded, and the prior rejected node already attempted a closely related cross-stage package search."}, {"method_id": "session-time-features", "reason": "Although temporal context is plausible, its flat-signal family intersects the excluded portfolio and its incremental gain is uncertain."}]}, "curve": [{"ck": "1", "p": 0.58805, "tl": 0.5839}, {"ck": "2", "p": 0.59666, "tl": 0.51923}, {"ck": "3", "p": 0.59978, "tl": 0.50571}, {"ck": "4", "p": 0.60045, "tl": 0.49972}, {"ck": "5", "p": 0.60168, "tl": 0.49406}, {"ck": "6", "p": 0.60094, "tl": 0.48301}, {"ck": "7", "p": 0.601, "tl": 0.48961}], "fixed": 7305, "broken": 7253}, {"id": "node_003", "accepted": true, "primary": 0.604237, "summary": "Because the parent validation score peaks and then falls while training loss continues improving, indicating overfit, a two-stage joint dial search over the literature-backed DCN-lite, 0.5-BPR hybrid, dropout/AdamW step-decay regularization, and recency-weighting package will improve validation primary by approximately 0.0029. (delta +0.0024)", "error": false, "probes": [{"stage": "coarse", "d": 0.15, "g": 0.72, "wd": 3e-05, "p": 0.582475}, {"stage": "coarse", "d": 0.19, "g": 0.55, "wd": 0.0001, "p": 0.584221}, {"stage": "coarse", "d": 0.23, "g": 0.7, "wd": 0.0003, "p": 0.58242}, {"stage": "coarse", "d": 0.27, "g": 0.5, "wd": 0.001, "p": 0.578615}, {"stage": "coarse", "d": 0.31, "g": 0.68, "wd": 0.003, "p": 0.579073}, {"stage": "coarse", "d": 0.34, "g": 0.42, "wd": 0.0001, "p": 0.577161}, {"stage": "coarse", "d": 0.37, "g": 0.6, "wd": 0.0005, "p": 0.579668}, {"stage": "coarse", "d": 0.4, "g": 0.78, "wd": 0.0015, "p": 0.576213}, {"stage": "refine", "d": 0.145, "g": 0.46, "wd": 5.5e-05, "p": 0.601643}, {"stage": "refine", "d": 0.165, "g": 0.51, "wd": 7.5e-05, "p": 0.60229}, {"stage": "refine", "d": 0.18, "g": 0.57, "wd": 9e-05, "p": 0.602686}, {"stage": "refine", "d": 0.2, "g": 0.53, "wd": 0.00011, "p": 0.602317}, {"stage": "refine", "d": 0.215, "g": 0.6, "wd": 0.000135, "p": 0.602481}, {"stage": "refine", "d": 0.235, "g": 0.64, "wd": 0.000175, "p": 0.602457}, {"stage": "final", "d": 0.18, "g": 0.57, "wd": 9e-05, "p": 0.604237}], "members": [], "selected_ensemble": null, "selection": {"diagnosis": "overfit", "chosen_method_id": "package-dial-sweep", "citation": "standard hyperparameter search practice (random/grid search, Bergstra & Bengio JMLR 2012); package composition per DCNv2/BPR training setups.", "why": "Validation peaks at epoch 8 and then declines while training loss continues downward, indicating overfit. With two convergence strikes already spent, isolated regularization or recency changes have an honest expected gain below the 0.002 reset threshold. This untried card is the strongest available single-node option: it tunes the literature-backed DCN-lite, hybrid-loss, strong-regularization, and recency package jointly, then uses half-epoch checkpoint selection. The same package has replicated near 0.6047, implying roughly +0.0029 over the 0.6018 baseline, while the internal sweep addresses why the earlier shallow cross-stage search reached only 0.6020.", "rejected": [{"method_id": "regularization-schedule", "reason": "It directly fits the overfit curve, but its measured standalone gain is about +0.0015, below epsilon and likely to end the run after the current two-strike streak."}, {"method_id": "stage-matrix-sweep", "reason": "A factorial cross-stage search was already attempted in node_001 and failed at 0.6020; repeating that broad opening is less justified than densely tuning the known interacting package."}, {"method_id": "recency-weighting", "reason": "Recency weighting alone was already rejected at 0.6017 and is known to require a stable regularized ranker."}, {"method_id": "seed-ensemble", "reason": "Ensembling is a closing move for a reproducibly competitive champion; the current accepted champion remains the baseline, and a prior premature ensemble was rejected."}]}, "curve": [{"ck": "1.5", "p": 0.59297, "tl": 0.598688}, {"ck": "1.0", "p": 0.59848, "tl": 0.546747}, {"ck": "2.5", "p": 0.60018, "tl": 0.537958}, {"ck": "2.0", "p": 0.60107, "tl": 0.555668}, {"ck": "3.5", "p": 0.60192, "tl": 0.537508}, {"ck": "3.0", "p": 0.60145, "tl": 0.522478}, {"ck": "4.5", "p": 0.60197, "tl": 0.528888}, {"ck": "4.0", "p": 0.60241, "tl": 0.533451}, {"ck": "5.5", "p": 0.60304, "tl": 0.525281}, {"ck": "5.0", "p": 0.60363, "tl": 0.523905}, {"ck": "6.5", "p": 0.60299, "tl": 0.518707}, {"ck": "6.0", "p": 0.60338, "tl": 0.518963}, {"ck": "7.5", "p": 0.60399, "tl": 0.526995}, {"ck": "7.0", "p": 0.60424, "tl": 0.528289}, {"ck": "8.5", "p": 0.60388, "tl": 0.527117}, {"ck": "8.0", "p": 0.60366, "tl": 0.527871}, {"ck": "9.5", "p": 0.60373, "tl": 0.530038}, {"ck": "9.0", "p": 0.60405, "tl": 0.530666}, {"ck": "10.5", "p": 0.60393, "tl": 0.528383}, {"ck": "10.0", "p": 0.60385, "tl": 0.522216}, {"ck": "11.5", "p": 0.6042, "tl": 0.51251}, {"ck": "11.0", "p": 0.60409, "tl": 0.516361}, {"ck": "12.5", "p": 0.6041, "tl": 0.52108}, {"ck": "12.0", "p": 0.60413, "tl": 0.524727}], "fixed": 11323, "broken": 10741}, {"id": "node_004", "accepted": false, "primary": null, "summary": "proposal unparseable/failed", "error": true, "probes": [], "members": [], "selected_ensemble": null, "selection": null, "curve": []}, {"id": "node_005", "accepted": false, "primary": 0.602957, "summary": "Adding a validation-selected cumulative ordinal watch-ratio auxiliary loss to the accepted regularized DCN-lite 0.5-BPR hybrid will improve validation primary by at least 0.002 by learning duration-aware engagement structure without using watch-time outcomes at inference.", "error": false, "probes": [], "members": [], "selected_ensemble": null, "selection": null, "curve": [], "fixed": 8429, "broken": 8854}, {"id": "node_006", "accepted": true, "primary": 0.605575, "summary": "Because validation peaks early and then declines, indicating residual overfit and seed variance, validation-selecting member count {3,5,7} and probability versus per-user-rank aggregation for independent replicas of the accepted regularized DCN-lite champion will improve validation primary by approximately 0.0008. (delta +0.0013)", "error": false, "probes": [{"stage": "coarse", "d": 0.15, "g": 0.72, "wd": 3e-05, "p": 0.582475}, {"stage": "coarse", "d": 0.19, "g": 0.55, "wd": 0.0001, "p": 0.584221}, {"stage": "coarse", "d": 0.23, "g": 0.7, "wd": 0.0003, "p": 0.58242}, {"stage": "coarse", "d": 0.27, "g": 0.5, "wd": 0.001, "p": 0.578615}, {"stage": "coarse", "d": 0.31, "g": 0.68, "wd": 0.003, "p": 0.579073}, {"stage": "coarse", "d": 0.34, "g": 0.42, "wd": 0.0001, "p": 0.577161}, {"stage": "coarse", "d": 0.37, "g": 0.6, "wd": 0.0005, "p": 0.579668}, {"stage": "coarse", "d": 0.4, "g": 0.78, "wd": 0.0015, "p": 0.576213}, {"stage": "refine", "d": 0.145, "g": 0.46, "wd": 5.5e-05, "p": 0.601643}, {"stage": "refine", "d": 0.165, "g": 0.51, "wd": 7.5e-05, "p": 0.60229}, {"stage": "refine", "d": 0.18, "g": 0.57, "wd": 9e-05, "p": 0.602686}, {"stage": "refine", "d": 0.2, "g": 0.53, "wd": 0.00011, "p": 0.602317}, {"stage": "refine", "d": 0.215, "g": 0.6, "wd": 0.000135, "p": 0.602481}, {"stage": "refine", "d": 0.235, "g": 0.64, "wd": 0.000175, "p": 0.602457}], "members": [{"seed": 42, "primary": 0.604237}, {"seed": 43, "primary": 0.604494}, {"seed": 44, "primary": 0.604013}, {"seed": 45, "primary": 0.603901}, {"seed": 46, "primary": 0.604127}, {"seed": 47, "primary": 0.603841}, {"seed": 48, "primary": 0.603957}], "selected_ensemble": {"member_count": 3, "combination_rule": "per_user_rank_average", "seeds": [42, 43, 44], "gauc": 0.672827, "ndcg5": 0.538324, "primary": 0.605575}, "selection": {"diagnosis": "overfit", "chosen_method_id": "ensemble-design-sweep", "citation": "Deep Ensembles (Lakshminarayanan et al., NeurIPS 2017); rank aggregation practice.", "why": "The journal reports validation peaking and then declining, and the accepted regularized package at 0.6042 is already near the benchmark ceiling. With a two-strike convergence streak and only small gains realistically remaining, this is a closing variance-reduction move. Unlike the previously rejected fixed three-seed rank ensemble, this untried card validates member count, probability versus per-user-rank averaging, and modest dial diversity on the accepted champion. Expected gain is honestly only about +0.0004 to +0.0015, unlikely to clear epsilon, but it is the strongest justified final-stage option.", "rejected": [{"method_id": "combo-sweep", "reason": "The ordinal auxiliary already reduced the champion to 0.6030, CWM and ordinal FM forms are measured dead, and recency is already in the accepted package; the remaining combinations have weak evidence and high runtime."}, {"method_id": "seed-ensemble", "reason": "A fixed three-seed rank ensemble was already rejected; the design sweep is materially broader and can diagnose whether aggregation rule, member count, or modest configuration diversity caused that failure."}, {"method_id": "duration-regime-heads", "reason": "Although previously replicated on a baseline, it is running elsewhere and its incremental gain on the tuned package is uncertain; at N-1 convergence pressure, a validated closing ensemble design is safer."}]}, "curve": [{"ck": "1", "p": 0.57202, "tl": 0.672686}, {"ck": "2", "p": 0.58247, "tl": 0.654385}], "fixed": 3547, "broken": 3830}], "corpus": [{"d": 0.4, "g": 0.85, "p": 0.60115}, {"d": 0.15, "g": 0.98, "p": 0.60046}, {"d": 0.4, "g": 0.85, "p": 0.601}, {"d": 0.05, "g": 0.9, "p": 0.60059}, {"d": 0.15, "g": 0.95, "p": 0.60044}, {"d": 0.05, "g": 0.98, "p": 0.60037}, {"d": 0.05, "g": 0.85, "p": 0.60074}, {"d": 0.15, "g": 0.98, "p": 0.60042}, {"d": 0.05, "g": 0.9, "p": 0.60056}, {"d": 0.25, "g": 0.95, "p": 0.60042}, {"d": 0.4, "g": 0.95, "p": 0.60024}, {"d": 0.05, "g": 0.85, "p": 0.60067}, {"d": 0.25, "g": 0.85, "p": 0.60044}, {"d": 0.25, "g": 0.98, "p": 0.60051}, {"d": 0.25, "g": 0.85, "p": 0.60055}, {"d": 0.4, "g": 0.95, "p": 0.60054}, {"d": 0.4, "g": 0.98, "p": 0.60063}, {"d": 0.05, "g": 0.98, "p": 0.60031}, {"d": 0.25, "g": 0.9, "p": 0.60038}, {"d": 0.05, "g": 0.98, "p": 0.60041}, {"d": 0.05, "g": 0.95, "p": 0.60064}, {"d": 0.4, "g": 0.95, "p": 0.60025}, {"d": 0.05, "g": 0.95, "p": 0.60058}, {"d": 0.15, "g": 0.85, "p": 0.60077}, {"d": 0.15, "g": 0.95, "p": 0.60033}, {"d": 0.15, "g": 0.98, "p": 0.60043}, {"d": 0.15, "g": 0.85, "p": 0.60086}, {"d": 0.05, "g": 0.9, "p": 0.60055}, {"d": 0.15, "g": 0.95, "p": 0.60033}, {"d": 0.15, "g": 0.9, "p": 0.60037}, {"d": 0.05, "g": 0.98, "p": 0.60036}, {"d": 0.4, "g": 0.98, "p": 0.60048}, {"d": 0.05, "g": 0.95, "p": 0.6005}, {"d": 0.15, "g": 0.9, "p": 0.60039}, {"d": 0.05, "g": 0.95, "p": 0.60068}, {"d": 0.25, "g": 0.95, "p": 0.60043}, {"d": 0.05, "g": 0.98, "p": 0.60039}, {"d": 0.05, "g": 0.9, "p": 0.60061}, {"d": 0.15, "g": 0.98, "p": 0.60051}, {"d": 0.15, "g": 0.98, "p": 0.60061}, {"d": 0.15, "g": 0.9, "p": 0.60032}, {"d": 0.25, "g": 0.9, "p": 0.60044}, {"d": 0.15, "g": 0.98, "p": 0.60046}, {"d": 0.15, "g": 0.9, "p": 0.6004}, {"d": 0.25, "g": 0.9, "p": 0.60038}, {"d": 0.25, "g": 0.85, "p": 0.60048}, {"d": 0.05, "g": 0.95, "p": 0.60063}, {"d": 0.05, "g": 0.9, "p": 0.60061}, {"d": 0.25, "g": 0.95, "p": 0.60047}, {"d": 0.4, "g": 0.9, "p": 0.60065}, {"d": 0.05, "g": 0.9, "p": 0.6006}, {"d": 0.4, "g": 0.85, "p": 0.601}, {"d": 0.25, "g": 0.98, "p": 0.60034}, {"d": 0.25, "g": 0.98, "p": 0.60038}, {"d": 0.05, "g": 0.95, "p": 0.6006}, {"d": 0.15, "g": 0.95, "p": 0.6004}, {"d": 0.15, "g": 0.98, "p": 0.6004}, {"d": 0.05, "g": 0.85, "p": 0.60079}, {"d": 0.25, "g": 0.98, "p": 0.60034}, {"d": 0.4, "g": 0.95, "p": 0.60053}, {"d": 0.05, "g": 0.98, "p": 0.60035}, {"d": 0.05, "g": 0.9, "p": 0.6006}, {"d": 0.25, "g": 0.85, "p": 0.60064}, {"d": 0.25, "g": 0.85, "p": 0.60049}, {"d": 0.15, "g": 0.98, "p": 0.60061}, {"d": 0.25, "g": 0.9, "p": 0.60044}, {"d": 0.05, "g": 0.95, "p": 0.60052}, {"d": 0.05, "g": 0.9, "p": 0.60058}, {"d": 0.05, "g": 0.85, "p": 0.60085}, {"d": 0.25, "g": 0.9, "p": 0.60029}, {"d": 0.25, "g": 0.9, "p": 0.60037}, {"d": 0.25, "g": 0.95, "p": 0.60047}, {"d": 0.4, "g": 0.85, "p": 0.60096}, {"d": 0.25, "g": 0.9, "p": 0.60031}, {"d": 0.05, "g": 0.98, "p": 0.60037}, {"d": 0.4, "g": 0.95, "p": 0.60055}, {"d": 0.4, "g": 0.9, "p": 0.60052}, {"d": 0.4, "g": 0.85, "p": 0.60109}, {"d": 0.05, "g": 0.9, "p": 0.60056}, {"d": 0.25, "g": 0.98, "p": 0.60049}, {"d": 0.4, "g": 0.85, "p": 0.59118}, {"d": 0.15, "g": 0.98, "p": 0.59105}, {"d": 0.15, "g": 0.5, "p": 0.56171}, {"d": 0.19, "g": 0.62, "p": 0.56348}, {"d": 0.23, "g": 0.45, "p": 0.56893}, {"d": 0.27, "g": 0.7, "p": 0.55607}, {"d": 0.31, "g": 0.55, "p": 0.56768}, {"d": 0.35, "g": 0.72, "p": 0.55998}, {"d": 0.4, "g": 0.4, "p": 0.55918}, {"d": 0.22, "g": 0.35, "p": 0.5627}, {"d": 0.195, "g": 0.37, "p": 0.60265}, {"d": 0.212, "g": 0.41, "p": 0.60247}, {"d": 0.23, "g": 0.45, "p": 0.60283}, {"d": 0.248, "g": 0.49, "p": 0.60198}, {"d": 0.265, "g": 0.53, "p": 0.60197}, {"d": 0.238, "g": 0.51, "p": 0.6021}, {"d": 0.23, "g": 0.45, "p": 0.60233}, {"d": 0.15, "g": 0.5, "p": 0.56009}, {"d": 0.19, "g": 0.62, "p": 0.55692}, {"d": 0.23, "g": 0.45, "p": 0.56703}, {"d": 0.27, "g": 0.7, "p": 0.56006}, {"d": 0.31, "g": 0.55, "p": 0.56785}, {"d": 0.35, "g": 0.72, "p": 0.56154}, {"d": 0.4, "g": 0.4, "p": 0.55906}, {"d": 0.22, "g": 0.35, "p": 0.56047}, {"d": 0.275, "g": 0.47, "p": 0.60278}, {"d": 0.292, "g": 0.51, "p": 0.60261}, {"d": 0.31, "g": 0.55, "p": 0.60194}, {"d": 0.328, "g": 0.59, "p": 0.60213}, {"d": 0.345, "g": 0.63, "p": 0.60227}, {"d": 0.318, "g": 0.61, "p": 0.60198}, {"d": 0.275, "g": 0.47, "p": 0.60337}, {"d": 0.15, "g": 0.5, "p": 0.5569}, {"d": 0.19, "g": 0.62, "p": 0.55267}, {"d": 0.23, "g": 0.45, "p": 0.56221}, {"d": 0.31, "g": 0.55, "p": 0.56051}, {"d": 0.35, "g": 0.72, "p": 0.55338}, {"d": 0.22, "g": 0.35, "p": 0.55674}, {"d": 0.195, "g": 0.37, "p": 0.59849}, {"d": 0.212, "g": 0.41, "p": 0.59742}, {"d": 0.23, "g": 0.45, "p": 0.59934}, {"d": 0.248, "g": 0.49, "p": 0.59926}, {"d": 0.265, "g": 0.53, "p": 0.5993}, {"d": 0.238, "g": 0.51, "p": 0.59933}, {"d": 0.23, "g": 0.45, "p": 0.59962}, {"d": 0.24, "g": 0.62, "p": 0.60138}, {"d": 0.24, "g": 0.62, "p": 0.60138}, {"d": 0.1556, "g": 0.74, "p": 0.60033}, {"d": 0.2615, "g": 0.86, "p": 0.59608}, {"d": 0.3026, "g": 0.62, "p": 0.59571}, {"d": 0.249, "g": 0.62, "p": 0.59935}, {"d": 0.42, "g": 0.74, "p": 0.59928}, {"d": 0.4019, "g": 0.5, "p": 0.60093}, {"d": 0.2278, "g": 0.74, "p": 0.60079}, {"d": 0.3232, "g": 0.86, "p": 0.59949}, {"d": 0.3905, "g": 0.5, "p": 0.59889}, {"d": 0.1851, "g": 0.62, "p": 0.59564}, {"d": 0.3482, "g": 0.86, "p": 0.59473}, {"d": 0.3642, "g": 0.74, "p": 0.60056}, {"d": 0.3523, "g": 0.38, "p": 0.60073}, {"d": 0.1675, "g": 0.38, "p": 0.59705}, {"d": 0.1439, "g": 0.62, "p": 0.5965}, {"d": 0.1989, "g": 0.86, "p": 0.60073}, {"d": 0.2872, "g": 0.74, "p": 0.60051}, {"d": 0.2117, "g": 0.74, "p": 0.59982}, {"d": 0.3059, "g": 0.74, "p": 0.60158}, {"d": 0.2424, "g": 0.5, "p": 0.60075}, {"d": 0.3342, "g": 0.62, "p": 0.59887}, {"d": 0.277, "g": 0.5, "p": 0.60149}, {"d": 0.3806, "g": 0.74, "p": 0.59761}, {"d": 0.187, "g": 0.74, "p": 0.60148}, {"d": 0.3059, "g": 0.74, "p": 0.60259}, {"d": 0.277, "g": 0.5, "p": 0.60043}, {"d": 0.187, "g": 0.74, "p": 0.59218}, {"d": 0.4019, "g": 0.5, "p": 0.60351}, {"d": 0.2278, "g": 0.74, "p": 0.59435}, {"d": 0.2424, "g": 0.5, "p": 0.60168}, {"d": 0.1989, "g": 0.86, "p": 0.60322}, {"d": 0.3523, "g": 0.38, "p": 0.60325}, {"d": 0.3642, "g": 0.74, "p": 0.60351}, {"d": 0.2872, "g": 0.74, "p": 0.60294}, {"d": 0.1556, "g": 0.74, "p": 0.5923}, {"d": 0.2117, "g": 0.74, "p": 0.60364}, {"d": 0.2117, "g": 0.74, "p": 0.60383}, {"d": 0.4019, "g": 0.5, "p": 0.60372}, {"d": 0.3642, "g": 0.74, "p": 0.60282}, {"d": 0.3523, "g": 0.38, "p": 0.60364}, {"d": 0.1989, "g": 0.86, "p": 0.60273}, {"d": 0.2872, "g": 0.74, "p": 0.60257}, {"d": 0.2117, "g": 0.74, "p": 0.60301}, {"d": 0.2477, "g": 0.6842, "p": 0.60243}, {"d": 0.1755, "g": 0.7368, "p": 0.60479}, {"d": 0.2173, "g": 0.7458, "p": 0.60306}, {"d": 0.2362, "g": 0.8133, "p": 0.6021}, {"d": 0.2071, "g": 0.7976, "p": 0.60342}, {"d": 0.2425, "g": 0.7675, "p": 0.60306}, {"d": 0.1866, "g": 0.7106, "p": 0.60412}, {"d": 0.2028, "g": 0.7426, "p": 0.60352}, {"d": 0.2461, "g": 0.7231, "p": 0.60274}, {"d": 0.1755, "g": 0.7368, "p": 0.60448}, {"d": 0.1755, "g": 0.7368, "p": 0.60372}, {"d": 0.1755, "g": 0.7368, "p": 0.60442}, {"d": 0.1755, "g": 0.7368, "p": 0.60424}, {"d": 0.1755, "g": 0.7368, "p": 0.60384}, {"d": 0.1556, "g": 0.74, "p": 0.55968}, {"d": 0.2615, "g": 0.86, "p": 0.56544}, {"d": 0.3026, "g": 0.62, "p": 0.56579}, {"d": 0.249, "g": 0.62, "p": 0.5559}, {"d": 0.42, "g": 0.74, "p": 0.55715}, {"d": 0.4019, "g": 0.5, "p": 0.55528}, {"d": 0.2278, "g": 0.74, "p": 0.55568}, {"d": 0.3232, "g": 0.86, "p": 0.55584}, {"d": 0.1851, "g": 0.62, "p": 0.56435}, {"d": 0.3482, "g": 0.86, "p": 0.5623}, {"d": 0.3642, "g": 0.74, "p": 0.5563}, {"d": 0.3523, "g": 0.38, "p": 0.56286}, {"d": 0.1675, "g": 0.38, "p": 0.56591}, {"d": 0.1439, "g": 0.62, "p": 0.56015}, {"d": 0.1989, "g": 0.86, "p": 0.56127}, {"d": 0.2872, "g": 0.74, "p": 0.55764}, {"d": 0.2117, "g": 0.74, "p": 0.55659}, {"d": 0.3059, "g": 0.74, "p": 0.55475}, {"d": 0.3342, "g": 0.62, "p": 0.56216}, {"d": 0.277, "g": 0.5, "p": 0.55206}, {"d": 0.3806, "g": 0.74, "p": 0.56354}, {"d": 0.187, "g": 0.74, "p": 0.55832}, {"d": 0.1675, "g": 0.38, "p": 0.57878}, {"d": 0.3026, "g": 0.62, "p": 0.5695}, {"d": 0.2615, "g": 0.86, "p": 0.56319}, {"d": 0.1851, "g": 0.62, "p": 0.5733}, {"d": 0.3806, "g": 0.74, "p": 0.56608}, {"d": 0.3523, "g": 0.38, "p": 0.56005}, {"d": 0.3482, "g": 0.86, "p": 0.56672}, {"d": 0.3342, "g": 0.62, "p": 0.56702}, {"d": 0.1989, "g": 0.86, "p": 0.55333}, {"d": 0.1439, "g": 0.62, "p": 0.56619}, {"d": 0.1556, "g": 0.74, "p": 0.555}, {"d": 0.187, "g": 0.74, "p": 0.55553}, {"d": 0.1675, "g": 0.38, "p": 0.58143}, {"d": 0.1851, "g": 0.62, "p": 0.57496}, {"d": 0.3026, "g": 0.62, "p": 0.57374}, {"d": 0.3342, "g": 0.62, "p": 0.57107}, {"d": 0.3482, "g": 0.86, "p": 0.56624}, {"d": 0.1439, "g": 0.62, "p": 0.56998}, {"d": 0.1675, "g": 0.38, "p": 0.58379}, {"d": 0.2035, "g": 0.3242, "p": 0.57468}, {"d": 0.1313, "g": 0.3768, "p": 0.5853}, {"d": 0.1731, "g": 0.3858, "p": 0.58364}, {"d": 0.192, "g": 0.4533, "p": 0.58242}, {"d": 0.1629, "g": 0.4376, "p": 0.58176}, {"d": 0.1983, "g": 0.4075, "p": 0.58246}, {"d": 0.1424, "g": 0.3506, "p": 0.5751}, {"d": 0.1586, "g": 0.3826, "p": 0.58498}, {"d": 0.2019, "g": 0.3631, "p": 0.57951}, {"d": 0.1313, "g": 0.3768, "p": 0.58518}, {"d": 0.1313, "g": 0.3768, "p": 0.58633}, {"d": 0.1313, "g": 0.3768, "p": 0.58559}, {"d": 0.1313, "g": 0.3768, "p": 0.58718}, {"d": 0.1313, "g": 0.3768, "p": 0.59062}, {"d": 0.1556, "g": 0.74, "p": 0.60063}, {"d": 0.2615, "g": 0.86, "p": 0.59663}, {"d": 0.3026, "g": 0.62, "p": 0.59491}, {"d": 0.249, "g": 0.62, "p": 0.5995}, {"d": 0.42, "g": 0.74, "p": 0.59878}, {"d": 0.4019, "g": 0.5, "p": 0.59966}, {"d": 0.2278, "g": 0.74, "p": 0.60113}, {"d": 0.3232, "g": 0.86, "p": 0.60006}, {"d": 0.3905, "g": 0.5, "p": 0.60015}, {"d": 0.1851, "g": 0.62, "p": 0.59547}, {"d": 0.3482, "g": 0.86, "p": 0.59467}, {"d": 0.3642, "g": 0.74, "p": 0.60085}, {"d": 0.3523, "g": 0.38, "p": 0.6003}, {"d": 0.1675, "g": 0.38, "p": 0.59671}, {"d": 0.1439, "g": 0.62, "p": 0.59509}, {"d": 0.1989, "g": 0.86, "p": 0.59925}, {"d": 0.2872, "g": 0.74, "p": 0.60016}, {"d": 0.2117, "g": 0.74, "p": 0.59894}, {"d": 0.3059, "g": 0.74, "p": 0.60123}, {"d": 0.2424, "g": 0.5, "p": 0.5985}, {"d": 0.3342, "g": 0.62, "p": 0.59804}, {"d": 0.277, "g": 0.5, "p": 0.60051}, {"d": 0.3806, "g": 0.74, "p": 0.59722}, {"d": 0.187, "g": 0.74, "p": 0.60022}, {"d": 0.3059, "g": 0.74, "p": 0.60039}, {"d": 0.2278, "g": 0.74, "p": 0.59133}, {"d": 0.3642, "g": 0.74, "p": 0.60232}, {"d": 0.1556, "g": 0.74, "p": 0.58985}, {"d": 0.277, "g": 0.5, "p": 0.5981}, {"d": 0.3523, "g": 0.38, "p": 0.60318}, {"d": 0.187, "g": 0.74, "p": 0.59153}, {"d": 0.2872, "g": 0.74, "p": 0.60168}, {"d": 0.3905, "g": 0.5, "p": 0.59926}, {"d": 0.3232, "g": 0.86, "p": 0.6004}, {"d": 0.4019, "g": 0.5, "p": 0.6023}, {"d": 0.249, "g": 0.62, "p": 0.60194}, {"d": 0.3523, "g": 0.38, "p": 0.60341}, {"d": 0.3642, "g": 0.74, "p": 0.60216}, {"d": 0.4019, "g": 0.5, "p": 0.60234}, {"d": 0.249, "g": 0.62, "p": 0.60247}, {"d": 0.2872, "g": 0.74, "p": 0.60179}, {"d": 0.3232, "g": 0.86, "p": 0.60129}, {"d": 0.3523, "g": 0.38, "p": 0.60299}, {"d": 0.3883, "g": 0.3242, "p": 0.60151}, {"d": 0.3162, "g": 0.3768, "p": 0.60378}, {"d": 0.358, "g": 0.3858, "p": 0.60295}, {"d": 0.3768, "g": 0.4533, "p": 0.60227}, {"d": 0.3477, "g": 0.4376, "p": 0.60332}, {"d": 0.3831, "g": 0.4075, "p": 0.60341}, {"d": 0.3272, "g": 0.3506, "p": 0.60255}, {"d": 0.3434, "g": 0.3826, "p": 0.6027}, {"d": 0.3867, "g": 0.3631, "p": 0.60218}, {"d": 0.3162, "g": 0.3768, "p": 0.60292}, {"d": 0.3162, "g": 0.3768, "p": 0.60277}, {"d": 0.3162, "g": 0.3768, "p": 0.60381}, {"d": 0.3162, "g": 0.3768, "p": 0.60332}, {"d": 0.3162, "g": 0.3768, "p": 0.60377}, {"d": 0.1556, "g": 0.74, "p": 0.60033}, {"d": 0.2615, "g": 0.86, "p": 0.59608}, {"d": 0.3026, "g": 0.62, "p": 0.59571}, {"d": 0.249, "g": 0.62, "p": 0.59935}, {"d": 0.42, "g": 0.74, "p": 0.59928}, {"d": 0.4019, "g": 0.5, "p": 0.60093}, {"d": 0.2278, "g": 0.74, "p": 0.60079}, {"d": 0.3232, "g": 0.86, "p": 0.59949}, {"d": 0.3905, "g": 0.5, "p": 0.59889}, {"d": 0.1851, "g": 0.62, "p": 0.59564}, {"d": 0.3482, "g": 0.86, "p": 0.59473}, {"d": 0.3642, "g": 0.74, "p": 0.60056}, {"d": 0.3523, "g": 0.38, "p": 0.60073}, {"d": 0.1675, "g": 0.38, "p": 0.59705}, {"d": 0.1439, "g": 0.62, "p": 0.5965}, {"d": 0.1989, "g": 0.86, "p": 0.60073}, {"d": 0.2872, "g": 0.74, "p": 0.60051}, {"d": 0.2117, "g": 0.74, "p": 0.59982}, {"d": 0.3059, "g": 0.74, "p": 0.60158}, {"d": 0.2424, "g": 0.5, "p": 0.60075}, {"d": 0.3342, "g": 0.62, "p": 0.59887}, {"d": 0.277, "g": 0.5, "p": 0.60149}, {"d": 0.3806, "g": 0.74, "p": 0.59761}, {"d": 0.187, "g": 0.74, "p": 0.60148}, {"d": 0.3059, "g": 0.74, "p": 0.60259}, {"d": 0.277, "g": 0.5, "p": 0.60043}, {"d": 0.187, "g": 0.74, "p": 0.59218}, {"d": 0.4019, "g": 0.5, "p": 0.60351}, {"d": 0.2278, "g": 0.74, "p": 0.59435}, {"d": 0.2424, "g": 0.5, "p": 0.60168}, {"d": 0.1989, "g": 0.86, "p": 0.60322}, {"d": 0.3523, "g": 0.38, "p": 0.60325}, {"d": 0.3642, "g": 0.74, "p": 0.60351}, {"d": 0.2872, "g": 0.74, "p": 0.60294}, {"d": 0.1556, "g": 0.74, "p": 0.5923}, {"d": 0.2117, "g": 0.74, "p": 0.60364}, {"d": 0.2117, "g": 0.74, "p": 0.60383}, {"d": 0.4019, "g": 0.5, "p": 0.60372}, {"d": 0.3642, "g": 0.74, "p": 0.60282}, {"d": 0.3523, "g": 0.38, "p": 0.60364}, {"d": 0.1989, "g": 0.86, "p": 0.60273}, {"d": 0.2872, "g": 0.74, "p": 0.60257}, {"d": 0.2117, "g": 0.74, "p": 0.60301}, {"d": 0.2477, "g": 0.6842, "p": 0.60243}, {"d": 0.1755, "g": 0.7368, "p": 0.60479}, {"d": 0.2173, "g": 0.7458, "p": 0.60306}, {"d": 0.2362, "g": 0.8133, "p": 0.6021}, {"d": 0.2071, "g": 0.7976, "p": 0.60342}, {"d": 0.2425, "g": 0.7675, "p": 0.60306}, {"d": 0.1866, "g": 0.7106, "p": 0.60412}, {"d": 0.2028, "g": 0.7426, "p": 0.60352}, {"d": 0.2461, "g": 0.7231, "p": 0.60274}, {"d": 0.1755, "g": 0.7368, "p": 0.60448}, {"d": 0.1755, "g": 0.7368, "p": 0.60372}, {"d": 0.1755, "g": 0.7368, "p": 0.60442}, {"d": 0.1755, "g": 0.7368, "p": 0.60424}, {"d": 0.1755, "g": 0.7368, "p": 0.60384}, {"d": 0.1755, "g": 0.7368, "p": 0.60417}, {"d": 0.24, "g": 0.62, "p": 0.55924}, {"d": 0.4122, "g": 0.48, "p": 0.59601}, {"d": 0.239, "g": 0.76, "p": 0.59255}, {"d": 0.1692, "g": 0.62, "p": 0.59228}, {"d": 0.184, "g": 0.76, "p": 0.59228}, {"d": 0.3807, "g": 0.48, "p": 0.59778}, {"d": 0.3107, "g": 0.62, "p": 0.5952}, {"d": 0.3807, "g": 0.48, "p": 0.60111}, {"d": 0.4122, "g": 0.48, "p": 0.60055}, {"d": 0.3107, "g": 0.62, "p": 0.59959}, {"d": 0.3807, "g": 0.48, "p": 0.60115}, {"d": 0.4257, "g": 0.409, "p": 0.60055}, {"d": 0.2, "g": 0.55, "p": 0.58565}, {"d": 0.3, "g": 0.5, "p": 0.5914}, {"d": 0.25, "g": 0.65, "p": 0.59671}, {"d": 0.1421, "g": 0.42, "p": 0.59959}, {"d": 0.2195, "g": 0.65, "p": 0.60253}, {"d": 0.4013, "g": 0.32, "p": 0.60097}, {"d": 0.1622, "g": 0.65, "p": 0.60151}, {"d": 0.3206, "g": 0.53, "p": 0.60083}, {"d": 0.2463, "g": 0.65, "p": 0.60233}, {"d": 0.2576, "g": 0.88, "p": 0.59978}, {"d": 0.4169, "g": 0.78, "p": 0.60067}, {"d": 0.2523, "g": 0.88, "p": 0.60048}, {"d": 0.3789, "g": 0.53, "p": 0.6019}, {"d": 0.2957, "g": 0.42, "p": 0.60079}, {"d": 0.3273, "g": 0.53, "p": 0.59959}, {"d": 0.4135, "g": 0.65, "p": 0.60116}, {"d": 0.1631, "g": 0.42, "p": 0.60199}, {"d": 0.3548, "g": 0.53, "p": 0.6011}, {"d": 0.4279, "g": 0.65, "p": 0.6021}, {"d": 0.1915, "g": 0.65, "p": 0.60172}, {"d": 0.4099, "g": 0.42, "p": 0.60241}, {"d": 0.3166, "g": 0.53, "p": 0.6023}, {"d": 0.3506, "g": 0.88, "p": 0.60199}, {"d": 0.4027, "g": 0.88, "p": 0.60098}, {"d": 0.3087, "g": 0.32, "p": 0.60122}, {"d": 0.2587, "g": 0.42, "p": 0.60148}, {"d": 0.3667, "g": 0.88, "p": 0.60064}, {"d": 0.2479, "g": 0.32, "p": 0.60031}, {"d": 0.3965, "g": 0.65, "p": 0.60207}, {"d": 0.2266, "g": 0.88, "p": 0.602}, {"d": 0.2843, "g": 0.88, "p": 0.60166}, {"d": 0.2278, "g": 0.88, "p": 0.60145}, {"d": 0.2598, "g": 0.88, "p": 0.60217}, {"d": 0.3281, "g": 0.65, "p": 0.60193}, {"d": 0.378, "g": 0.88, "p": 0.60195}, {"d": 0.2685, "g": 0.65, "p": 0.60308}, {"d": 0.3923, "g": 0.88, "p": 0.60028}, {"d": 0.3701, "g": 0.65, "p": 0.60126}, {"d": 0.3593, "g": 0.65, "p": 0.60163}, {"d": 0.345, "g": 0.53, "p": 0.6004}, {"d": 0.3029, "g": 0.53, "p": 0.60218}, {"d": 0.2766, "g": 0.53, "p": 0.60033}, {"d": 0.1317, "g": 0.53, "p": 0.60258}, {"d": 0.3266, "g": 0.53, "p": 0.60027}, {"d": 0.2563, "g": 0.78, "p": 0.60226}, {"d": 0.2031, "g": 0.78, "p": 0.59921}, {"d": 0.2686, "g": 0.42, "p": 0.60105}, {"d": 0.3814, "g": 0.42, "p": 0.6009}, {"d": 0.2431, "g": 0.53, "p": 0.60173}, {"d": 0.2505, "g": 0.32, "p": 0.60261}, {"d": 0.3326, "g": 0.32, "p": 0.60206}, {"d": 0.2685, "g": 0.65, "p": 0.60288}, {"d": 0.3487, "g": 0.53, "p": 0.60213}, {"d": 0.2789, "g": 0.42, "p": 0.59934}, {"d": 0.4204, "g": 0.53, "p": 0.59974}, {"d": 0.2036, "g": 0.32, "p": 0.60122}, {"d": 0.2721, "g": 0.53, "p": 0.60154}, {"d": 0.1726, "g": 0.32, "p": 0.60197}, {"d": 0.1767, "g": 0.42, "p": 0.60081}, {"d": 0.1924, "g": 0.88, "p": 0.60185}, {"d": 0.1833, "g": 0.53, "p": 0.60066}, {"d": 0.2029, "g": 0.32, "p": 0.60123}, {"d": 0.1899, "g": 0.65, "p": 0.60024}, {"d": 0.2322, "g": 0.53, "p": 0.59983}, {"d": 0.1642, "g": 0.65, "p": 0.59976}, {"d": 0.1722, "g": 0.53, "p": 0.59978}, {"d": 0.303, "g": 0.53, "p": 0.60167}, {"d": 0.376, "g": 0.42, "p": 0.60121}, {"d": 0.3344, "g": 0.88, "p": 0.60131}, {"d": 0.2821, "g": 0.65, "p": 0.59937}, {"d": 0.2508, "g": 0.53, "p": 0.60125}, {"d": 0.1655, "g": 0.53, "p": 0.60228}, {"d": 0.2029, "g": 0.32, "p": 0.60006}, {"d": 0.2265, "g": 0.65, "p": 0.60139}, {"d": 0.4053, "g": 0.88, "p": 0.60129}, {"d": 0.3263, "g": 0.42, "p": 0.59892}, {"d": 0.1695, "g": 0.65, "p": 0.60255}, {"d": 0.324, "g": 0.53, "p": 0.60178}, {"d": 0.3935, "g": 0.53, "p": 0.6011}, {"d": 0.3721, "g": 0.78, "p": 0.59989}, {"d": 0.3481, "g": 0.78, "p": 0.59932}, {"d": 0.3114, "g": 0.32, "p": 0.60099}, {"d": 0.2939, "g": 0.42, "p": 0.60067}, {"d": 0.2968, "g": 0.65, "p": 0.60061}, {"d": 0.2074, "g": 0.78, "p": 0.60249}, {"d": 0.2046, "g": 0.78, "p": 0.60121}, {"d": 0.1747, "g": 0.78, "p": 0.60135}, {"d": 0.367, "g": 0.42, "p": 0.59951}, {"d": 0.4063, "g": 0.65, "p": 0.60166}, {"d": 0.1443, "g": 0.78, "p": 0.60097}, {"d": 0.362, "g": 0.32, "p": 0.59895}, {"d": 0.3562, "g": 0.53, "p": 0.60187}, {"d": 0.2625, "g": 0.32, "p": 0.60195}, {"d": 0.1313, "g": 0.32, "p": 0.59999}, {"d": 0.407, "g": 0.78, "p": 0.60173}, {"d": 0.2278, "g": 0.88, "p": 0.60193}, {"d": 0.4032, "g": 0.32, "p": 0.60167}, {"d": 0.1879, "g": 0.53, "p": 0.60106}, {"d": 0.25, "g": 0.88, "p": 0.60123}, {"d": 0.3015, "g": 0.78, "p": 0.6018}, {"d": 0.1695, "g": 0.65, "p": 0.60251}, {"d": 0.2104, "g": 0.6079, "p": 0.60201}, {"d": 0.1695, "g": 0.5755, "p": 0.60287}, {"d": 0.2336, "g": 0.6951, "p": 0.60265}, {"d": 0.2011, "g": 0.7097, "p": 0.60157}, {"d": 0.1481, "g": 0.5525, "p": 0.60056}, {"d": 0.1614, "g": 0.617, "p": 0.60228}, {"d": 0.1952, "g": 0.6756, "p": 0.60292}, {"d": 0.1853, "g": 0.6788, "p": 0.60111}, {"d": 0.1663, "g": 0.4592, "p": 0.60197}, {"d": 0.205, "g": 0.6486, "p": 0.60263}, {"d": 0.2012, "g": 0.6821, "p": 0.60127}, {"d": 0.2052, "g": 0.6293, "p": 0.60188}, {"d": 0.1766, "g": 0.6047, "p": 0.60328}, {"d": 0.1681, "g": 0.5499, "p": 0.60323}, {"d": 0.183, "g": 0.7406, "p": 0.60228}, {"d": 0.1766, "g": 0.6047, "p": 0.6022}, {"d": 0.1766, "g": 0.6047, "p": 0.60279}, {"d": 0.1766, "g": 0.6047, "p": 0.6027}, {"d": 0.1766, "g": 0.6047, "p": 0.60366}, {"d": 0.1766, "g": 0.6047, "p": 0.60191}, {"d": 0.3487, "g": 0.53, "p": 0.60019}, {"d": 0.2789, "g": 0.42, "p": 0.59887}, {"d": 0.3487, "g": 0.53, "p": 0.59922}, {"d": 0.3487, "g": 0.53, "p": 0.59859}, {"d": 0.3487, "g": 0.53, "p": 0.60213}, {"d": 0.2789, "g": 0.42, "p": 0.59934}, {"d": 0.4204, "g": 0.53, "p": 0.59974}, {"d": 0.2036, "g": 0.32, "p": 0.60122}, {"d": 0.2721, "g": 0.53, "p": 0.60154}, {"d": 0.1726, "g": 0.32, "p": 0.60197}, {"d": 0.1767, "g": 0.42, "p": 0.60081}, {"d": 0.1924, "g": 0.88, "p": 0.60185}, {"d": 0.1833, "g": 0.53, "p": 0.60066}, {"d": 0.2029, "g": 0.32, "p": 0.60123}, {"d": 0.1899, "g": 0.65, "p": 0.60024}, {"d": 0.2322, "g": 0.53, "p": 0.59983}, {"d": 0.1642, "g": 0.65, "p": 0.59976}, {"d": 0.1722, "g": 0.53, "p": 0.59978}, {"d": 0.303, "g": 0.53, "p": 0.60167}, {"d": 0.376, "g": 0.42, "p": 0.60121}, {"d": 0.3344, "g": 0.88, "p": 0.60131}, {"d": 0.2821, "g": 0.65, "p": 0.59937}, {"d": 0.2508, "g": 0.53, "p": 0.60125}, {"d": 0.1655, "g": 0.53, "p": 0.60228}, {"d": 0.2029, "g": 0.32, "p": 0.60006}, {"d": 0.2265, "g": 0.65, "p": 0.60139}, {"d": 0.4053, "g": 0.88, "p": 0.60129}, {"d": 0.3263, "g": 0.42, "p": 0.59892}, {"d": 0.1695, "g": 0.65, "p": 0.60255}, {"d": 0.324, "g": 0.53, "p": 0.60178}, {"d": 0.3935, "g": 0.53, "p": 0.6011}, {"d": 0.3721, "g": 0.78, "p": 0.59989}, {"d": 0.3481, "g": 0.78, "p": 0.59932}, {"d": 0.3114, "g": 0.32, "p": 0.60099}, {"d": 0.2939, "g": 0.42, "p": 0.60067}, {"d": 0.2968, "g": 0.65, "p": 0.60061}, {"d": 0.2074, "g": 0.78, "p": 0.60249}, {"d": 0.2046, "g": 0.78, "p": 0.60121}, {"d": 0.1747, "g": 0.78, "p": 0.60135}, {"d": 0.367, "g": 0.42, "p": 0.59951}, {"d": 0.4063, "g": 0.65, "p": 0.60166}, {"d": 0.1443, "g": 0.78, "p": 0.60097}, {"d": 0.362, "g": 0.32, "p": 0.59895}, {"d": 0.3562, "g": 0.53, "p": 0.60187}, {"d": 0.2625, "g": 0.32, "p": 0.60195}, {"d": 0.1313, "g": 0.32, "p": 0.59999}, {"d": 0.407, "g": 0.78, "p": 0.60173}, {"d": 0.2278, "g": 0.88, "p": 0.60193}, {"d": 0.4032, "g": 0.32, "p": 0.60167}, {"d": 0.1879, "g": 0.53, "p": 0.60106}, {"d": 0.25, "g": 0.88, "p": 0.60123}, {"d": 0.3015, "g": 0.78, "p": 0.6018}, {"d": 0.1695, "g": 0.65, "p": 0.60251}, {"d": 0.2104, "g": 0.6079, "p": 0.60201}, {"d": 0.1695, "g": 0.5755, "p": 0.60287}, {"d": 0.2336, "g": 0.6951, "p": 0.60265}, {"d": 0.2011, "g": 0.7097, "p": 0.60157}, {"d": 0.1481, "g": 0.5525, "p": 0.60056}, {"d": 0.1614, "g": 0.617, "p": 0.60228}, {"d": 0.1952, "g": 0.6756, "p": 0.60292}, {"d": 0.1853, "g": 0.6788, "p": 0.60111}, {"d": 0.1663, "g": 0.4592, "p": 0.60197}, {"d": 0.205, "g": 0.6486, "p": 0.60263}, {"d": 0.2012, "g": 0.6821, "p": 0.60127}, {"d": 0.2052, "g": 0.6293, "p": 0.60188}, {"d": 0.1766, "g": 0.6047, "p": 0.60328}, {"d": 0.1681, "g": 0.5499, "p": 0.60323}, {"d": 0.183, "g": 0.7406, "p": 0.60228}, {"d": 0.1766, "g": 0.6047, "p": 0.6022}, {"d": 0.1766, "g": 0.6047, "p": 0.60279}, {"d": 0.1766, "g": 0.6047, "p": 0.6027}, {"d": 0.1766, "g": 0.6047, "p": 0.60366}, {"d": 0.1766, "g": 0.6047, "p": 0.60191}, {"d": 0.3487, "g": 0.53, "p": 0.60019}, {"d": 0.2789, "g": 0.42, "p": 0.59887}, {"d": 0.3487, "g": 0.53, "p": 0.59922}, {"d": 0.3487, "g": 0.53, "p": 0.59859}], "cards": ["bpr-hybrid", "dndcg-lambda", "dcn-lite", "finalmlp", "mtl-shared-bottom", "regularization-schedule", "swa-ema", "embedding-dim-down", "duration-regime-heads", "user-metadata-crosses", "session-time-features", "recency-weighting", "covisit-svd-init", "seed-architecture-ensemble", "package-dial-sweep", "stage-matrix-sweep", "combo-sweep", "ensemble-design-sweep", "swa-then-ensemble", "freq-adaptive-reg", "group-hard-pair-bpr", "adversarial-recency", "gbdt-diversity-member", "gauge-fixed-bce", "signed-sketch-residual", "temporal-pair-kernel", "broad-to-recent-curriculum", "listwise-regime", "social-mtl-heads", "hetero-objective-ensemble", "lambda-weighted-pairs", "decayed-positive-sampling", "small-batch-diversity", "relative-watch-component", "seed-ensemble", "top-tail-rider", "full-slate-gauc-loss", "ordinal-watch-ratio-fm", "cwm-censored-fm"]};window.WEIGHTS={"baseline": [{"ck": 0.5, "primary": 0.57271, "norms": [0.04707, 0.05316, 0.05887, 0.06348, 0.07067, 0.07274, 0.08241, 0.08808, 0.09758, 0.1209]}, {"ck": 1.0, "primary": 0.58952, "norms": [0.06315, 0.08187, 0.09268, 0.10356, 0.11341, 0.12582, 0.14013, 0.15927, 0.17875, 0.2256]}, {"ck": 1.5, "primary": 0.59348, "norms": [0.08656, 0.11433, 0.12827, 0.14085, 0.15423, 0.17171, 0.19438, 0.2079, 0.23728, 0.27983]}, {"ck": 2.0, "primary": 0.59741, "norms": [0.10824, 0.13681, 0.15262, 0.16741, 0.17761, 0.19972, 0.21864, 0.22622, 0.25625, 0.29782]}, {"ck": 2.5, "primary": 0.5989, "norms": [0.13142, 0.15899, 0.17293, 0.18964, 0.19706, 0.21577, 0.23903, 0.24046, 0.27011, 0.30869]}, {"ck": 3.0, "primary": 0.59981, "norms": [0.15047, 0.17272, 0.18757, 0.20074, 0.20659, 0.22481, 0.24535, 0.2461, 0.26954, 0.30928]}, {"ck": 3.5, "primary": 0.60115, "norms": [0.17147, 0.19229, 0.20299, 0.21235, 0.21787, 0.23769, 0.25438, 0.25549, 0.27959, 0.31836]}, {"ck": 4.0, "primary": 0.6015, "norms": [0.18907, 0.20547, 0.21287, 0.21837, 0.22211, 0.24196, 0.25357, 0.25489, 0.28115, 0.32091]}, {"ck": 4.5, "primary": 0.60159, "norms": [0.21004, 0.21857, 0.224, 0.22733, 0.23642, 0.24902, 0.26401, 0.2585, 0.28727, 0.32521]}, {"ck": 5.0, "primary": 0.60144, "norms": [0.22754, 0.23119, 0.23385, 0.23817, 0.24111, 0.25898, 0.26216, 0.26211, 0.28894, 0.32875]}, {"ck": 5.5, "primary": 0.602, "norms": [0.24581, 0.24441, 0.24738, 0.24698, 0.25189, 0.26272, 0.27186, 0.269, 0.29417, 0.33488]}, {"ck": 6.0, "primary": 0.60169, "norms": [0.26414, 0.25334, 0.25388, 0.2565, 0.25744, 0.26952, 0.27266, 0.2743, 0.29869, 0.34103]}, {"ck": 6.5, "primary": 0.60106, "norms": [0.27971, 0.27068, 0.26696, 0.26665, 0.2669, 0.27859, 0.28214, 0.28098, 0.30385, 0.34867]}, {"ck": 7.0, "primary": 0.60217, "norms": [0.29672, 0.28255, 0.27558, 0.27565, 0.27655, 0.2855, 0.28183, 0.28418, 0.30938, 0.35033]}, {"ck": 7.5, "primary": 0.6005, "norms": [0.31609, 0.29504, 0.28787, 0.28763, 0.28401, 0.29335, 0.29258, 0.29149, 0.31714, 0.36244]}, {"ck": 8.0, "primary": 0.60153, "norms": [0.32994, 0.3069, 0.29923, 0.29665, 0.29445, 0.3025, 0.29824, 0.299, 0.32301, 0.36628]}], "treated": [{"ck": 0.5, "primary": 0.58985, "norms": [0.04862, 0.05629, 0.06091, 0.06964, 0.07187, 0.0726, 0.0784, 0.08003, 0.08386, 0.09417]}, {"ck": 1.0, "primary": 0.60028, "norms": [0.06297, 0.07943, 0.08472, 0.09386, 0.09106, 0.08757, 0.09303, 0.09021, 0.08697, 0.08493]}, {"ck": 1.5, "primary": 0.60181, "norms": [0.07622, 0.09437, 0.09383, 0.10064, 0.10132, 0.0941, 0.09708, 0.09353, 0.0882, 0.08874]}, {"ck": 2.0, "primary": 0.60293, "norms": [0.08973, 0.0993, 0.10244, 0.10907, 0.10196, 0.10143, 0.10264, 0.09303, 0.09005, 0.08768]}, {"ck": 2.5, "primary": 0.60346, "norms": [0.09843, 0.10518, 0.10661, 0.11185, 0.10398, 0.10514, 0.10373, 0.0955, 0.09086, 0.0884]}, {"ck": 3.0, "primary": 0.60348, "norms": [0.10566, 0.10767, 0.10923, 0.11627, 0.10744, 0.10465, 0.10545, 0.09653, 0.09057, 0.08819]}, {"ck": 3.5, "primary": 0.60411, "norms": [0.11182, 0.11153, 0.11255, 0.11774, 0.11034, 0.10829, 0.10928, 0.0992, 0.09176, 0.08976]}, {"ck": 4.0, "primary": 0.60448, "norms": [0.12151, 0.11532, 0.11417, 0.12047, 0.11377, 0.10989, 0.11094, 0.09991, 0.09216, 0.09044]}, {"ck": 4.5, "primary": 0.60405, "norms": [0.12582, 0.11753, 0.11695, 0.12193, 0.11374, 0.10845, 0.11089, 0.09994, 0.09232, 0.0902]}, {"ck": 5.0, "primary": 0.60427, "norms": [0.13129, 0.11895, 0.11858, 0.12326, 0.11492, 0.11097, 0.11217, 0.10079, 0.09321, 0.09053]}, {"ck": 5.5, "primary": 0.60443, "norms": [0.13816, 0.12375, 0.12077, 0.12364, 0.1166, 0.11272, 0.11162, 0.1011, 0.09395, 0.09132]}, {"ck": 6.0, "primary": 0.60434, "norms": [0.14136, 0.12364, 0.12182, 0.12514, 0.11733, 0.11392, 0.11308, 0.10094, 0.09423, 0.09215]}, {"ck": 6.5, "primary": 0.60418, "norms": [0.1444, 0.1259, 0.12315, 0.12548, 0.11838, 0.11316, 0.11119, 0.1016, 0.09431, 0.09217]}, {"ck": 7.0, "primary": 0.60448, "norms": [0.14803, 0.12571, 0.12423, 0.12618, 0.11886, 0.11483, 0.11212, 0.10161, 0.09578, 0.09185]}, {"ck": 7.5, "primary": 0.60439, "norms": [0.15056, 0.12676, 0.12318, 0.12728, 0.11955, 0.11548, 0.11262, 0.10219, 0.09493, 0.09198]}, {"ck": 8.0, "primary": 0.60442, "norms": [0.15359, 0.12693, 0.12521, 0.12859, 0.11962, 0.11656, 0.11242, 0.10141, 0.09544, 0.09216]}], "decile_counts": [4, 9, 16, 24, 35, 54, 86, 139, 257, 884]};window.SLATES=[{"videos": [{"vid": 28233, "watched": 1, "b": -0.0950505, "a": 0.777777731}, {"vid": 26934, "watched": 1, "b": -0.0284255, "a": 1.0}, {"vid": 28459, "watched": 0, "b": -0.681797, "a": 0.166666672}, {"vid": 27998, "watched": 0, "b": 1.06773, "a": 0.611111104}, {"vid": 26639, "watched": 0, "b": 0.115385, "a": 0.611111164}, {"vid": 27993, "watched": 1, "b": -0.910348, "a": 0.0}, {"vid": 28174, "watched": 1, "b": -0.492908, "a": 0.333333343}]}, {"videos": [{"vid": 28778, "watched": 1, "b": -0.119604, "a": 0.055555556}, {"vid": 29787, "watched": 1, "b": 0.110039, "a": 0.333333343}, {"vid": 26852, "watched": 1, "b": -0.0820457, "a": 0.111111112}, {"vid": 31480, "watched": 1, "b": 0.190718, "a": 0.944444418}, {"vid": 27740, "watched": 0, "b": 1.04435, "a": 0.666666687}, {"vid": 27445, "watched": 1, "b": 0.279125, "a": 0.888888836}, {"vid": 27420, "watched": 0, "b": 1.13024, "a": 0.5}]}, {"videos": [{"vid": 26797, "watched": 0, "b": -1.12714, "a": 0.166666672}, {"vid": 26452, "watched": 1, "b": -0.27482, "a": 0.611111164}, {"vid": 27333, "watched": 1, "b": -0.319859, "a": 0.833333313}, {"vid": 33117, "watched": 0, "b": 0.0732908, "a": 0.50000006}, {"vid": 28143, "watched": 0, "b": 0.0280586, "a": 0.388888925}, {"vid": 27586, "watched": 1, "b": 0.440204, "a": 1.0}, {"vid": 30952, "watched": 0, "b": -2.9227, "a": 0.0}]}, {"videos": [{"vid": 27648, "watched": 1, "b": -0.628226, "a": 0.555555582}, {"vid": 26466, "watched": 0, "b": -2.13885, "a": 0.0}, {"vid": 28965, "watched": 0, "b": -0.452406, "a": 0.555555582}, {"vid": 27992, "watched": 1, "b": -0.392832, "a": 0.888888896}]}, {"videos": [{"vid": 27455, "watched": 0, "b": 0.483751, "a": 0.833333313}, {"vid": 26261, "watched": 1, "b": 0.637854, "a": 0.388888925}, {"vid": 26608, "watched": 1, "b": 0.796203, "a": 0.888888896}, {"vid": 26450, "watched": 0, "b": -2.65377, "a": 0.0}, {"vid": 27432, "watched": 0, "b": -2.49932, "a": 0.166666672}, {"vid": 27073, "watched": 1, "b": 0.836672, "a": 0.444444448}, {"vid": 26988, "watched": 1, "b": 0.92606, "a": 0.777777731}]}, {"videos": [{"vid": 28322, "watched": 0, "b": -2.08176, "a": 0.0}, {"vid": 27944, "watched": 1, "b": -1.68113, "a": 0.333333343}, {"vid": 26558, "watched": 0, "b": -1.80779, "a": 0.666666687}, {"vid": 27269, "watched": 1, "b": -1.43993, "a": 1.0}]}];</script>
-<script>(function(){
-const D=window.RUNDATA,W=window.WEIGHTS,SL=window.SLATES,M=D.meta||{},N=D.nodes||[];
-const root=document.getElementById('pages');
-const fmtp=p=>p?p.toFixed(6):'—';
-// ---------- helpers: self-drawing SVG curve ----------
-let uid=0;
-function curveSVG(series,w,h,opts){ // series=[{pts:[{x,y}],color,ghost,label}]
-  opts=opts||{};
-  const pad=34, X=v=>pad+v*(w-2*pad), Y=v=>h-pad-(v)*(h-2*pad);
-  const y0=opts.y0??0.585, y1=opts.y1??0.607;
-  const ny=p=>Math.max(0,Math.min(1,(p-y0)/(y1-y0)));
-  let s=`<svg viewBox="0 0 ${w} ${h}" class="curve">`;
-  [0.59,0.595,0.6,0.605].forEach(v=>{ if(v<y0||v>y1)return;
-    s+=`<line x1="${pad}" x2="${w-pad}" y1="${Y(ny(v))}" y2="${Y(ny(v))}" class="gl"/>`+
-       `<text x="4" y="${Y(ny(v))+4}" class="axis">${v.toFixed(3)}</text>`;});
-  series.forEach(se=>{
-    if(!se.pts.length)return;
-    const d=se.pts.map((p,i)=>(i?'L':'M')+X(p.x)+','+Y(ny(p.y))).join(' ');
-    const id='c'+(uid++);
-    s+=`<path id="${id}" d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.ghost?2:3}" `+
-       `stroke-linecap="round" ${se.ghost?'stroke-dasharray="5 6" opacity="0.5"':'class="draw"'}/>`;
-    if(se.peak){const pk=se.pts.reduce((a,b)=>b.y>a.y?b:a);
-      s+=`<circle cx="${X(pk.x)}" cy="${Y(ny(pk.y))}" r="6" class="peak"/>`+
-         `<text x="${X(pk.x)+10}" y="${Y(ny(pk.y))-8}" class="anno">${se.peakNote||'peak — then it falls: memorizing'}</text>`;}
-    if(se.label)s+=`<text x="${X(se.pts[se.pts.length-1].x)-6}" y="${Y(ny(se.pts[se.pts.length-1].y))-10}" text-anchor="end" class="clabel" fill="${se.color}">${se.label}</text>`;
-  });
-  return s+'</svg>';
-}
-function nodeCurve(n){ return (n.curve||[]).map((c,i,arr)=>({x:i/Math.max(1,arr.length-1),y:c.p})); }
-// ---------- network panel (real weight norms) ----------
-function networkSVG(which,step){ // which: 'baseline'|'treated'
-  const snaps=(W&&W[which])||[]; if(!snaps.length)return '<div class="dim">instrumentation pending…</div>';
-  const s0=snaps[0].norms, s=snaps[Math.min(step,snaps.length-1)];
-  const w=560,h=250;
-  let out=`<svg viewBox="0 0 ${w} ${h}" class="net">`;
-  // layers: 5 field columns -> hidden -> score
-  const fields=['user','video','author','tab','dur'];
-  fields.forEach((f,fi)=>{ const x=40, y=28+fi*44;
-    out+=`<text x="${x-32}" y="${y+4}" class="axis">${f}</text>`;});
-  // video row expands into 10 frequency-decile cells with glow = norm growth vs start
-  for(let d0=0; d0<10; d0++){
-    const growth=Math.max(0,(s.norms[d0]-s0[d0])/(s0[d0]+1e-9));
-    const heat=Math.min(1,growth*2.2);
-    const col=`rgb(${Math.round(60+heat*195)},${Math.round(80-heat*30)},${Math.round(120-heat*70)})`;
-    const x=70+d0*30, y=72;
-    out+=`<rect x="${x}" y="${y-12}" width="24" height="24" rx="5" fill="${col}"/>`;
-  }
-  out+=`<text x="70" y="50" class="anno">video embeddings, rare → common (real norms, glow = growth since start)</text>`;
-  // other fields as quiet nodes
-  [0,2,3,4].forEach(fi=>{ const y=28+fi*44;
-    out+=`<rect x="70" y="${y-11}" width="24" height="22" rx="5" fill="#2a3350"/>`;});
-  // edges to hidden to score
-  for(let i=0;i<5;i++){ const y=28+i*44;
-    out+=`<line x1="96" y1="${y}" x2="360" y2="118" class="edge"/>`;}
-  out+=`<rect x="360" y="96" width="34" height="44" rx="8" fill="#31406b"/><text x="356" y="156" class="axis">MLP</text>`;
-  out+=`<line x1="394" y1="118" x2="480" y2="118" class="edge"/>`;
-  out+=`<circle cx="500" cy="118" r="16" fill="#d8b24a"/><text x="488" y="152" class="axis">score</text>`;
-  out+=`<text x="${w-190}" y="24" class="anno">checkpoint ${s.ck} · valid ${s.primary.toFixed(4)}</text>`;
-  return out+'</svg>';
-}
-function netBlock(which,title){
-  const snaps=(W&&W[which])||[];
-  const id='nb'+(uid++);
-  setTimeout(()=>{ // animate through snapshots
-    let i=0; const el=document.getElementById(id); if(!el)return;
-    const iv=setInterval(()=>{ if(!document.body.contains(el)){clearInterval(iv);return;}
-      el.innerHTML=networkSVG(which,i); i=(i+1); if(i>=snaps.length){clearInterval(iv);} },700);
-  },400);
-  return `<div class="netwrap"><div class="nettitle">${title}</div><div id="${id}">${networkSVG(which,0)}</div></div>`;
-}
-// ---------- pages ----------
-const pages=[];
-pages.push({t:'Cover',h:`<div class="cover"><div class="kicker">TikTok TechJam 2026 · Track 2</div>
-<h1>The Agent's Lab Notebook</h1>
-<p class="lede">One autonomous research run — <b>${M.run}</b> — replayed page by page from its own logs. Every curve, number, diagnosis and stamp below is real.</p>
-<div class="loopstrip"><span>diagnose</span>→<span>select a card</span>→<span>implement</span>→<span>retrain</span>→<span>face the evidence</span></div>
-<p class="dim">${M.iterations} decisions · ${Math.round((M.wall_s||0)/60)} min · ${(M.tokens||0).toLocaleString()} LLM tokens · zero mid-run human actions</p></div>`});
-pages.push({t:'The disease',h:`<h2>Page 1 — the patient presents</h2>
-<p>The official baseline trains happily — its <i>training</i> loss falls forever. But its validation score tells the truth:</p>
-${curveSVG([{pts:nodeCurve(N[0]),color:'#d8b24a',peak:true,peakNote:'peaks — then falls. The model is memorizing.',label:'baseline'}],640,240)}
-<p>That downhill slope after the peak is <b>overfitting</b> — and with only ~42 impressions per user, there is a lot to memorize and little to learn. Champion so far: <b>${fmtp(N[0].primary)}</b>.</p>`});
-pages.push({t:'Inside the net',h:`<h2>Page 2 — the disease, mechanically</h2>
-<p>We instrumented the same training to watch the weights themselves. Each cell is the median embedding size of videos in a popularity decile — <b>rare videos left, popular right</b>. Watch the rare cells heat up: the network is burning capacity memorizing videos it barely saw.</p>
-${netBlock('baseline','BASELINE — untreated (animating through real checkpoints)')}
-<p class="dim">Real measurements from tools/instrument_weights.py — rare-video embedding norms grow fastest exactly as validation starts falling.</p>`});
-N.forEach((n,ix)=>{
-  if(n.id==='node_000')return;
-  if(n.error&&!n.primary){
-    pages.push({t:n.id,h:`<h2>${n.id} — the tooling fails</h2>
-    <p class="mono dim">${n.summary}</p>
-    <p>No model was produced. The harness journals the failure and the convergence strike counts anyway.</p>
-    <div class="stamp bad">STRIKE</div>`});
-    return;
-  }
-  const sel=n.selection||{};
-  const fan=(D.cards||[]).slice(0,0); // deck rendered from selection below
-  const rej=(sel.rejected||[]).map(r=>r.method_id);
-  const deck = sel.chosen_method_id? `<div class="cards">${[...rej.slice(0,3).map(c=>`<span class="mcard rej">${c}</span>`),`<span class="mcard pick">${sel.chosen_method_id} ✓</span>`].join('')}</div>
-   ${sel.why?`<p class="why">“${String(sel.why).slice(0,230)}”</p>`:''}`:'';
-  const series=[];
-  if(N[0].curve&&N[0].curve.length)series.push({pts:nodeCurve(N[0]),color:'#8b95ad',ghost:true,label:'baseline'});
-  if(n.curve&&n.curve.length>2)series.push({pts:nodeCurve(n),color:n.accepted?'#7fb069':'#5b8dd9',peak:!n.accepted,label:n.id});
-  pages.push({t:n.id,h:`<h2>${n.id} — consultation</h2>
-  <p><b>Diagnosis (verbatim from the journal):</b> ${(n.summary.split('will')[0]||n.summary).slice(0,240)}…</p>
-  ${deck}
-  ${n.probes&&n.probes.length>2?`<p class="dim">The treatment is a search: ${n.probes.length} internal trials logged before committing${n.members&&n.members.length?`; ${n.members.length} seed members trained for the ensemble`:''}.</p>`:''}
-  ${series.length>1?curveSVG(series,640,220):''}
-  <p><b>Verdict:</b> ${fmtp(n.primary)} ${n.accepted?'<span class="ok">beats the noise floor</span>':'<span class="no">does not clear the evidence bar</span>'}${n.fixed!=null?` · fixed <b>${n.fixed.toLocaleString()}</b> orderings, broke <b>${n.broken.toLocaleString()}</b>${n.id==='node_006'?' (raw counts even net negative — but the metric weights users by positives and the top of the list: the official score improves. Counts are not the metric.)':''}`:''}</p>
-  <div class="stamp ${n.accepted?'good':'bad'}">${n.accepted?'ACCEPTED':'REJECTED'}</div>`});
-});
-pages.push({t:'The cure',h:`<h2>Page ${N.length+1} — the treated network</h2>
-<p>Same instrumentation, now with the agent's accepted treatment (dropout 0.18, weight decay, rapid LR decay, recency weighting):</p>
-${netBlock('treated','TREATED — the champion package (real checkpoints)')}
-<p>The rare-video cells stay cool — memorization suppressed — and validation holds its peak instead of collapsing. This is <i>why</i> the treatment works, in the weights themselves.</p>`});
-if(SL&&SL.length){
-  const rows=SL.map((s,si)=>{
-    const vb=[...s.videos].sort((a,b)=>b.b-a.b), vaa=[...s.videos].sort((a,b)=>b.a-a.a);
-    const col=v=>`<div class="chip ${v.watched?'w':''}">${v.watched?'▶ watched':'· skipped'}</div>`;
-    return `<div class="slate"><div class="scol"><div class="stit">before</div>${vb.map(col).join('')}</div>
-            <div class="scol"><div class="stit">after</div>${vaa.map(col).join('')}</div></div>`;
-  }).join('');
-  pages.push({t:'Real users',h:`<h2>Page ${N.length+2} — what changed for real users</h2>
-  <p>Six actual validation users. Each column is their feed ordered by the model — watched videos should rise to the top. Four improved; the last two got <i>worse</i> (the broken pairs — improvement is a trade, and we show both sides).</p>
-  <div class="slates">${rows}</div>`});
-}
-pages.push({t:'Converged',h:`<div class="cover"><h1>${fmtp(M.best)}</h1>
-<p class="lede">Stopped by the official convergence rule after ${M.iterations} decisions — the agent cannot overstay. +0.00398 over the published baseline; predicted hidden-test ≈ 0.5977 ± 0.0020 (we correct our own winner's curse).</p>
-<p class="dim">113 disclosed runs · every negative kept · replayable from the public repo</p></div>`});
-// ---------- render + nav ----------
-let cur=0;
-function render(){
-  root.innerHTML=`<div class="page">${pages[cur].h}</div>`;
-  document.getElementById('step-label').textContent=`${cur+1} / ${pages.length}`;
-  document.getElementById('prev').disabled=cur===0;
-  document.getElementById('next').disabled=cur===pages.length-1;
-  root.querySelectorAll('path.draw').forEach(p=>{const L=p.getTotalLength();
-    p.style.strokeDasharray=L; p.style.strokeDashoffset=L;
-    p.getBoundingClientRect(); p.style.transition='stroke-dashoffset 1.8s ease';
-    requestAnimationFrame(()=>p.style.strokeDashoffset='0');});
-}
-document.getElementById('next').onclick=()=>{if(cur<pages.length-1){cur++;render();}};
-document.getElementById('prev').onclick=()=>{if(cur>0){cur--;render();}};
-addEventListener('keydown',e=>{if(e.key==='ArrowRight')document.getElementById('next').click();if(e.key==='ArrowLeft')document.getElementById('prev').click();});
-render();
-})();
-</script>
+</head>
+<body>
+<div id="bar"><div class="wrap">
+  <div class="l">MLE-AGENT · FLIGHT RECORDER</div>
+  <div class="r dim">valid primary <b id="barscore">0.6016</b></div>
+</div></div>
+<div id="prog"></div>
+
+<header id="hero"><div class="wrap">
+  <div class="kicker">TikTok TechJam 2026 · Track 2 · KuaiRand-Pure</div>
+  <h1>An agent taught itself to rank —
+    <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>,
+    zero humans in the loop.<span class="cursor"></span></h1>
+  <p class="sub">This page is its flight recorder: every hypothesis, every dead end,
+  every accepted fix — replayed from the run journal of one autonomous research loop.</p>
+  <svg id="herochart" viewBox="0 0 760 190" aria-label="validation score per iteration"></svg>
+  <div class="scrollhint">▼ SCROLL TO REPLAY THE RUN</div>
+</div></header>
+
+<section id="loop"><div class="wrap">
+  <div class="eyebrow">the machine</div>
+  <h2>Diagnose → treat → retrain → measure. Repeat until the rule says stop.</h2>
+  <p class="lede">No human picks the next move. The agent reads its own training
+  curves, chooses a treatment from a library of cited method cards, edits the model
+  code, retrains, and keeps only what measures above an ε&nbsp;=&nbsp;0.002 bar.
+  A convergence rule — not a person — ends the run.</p>
+  <svg viewBox="0 0 820 150">
+    <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L8 4L0 8z" fill="#5C6E7A"/></marker></defs>
+    <g id="loopg"></g>
+  </svg>
+</div></section>
+
+<section id="log"><div class="wrap">
+  <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
+  <h2>Six iterations, replayed.</h2>
+  <div class="cols">
+    <div id="chartpin"><svg id="bigchart" viewBox="0 0 560 420"></svg></div>
+    <div class="entries" id="entries"></div>
+  </div>
+</div></section>
+
+<section id="space">
+  <div id="spacetall"><div id="spacestick">
+    <canvas id="spacecanvas"></canvas>
+    <div id="spacehud"><div class="inner">
+      <div class="eyebrow">inside the model</div>
+      <h2>7,538 real videos, placed by the model. <span id="morphlbl" class="go"></span></h2>
+      <p class="lede">Each dot is one KuaiRand video in the model's learned embedding
+      space (shared-PCA projection; instrumented retrain, not a scored run).
+      Keep scrolling: the space morphs from the <span class="no">baseline's</span> geometry
+      to the <span class="go">champion's</span>.</p>
+    </div></div>
+    <div id="spacecap"><div class="cap" id="spacecaption"></div></div>
+  </div></div>
+</section>
+
+<section id="receipts"><div class="wrap">
+  <div class="eyebrow">the receipts</div>
+  <h2>Everything above is measured, logged, and reproducible.</h2>
+  <div class="grid" id="rgrid"></div>
+  <p class="note">Scored artifact = best validation checkpoint at rule convergence;
+  hidden test touched exactly once, at final submission. Bonus: the same agent on
+  KuaiRand-1K (11.7M rows) reached <span class="go">0.6524</span>. Full run journals,
+  method-card library, and 250+ measured experiment cells ship in the repo.</p>
+</div></section>
+
+<footer><div class="wrap">
+  mle-agent · TikTok TechJam 2026 Track 2 · built by team jitai ·
+  every number on this page has a run directory behind it
+</div></footer>
+
+<script src="rundata.js"></script>
+<script src="space.js"></script>
+<script src="three.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

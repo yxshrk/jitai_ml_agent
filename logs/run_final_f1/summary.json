@@ -1,0 +1,2131 @@
+{
+  "run_dir": "logs/run_final_f1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "max_hours",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6707045680059865,
+    "ndcg5": 0.537352703659592,
+    "primary": 0.6040286358327893,
+    "winner": {
+      "architecture": "dcn",
+      "loss": "logloss",
+      "weighting": "recency",
+      "regularization": "strong"
+    },
+    "matrix_summary": [
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6038559813589204,
+        "std_primary": 0.00048063346771526073,
+        "scores": [
+          0.6040928471447615,
+          0.6039456485095817,
+          0.6043541130388108,
+          0.6039450102068549,
+          0.6029422878945927
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6035418504861504,
+        "std_primary": 0.00025127499725014315,
+        "scores": [
+          0.6036941957139412,
+          0.6037591846795891,
+          0.6031658765713481,
+          0.6037728970596258,
+          0.6033170984062478
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6033581177775966,
+        "std_primary": 0.0003764473518849827,
+        "scores": [
+          0.6033954049821291,
+          0.6029320700773448,
+          0.603171818352358,
+          0.6040491335699236,
+          0.603242161906228
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6033253679954047,
+        "std_primary": 0.00026825706807946583,
+        "scores": [
+          0.6033943393450021,
+          0.6030561062396467,
+          0.6030869865862525,
+          0.6037991721286704,
+          0.6032902356774522
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6032516671764554,
+        "std_primary": 0.000134682373631373,
+        "scores": [
+          0.6030871820091344,
+          0.6032535509144641,
+          0.6031147596456268,
+          0.6033968769069451,
+          0.6034059664061064
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6026759890365281,
+        "std_primary": 8.47171737973527e-05,
+        "scores": [
+          0.6028192145113083,
+          0.6025703781314109,
+          0.6026458948382322,
+          0.6026317081215102,
+          0.6027127495801786
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6022639317688543,
+        "std_primary": 0.00035958636182200856,
+        "scores": [
+          0.6021743921476131,
+          0.6021319301679491,
+          0.6017190659947984,
+          0.6025236414655385,
+          0.6027706290683725
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6016634696182508,
+        "std_primary": 0.0003490896984984311,
+        "scores": [
+          0.6015455312479536,
+          0.6010893425514519,
+          0.6021197097191411,
+          0.601659265711495,
+          0.6019034988612124
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6002107340213582,
+        "std_primary": 0.00022049891692883718,
+        "scores": [
+          0.6002730963680523,
+          0.6000269083425877,
+          0.5999447480487657,
+          0.6005771012233627,
+          0.6002318161240221
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6001184984334675,
+        "std_primary": 0.000345657802392835,
+        "scores": [
+          0.6004762192014341,
+          0.5999114855602243,
+          0.6001939128004854,
+          0.5995608447144491,
+          0.6004500298907449
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6000840158403243,
+        "std_primary": 0.000266913320636743,
+        "scores": [
+          0.6001301379055565,
+          0.6001307436900204,
+          0.6002239099792823,
+          0.5995769728524668,
+          0.6003583147742958
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.5998565861427965,
+        "std_primary": 0.0006257618845644094,
+        "scores": [
+          0.599334248834632,
+          0.5997020656201675,
+          0.5991191374137251,
+          0.6003216498991981,
+          0.6008058289462597
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.5994418270376303,
+        "std_primary": 0.0002615758752773046,
+        "scores": [
+          0.5993675941527319,
+          0.5999578380430591,
+          0.5993389673287883,
+          0.5992383175078699,
+          0.599306418155702
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.5991676054708267,
+        "std_primary": 0.0007960498642790241,
+        "scores": [
+          0.6004439690645915,
+          0.5997117756070804,
+          0.5988013122987759,
+          0.5986012229958975,
+          0.5982797473877883
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.5943972174931009,
+        "std_primary": 0.0003656867143900953,
+        "scores": [
+          0.5946137745851109,
+          0.5940660042967756,
+          0.5938828470753323,
+          0.5945542178967794,
+          0.5948692436115061
+        ]
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.5937358082161761,
+        "std_primary": 0.0004392263565842452,
+        "scores": [
+          0.5940915931145097,
+          0.593540541664758,
+          0.592959267392168,
+          0.5941035251668165,
+          0.5939841137426287
+        ]
+      }
+    ],
+    "refinement_summary": [
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6040370717128201,
+        "std_primary": 0.00010278949039439014,
+        "scores": [
+          0.6040000214040935,
+          0.6041828067320401,
+          0.6039756429546654,
+          0.6039009116953695,
+          0.6041259757779316
+        ],
+        "mean_best_epoch": 7.4
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6038824386761105,
+        "std_primary": 0.0003589938039098721,
+        "scores": [
+          0.6036487222376867,
+          0.6034838530493387,
+          0.6036526075236408,
+          0.6043702048423654,
+          0.6042568057275204
+        ],
+        "mean_best_epoch": 6.6
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6038115751350854,
+        "std_primary": 0.0004913015372389268,
+        "scores": [
+          0.604067046694087,
+          0.6040573806669933,
+          0.6031712170322492,
+          0.6044562111381986,
+          0.6033060201438988
+        ],
+        "mean_best_epoch": 3.4
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "mean_primary": 0.6037110923727979,
+        "std_primary": 0.00023821084142455992,
+        "scores": [
+          0.6033790857279892,
+          0.6037458559539611,
+          0.6039561913146287,
+          0.6035017370456617,
+          0.6039725918217488
+        ],
+        "mean_best_epoch": 3.4
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6031506006523533,
+        "std_primary": 0.0004985712637755298,
+        "scores": [
+          0.6022941277983733,
+          0.6029758019727389,
+          0.6033179822948356,
+          0.6033855726161428,
+          0.6037795185796753
+        ],
+        "mean_best_epoch": 4.4
+      },
+      {
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "mean_primary": 0.6028490053825226,
+        "std_primary": 0.000301575482980936,
+        "scores": [
+          0.6033627318697208,
+          0.602633081784774,
+          0.6024809765500087,
+          0.6028280385320999,
+          0.60294019817601
+        ],
+        "mean_best_epoch": 3.6
+      }
+    ],
+    "final_curve": [
+      {
+        "epoch": 0.5,
+        "train_loss": 0.602491,
+        "val_gauc": 0.656349,
+        "val_primary": 0.593871
+      },
+      {
+        "epoch": 1.0,
+        "train_loss": 0.566404,
+        "val_gauc": 0.664856,
+        "val_primary": 0.599561
+      },
+      {
+        "epoch": 1.5,
+        "train_loss": 0.505454,
+        "val_gauc": 0.667496,
+        "val_primary": 0.601469
+      },
+      {
+        "epoch": 2.0,
+        "train_loss": 0.507567,
+        "val_gauc": 0.66901,
+        "val_primary": 0.602706
+      },
+      {
+        "epoch": 2.5,
+        "train_loss": 0.498668,
+        "val_gauc": 0.669895,
+        "val_primary": 0.603569
+      },
+      {
+        "epoch": 3.0,
+        "train_loss": 0.500633,
+        "val_gauc": 0.670137,
+        "val_primary": 0.603663
+      },
+      {
+        "epoch": 3.5,
+        "train_loss": 0.496511,
+        "val_gauc": 0.670705,
+        "val_primary": 0.604029
+      },
+      {
+        "epoch": 4.0,
+        "train_loss": 0.498082,
+        "val_gauc": 0.669962,
+        "val_primary": 0.603613
+      },
+      {
+        "epoch": 4.5,
+        "train_loss": 0.496857,
+        "val_gauc": 0.670188,
+        "val_primary": 0.603666
+      },
+      {
+        "epoch": 5.0,
+        "train_loss": 0.496742,
+        "val_gauc": 0.669981,
+        "val_primary": 0.603624
+      },
+      {
+        "epoch": 5.5,
+        "train_loss": 0.496065,
+        "val_gauc": 0.670105,
+        "val_primary": 0.603706
+      },
+      {
+        "epoch": 6.0,
+        "train_loss": 0.496163,
+        "val_gauc": 0.670043,
+        "val_primary": 0.603634
+      },
+      {
+        "epoch": 6.5,
+        "train_loss": 0.495198,
+        "val_gauc": 0.669995,
+        "val_primary": 0.603614
+      },
+      {
+        "epoch": 7.0,
+        "train_loss": 0.495774,
+        "val_gauc": 0.669909,
+        "val_primary": 0.603554
+      },
+      {
+        "epoch": 7.5,
+        "train_loss": 0.496097,
+        "val_gauc": 0.669982,
+        "val_primary": 0.603619
+      },
+      {
+        "epoch": 8.0,
+        "train_loss": 0.495747,
+        "val_gauc": 0.669943,
+        "val_primary": 0.6036
+      },
+      {
+        "epoch": 8.5,
+        "train_loss": 0.495386,
+        "val_gauc": 0.669879,
+        "val_primary": 0.603523
+      },
+      {
+        "epoch": 9.0,
+        "train_loss": 0.495453,
+        "val_gauc": 0.669864,
+        "val_primary": 0.60353
+      },
+      {
+        "epoch": 9.5,
+        "train_loss": 0.494836,
+        "val_gauc": 0.669868,
+        "val_primary": 0.603535
+      },
+      {
+        "epoch": 10.0,
+        "train_loss": 0.495496,
+        "val_gauc": 0.669887,
+        "val_primary": 0.603545
+      },
+      {
+        "epoch": 10.5,
+        "train_loss": 0.495437,
+        "val_gauc": 0.669832,
+        "val_primary": 0.60351
+      },
+      {
+        "epoch": 11.0,
+        "train_loss": 0.49548,
+        "val_gauc": 0.66983,
+        "val_primary": 0.603512
+      },
+      {
+        "epoch": 11.5,
+        "train_loss": 0.494616,
+        "val_gauc": 0.669846,
+        "val_primary": 0.60352
+      },
+      {
+        "epoch": 12.0,
+        "train_loss": 0.495591,
+        "val_gauc": 0.669839,
+        "val_primary": 0.603519
+      }
+    ],
+    "history": [
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.599334248834632,
+        "gauc": 0.664371
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 1051,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5997020656201675,
+        "gauc": 0.664666
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 2060,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5991191374137251,
+        "gauc": 0.663387
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 3069,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6003216498991981,
+        "gauc": 0.665305
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4078,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6008058289462597,
+        "gauc": 0.665984
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 79,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5940915931145097,
+        "gauc": 0.656489
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1088,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.593540541664758,
+        "gauc": 0.655412
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 2097,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.592959267392168,
+        "gauc": 0.654728
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 3106,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5941035251668165,
+        "gauc": 0.656165
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 4115,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5939841137426287,
+        "gauc": 0.655896
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 116,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6002730963680523,
+        "gauc": 0.665737
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 1125,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6000269083425877,
+        "gauc": 0.665041
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 2134,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5999447480487657,
+        "gauc": 0.664944
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 3143,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6005771012233627,
+        "gauc": 0.666008
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 4152,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6002318161240221,
+        "gauc": 0.665689
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 153,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5946137745851109,
+        "gauc": 0.656906
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 1162,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5940660042967756,
+        "gauc": 0.65648
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 2171,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5938828470753323,
+        "gauc": 0.656137
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 3180,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5945542178967794,
+        "gauc": 0.657309
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 4189,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5948692436115061,
+        "gauc": 0.657338
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 190,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6004439690645915,
+        "gauc": 0.66596
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 1199,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5997117756070804,
+        "gauc": 0.664877
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 2208,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5988013122987759,
+        "gauc": 0.664327
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 3217,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5986012229958975,
+        "gauc": 0.663544
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4226,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5982797473877883,
+        "gauc": 0.663035
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 227,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6001301379055565,
+        "gauc": 0.665758
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1236,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6001307436900204,
+        "gauc": 0.665528
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 2245,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6002239099792823,
+        "gauc": 0.665693
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 3254,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5995769728524668,
+        "gauc": 0.664702
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 4263,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6003583147742958,
+        "gauc": 0.66584
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 264,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5993675941527319,
+        "gauc": 0.664492
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 1273,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5999578380430591,
+        "gauc": 0.665958
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 2282,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5993389673287883,
+        "gauc": 0.66512
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 3291,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5992383175078699,
+        "gauc": 0.66468
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 4300,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.599306418155702,
+        "gauc": 0.664714
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 301,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6004762192014341,
+        "gauc": 0.665948
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 1310,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.5999114855602243,
+        "gauc": 0.665217
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 2319,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6001939128004854,
+        "gauc": 0.665813
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 3328,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.5995608447144491,
+        "gauc": 0.664625
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "fm",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 4337,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6004500298907449,
+        "gauc": 0.666063
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 338,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6036941957139412,
+        "gauc": 0.670268
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 1347,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6037591846795891,
+        "gauc": 0.670462
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 2356,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6031658765713481,
+        "gauc": 0.669178
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 3365,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6037728970596258,
+        "gauc": 0.670265
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4374,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6033170984062478,
+        "gauc": 0.669683
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 375,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6030871820091344,
+        "gauc": 0.669474
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1384,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6032535509144641,
+        "gauc": 0.669608
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 2393,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6031147596456268,
+        "gauc": 0.66955
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 3402,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6033968769069451,
+        "gauc": 0.669986
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 4411,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6034059664061064,
+        "gauc": 0.669796
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 412,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6040928471447615,
+        "gauc": 0.670712
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 1421,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6039456485095817,
+        "gauc": 0.670669
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 2430,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6043541130388108,
+        "gauc": 0.671098
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 3439,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6039450102068549,
+        "gauc": 0.670797
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 4448,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6029422878945927,
+        "gauc": 0.669063
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 449,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6033943393450021,
+        "gauc": 0.669973
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 1458,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6030561062396467,
+        "gauc": 0.669139
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 2467,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6030869865862525,
+        "gauc": 0.6694
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 3476,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6037991721286704,
+        "gauc": 0.67024
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 4485,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6032902356774522,
+        "gauc": 0.669447
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 486,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6015455312479536,
+        "gauc": 0.667663
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 1495,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6010893425514519,
+        "gauc": 0.667515
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 2504,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6021197097191411,
+        "gauc": 0.667951
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 3513,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.601659265711495,
+        "gauc": 0.667772
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4522,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6019034988612124,
+        "gauc": 0.668235
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 523,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6028192145113083,
+        "gauc": 0.669569
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1532,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6025703781314109,
+        "gauc": 0.668892
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 2541,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6026458948382322,
+        "gauc": 0.669269
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 3550,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6026317081215102,
+        "gauc": 0.669266
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 4559,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6027127495801786,
+        "gauc": 0.669525
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 560,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6021743921476131,
+        "gauc": 0.668771
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 1569,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6021319301679491,
+        "gauc": 0.668683
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 2578,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6017190659947984,
+        "gauc": 0.6678
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 3587,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6025236414655385,
+        "gauc": 0.668954
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 4596,
+        "epochs": 3,
+        "best_epoch": 1.0,
+        "primary": 0.6027706290683725,
+        "gauc": 0.669333
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 597,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6033954049821291,
+        "gauc": 0.670418
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 1606,
+        "epochs": 3,
+        "best_epoch": 2.0,
+        "primary": 0.6029320700773448,
+        "gauc": 0.669558
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 2615,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.603171818352358,
+        "gauc": 0.669604
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 3624,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.6040491335699236,
+        "gauc": 0.671027
+      },
+      {
+        "phase": "matrix_probe",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 4633,
+        "epochs": 3,
+        "best_epoch": 3.0,
+        "primary": 0.603242161906228,
+        "gauc": 0.669867
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 50063,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.6033790857279892,
+        "gauc": 0.67019
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 52080,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6037458559539611,
+        "gauc": 0.670159
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 54097,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6039561913146287,
+        "gauc": 0.670516
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 56114,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.6035017370456617,
+        "gauc": 0.670014
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "mild"
+        },
+        "seed": 58131,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6039725918217488,
+        "gauc": 0.670744
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 50376,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.604067046694087,
+        "gauc": 0.670916
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 52393,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6040573806669933,
+        "gauc": 0.670851
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 54410,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6031712170322492,
+        "gauc": 0.669835
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 56427,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6044562111381986,
+        "gauc": 0.671434
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 58444,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.6033060201438988,
+        "gauc": 0.66985
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 50689,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6022941277983733,
+        "gauc": 0.668696
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 52706,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6029758019727389,
+        "gauc": 0.669454
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 54723,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.6033179822948356,
+        "gauc": 0.670074
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 56740,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.6033855726161428,
+        "gauc": 0.669918
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 58757,
+        "epochs": 10,
+        "best_epoch": 9.0,
+        "primary": 0.6037795185796753,
+        "gauc": 0.670467
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 51002,
+        "epochs": 10,
+        "best_epoch": 10.0,
+        "primary": 0.6040000214040935,
+        "gauc": 0.670435
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 53019,
+        "epochs": 10,
+        "best_epoch": 6.0,
+        "primary": 0.6041828067320401,
+        "gauc": 0.670761
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 55036,
+        "epochs": 10,
+        "best_epoch": 8.0,
+        "primary": 0.6039756429546654,
+        "gauc": 0.670578
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 57053,
+        "epochs": 10,
+        "best_epoch": 8.0,
+        "primary": 0.6039009116953695,
+        "gauc": 0.670126
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 59070,
+        "epochs": 10,
+        "best_epoch": 5.0,
+        "primary": 0.6041259757779316,
+        "gauc": 0.67071
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 51315,
+        "epochs": 10,
+        "best_epoch": 4.0,
+        "primary": 0.6036487222376867,
+        "gauc": 0.670324
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 53332,
+        "epochs": 10,
+        "best_epoch": 7.0,
+        "primary": 0.6034838530493387,
+        "gauc": 0.669989
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 55349,
+        "epochs": 10,
+        "best_epoch": 8.0,
+        "primary": 0.6036526075236408,
+        "gauc": 0.670192
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 57366,
+        "epochs": 10,
+        "best_epoch": 7.0,
+        "primary": 0.6043702048423654,
+        "gauc": 0.670982
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 59383,
+        "epochs": 10,
+        "best_epoch": 7.0,
+        "primary": 0.6042568057275204,
+        "gauc": 0.671027
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 51628,
+        "epochs": 10,
+        "best_epoch": 2.0,
+        "primary": 0.6033627318697208,
+        "gauc": 0.669716
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 53645,
+        "epochs": 10,
+        "best_epoch": 3.0,
+        "primary": 0.602633081784774,
+        "gauc": 0.669251
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 55662,
+        "epochs": 10,
+        "best_epoch": 2.0,
+        "primary": 0.6024809765500087,
+        "gauc": 0.669083
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 57679,
+        "epochs": 10,
+        "best_epoch": 6.0,
+        "primary": 0.6028280385320999,
+        "gauc": 0.669522
+      },
+      {
+        "phase": "refinement",
+        "config": {
+          "architecture": "dcn",
+          "loss": "hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 59696,
+        "epochs": 10,
+        "best_epoch": 5.0,
+        "primary": 0.60294019817601,
+        "gauc": 0.669629
+      },
+      {
+        "phase": "final",
+        "config": {
+          "architecture": "dcn",
+          "loss": "logloss",
+          "weighting": "recency",
+          "regularization": "strong"
+        },
+        "seed": 42,
+        "epochs": 12,
+        "best_epoch": 3.5,
+        "primary": 0.6040286358327893,
+        "gauc": 0.6707045680059865
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 46388,
+      "out": 3483,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 37083,
+      "out": 32376,
+      "calls": 4
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 5167,
+      "out": 5261,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3477,
+      "out": 1469,
+      "calls": 2
+    }
+  },
+  "tokens_total": 134704,
+  "wall_s": 33849.7,
+  "self_critique": "Overall assessment\n\nThe run found a real-looking improvement: node_001 raised primary from 0.6018 to 0.604029, about +0.0022. However, the broad search bundled several changes, so the source and robustness of the gain remain unclear. Subsequent work mostly explored speculative add-ons rather than resolving that uncertainty.\n\nWhat the harness/policy did suboptimally\n\n- It accepted a compound intervention\u2014architecture, BPR supervision, recency weighting, and regularization\u2014without immediately decomposing it. This produced a champion but little reusable causal knowledge.\n- Node_004 reported 0.6045, nominally above the recorded best of 0.604029, yet was rejected. That may be correct under paired significance or acceptance rules, but the journal does not expose the uncertainty, seed results, or rejection reason. This is the most important bookkeeping/evaluation issue to audit.\n- The policy spent three trials chasing small predicted gains near the noise floor. Node_002 and node_003 were only 0.0003\u20130.0004 below the champion; without explicit paired confidence intervals, these outcomes are not very informative.\n- The run stopped on max_hours after only five nodes. Ensemble and snapshot experiments are expensive, so resource allocation likely favored costly late-stage ideas over cheap ablations and replications.\n- Hypotheses were overly specific and causal relative to the evidence. \u201cEarly peak diagnoses overfitting\u201d is plausible, but it does not establish temporal covariate shift or that a particular recency correction is independently beneficial.\n- Acceptance reporting was inconsistent: only the baseline shows sigma, while close comparisons that depend critically on variance do not.\n\nWhat I would change in the scaffold\n\n- Require every result to report matched-seed scores, mean delta versus parent, confidence interval or standard error, runtime, and the exact rejection criterion.\n- After any multi-factor winner, force a decomposition phase before allowing new feature families: leave-one-out ablations, then isolated additions under identical seeds.\n- Separate exploration from confirmation. Use one seed or successive halving for screening, then reserve multiple paired seeds for the top one or two candidates.\n- Make hypotheses shorter and falsifiable: one intervention, one mechanism, one expected directional result. Avoid claims of independent effects unless the design can identify them.\n- Add a consistency check so a rejected node with a higher nominal metric is explicitly explained and cannot silently disappear from \u201cbest_primary.\u201d\n- Track improvement per compute-hour and cap expensive ensemble branches until the single-model champion is stable.\n\nWhat the next run should try first\n\n1. Reproduce node_001 and node_004 with 3\u20135 identical paired seeds and fixed evaluation code. Determine whether the ensemble\u2019s nominal +0.00047 is real or variance.\n2. Recover the node_001 factorial results and identify which components drove the +0.0022. If those records are insufficient, run leave-one-component-out ablations for DCN-lite, hybrid BPR, recency weighting, and strong scheduled regularization.\n3. Build the simplest configuration statistically tied with the champion, then tune only its dominant component.\n4. Defer new temporal features and ensemble variants until the champion\u2019s variance and causal composition are known.\n\nThe immediate priority is confirmation and attribution, not another broad hypothesis."
+}

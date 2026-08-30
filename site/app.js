@@ -1,157 +1,252 @@
+/* Flight Recorder — mle-agent scrollytelling site.
+   2D mission-log replay of the designated run (rundata.js) with one 3D garnish:
+   the scroll-morphed embedding starscape (space.js). No frameworks. */
 (function(){
-const D=window.RUNDATA, M=D.meta||{}, N=D.nodes||[];
-const panel=document.getElementById('panel-body'), stepLabel=document.getElementById('step-label');
-const ticker=document.getElementById('score'), strikeEl=document.getElementById('strikes');
-const deckEl=document.getElementById('deck');
-function showDeck(sel){
-  if(!sel||!sel.chosen_method_id){deckEl.classList.remove('open');return;}
-  const all=D.cards||[],chosen=sel.chosen_method_id,rej=(sel.rejected||[]).map(r=>r.method_id);
-  const sample=all.filter(c=>c!==chosen&&!rej.includes(c)).slice(0,6);
-  const ordr=[...rej.slice(0,3),chosen,...sample].slice(0,10);
-  deckEl.innerHTML='<div class="deck-title">Treatment selection — from '+all.length+' cited method cards</div><div class="fan">'
-    +ordr.map(c=>'<div class="'+(c===chosen?'card chosen':(rej.includes(c)?'card rejected':'card'))+'">'+c
-    +(c===chosen?'<span class="pick">✓ chosen</span>':(rej.includes(c)?'<span class="rej">considered</span>':''))+'</div>').join('')
-    +'</div>'+(sel.why?'<div class="deck-why">“'+String(sel.why).slice(0,220)+'”</div>':'');
-  deckEl.classList.add('open');
-}
-// ---------- scene ----------
-const canvas=document.getElementById('c');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
-const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0b0e14);
-const camera=new THREE.PerspectiveCamera(46,2,0.1,300);
-scene.add(new THREE.AmbientLight(0x99a5c5,0.8));
-const sun=new THREE.DirectionalLight(0xfff2dd,0.9); sun.position.set(8,18,10); scene.add(sun);
-const camT=new THREE.Vector3(4,4.5,0);
-// axes/floor of the "curve theater"
-const XW=20, Y0=0.588, Y1=0.608, YS=9, ZGAP=2.6;
-const yof=p=>Math.max(0,(p-Y0)/(Y1-Y0))*YS;
-const grid=new THREE.GridHelper(46,23,0x1c2438,0x151b2c); grid.position.y=0; scene.add(grid);
-// score gridlines + labels via sprites
-function label(txt,x,y,z,size=1.1,color='#8b95ad',parent){
-  const cv=document.createElement('canvas');cv.width=256;cv.height=64;
-  const g=cv.getContext('2d');g.font='600 30px ui-monospace,monospace';g.fillStyle=color;g.fillText(txt,6,40);
-  const t=new THREE.CanvasTexture(cv);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true}));
-  sp.scale.set(4*size,1*size,1); sp.position.set(x,y,z); (parent||scene).add(sp); return sp;
-}
-[0.59,0.595,0.60,0.605].forEach(v=>{
-  const y=yof(v);
-  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints(
-    [new THREE.Vector3(-XW/2,y,-14),new THREE.Vector3(-XW/2,y,6)]),
-    new THREE.LineBasicMaterial({color:0x222b44}));
-  scene.add(ln); label(v.toFixed(3),-XW/2-2.6,y,5,0.9);
-});
-// evidence bar (right side)
-const barGroup=new THREE.Group(); scene.add(barGroup);
-let barMesh=null, ball=null;
-function setBar(champ,floor){
-  while(barGroup.children.length)barGroup.remove(barGroup.children[0]);
-  const y=yof(champ+floor);
-  barMesh=new THREE.Mesh(new THREE.BoxGeometry(3.4,0.12,1.6),
-    new THREE.MeshStandardMaterial({color:0xd8b24a,emissive:0xd8b24a,emissiveIntensity:0.25}));
-  barMesh.position.set(XW/2+4,y,0); barGroup.add(barMesh);
-  label('evidence bar',XW/2+4,y+0.9,0,0.85,'#d8b24a',barGroup);
-}
-const ribbons=new THREE.Group(); scene.add(ribbons);
-let anims=[];
-function animate(a){anims.push(a);}
-function tick(dt){anims=anims.filter(a=>{a.t+=dt;const k=Math.min(1,a.t/a.dur);a.fn(k);return k<1;});}
-function ribbonFrom(curve,z,color,ghost){
-  const pts=curve.map((c,i)=>new THREE.Vector3(-XW/2+ (i/(Math.max(1,curve.length-1)))*XW, yof(c.p), z));
-  const g=new THREE.BufferGeometry().setFromPoints(pts);
-  const mat=new THREE.LineBasicMaterial({color,transparent:true,opacity:ghost?0.35:1,linewidth:2});
-  const line=new THREE.Line(g,mat);
-  line.geometry.setDrawRange(0,ghost?pts.length:0);
-  ribbons.add(line);
-  if(!ghost) animate({t:0,dur:2.2,fn:k=>line.geometry.setDrawRange(0,Math.floor(k*pts.length))});
-  // sag marker: peak point
-  let mi=0; curve.forEach((c,i)=>{if(c.p>curve[mi].p)mi=i;});
-  if(!ghost&&curve.length>2){
-    const peak=pts[mi];
-    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.22,10,10),
-      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0.6}));
-    dot.position.copy(peak); dot.visible=false; ribbons.add(dot);
-    animate({t:0,dur:2.6,fn:k=>{if(k>0.85){dot.visible=true; dot.scale.setScalar(1+0.4*Math.sin(k*40));}}});
+'use strict';
+const D=window.RUNDATA||{}, N=D.nodes||[], M=D.meta||{};
+const BASELINE=0.6016, BEST=M.best||0.605575, EPS=0.002;
+const $=s=>document.querySelector(s);
+const esc=s=>{const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;};
+const nice=id=>String(id||'').replace(/-/g,' ');
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- scroll progress + bar score --------------------------------- */
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  $('#prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+
+/* ---------- hero chart: the whole run, self-drawing ---------------------- */
+(function hero(){
+  const svg=$('#herochart'), W=760, Hh=190, P=34;
+  const S0=0.6005,S1=0.6062;
+  const xs=i=>P+i/(N.length-1||1)*(W-2*P);
+  const ys=v=>Hh-P-(Math.min(S1,Math.max(S0,v))-S0)/(S1-S0)*(Hh-2*P);
+  let h='<line class="axis" x1="'+P+'" y1="'+(Hh-P)+'" x2="'+(W-P)+'" y2="'+(Hh-P)+'"/>';
+  h+='<line class="baseline-l" x1="'+P+'" y1="'+ys(BASELINE)+'" x2="'+(W-P)+'" y2="'+ys(BASELINE)+'"/>';
+  h+='<text class="axistext" x="'+(W-P)+'" y="'+(ys(BASELINE)-6)+'" text-anchor="end">baseline 0.6016</text>';
+  const acc=N.map((n,i)=>({n,i})).filter(o=>o.n.accepted&&o.n.primary!=null);
+  const pts=acc.map(o=>xs(o.i)+','+ys(o.n.primary)).join(' ');
+  h+='<polyline id="heroline" class="trace" points="'+pts+'"/>';
+  N.forEach((n,i)=>{if(n.primary==null)return;
+    h+='<circle r="4" cx="'+xs(i)+'" cy="'+ys(n.primary)+'" fill="'
+      +(n.accepted?css('--go'):css('--no'))+'" opacity="'+(n.accepted?1:.65)+'"/>';});
+  h+='<text class="axistext" x="'+xs(acc[acc.length-1].i)+'" y="'
+    +(ys(BEST)-10)+'" text-anchor="end" fill="'+css('--go')+'">'+BEST.toFixed(4)+'</text>';
+  svg.innerHTML=h;
+  const line=$('#heroline'), len=line.getTotalLength();
+  line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
+  requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';
+    line.style.strokeDashoffset=0;});
+})();
+
+/* ---------- loop diagram -------------------------------------------------- */
+(function loop(){
+  const stages=['DIAGNOSE','TREAT','RETRAIN','MEASURE'];
+  const g=$('#loopg');let h='';
+  const bw=150,bh=44,y=40,gap=(820-4*bw-40)/3;
+  stages.forEach((s,i)=>{
+    const x=20+i*(bw+gap);
+    h+='<rect class="boxr" x="'+x+'" y="'+y+'" width="'+bw+'" height="'+bh+'" rx="3"/>';
+    h+='<text x="'+(x+bw/2)+'" y="'+(y+bh/2+5)+'" text-anchor="middle">'+s+'</text>';
+    if(i<3)h+='<path class="arrow" d="M'+(x+bw+4)+' '+(y+bh/2)+' L'+(x+bw+gap-6)+' '+(y+bh/2)+'"/>';
+  });
+  // loopback arrow measure -> diagnose
+  h+='<path class="arrow" d="M'+(20+3*(bw+gap)+bw/2)+' '+(y+bh+6)
+    +' C '+(20+3*(bw+gap)+bw/2)+' 135, '+(20+bw/2)+' 135, '+(20+bw/2)+' '+(y+bh+6)+'"/>';
+  h+='<text class="axistext" x="410" y="128" text-anchor="middle" fill="'+css('--dim')
+    +'">accept only if Δ ≥ ε on validation · stop on 3 quiet iterations</text>';
+  h+='<circle id="looppulse" class="pulse" r="4" cx="20" cy="'+(y+bh/2)+'"/>';
+  g.innerHTML=h;
+  // pulse orbiting the loop
+  const pulse=$('#looppulse');const xsP=[95,95+bw+gap,95+2*(bw+gap),95+3*(bw+gap)];
+  let t=0;setInterval(()=>{t=(t+1)%4;
+    pulse.setAttribute('cx',xsP[t]);},1200);
+})();
+
+/* ---------- mission log --------------------------------------------------- */
+const CH={W:560,H:420,P:46,S0:0.6005,S1:0.6062};
+const cx=i=>CH.P+i/(N.length-1||1)*(CH.W-2*CH.P);
+const cy=v=>CH.H-CH.P-(Math.min(CH.S1,Math.max(CH.S0,v))-CH.S0)/(CH.S1-CH.S0)*(CH.H-2*CH.P);
+(function bigChart(){
+  const svg=$('#bigchart');let h='';
+  for(let v=0.601;v<=CH.S1;v+=0.001){
+    h+='<line class="axis" x1="'+CH.P+'" y1="'+cy(v)+'" x2="'+(CH.W-CH.P)+'" y2="'+cy(v)+'" opacity="0.5"/>';
+    h+='<text class="axistext" x="'+(CH.P-8)+'" y="'+(cy(v)+4)+'" text-anchor="end">'+v.toFixed(3)+'</text>';
   }
-  return {line,pts,peakIdx:mi};
+  h+='<line class="baseline-l" x1="'+CH.P+'" y1="'+cy(BASELINE)+'" x2="'+(CH.W-CH.P)+'" y2="'+cy(BASELINE)+'"/>';
+  h+='<text class="axistext" x="'+(CH.W-CH.P)+'" y="'+(cy(BASELINE)+16)+'" text-anchor="end" fill="'
+    +css('--no')+'">baseline</text>';
+  h+='<rect id="epsband" class="epsband" x="'+CH.P+'" y="'+cy(BEST)+'" width="'
+    +(CH.W-2*CH.P)+'" height="'+(cy(BEST-EPS)-cy(BEST))+'"/>';
+  h+='<polyline id="bigtrace" class="trace" points=""/>';
+  N.forEach((n,i)=>{
+    if(n.primary==null){
+      h+='<g id="nd'+i+'" class="dead"><line x1="'+(cx(i)-6)+'" y1="'+(cy(CH.S0)+0)+'" x2="'
+        +(cx(i)+6)+'" y2="'+(cy(CH.S0)-12)+'" /><line x1="'+(cx(i)+6)+'" y1="'+cy(CH.S0)
+        +'" x2="'+(cx(i)-6)+'" y2="'+(cy(CH.S0)-12)+'"/></g>';
+      return;
+    }
+    if(n.accepted)h+='<circle id="nd'+i+'" class="nodedot" r="5" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>';
+    else h+='<g id="nd'+i+'" class="dead"><circle r="5" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>'
+      +'<line x1="'+(cx(i)-7)+'" y1="'+(cy(n.primary)+7)+'" x2="'+(cx(i)+7)+'" y2="'+(cy(n.primary)-7)+'"/></g>';
+    h+='<text class="axistext" x="'+cx(i)+'" y="'+(CH.H-CH.P+18)+'" text-anchor="middle">'
+      +String(i).padStart(2,'0')+'</text>';
+  });
+  svg.innerHTML=h;
+})();
+function traceUpTo(k){ // accepted polyline through iteration k
+  const pts=[];
+  N.forEach((n,i)=>{if(i<=k&&n.accepted&&n.primary!=null)pts.push(cx(i)+','+cy(n.primary));});
+  $('#bigtrace').setAttribute('points',pts.join(' '));
 }
-function leapBall(fromY,toP,pass){
-  if(ball)barGroup.remove(ball);
-  ball=new THREE.Mesh(new THREE.SphereGeometry(0.45,14,14),
-    new THREE.MeshStandardMaterial({color:pass?0x7fb069:0x8a5560,emissive:pass?0x7fb069:0x8a5560,emissiveIntensity:0.4}));
-  const x=XW/2+4, y1=yof(toP);
-  ball.position.set(x,0.4,2.6); barGroup.add(ball);
-  animate({t:0,dur:1.6,fn:k=>{
-    const up=Math.sin(Math.min(1,k*1.15)*Math.PI)* (y1+1.2);
-    ball.position.set(x, 0.4+ (k<0.87? up : (pass? y1 : Math.max(0.4,(1-k)*8*y1/ y1))), 2.6-2.6*Math.min(1,k*1.3));
-    if(k>=0.87){ ball.position.y = pass? y1+0.3 : Math.max(0.4, y1*(1-(k-0.87)/0.13)); }
-  }});
+
+/* entries */
+function headline(n,i){
+  const sel=n.selection||{};
+  if(i===0)return 'Reproduce the baseline. <span class="go">0.6018</span> — base camp.';
+  if(n.primary==null)return 'Node crashed mid-run. Logged as <span class="amber">VOID</span>, loop continues.';
+  const m='tries <b>'+esc(nice(sel.chosen_method_id||'a new package'))+'</b>';
+  return n.accepted
+    ?m+' → <span class="go">'+n.primary.toFixed(4)+'</span>. Cleared the bar.'
+    :m+' → <span class="no">'+n.primary.toFixed(4)+'</span>. Below ε — dead end.';
 }
-// ---------- build consultation steps ----------
-const fmtp=p=>p?p.toFixed(6):'—';
-let strikes=0, score=(N[0]&&N[0].primary)||0.6018, champ=score, floor=0.0009, zi=0;
-function setScore(v){score=v;}
-const steps=[];
-let champCurve=(N[0]&&N[0].curve)||[];
-steps.push({label:'The patient',html:`<h3>The consultation loop</h3><p>Each iteration is one consultation: read the vitals (real learning curves), diagnose, choose a treatment from the card library, retrain, and face the evidence bar. Everything below is drawn from <b>${M.run}</b>'s actual logs.</p><p class="dim">Ribbons = validation score across training checkpoints. Depth = iterations. The gold ribbon is the reigning champion.</p>`,
-  act:()=>{while(ribbons.children.length)ribbons.remove(ribbons.children[0]); zi=0; strikes=0; champ=N[0].primary; setScore(champ); setBar(champ,floor);
-    if(champCurve.length)ribbonFrom(champCurve,0,0xd8b24a,false);}});
-steps.push({label:'Diagnosis 0',html:`<h3>First vitals — the disease</h3><p>The baseline's own curve shows it: validation climbs, <b>peaks at epoch ~7-8, then falls</b> while training loss keeps improving — the model starts memorizing. The white pulse marks the peak the agent will keep diagnosing all run.</p><p><b>Champion: ${fmtp(champ)}</b>. The evidence bar (right) sits a noise-floor above it: to become champion, a candidate must clear it.</p>`,
-  act:()=>{}});
-N.forEach((n,ix)=>{
-  if(n.id==='node_000')return;
-  zi+=1; const z=-zi*ZGAP;
-  if(n.error&&!n.primary){
-    steps.push({label:`${n.id}: failure`,html:`<h3>${n.id} — the tooling fails (real, journaled)</h3><p>${n.summary}</p><p class="dim">No model was produced; the strike counter advances anyway. Robustness = surviving your own instruments.</p>`,
-      act:()=>{strikes=Math.min(3,strikes+1);}});
-    return;
+(function entries(){
+  const box=$('#entries');
+  N.forEach((n,i)=>{
+    const sel=n.selection||{};
+    const stamp=n.primary==null?'<span class="stamp void">VOID</span>'
+      :n.accepted?'<span class="stamp acc">ACCEPTED</span>':'<span class="stamp rej">DEAD END</span>';
+    let h='<div class="entry" data-i="'+i+'">'+stamp+'<h3>ITER '+String(i).padStart(2,'0')+'</h3>'
+      +'<div>'+headline(n,i)+'</div>';
+    if(sel.diagnosis||sel.why){
+      const q=(sel.diagnosis?('['+esc(sel.diagnosis)+'] '):'')+esc((sel.why||'').slice(0,260))
+        +((sel.why||'').length>260?'…':'');
+      h+='<div class="quote"><span class="typed" data-full="'+q.replace(/"/g,'&quot;')+'"></span></div>';
+    }
+    const rej=sel.rejected||[];
+    if(sel.chosen_method_id||rej.length){
+      h+='<div class="chips">';
+      rej.forEach(r=>h+='<span class="chip rej">'+esc(nice(r.method_id||r))+'</span>');
+      if(sel.chosen_method_id)h+='<span class="chip pick">'+esc(nice(sel.chosen_method_id))+'</span>';
+      h+='</div>';
+    }
+    if(n.primary!=null)h+='<div class="meas dim">measured '+n.primary.toFixed(6)
+      +(n.accepted&&i>0?' · Δ +'+(n.primary-BASELINE).toFixed(4)+' vs baseline':'')+'</div>';
+    if((sel.why||'').length>260||sel.citation)
+      h+='<details><summary>full journal entry</summary><div class="full">'
+        +esc(sel.why||n.summary||'')+(sel.citation?'\n\ncitations: '+esc(sel.citation):'')+'</div></details>';
+    h+='</div>';
+    box.insertAdjacentHTML('beforeend',h);
+  });
+  // final entry: convergence
+  box.insertAdjacentHTML('beforeend','<div class="entry" data-i="conv">'
+    +'<span class="stamp acc">CONVERGED</span><h3>STOP</h3>'
+    +'<div>Three consecutive iterations inside <b>ε = 0.002</b> — the official rule fires. '
+    +'Final: <span class="go">'+BEST.toFixed(6)+'</span>, +'+(BEST-BASELINE).toFixed(4)
+    +' over the baseline. No human said stop.</div></div>');
+})();
+
+/* typewriter */
+function typeIn(el){
+  const full=el.dataset.full||'';if(el.dataset.done)return;el.dataset.done=1;
+  let k=0;const t=setInterval(()=>{
+    k+=3;el.innerHTML=full.slice(0,k);
+    if(k>=full.length){clearInterval(t);el.closest('.quote').classList.add('done');}
+  },12);
+}
+
+/* scroll activation */
+let bestSoFar=BASELINE;
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  const el=e.target;el.classList.add('onn');
+  const i=el.dataset.i;
+  el.querySelectorAll('.typed').forEach(typeIn);
+  if(i==='conv'){$('#epsband').classList.add('onn');traceUpTo(N.length);$('#barscore').textContent=BEST.toFixed(4);return;}
+  const k=+i,n=N[k];
+  const nd=document.getElementById('nd'+k);if(nd)nd.classList.add('onn');
+  traceUpTo(k);
+  if(n&&n.accepted&&n.primary!=null)bestSoFar=Math.max(bestSoFar,n.primary);
+  $('#barscore').textContent=bestSoFar.toFixed(4);
+}),{threshold:0.45});
+document.querySelectorAll('.entry').forEach(el=>io.observe(el));
+
+/* ---------- receipts ------------------------------------------------------ */
+(function receipts(){
+  const wall=M.wall_s?Math.round(M.wall_s/60)+' min':'—';
+  const cells=[
+    [BEST.toFixed(4),'final valid primary'],
+    ['+'+(BEST-BASELINE).toFixed(4),'gain vs published baseline'],
+    [String(M.iterations||6),'iterations to convergence'],
+    [wall,'agent wall-clock'],
+    [((M.tokens||0)/1000).toFixed(0)+'k','LLM tokens'],
+    ['0','manual interventions'],
+  ];
+  $('#rgrid').innerHTML=cells.map(c=>'<div class="cell"><div class="v">'+c[0]
+    +'</div><div class="k">'+c[1]+'</div></div>').join('');
+})();
+
+/* ---------- starscape (scroll-morphed) ----------------------------------- */
+(function space(){
+  const SP=window.SPACE;const canvas=$('#spacecanvas');
+  if(!SP||!window.THREE){$('#spacetall').style.height='auto';
+    $('#spacecaption').textContent='(embedding visual unavailable — run tools/build_space.py)';return;}
+  const n=SP.meta.n,dec=SP.decile;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  const scene=new THREE.Scene();scene.background=new THREE.Color(css('--bg'));
+  const camera=new THREE.PerspectiveCamera(50,2,0.1,400);
+  const R=30;
+  const A=new Float32Array(n*3),B=new Float32Array(n*3),pos=new Float32Array(n*3);
+  for(let i=0;i<n;i++)for(let a=0;a<3;a++){
+    A[i*3+a]=(SP.base[i][a]/1000-0.5)*R;B[i*3+a]=(SP.treat[i][a]/1000-0.5)*R;pos[i*3+a]=A[i*3+a];
   }
-  // diagnosis + treatment
-  const diag=(n.summary.split('will')[0]||n.summary).slice(0,260);
-  steps.push({selection:n.selection,label:`${n.id}: diagnose`,html:`<h3>${n.id} — diagnose & prescribe</h3><p><b>Diagnosis (verbatim):</b> ${diag}…</p>${n.selection?`<p><b>Treatment:</b> <span style="color:var(--gold)">${n.selection.chosen_method_id}</span> — see the card fan (left) for what it weighed.</p>`:''}${n.probes&&n.probes.length>2?`<p class="dim">This treatment is a search: ${n.probes.length} internal trials logged before committing.</p>`:''}`,
-    act:()=>{}});
-  // retrain
-  steps.push({label:`${n.id}: retrain`,html:`<h3>${n.id} — retrain</h3><p>The new ribbon draws against the champion's ghost. Watch the shape: ${n.accepted?'it holds its peak higher':'does it hold its peak, or sag the same way?'}${n.members&&n.members.length>1?` (${n.members.length} seed members trained; validation selects the combination)`:''}.</p>`,
-    act:()=>{ if(champCurve.length)ribbonFrom(champCurve,z+1.1,0xd8b24a,true);
-      const cv=(n.curve&&n.curve.length>2)?n.curve:(n.members&&n.members.length?null:null);
-      if(cv)ribbonFrom(cv,z,0x5b8dd9,false);
-      else label((n.members&&n.members.length? n.members.length+' members trained':'(curve not logged)'),0,yof(n.primary||champ)+1.2,z,1.0,'#8b95ad',ribbons);}});
-  // verdict + evidence bar + fixed/broken
-  const passed=n.accepted;
-  steps.push({label:`${n.id}: verdict`,html:`<h3>${n.id} — the evidence bar</h3><p>Scored <b>${fmtp(n.primary)}</b> vs champion ${fmtp(champ)} + floor.</p>${(n.fixed!=null)?`<p>Real per-pair audit: <span class="good">fixed ${n.fixed.toLocaleString()}</span> orderings, <span class="bad">broke ${n.broken.toLocaleString()}</span> — improvement is a narrow trade, not magic${(n.id==='node_006')?'; note the raw counts even net negative here, but GAUC weights users by positives and nDCG weights the top — the official metric improves. Counts are not the metric.':''}.</p>`:''}<p>${passed?'<span class="good">CLEARS — new champion.</span>':'<span class="bad">Falls short — rejected; strike recorded.</span>'}</p>`,
-    act:()=>{ leapBall(0,n.primary||champ,passed);
-      if(passed){ const gain=(n.primary-champ); strikes=gain>0.002?0:Math.min(3,strikes+1);
-        champ=n.primary; setScore(champ); if(n.curve&&n.curve.length>2)champCurve=n.curve; setBar(champ,floor);
-      } else strikes=Math.min(3,strikes+1);}});
-});
-steps.push({label:'Converged',html:`<h3>The rule stops the run</h3><p>Third consultation without a ≥0.002 gain — the official convergence rule ends it. Final champion <b>${fmtp(M.best)}</b>: ${M.iterations} decisions, ${Math.round((M.wall_s||0)/60)} minutes, ${(M.tokens||0).toLocaleString()} tokens, zero mid-run human actions.</p><p class="dim">Replayable end-to-end from ${M.run}/ in the public repo.</p>`,
-  act:()=>{setScore(M.best||champ);}});
-let cur=-1;
-function go(i){ if(i<0||i>=steps.length)return; cur=i; const st=steps[i];
-  panel.innerHTML=st.html; showDeck(st.selection||null); st.act();
-  stepLabel.textContent=`${i+1} / ${steps.length}`;
-  document.getElementById('prev').disabled=i===0;
-  document.getElementById('next').disabled=i===steps.length-1;
-}
-document.getElementById('next').onclick=()=>go(cur+1);
-document.getElementById('prev').onclick=()=>go(cur-1);
-addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);});
-// camera orbit
-let theta=0.35,phi=1.15,radius=30,drag=false,px=0,py=0,auto=true;
-canvas.addEventListener('pointerdown',e=>{drag=true;auto=false;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>drag=false);
-addEventListener('pointermove',e=>{if(!drag)return;theta-=(e.clientX-px)*0.005;phi=Math.max(0.35,Math.min(1.5,phi-(e.clientY-py)*0.004));px=e.clientX;py=e.clientY;});
-canvas.addEventListener('wheel',e=>{radius=Math.max(14,Math.min(60,radius+e.deltaY*0.02));e.preventDefault();},{passive:false});
-let last=performance.now(),shown=score;
-function loop(now){const dt=(now-last)/1000;last=now;
-  if(auto)theta+=dt*0.03;
-  camera.position.set(camT.x+radius*Math.sin(phi)*Math.cos(theta),camT.y+radius*Math.cos(phi),camT.z+radius*Math.sin(phi)*Math.sin(theta));
-  camera.lookAt(camT); tick(dt);
-  shown+=(score-shown)*Math.min(1,dt*3); ticker.textContent=shown.toFixed(6);
-  strikeEl.textContent='✕'.repeat(strikes)+'·'.repeat(Math.max(0,3-strikes));
-  const w=canvas.clientWidth,h=canvas.clientHeight;
-  if(canvas.width!==w||canvas.height!==h){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
-  renderer.render(scene,camera); requestAnimationFrame(loop);
-}
-go(0); requestAnimationFrame(loop);
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const col=new Float32Array(n*3);
+  const cGo=new THREE.Color(css('--go')),cNo=new THREE.Color(css('--no')),cDim=new THREE.Color(css('--dim'));
+  for(let i=0;i<n;i++){
+    const c=dec[i]<=2?cNo.clone().lerp(cDim,0.25):cDim.clone().lerp(cGo,dec[i]/9*0.7);
+    col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+  }
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const dotTex=(function(){const cv=document.createElement('canvas');cv.width=cv.height=64;
+    const g=cv.getContext('2d');g.beginPath();g.arc(32,32,26,0,7);g.fillStyle='#fff';g.fill();
+    return new THREE.CanvasTexture(cv);})();
+  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({size:0.32,map:dotTex,
+    vertexColors:true,transparent:true,opacity:0.85,alphaTest:0.4})));
+  let morph=-1;
+  const tall=$('#spacetall'),cap=$('#spacecaption'),lbl=$('#morphlbl');
+  const CAPS=[[0,'the baseline\'s space — memorized red outliers everywhere (score 0.6015)'],
+              [0.45,'the agent\'s treatments applying: regularization + recency + ensemble…'],
+              [0.85,'the champion\'s space — tighter, structured, rare videos reined in (score 0.6045)']];
+  function setMorph(m){
+    if(Math.abs(m-morph)<0.004)return;morph=m;
+    for(let i=0;i<n*3;i++)pos[i]=A[i]+(B[i]-A[i])*m;
+    geo.attributes.position.needsUpdate=true;
+    lbl.textContent='morph '+(m*100).toFixed(0)+'%';
+    cap.textContent=CAPS.filter(c=>m>=c[0]).pop()[1];
+  }
+  function resize(){const r=canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;
+    camera.updateProjectionMatrix();}
+  addEventListener('resize',resize);resize();
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let theta=0;
+  function frame(){
+    const r=tall.getBoundingClientRect();
+    const vis=r.top<innerHeight&&r.bottom>0;
+    if(vis){
+      const p=Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)));
+      setMorph(p);
+      if(!reduced)theta+=0.0012;
+      camera.position.set(Math.sin(theta)*54,10,Math.cos(theta)*54);
+      camera.lookAt(0,0,0);
+      renderer.render(scene,camera);
+    }
+    requestAnimationFrame(frame);
+  }
+  setMorph(0);requestAnimationFrame(frame);
+})();
 })();

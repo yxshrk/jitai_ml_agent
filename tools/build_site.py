@@ -58,8 +58,10 @@ def main():
         meta = {'run': run.name}
     import re as _re
     cards = _re.findall(r'^### ([a-z0-9-]+):', (ROOT/'agent/METHODS.md').read_text(), _re.M)
-    json.dump({'meta': meta, 'nodes': steps, 'corpus': corpus[:1200], 'cards': cards},
-              open(ROOT / 'site/rundata.json', 'w'))
+    payload = {'meta': meta, 'nodes': steps, 'corpus': corpus[:1200], 'cards': cards}
+    json.dump(payload, open(ROOT / 'site/rundata.json', 'w'))
+    # file://-safe copy for the site (fetch() is blocked off-server)
+    (ROOT / 'site/rundata.js').write_text('window.RUNDATA=' + json.dumps(payload) + ';')
     print(f"site data built from {run.name}: {len(steps)} nodes, {len(corpus)} corpus probes")
 
 if __name__ == '__main__':

@@ -1,0 +1,2 @@
+{"frequency_exponent": 0.5, "frequency_reg_lambda": 0.1, "loss": "pointwise_bce_control", "primary": 0.587077, "seed": 42}
+{"frequency_exponent": 0.5, "frequency_reg_lambda": 0.1, "loss": "gauge_fixed_bce", "primary": 0.601069, "seed": 42}

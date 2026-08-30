@@ -1,0 +1,2 @@
+{"loss": "pointwise_bce_control", "primary": 0.58732, "seed": 42}
+{"loss": "gauge_fixed_bce", "primary": 0.601297, "seed": 42}

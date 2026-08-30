@@ -1,0 +1,3 @@
+{"lambda_alpha": 0.0, "primary": 0.6015076341279698, "seed": 42, "stage": "lambda_probe"}
+{"lambda_alpha": 1.0, "primary": 0.5923073394341227, "seed": 42, "stage": "lambda_probe"}
+{"lambda_alpha": 0.0, "primary": 0.6019876010299343, "seed": 1043, "stage": "lambda_refinement"}
