@@ -33,3 +33,11 @@ k=3 0.60501 | k=5 0.60476 | k=7 0.60502 | k=9 0.60491 | k=12 0.60493.
 Spread ±0.0003 = seed-noise scale -> member count is FLAT on Pure (contrast 1K).
 VERDICT: keep the predeclared 5-seed recipe; choosing k=7 post hoc would be
 validation-noise cherry-picking.
+
+## Exact-tie sensitivity audit of the designated Pure close (31 Aug, tools/endgame_close_audit.py)
+bc07 node_006 (3-member per-user rank average): 10.8% of validation slates contain
+an exact aggregate tie (5.3% of rows). Under 200 random tie resolutions primary =
+0.605605 ± 0.000086; recorded 0.605575 is -0.00003 from the tie-neutral mean.
+VERDICT: artifact is tie-stable; no row-order dependence. (Suggested by ChatGPT Pro
+playbook §6.1; aggregation-swap suggestions §6.2+ rejected — would change the
+designated artifact.)

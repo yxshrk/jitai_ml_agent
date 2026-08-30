@@ -25,7 +25,11 @@
 - NOTE: farm-greedy 0.60577/0.60602 are val-selected -> EVIDENCE ONLY. The honest
   consecutive-seed ensemble reproduces at 0.60513 in two independent agent runs.
 
-## Pure (primary)
+## [STALE — SUPERSEDED by the designated-champions section above and the compliance
+## ruling below. Team-built pool ensembles are WRITEUP EVIDENCE ONLY. The Pure
+## submission is bc07 node_006: 3 members, seeds 42-44, per-user rank average,
+## via tools/predict_test_bc07.py — ALREADY BUILT. Do NOT build a 5-seed Pure CSV.]
+## Pure (primary) — historical Saturday decision
 Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
 {46, 74, 93, 91, 60}, greedy-selected on validation from the 60-seed farm
 (coral, farm_results.jsonl; optimizer log ens_opt.log).
