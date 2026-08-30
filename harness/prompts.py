@@ -98,7 +98,11 @@ and which node moved which group — the deepen slot should target that. Group m
 within user on SHORTER lists, so a group's nDCG@5 is a map of relative weakness, not comparable to the overall number
 (tab=0 or dur=0 users are mostly all-negative, so their nDCG is near zero whatever the model does). Groups listed as
 HARD in the state (>= HARD_GROUP_REJECTS rejected deepens; likely irreducible label noise — a long video needs only 18 s of play
-to be a positive) are not "next": say so in one clause and move on. (6) If the state names a CAMPAIGN family: one clause
+to be a positive) are not "next": say so in one clause and move on. The PAIR-TYPE table is the sharper map: GAUC is
+pair error, and each node's by_pair_delta says which pair types it moved (negative = fewer misordered). tab1_x_tab1 pairs
+on different days carry ~69 % of the mass (facts §11); a node that moves only gap<10min pairs (2 %) or one small group
+has touched little of what the metric counts — say which pair type the champion's error sits in and whether the
+generation moved it. (6) If the state names a CAMPAIGN family: one clause
 on whether its variants moved anything (which mechanism, which group) and whether it should stay open.""",
  'select': """Role: SELECTOR. Choose exactly k candidates for the next generation.
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
@@ -398,8 +402,14 @@ def _breakdown(ch):
     bg = (ch.get('metrics') or {}).get('by_group') or {}
     if not bg:
         return ''
-    return ('Champion by group (where it is wrong; primary / GAUC / nDCG@5, rows): '
+    text = ('Champion by group (where it is wrong; primary / GAUC / nDCG@5, rows): '
             + '; '.join(f"{g} {v['primary']:.4f}/{v['gauc']:.4f}/{v['ndcg5']:.4f} ({v['rows']})" for g, v in bg.items()) + '\n')
+    bp = (ch.get('metrics') or {}).get('by_pair') or {}
+    if bp:   # GAUC is pair error: which positive-negative pair types carry it (facts §11)
+        text += ('Champion by PAIR TYPE (share of the GAUC pair mass / misordered fraction): '
+                 + '; '.join(f"{t} {v['share']:.2f}/{v['err']:.3f}" for t, v in bp.items() if isinstance(v, dict) and v.get('err') is not None)
+                 + f" | total misordered {bp.get('total_err')}\n")
+    return text
 
 def user_diagnose(ctx):
     return _state(ctx) + '\n\nLast generation results:\n' + json.dumps(ctx.get('last_generation', []), indent=1, default=str)[:24000]

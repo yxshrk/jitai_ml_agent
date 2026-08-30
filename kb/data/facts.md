@@ -101,3 +101,31 @@ base P(long_view) = 0.337; reproduced by `eda.py` — exact table in `eda_report
    > 10 → 0.120; by gap since the previous impression < 0.5 min 0.361 · 10–60 min 0.399 · > 60 min 0.417. Attention
    budget per impression is the mechanism; the features vary within a user's list and need only `time_ms` of earlier
    rows (card `features-exposure-session`).
+
+## 11. Information ceiling — where the error is and which signal families are bounded (research session, 2026-08-31;
+scripts and full tables in `kb/data/screens/CEILING.md`, `pairs.py`, `oracles.py`, `knn.py`; champion = live_07 node_009,
+valid 0.6041; seed SD ≈ 0.00035, so ±0.0005 is zero)
+1. **GAUC is pair error, and 69 % of the champion's remaining pair mass is tab-1 × tab-1 pairs on different days**
+   (misordered 0.379). Cross-tab pairs are solved (0.186); pairs within 10 min are 2 % of the mass (the cap on session
+   features, measured +0.0009); pairs more than a day apart 62 %. Duration calibration is already right.
+2. **Per-family oracle bounds** — the most a family can add on the champion, measured with information no legal
+   model has (valid labels leave-one-out or split-half, the random log, the leaky statistics file):
+   | family | oracle | bound | implication |
+   |---|---|---|---|
+   | video / author side, any period | valid-week LOO rate from the valid labels; whole-month `video_features_statistic` | +0.0003 / +0.0000 | rates, drift, popularity, content, statistics: closed |
+   | user state that day ("mood") | user × date from the other half of the user's own valid rows (54 % coverage) | +0.0000 | day-level and label-free day context: closed |
+   | random-exposure log (same dates, 78 % of valid rows covered) | user-day / user-week / video-week rates | ≤ +0.0001 | not a lever; the rules question is moot |
+   | user × tab / duration / tag / type taste | other-half rates | ≤ +0.0003 | closed |
+   | **user × author, user × music** | other-half rates, **3 % coverage** | **+0.0021 / +0.0016** | the only taste signal; unobservable without same-week labels |
+   | train-history taste, item-kNN (4 variants), repeats, weekday/hour | — | ≤ +0.0002 | history aggregates / CF add-ons: closed |
+3. **Model-side ablations (single seed):** the FM without `user_id` scores 0.5932 vs 0.6015 (personalisation +0.008,
+   flat across users with 1–800 training rows: it learns user × tab / duration, not taste); train + half of valid
+   scored on the other half 0.5821 vs 0.5826 and windows from 04-12 / 04-14 / 04-15 score 0.6004 / 0.5999 / 0.5949
+   (volume, not recency — a train+valid refit at designation is worth ≤ +0.001); same-tab BPR negatives at 30 / 70 /
+   100 % 0.6030 / 0.6024 / 0.5880; 20 seeds 0.6044; two lineages 0.6047. live_07 (converged at generation 5, champion
+   node_009 fresh-seed mean 0.6044): the DIN history-attention slot (node_017, bound 0 from the kNN result) −0.0001;
+   session features +0.0009 on BPR (z 3.1) but +0.0002 on the seed blend (z 1.0); the best unaccepted node, a
+   session-gated parent–child rank fusion (node_019), +0.0005 at z 1.9 — every one inside the bounds above.
+4. **Reading:** the legal ceiling on valid is ≈ 0.605–0.607; the residual is the user's momentary interest in a
+   specific feed video and nothing observable at show time predicts it. Campaign ordering (ADR-0016) should place the
+   bounded families last; the stop rule stays the organizers' measured-flatness criterion (ADR-0012), not this bound.

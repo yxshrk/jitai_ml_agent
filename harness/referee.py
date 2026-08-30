@@ -19,12 +19,13 @@ def valid_index():
     """(user_ids, video_ids, labels) of the valid split in row_id order, cached."""
     global _VALID
     if _VALID is None:
-        uid, vid, y, tab, dur = [], [], [], [], []
+        uid, vid, y, tab, dur, date, tms = [], [], [], [], [], [], []
         with open(C.WS_DATA / 'valid.csv', newline='') as fh:
             for row in csv.DictReader(fh):
                 uid.append(row['user_id']); vid.append(row['video_id']); y.append(1 if row['long_view'] != '0' else 0)
                 tab.append(row.get('tab', '')); dur.append(float(row.get('duration_ms') or 0))
-        _VALID = (uid, vid, y); _VALID_EXTRA.update({'tab': tab, 'dur': dur})
+                date.append(row.get('date', '')); tms.append(int(row.get('time_ms') or 0))
+        _VALID = (uid, vid, y); _VALID_EXTRA.update({'tab': tab, 'dur': dur, 'date': date, 'time': tms})
     return _VALID
 
 _VALID_EXTRA, _GROUPS = {}, None
@@ -50,6 +51,40 @@ def group_breakdown(scores):
     for name, idx in valid_groups().items():
         m = evaluate([uid[i] for i in idx], [y[i] for i in idx], [scores[i] for i in idx])
         out[name] = {'rows': len(idx), 'gauc': round(m['GAUC'], 4), 'ndcg5': round(m['nDCG@5'], 4), 'primary': round(m['primary'], 4)}
+    return out
+
+PAIR_TYPES = ('same_tab', 'diff_tab', 'tab1_x_tab1', 'same_date', 'diff_date', 'gap>1d', 'gap<10min', 'pos_shorter', 'pos_longer')
+def pair_breakdown(scores):
+    """GAUC error attributed to positive-negative pair types (the ceiling study, kb/data/screens/CEILING.md).
+    Each discriminative user's pairs are weighted 1/#negatives so the user counts #positives, as GAUC weights it;
+    `share` = the type's share of the pair mass, `err` = weighted misordered fraction (ties count 0.5),
+    `contrib` = share * err; `total_err` = 1 - GAUC. Types overlap (they are different cuts of the same pairs)."""
+    uid, _, y = valid_index(); tab, dur, date, tms = (_VALID_EXTRA[k] for k in ('tab', 'dur', 'date', 'time'))
+    by_user = {}
+    for i, u in enumerate(uid):
+        by_user.setdefault(u, ([], []))[y[i]].append(i)
+    mass = {t: 0.0 for t in PAIR_TYPES}; err = {t: 0.0 for t in PAIR_TYPES}; total_mass = total_err = 0.0
+    for neg, pos in by_user.values():
+        if not pos or not neg:
+            continue
+        w = 1.0 / len(neg)
+        for p in pos:
+            sp, tp, dp, datep, timep = scores[p], tab[p], dur[p], date[p], tms[p]
+            for n in neg:
+                e = 0.0 if sp > scores[n] else 0.5 if sp == scores[n] else 1.0
+                gap = abs(timep - tms[n])
+                types = ('same_tab' if tp == tab[n] else 'diff_tab', 'same_date' if datep == date[n] else 'diff_date')
+                if tp == '1' and tab[n] == '1': types += ('tab1_x_tab1',)
+                if gap > 86_400_000: types += ('gap>1d',)
+                elif gap < 600_000: types += ('gap<10min',)
+                if dur[n] > 0 and dp < dur[n]: types += ('pos_shorter',)
+                elif dp > dur[n]: types += ('pos_longer',)
+                for t in types:
+                    mass[t] += w; err[t] += w * e
+                total_mass += w; total_err += w * e
+    out = {t: {'share': round(mass[t] / total_mass, 3), 'err': round(err[t] / mass[t], 3) if mass[t] else None,
+               'contrib': round(err[t] / total_mass, 4)} for t in PAIR_TYPES}
+    out['total_err'] = round(total_err / total_mass, 4) if total_mass else None
     return out
 
 def static_check(code: str):
@@ -97,13 +132,14 @@ def valid_cohorts():
 
 def score(scores, breakdown=False):
     """Official metrics plus `ndcg5_disc`: nDCG@5 restricted to discriminative users, the sharper diagnostic
-    (nDCG = all_pos*1 + disc*ndcg_disc + all_neg*0); with breakdown=True also the per-tab / per-duration map."""
+    (nDCG = all_pos*1 + disc*ndcg_disc + all_neg*0); with breakdown=True also the per-tab / per-duration map and
+    the pair-type attribution of the GAUC error (`by_pair`)."""
     uid, _, y = valid_index()
     m = evaluate(uid, y, scores); c = valid_cohorts()
     disc = (m['nDCG@5'] - c['all_pos']) / c['disc'] if c['disc'] else float('nan')
     out = {'gauc': m['GAUC'], 'ndcg5': m['nDCG@5'], 'primary': m['primary'], 'ndcg5_disc': disc}
     if breakdown:
-        out['by_group'] = group_breakdown(scores)
+        out['by_group'] = group_breakdown(scores); out['by_pair'] = pair_breakdown(scores)
     return out
 
 @dataclass

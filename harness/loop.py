@@ -854,11 +854,16 @@ class Loop:
         view = {k: rec.get(k) for k in ('n', 'parent', 'merge_parents', 'action', 'method', 'target_component', 'hypothesis',
                                         'change_summary', 'expected_delta', 'realized_delta', 'accepted',
                                         'seed_confirmation', 'failure_stage', 'error', 'recovery', 'duration_s')}
-        view['metrics'] = {k: v for k, v in m.items() if k != 'by_group'}
+        view['metrics'] = {k: v for k, v in m.items() if k not in ('by_group', 'by_pair')}
         view['curve'] = [round(h.get('val_primary', 0), 4) for h in rec.get('history', [])][:40]
         cg = (self.champion.get('metrics') or {}).get('by_group') or {}
         if m.get('by_group') and cg:   # where the node moved relative to the champion, per tab and duration band
             view['by_group_delta'] = {g: round(m['by_group'][g]['primary'] - cg[g]['primary'], 4) for g in m['by_group'] if g in cg}
+        cp = (self.champion.get('metrics') or {}).get('by_pair') or {}
+        if m.get('by_pair') and cp:   # misordered-pair fraction per pair type vs the champion; negative = fewer misordered pairs
+            view['by_pair_delta'] = {t: round(m['by_pair'][t]['err'] - cp[t]['err'], 3) for t in m['by_pair']
+                                     if isinstance(m['by_pair'].get(t), dict) and isinstance(cp.get(t), dict)
+                                     and m['by_pair'][t].get('err') is not None and cp[t].get('err') is not None}
         return view
 
     # ---------------- driver ----------------

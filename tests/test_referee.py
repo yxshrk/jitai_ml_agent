@@ -7,6 +7,16 @@ def test_static_check_flags_forbidden_paths():
     assert 'private/' in R.static_check("p = 'private/test_features.csv'")
     assert R.static_check("import numpy as np\nprint('hello')") == []
 
+def test_pair_breakdown():
+    uid, _, y = R.valid_index()
+    perfect = R.pair_breakdown([float(v) for v in y]); flat = R.pair_breakdown([0.0] * len(y))
+    assert perfect['total_err'] == 0.0 and flat['total_err'] == 0.5                       # labels as scores / all ties
+    assert abs(perfect['same_tab']['share'] + perfect['diff_tab']['share'] - 1.0) < 1e-6   # the tab cut partitions the mass
+    assert abs(perfect['same_date']['share'] + perfect['diff_date']['share'] - 1.0) < 1e-6
+    assert all(flat[t]['err'] == 0.5 for t in R.PAIR_TYPES if flat[t]['err'] is not None)
+    assert flat['tab1_x_tab1']['share'] > 0.5                                               # facts §11: the feed pairs dominate
+    m = R.score([0.0] * len(y), breakdown=True); assert 'by_pair' in m and m['by_pair']['total_err'] == 0.5
+
 def test_accept_and_convergence():
     assert R.accept(0.6015, 0.6040) == (True, pytest.approx(0.0025))
     assert R.accept(0.6015, 0.6030)[0] is False
