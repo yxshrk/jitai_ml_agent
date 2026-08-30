@@ -9,7 +9,7 @@
 | Benchmark | Official baseline (valid) | Ours (valid) | Absolute delta |
 |---|---|---|---|
 | KuaiRand-Pure (required) | GAUC 0.6674 / nDCG@5 0.5357 / primary 0.6016 | GAUC 0.6728 / nDCG@5 0.5383 / **primary 0.605575** | **+0.00398** primary (+0.0054 GAUC, +0.0026 nDCG@5) |
-| KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.63874** | +0.0179 vs our single-model start |
+| KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.6524** (designated) — {{TBD: 0.66892 re-designation pending audit}} | +0.032 vs single-model start ({{TBD: +0.048 pending}}) |
 | KuaiRand-27K (bonus, out-of-protocol scaling demo) | n/a | primary 0.67263 | — (GPU demo, not an agent run) |
 
 Designated runs: Pure = `logs/run_bigclock_07` (no executable seed; stopped under the ε=0.002/N=3 rule);

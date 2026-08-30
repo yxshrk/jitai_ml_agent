@@ -1,4 +1,4 @@
-# Demo video script (~2 min) — record Sunday
+# Demo video script (~2-3 min) — record Monday
 
 Format: screen capture + voiceover. Rehearse once; speak plainly; no music needed.
 
@@ -43,3 +43,22 @@ The agent is the product; the score is its evidence. Thanks."
 - Terminal font large; hide personal notifications; 1080p or higher.
 - Keep total under 2:30; judges may watch nothing else — the video must stand alone.
 - No third-party trademarks/music (rules requirement).
+
+
+## Shot 5 (NEW) — the Flight Recorder site (insert after Shot 3, ~20s)
+Screen: site/index.html served locally — scroll the hero (self-drawing score line),
+one mission-log iteration card (typewriter diagnosis + DEAD END stamp), and the
+memorization evidence panels.
+Say: "Every claim on this page is generated from the run journals — the site IS the
+log. Here is the agent diagnosing overfit, trying a treatment, and striking out its
+own dead ends."
+
+## Shot 6 (NEW) — the knowledge loop / 1K breakthrough (~20s)
+Screen: agent/METHODS.md temporal-pair-kernel card (measured-win status), then
+logs/RUNS.md tail with omega_1k line.
+Say: "Runs feed each other through a cited method library. One run invented a pair-
+sampling kernel; another discovered session features worth plus-point-zero-one-nine
+on the bonus benchmark — {{TBD-1K-FINAL}} after a three-way audit. The agents do the
+research; the library remembers."
+
+## {{TBD-MONDAY}}: re-record Shot 4 numbers with final designations.
