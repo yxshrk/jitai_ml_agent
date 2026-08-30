@@ -49,8 +49,40 @@ def test_family_choice_order(tmp_path, monkeypatch):
 
 def test_screen_gain_orders_families_first(tmp_path, monkeypatch):
     _kb(tmp_path, monkeypatch); lp = _loop(tmp_path, monkeypatch)
-    lp.state['screened'] = [{'card': 'features-s', 'family': 'features', 'best_gain': 0.0006}]
-    assert lp._campaign_family(2) == 'features'                             # a measured screen gain beats a card's promise
+    lp.state['screened'] = [{'card': 'features-s', 'family': 'features', 'best_gain': 0.0006, 'kept': True, 'generation': 1}]
+    assert lp._campaign_family(2) == 'features'                             # a measured (kept) screen gain beats a card's promise
+    lp.state['campaign'] = None
+    lp.state['screened'] = [{'card': 'features-s', 'family': 'features', 'best_gain': 0.0001, 'kept': False, 'generation': 1}]
+    assert lp._campaign_family(2) == 'history'                              # a dropped screen is not evidence for the family
+
+
+def test_dead_stacks_compare_exactly(tmp_path, monkeypatch):
+    from harness.loop import _dead_stacks, _stack_key
+    st = 'dead_under [official FM + loss-bpr x1 (best Δ -0.0022); official FM + loss-bpr + ensembling-z ×2 (best Δ +0.0001)]'
+    assert _dead_stacks(st) == ['official FM + loss-bpr', 'official FM + loss-bpr + ensembling-z']
+    assert _stack_key('official FM + loss-bpr') != _stack_key('official FM + loss-bpr + ensembling-z')
+    kb = _kb(tmp_path, monkeypatch)
+    (kb / 'methods' / 'model-y.md').write_text(CARD.format(id='model-y', family='model', tc='model', hi=0.005,
+                                                            status='dead_under [official FM + loss-bpr + ensembling-z x1 (best Δ +0.0001)]'))
+    lp = _loop(tmp_path, monkeypatch)
+    assert lp._family_score('model') == (1, 0, 0.005)                       # model-y died on a LONGER stack: still measurable here
+    assert lp._proven_not_on_stack() == ['features-s']                      # exact membership, not substring
+
+
+def test_current_family_re_evaluated_and_no_node_generation(tmp_path, monkeypatch):
+    _kb(tmp_path, monkeypatch); lp = _loop(tmp_path, monkeypatch)
+    lp.state['campaign'] = lp._campaign_family(2); assert lp.state['campaign'] == 'history'
+    # both history cards land on the stack: the family is exhausted and the next generation moves on
+    lp.state['nodes']['4'] = {'n': 4, 'metrics': {'primary': 0.604}, 'parent': 3, 'action': 'improve', 'accepted': True, 'method': 'history-a'}
+    lp.state['nodes']['5'] = {'n': 5, 'metrics': {'primary': 0.605}, 'parent': 4, 'action': 'improve', 'accepted': True, 'method': 'history-b'}
+    lp.state['champion'] = 5
+    assert lp._campaign_family(3) == 'features' and lp.state['families']['history']['status'] == 'exhausted'
+    lp.state['campaign'] = 'features'
+    lp._campaign_update(3, [{'n': 6, 'metrics': {'primary': 0.6}, 'method': 'ensembling-z', 'action': 'merge', 'accepted': False, 'realized_delta': 0.0}])
+    assert lp.state['families']['features']['flat_streak'] == 0             # no features node this generation: streak untouched
+    lp.state['screened'] = [{'card': 'features-s', 'family': 'features', 'best_gain': 0.0001, 'kept': False, 'generation': 4}]
+    lp._campaign_update(4, [])
+    assert lp.state['families']['features']['flat_streak'] == 1             # screened out: that is a measurement
 
 
 def test_no_campaigns_flag_and_state_in_ctx(tmp_path, monkeypatch):
@@ -71,9 +103,10 @@ def test_diversify_by_mechanism_inside_a_campaign(tmp_path, monkeypatch):
             {'type': 'improve', 'card': 'history-a', 'target_component': 'history', 'mechanism': 'author-run', 'hypothesis': 'a'},
             {'type': 'deepen', 'card': 'history-b', 'target_component': 'history', 'mechanism': 'Author Run', 'hypothesis': 'same mechanism again'},
             {'type': 'deepen', 'card': 'history-b', 'target_component': 'history', 'mechanism': 'tag-recurrence', 'hypothesis': 'b'},
+            {'type': 'deepen', 'card': 'history-c', 'target_component': 'history', 'hypothesis': 'no slug given'},
             {'type': 'merge', 'merge_parents': [3, 4], 'target_component': 'ensembling', 'hypothesis': 'm'}]
     kept = [s['hypothesis'] for s in lp._diversify(sels)]
-    assert kept == ['wild', 'a', 'b', 'm']                                 # same component allowed; same mechanism dropped
+    assert kept == ['wild', 'a', 'b', 'no slug given', 'm']                # same component allowed; same mechanism dropped; no slug keyed by card
     lp.state['campaign'] = None
     kept = [s['hypothesis'] for s in lp._diversify(sels)]
     assert kept == ['wild', 'm']                                            # breadth generation: one per component

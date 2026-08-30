@@ -25,6 +25,17 @@ def _gkey(x):
     """Normalise a breakdown-group name for comparison: 'dur>180s', 'dur > 180 s' and 'DUR>180S' are one group."""
     return re.sub(r'[^a-z0-9]', '', str(x or '').lower()) or None
 
+def _stack_key(stack):
+    """A stack string 'official FM + a + b' as a set of its parts — equality, never substring containment."""
+    return frozenset(x.strip() for x in str(stack or '').split(' + ') if x.strip())
+
+def _dead_stacks(status):
+    """The stacks named in a 'dead_under [stack xN (best Δ); stack xN (...)]' status."""
+    m = re.search(r'dead_under \[(.*)\]\s*$', str(status or ''))
+    if not m:
+        return []
+    return [re.sub(r'\s+[x×]\d+.*$', '', part).strip() for part in m.group(1).split(';') if part.strip()]
+
 def pick_champion(results):
     """The accepted node with the largest seed-mean gain (falls back to the single-seed delta), or None.
     A rejected node with the best single seed must not block an accepted one (ADR-0012)."""
@@ -468,7 +479,13 @@ class Loop:
         for s in selections:
             tc = s.get('target_component')
             in_campaign = bool(fam) and not s.get('wildcard') and s.get('type') not in ('merge', 'retest')
-            key = ('mechanism', _slug(s.get('mechanism'))) if in_campaign and _slug(s.get('mechanism')) else ('component', tc)
+            if in_campaign and _slug(s.get('mechanism')):
+                key = ('mechanism', _slug(s.get('mechanism')))
+            elif in_campaign:      # no mechanism slug: never collide it with the whole family on the component key
+                key = ('card', s.get('card')) if s.get('card') else ('hypothesis', (_slug(s.get('hypothesis')) or '')[:40])
+                self.log(f"  campaign candidate without a mechanism slug ({s.get('card')!r}); keyed by {key[0]}")
+            else:
+                key = ('component', tc)
             if key in seen and s.get('type') != 'merge':
                 prev = out[seen[key]]
                 if s.get('free_slot') and prev.get('wildcard'):
@@ -509,8 +526,8 @@ class Loop:
         return [c for c in self.INPUT_COLUMNS if re.search(r'\b' + re.escape(c) + r'(\d+|_range)?\b', code)]
 
     def _proven_not_on_stack(self):
-        stack = self.stack_of(self.state['champion'])
-        return [c for c in P.proven_cards() if c not in stack]
+        parts = _stack_key(self.stack_of(self.state['champion']))
+        return [c for c in P.proven_cards() if c not in parts]
 
     def _rejected_deepens(self):
         return [r for r in self.state['nodes'].values() if r.get('action') == 'deepen' and r.get('metrics') and not r.get('accepted')]
@@ -645,15 +662,18 @@ class Loop:
     def _family_score(self, fam):
         """Ordering key of an open family: (not a last family, has a measured screen gain, that gain or else the highest card
         expected_delta among the family's cards still measurable on this stack); None when nothing is left to measure."""
-        idx = P.card_index(); stack = self.stack_of(self.state['champion'])
-        screened = [s.get('best_gain') for s in (self.state.get('screened') or []) if s.get('family') == fam and s.get('best_gain') is not None]
+        idx = P.card_index(); stack = _stack_key(self.stack_of(self.state['champion']))
+        kept = [s['best_gain'] for s in (self.state.get('screened') or [])
+                if s.get('family') == fam and s.get('best_gain') is not None and s.get('kept')]   # dropped screens are evidence AGAINST
         last = 0 if fam in C.CAMPAIGN_LAST_FAMILIES else 1
-        if screened:
-            return (last, 1, max(screened))
+        if kept:
+            return (last, 1, max(kept))
         def measurable(c, v):
             if c in stack:
                 return False
-            return stack not in v['status'] if v['status'].startswith('dead_under') else True
+            if v['status'].startswith('dead_under'):
+                return stack not in {_stack_key(s) for s in _dead_stacks(v['status'])}
+            return True
         hi = [v['expected_hi'] for c, v in idx.items() if v['family'] == fam and measurable(c, v) and v['expected_hi'] is not None]
         return (last, 0, max(hi)) if hi else None
 
@@ -664,7 +684,10 @@ class Loop:
             return None
         fams = self._families_init(); cur = self.state.get('campaign')
         if cur and fams.get(cur, {}).get('status') == 'open':
-            return cur
+            if self._family_score(cur) is not None:
+                return cur
+            fams[cur]['status'] = 'exhausted'; fams[cur]['evidence'] = (fams[cur]['evidence'] + ' nothing left to measure on this stack').strip()
+            self.log(f"  campaign {cur!r} exhausted: nothing left to measure on this stack")
         best = None
         for fam, v in fams.items():
             if v['status'] != 'open':
@@ -688,8 +711,11 @@ class Loop:
         gains = [x for x in gains if x is not None]
         if gains:
             v['best_gain'] = max(gains + ([v['best_gain']] if v['best_gain'] is not None else []))
+        dropped_here = any(s.get('family') == fam and not s.get('kept') and s.get('generation') == g for s in (self.state.get('screened') or []))
         if any(r.get('accepted') for r in mine):
             v['flat_streak'] = 0
+        elif not mine and not dropped_here:
+            self.log(f"  campaign {fam!r}: no node this generation (slots went to merges/retests); flat streak unchanged")
         else:
             v['flat_streak'] += 1
             if v['flat_streak'] >= C.CAMPAIGN_FLAT_GENERATIONS:
