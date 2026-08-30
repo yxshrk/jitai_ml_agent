@@ -10,10 +10,11 @@ def test_static_check_flags_forbidden_paths():
 def test_accept_and_convergence():
     assert R.accept(0.6015, 0.6040) == (True, pytest.approx(0.0025))
     assert R.accept(0.6015, 0.6030)[0] is False
-    c = R.Convergence()                                          # ADR-0012 (revised): confirmed champion changes reset the streak
-    assert c.update(True) is True and c.streak == 0
+    c = R.Convergence()                                          # ADR-0012: confirmed champion changes of >= RESET_MIN_GAIN reset the streak
+    assert c.update(True, 0.0012) is True and c.streak == 0
     assert c.update(False) is False and c.update(False) is False and c.streak == 2 and not c.converged
-    assert c.update(True) is True and c.streak == 0              # a +0.0006 confirmed gain keeps the run alive
+    assert c.update(True, 0.0006) is False and c.streak == 3 and c.converged   # a small confirmed change moves the champion but buys no time
+    c = R.Convergence(2); assert c.update(True, 0.0017) is True and c.streak == 0
     assert all(c.update(False) is False for _ in range(3)) and c.converged
     o = R.OfficialRule(0.6015)                                   # the literal single-seed rule, tracked for reporting
     o.update(0.6030, 1); o.update(0.6032, 2); o.update(0.6033, 3)

@@ -40,8 +40,9 @@ def confirm_stats(v_node, v_ch):
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
                  wall_clock_s=C.WALL_CLOCK_S, parallel=True, confirm_seeds=True, seed_script=None, log=print, final_reseed=True,
-                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True):
+                 iteration_unit='node', wildcard=True, librarian=True, auto_distill=True, convergence='confirmed'):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
+        assert convergence in ('confirmed', 'official'); self.convergence = convergence   # ADR-0012: which rule stops the run
         self.librarian_max = 2 if librarian else 0     # ADR-0013: web-searched cards after flat generations, at most twice a run
         self.auto_distill = auto_distill               # ADR-0013: fold the journal into the cards when the run ends
         self.max_nodes, self.max_generations = max_nodes, max_generations or max_nodes
@@ -276,12 +277,25 @@ class Loop:
             self.state['champion'] = new_champion
         if ok:                                                      # the literal single-seed best, reported alongside
             self.state['best_single'] = max(self.state.get('best_single') or 0.0, max(r['metrics']['primary'] for r in ok))
+        gain = None
+        if new_champion is not None:
+            rec = next(r for r in results if r.get('n') == new_champion)
+            gain = (rec.get('seed_confirmation') or {}).get('delta_mean', rec.get('realized_delta'))
         conv = R.Convergence(self.state['streak'])
-        improved = conv.update(new_champion is not None)             # ADR-0012 (revised): a confirmed champion change resets the streak
-        self.state['streak'] = conv.streak; self.state['best'] = round(self.champion_mean(), 5)
-        off = self.state.setdefault('official_rule', {'best_single_seed': self.node(0)['metrics']['primary'], 'streak': 0, 'converged_at_generation': None})
+        improved = conv.update(new_champion is not None, gain)       # ADR-0012: a confirmed change of >= RESET_MIN_GAIN resets the streak
+        self.state['best'] = round(self.champion_mean(), 5)
+        off = self.state.setdefault('official_rule', {'best_single_seed': self.node(0)['metrics']['primary'], 'streak': 0,
+                                                      'converged_at_generation': None, 'champion_at_stop': None})
         o = R.OfficialRule(off['best_single_seed'], off['streak'], off['converged_at_generation'])
-        o.update(max((r['metrics']['primary'] for r in ok), default=None), g); self.state['official_rule'] = o.to_dict()
+        o.update(max((r['metrics']['primary'] for r in ok), default=None), g)
+        off.update(o.to_dict())
+        if off['converged_at_generation'] == g and off.get('champion_at_stop') is None:
+            off['champion_at_stop'] = self.state['champion']         # what the literal rule would have submitted
+        self.state['official_rule'] = off
+        if self.convergence == 'official':                           # the literal rule stops the run (switch for the judges)
+            self.state['streak'] = o.streak; improved = (o.streak == 0)
+        else:
+            self.state['streak'] = conv.streak
         self._maybe_librarian(g, improved, results)
         # parked ideas: rejected-but-plausible nodes stay available for a justified retest (ADR-0004)
         for r in results:
@@ -487,7 +501,8 @@ class Loop:
         self.start()
         while True:
             if self.state['streak'] >= C.N_CONVERGE:
-                self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without a seed-confirmed champion change (ADR-0012)'; break
+                self.state['stop_reason'] = (f'converged: {C.N_CONVERGE} generations without a seed-confirmed champion change of >= {C.RESET_MIN_GAIN} (ADR-0012)'
+                                             if self.convergence == 'confirmed' else f'converged: official rule (single-seed best, eps {C.EPS}, N {C.N_CONVERGE})'); break
             if self.iteration_unit == 'node' and self.state['n_next'] + self.k > self.max_nodes:
                 self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting nodes)'; break
             if self.iteration_unit == 'generation' and self.state['generation'] >= self.max_nodes:
@@ -539,6 +554,15 @@ class Loop:
         self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
         return ranking
 
+    def _official_submission(self):
+        """The node the organizers' literal rule would have submitted: the champion at the generation it converged."""
+        off = self.state.get('official_rule') or {}; n = off.get('champion_at_stop')
+        if n is None:
+            return {'note': 'the literal single-seed rule had not converged when the run ended', 'node': None}
+        vals = [self.node(n)['metrics']['primary']] + [v for k_, v in self.state['seed_cache'].items() if k_.startswith(f'{n}:') and v is not None]
+        return {'node': n, 'generation': off.get('converged_at_generation'), 'valid_primary': self.node(n)['metrics']['primary'],
+                'seed_mean': round(statistics.mean(vals), 5), 'seeds': len(vals)}
+
     def finish(self):
         ch = self.champion; nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:3]
@@ -552,7 +576,8 @@ class Loop:
                    'usage': self.brain.usage.snapshot(), 'wall_clock_s': round(self.elapsed(), 1),
                    'champion_seed_mean': round(self.champion_mean(), 5), 'best_single_seed': self.state.get('best_single'),
                    'convergence_rule': f'ADR-0012 (revised): {C.N_CONVERGE} generations without a seed-confirmed champion change',
-                   'official_rule': self.state.get('official_rule'),
+                   'official_rule': self.state.get('official_rule'), 'official_rule_submission': self._official_submission(),
+                   'convergence_switch': self.convergence,
                    'tokens': {'in_uncached': self.brain.usage.snapshot().get('tokens_in'), 'in_cached': self.brain.usage.snapshot().get('cache_read'),
                               'out': self.brain.usage.snapshot().get('tokens_out')},
                    'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,

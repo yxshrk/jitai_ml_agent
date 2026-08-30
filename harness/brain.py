@@ -89,8 +89,8 @@ class LLMBrain(Brain):
     """Shared role logic (prompt -> call -> parse -> validate, one format-reminder retry). Backends implement _call."""
     DEFAULT_EFFORT = {'diagnose': 'medium', 'select': 'xhigh', 'implement': 'xhigh', 'critique': 'medium',
                       'fix': 'medium', 'consolidate': 'medium', 'explore': 'xhigh', 'archive': 'medium', 'librarian': 'high'}
-    MAX_TOKENS = {'diagnose': 3000, 'select': 8000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000,
-                  'explore': 8000, 'archive': 8000, 'librarian': 20000}
+    MAX_TOKENS = {'diagnose': 3000, 'select': 16000, 'implement': 30000, 'critique': 4000, 'fix': 30000, 'consolidate': 5000,
+                  'explore': 12000, 'archive': 8000, 'librarian': 20000}   # reasoning tokens count against these (xhigh roles need room)
     ROLE_TOOLS = {'librarian': [{'type': 'web_search'}]}     # provider-side tools per role (OpenAI Responses API)
 
     def __init__(self, models=None, efforts=None, budget_usd=None, log=print):

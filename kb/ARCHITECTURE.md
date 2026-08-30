@@ -25,7 +25,7 @@ flowchart TD
         B3["branch 5<br/>implement → firewall + diff guard → critic (diff) → smoke → full run"]
         B1 & B2 & B3 --> REF["REFEREE (code)<br/>validate predictions → official evaluate.py → Δ vs champion<br/>md5 identical to the parent → NO-OP, rejected<br/>Δ > 0 → 2 more seeds in parallel (all seeds cached)<br/>accept iff seed-mean gain ≥ 0.0005 and ≥ 2.5 standard errors"]
         REF --> J["JOURNAL (code)<br/>hypothesis · diff · metrics · curve · seeds · critic rounds · errors · recovery · tokens · time"]
-        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged after 3 generations without a seed-confirmed champion change<br/>(the literal single-seed ε rule is tracked and reported alongside)"]
+        J --> CH["CHAMPION + CONVERGENCE (code)<br/>champion = accepted node with the largest seed-mean gain<br/>converged after 3 generations without a confirmed champion change ≥ 0.001 (seed-mean)<br/>(the literal single-seed ε rule is tracked and reported alongside)"]
         CH --> LIB["LIBRARIAN (LLM + web search), only after a flat generation<br/>when < k untried cards remain (≤ 2× per run): n new cards, validated by code"]
         LIB --> CONS["CONSOLIDATOR (LLM)<br/>reads the verdicts → next generation's slots:<br/>merge orthogonal winners · retest a parked idea · explore after a flat generation"]
     end
@@ -113,10 +113,11 @@ the user message. Never a growing transcript. The rules the roles read are gener
 5. **Champion (ADR-0012).** The accepted node with the largest seed-mean gain this generation; it parents the next
    generation. A rejected node's lucky single seed cannot block it. Rejected ideas are parked.
 6. **Convergence (ADR-0012, revised).** The streak counts consecutive generations without a seed-confirmed
-   champion change; three → converged. The seed test is a stricter noise filter than the organizers' fixed
-   ε = 0.002 on one seed, so a confirmed gain of any size keeps the run alive; ε remains the per-node single-seed
-   screen, and `referee.OfficialRule` tracks the literal rule (single-seed best, > ε, N = 3) every generation and
-   reports where it would have stopped. Also stops at 50 nodes (or 50 generations with
+   champion change of at least 0.001 on the seed-mean (ε/2 on a statistic with a third of the noise — a false
+   acceptance at the 0.0005 floor cannot buy three more generations); three → converged. Smaller confirmed gains
+   still move the champion. ε remains the per-node single-seed screen; `referee.OfficialRule` tracks the literal
+   rule (single-seed best, > ε, N = 3) every generation, and the summary reports where it would have stopped and
+   which node it would have submitted (`--convergence official` makes it the stopping rule). Also stops at 50 nodes (or 50 generations with
    `--iteration-unit generation`), 6 h of running time, or the dollar budget.
 7. **Final designation.** Top-3 nodes by validation primary re-ranked by 3-seed mean; the winner is submitted
    (`submit.py`: one run on `private/test_features.csv`, validated by the organizers' `submit.py --check`; no test

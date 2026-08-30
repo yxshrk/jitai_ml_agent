@@ -22,6 +22,8 @@ def main():
     r.add_argument('--no-parallel', action='store_true')
     r.add_argument('--no-confirm', action='store_true', help='skip the multi-seed confirmation of positive deltas (not recommended)')
     r.add_argument('--no-librarian', action='store_true', help='never call the web-searching Librarian during the run (ADR-0013)')
+    r.add_argument('--convergence', choices=['confirmed', 'official'], default='confirmed',
+                   help='confirmed = stop after N generations without a seed-confirmed champion change >= RESET_MIN_GAIN (ADR-0012); official = the literal single-seed eps rule')
     r.add_argument('--no-distill', action='store_true', help='do not fold the journal into the cards when the run ends')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
@@ -51,7 +53,7 @@ def main():
             brain = AnthropicBrain(models={r: a.model for r in AnthropicBrain.DEFAULT_MODELS} if a.model else None, budget_usd=a.budget_usd)
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
                     parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
-                    iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill)
+                    iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill, convergence=a.convergence)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         from .submit import make_submission

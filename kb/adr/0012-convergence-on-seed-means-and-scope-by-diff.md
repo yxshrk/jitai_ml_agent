@@ -30,7 +30,13 @@ Rules changed at different times had drifted apart, and live_04 showed the cost:
    filter than a fixed 0.002 on one seed, which is what ε exists for. ε keeps two jobs: the single-seed screen
    recorded per node (`single_seed_accept`), and `referee.OfficialRule` — the organizers' rule read literally on
    single-seed bests, tracked every generation and reported in `summary.official_rule` (where it would have
-   stopped) so the judges see both. The caps (50 nodes, 6 h, dollars) bound the extra generations this allows.
+   stopped) so the judges see both. Guard against false positives (Yash, after the risk was quantified): the seed
+   test admits roughly 2–5 % of null candidates at the 0.0005 floor, and each false champion would buy three more
+   generations — so only a confirmed change of **≥ 0.001 on the seed-mean** (`RESET_MIN_GAIN`: ε/2 on a statistic
+   with about a third of the single-seed noise, a 4σ event under the null) resets the streak; smaller confirmed
+   gains still move the champion. `--convergence official` switches the stopping rule to the literal one, and every
+   summary reports `official_rule_submission` — the node the literal rule would have submitted — next to ours. The
+   caps (50 nodes, 6 h, dollars) bound the extra generations this allows.
 2. **Champion = the accepted node with the largest seed-mean gain** (`pick_champion`), not the best single seed.
 3. **One seed cache** (`state.seed_cache`, keyed `node:seed`, never cleared) serves confirmation, prefetch and the
    final designation. Sample SD (`statistics.stdev`) with the 0.0002 floor; two-sample test kept — seeds are not

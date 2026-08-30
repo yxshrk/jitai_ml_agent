@@ -158,9 +158,11 @@ class Convergence:
     The organizers' literal rule is tracked alongside by OfficialRule and reported, never used to stop."""
     def __init__(self, streak=0):
         self.streak = streak
-    def update(self, champion_changed):
-        """Returns True iff this generation produced a seed-confirmed champion change."""
-        if champion_changed:
+    def update(self, champion_changed, gain=None):
+        """Returns True iff this generation produced a seed-confirmed champion change whose seed-mean gain is at least
+        RESET_MIN_GAIN (eps/2 on a statistic with about a third of the single-seed noise): a false acceptance at the
+        0.0005 floor must not buy three more generations. Smaller confirmed gains still moved the champion."""
+        if champion_changed and (gain is None or gain >= C.RESET_MIN_GAIN):
             self.streak = 0
             return True
         self.streak += 1

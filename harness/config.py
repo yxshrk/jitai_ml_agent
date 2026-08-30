@@ -19,6 +19,8 @@ MIN_EFFECT = 0.0005               # acceptance: the seed-mean improvement must b
 T_CRIT = 2.5                      # ... and at least T_CRIT standard errors (guards against the winner's curse)
 STD_FLOOR = 0.0002                # floor on a per-node seed std estimate (3 seeds is a small sample)
 N_CONVERGE = 3                    # official N
+RESET_MIN_GAIN = 0.001            # a confirmed champion change resets the convergence streak only if its seed-mean gain is at least this:
+                                  # eps/2 on a statistic with ~1/3 the noise, so a false acceptance at the 0.0005 floor cannot buy 3 more generations
 MAX_ITERS = 50                    # official cap
 WALL_CLOCK_S = 6 * 3600           # official backstop
 SMOKE_TIMEOUT_S = 120
@@ -39,5 +41,6 @@ def rules_text():
             f"is >= {MIN_EFFECT} AND >= {T_CRIT} standard errors of the difference (seed-to-seed SD ~ {SEED_SD}); a node whose "
             f"predictions are byte-identical to its parent's is a no-op and is rejected without seeds. "
             f"CONVERGENCE (code, ADR-0012): the run stops after {N_CONVERGE} consecutive generations without a seed-confirmed "
-            f"champion change (the seed test replaces the organizers' single-seed eps = {EPS} as the noise filter; the literal "
+            f"champion change of at least {RESET_MIN_GAIN} on the seed-mean (smaller confirmed gains still move the champion but do "
+            f"not extend the run; this is the organizers' eps = {EPS} rescaled to the seed-mean's noise, and the literal single-seed "
             f"eps rule is tracked and reported alongside); the cap is {MAX_ITERS} iterations and {WALL_CLOCK_S // 3600} h.")

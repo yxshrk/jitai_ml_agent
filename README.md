@@ -35,8 +35,9 @@ organizers' `evaluate.py`. Official FM baseline: **0.6016 valid / 0.5946 hidden 
    improvement holds up over **three seeds** (seed-mean gain ≥ 0.0005 at ≥ 2.5 standard errors — selecting the best
    of five single-seed branches is biased upward; measured: +0.0022 on one seed was +0.0017 over three). The
    champion is the accepted node with the best seed-mean gain; the run converges after N = 3 generations without a
-   seed-confirmed champion change (the seed test is a stricter noise filter than the organizers' fixed ε = 0.002 on
-   one seed; the literal ε rule is tracked and reported alongside). The final submission is chosen among the top
+   seed-confirmed champion change of ≥ 0.001 on the seed-mean (the organizers' ε = 0.002 rescaled to a statistic
+   with a third of the noise; the literal single-seed ε rule is tracked and reported alongside, with the node it
+   would have submitted). The final submission is chosen among the top
    nodes by seed-mean, never by a single lucky seed.
 3b. **The knowledge base evolves.** Every role reads the *exact* run journal — every node's hypothesis, diff,
    curve, seeds and critic notes — from a cached prompt block, plus a foundations note with the task-specific
