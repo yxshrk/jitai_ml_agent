@@ -447,6 +447,15 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
+
+### listwise-regime: Listwise objective in its own training regime
+- mechanism: Per-user listwise (softmax cross-entropy over each user's slate) objective, trained in the regime where a public competitor measured it working: HIGHER capacity (k~32), LOWER lr (~3e-4), LONG training (up to ~100 epochs) with validation patience ~10 instead of our rapid-decay early-peak schedule. The hypothesis: listwise loss changes the overfitting dynamics, so the "listwise is dead" verdict measured under our short-peak regime does not transfer. Probe as a PACKAGE (loss + capacity + schedule together).
+- treats: metric-mismatch | underfit
+- citation: public Track 2 solution github.com/vrisdng/tiktok-techjam (reports 0.6019 repro -> 0.6034 listwise -> 0.60417 tuned 5-seed, claimed 6-sigma); public solutions are explicitly in-scope per the brief's Resource policy. Our own listwise-softmax card is measured-dead UNDER OUR REGIME ONLY.
+- expected_gain / cost: their measured +0.0016-0.0023 over baseline-repro in their regime; unknown whether it stacks with our package or gauge-fixed-bce / med (long trainings).
+- status_pure: untried (in this regime)
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
