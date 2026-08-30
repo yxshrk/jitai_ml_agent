@@ -144,6 +144,22 @@ class SequenceDeepFM(nn.Module):
             nn.Linear(input_dimension, hidden_dim), nn.ReLU(), nn.Dropout(0.1), nn.Linear(hidden_dim, 1)
         )
         self.bias = nn.Parameter(torch.zeros(()))
+        # PyTorch's default unit-variance embedding initialization makes the FM
+        # interaction term explode with eight categorical fields.  Match the
+        # organizer FM's small 0.01 initialization so the neural extension
+        # starts from a calibrated logit scale.
+        for embedding in self.embeddings:
+            nn.init.normal_(embedding.weight, mean=0.0, std=0.01)
+            if embedding.padding_idx is not None:
+                embedding.weight.data[embedding.padding_idx].zero_()
+        for linear in self.linear:
+            nn.init.zeros_(linear.weight)
+            if linear.padding_idx is not None:
+                linear.weight.data[linear.padding_idx].zero_()
+        for layer in self.deep:
+            if isinstance(layer, nn.Linear):
+                nn.init.xavier_uniform_(layer.weight)
+                nn.init.zeros_(layer.bias)
 
     def forward(self, features, history_authors):
         embeddings = [embedding(features[:, index]) for index, embedding in enumerate(self.embeddings)]
@@ -228,6 +244,13 @@ def run(args):
                 print(f"early stop at epoch {epoch}")
                 break
     model.load_state_dict(best_state)
+    selected_scores = predict(model, valid_x, valid_history, device, args.batch_size)
+    if args.validation_scores_out:
+        score_path = Path(args.validation_scores_out)
+        if score_path.exists():
+            raise FileExistsError(f"Refusing to overwrite existing validation scores: {score_path}")
+        score_path.parent.mkdir(parents=True, exist_ok=True)
+        np.save(score_path, selected_scores)
     record = {
         "phase": "causal_sequence_deepfm",
         "hypothesis": HYPOTHESIS,
@@ -259,6 +282,7 @@ def parse_args():
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=8192)
     parser.add_argument("--run_log", default=None)
+    parser.add_argument("--validation_scores_out", default=None)
     return parser.parse_args()
 
 
