@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# TikTok TechJam Project 2 - local competition data downloaded from Zenodo.
+# Keep the public data archive and its extracted contents out of commits.
+kuairand-starter-kit/KuaiRand-Pure.tar.gz
+kuairand-starter-kit/KuaiRand-Pure/

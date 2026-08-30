@@ -1,0 +1,2 @@
+# The organizer-supplied KuaiRand starter kit intentionally uses NumPy only.
+numpy>=1.24,<3
