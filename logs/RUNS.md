@@ -30,3 +30,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | qb_b | coral | converged | 4 | 0.60466 | decayed-positive sampling; below champion, no re-designation |
 | novel_r1 | ruby | max_hours | 5 | 0.60447 | pair-kernel line on ruby; below champion, no re-designation |
 | final_f1 | ruby | max_hours | 4 | 0.60403 | dial-jitter member-bank close (GPU); below champion, no re-designation |
+| clean_c1 | coral | KILLED n=2 | - | - | discarded: mid-run METHODS.md dedupe sync = intervention taint; relaunched as clean_c2 with fixed library |
