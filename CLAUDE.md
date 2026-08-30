@@ -43,5 +43,10 @@ present, or ask). Sync helper copies with rsync (NOT git), excluding
 Pure DESIGNATED: 0.60558 run_bigclock_07 (coral) — FULLY UNSEEDED, beats seeded
 0.60513; recipe in SUBMISSION_RECIPE.md; test CSV built + validated (predict_test_bc07). 1K: 0.63874 agent-designated
 (run_desig_1k_01, 10-member). 27K bonus demo: 0.67263. Test CSVs built (labels never
-read). Remaining: finish fleet, final designation + clean rerun, resource table,
-Devpost + video (user).
+read). Remaining: finish fleet -> POST-WAVE VALIDATION ROUND (user-ordered, before freeze):
+(1) one run that plays combo-sweep systematically on a top package (riders: click-aux,
+duration-heads, ordinal-aux, recency variants — incl. pairs); (2) verify snapshot-member
+close executes (read node code of any run that played it, else force one);
+(3) confirm runner-up branching triggers (grep journals for "branch:"), else unit-test it;
+(4) check f-wave node code for probe parallelism adoption. THEN final designation,
+regenerate RESULTS_AND_RESOURCES, figures + briefing artifact refresh, Devpost + video (user).
