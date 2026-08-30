@@ -17,10 +17,13 @@ from .journal import Journal
 
 class Loop:
     def __init__(self, run_id, brain, k=3, max_nodes=C.MAX_ITERS, max_generations=None, seed=C.DEFAULT_SEED,
-                 wall_clock_s=C.WALL_CLOCK_S, parallel=True, reseed_grey=True, seed_script=None, log=print):
+                 wall_clock_s=C.WALL_CLOCK_S, parallel=True, reseed_grey=True, seed_script=None, log=print, final_reseed=True,
+                 iteration_unit='node'):
         self.run_id, self.brain, self.k, self.seed = run_id, brain, k, seed
         self.max_nodes, self.max_generations = max_nodes, max_generations or max_nodes
         self.wall_clock_s, self.parallel, self.reseed_grey = wall_clock_s, parallel, reseed_grey
+        self.final_reseed = final_reseed
+        assert iteration_unit in ('node', 'generation'); self.iteration_unit = iteration_unit   # ADR-0006: what the 50 cap counts
         self.seed_script = Path(seed_script or C.SEEDS / 'node_000_fm.py')
         self.run_dir = C.RUNS / run_id; self.j = Journal(self.run_dir); self._log = log
         self.state_path = self.run_dir / 'state.json'
@@ -318,8 +321,10 @@ class Loop:
         while True:
             if self.state['streak'] >= C.N_CONVERGE:
                 self.state['stop_reason'] = f'converged: {C.N_CONVERGE} generations without > {C.EPS} improvement'; break
-            if self.state['n_next'] + self.k > self.max_nodes:
-                self.state['stop_reason'] = f'node cap {self.max_nodes}'; break
+            if self.iteration_unit == 'node' and self.state['n_next'] + self.k > self.max_nodes:
+                self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting nodes)'; break
+            if self.iteration_unit == 'generation' and self.state['generation'] >= self.max_nodes:
+                self.state['stop_reason'] = f'iteration cap {self.max_nodes} (counting generations)'; break
             if self.state['generation'] >= self.max_generations:
                 self.state['stop_reason'] = f'generation cap {self.max_generations}'; break
             if self.elapsed() > self.wall_clock_s:
@@ -336,16 +341,43 @@ class Loop:
                 self.state['streak'] += 1; self.save()
         return self.finish()
 
+    def designate_final(self, top_k=3, extra_seeds=(1, 2)):
+        """Robust final selection (AIRA): among the top_k nodes by validation primary, re-rank by the mean over
+        extra seeds so a lucky single seed cannot be the submission. Ties go to the higher single-seed score."""
+        nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
+        top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:top_k]
+        cache = self.state.setdefault('final_seeds', {})
+        ranking = []
+        for v in top:
+            vals = [v['metrics']['primary']]
+            if self.final_reseed:
+                for s in extra_seeds:
+                    key = f"{v['n']}:{self.seed + s}"
+                    if key not in cache:
+                        r = R.run_script(self.j.node_path(v['n']), self.j.out_dir(v['n'], f'_seed{self.seed + s}'),
+                                         seed=self.seed + s, threads=os.cpu_count() or 2)
+                        cache[key] = r.metrics['primary'] if r.ok else None
+                    if cache[key] is not None:
+                        vals.append(cache[key])
+            ranking.append({'n': v['n'], 'valid_primary': v['metrics']['primary'], 'seeds': vals,
+                            'mean': statistics.mean(vals), 'std': statistics.pstdev(vals) if len(vals) > 1 else None})
+        ranking.sort(key=lambda r: (-r['mean'], -r['valid_primary']))
+        self.state['designated'] = ranking[0]['n'] if ranking else self.state['champion']
+        return ranking
+
     def finish(self):
         ch = self.champion; nodes = [v for v in self.state['nodes'].values() if v.get('metrics')]
         top = sorted(nodes, key=lambda v: -v['metrics']['primary'])[:3]
+        ranking = self.designate_final()
         summary = {'run_id': self.run_id, 'stop_reason': self.state['stop_reason'], 'generations': self.state['generation'],
                    'nodes': self.state['n_next'], 'champion': ch['n'], 'champion_metrics': ch['metrics'],
                    'baseline_valid_primary': self.node(0)['metrics']['primary'],
                    'delta_vs_baseline_valid': round(ch['metrics']['primary'] - self.node(0)['metrics']['primary'], 5),
                    'top3_valid': [{'n': v['n'], 'primary': v['metrics']['primary']} for v in top],
+                   'designated': self.state.get('designated'), 'final_ranking': ranking,
                    'usage': self.brain.usage.snapshot(), 'wall_clock_s': round(self.elapsed(), 1),
-                   'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE}
+                   'interventions': self.state['interventions'], 'k': self.k, 'eps': C.EPS, 'n_converge': C.N_CONVERGE,
+                   'iteration_unit': self.iteration_unit, 'iterations_used': self.state['n_next'] if self.iteration_unit == 'node' else self.state['generation']}
         (self.run_dir / 'summary.json').write_text(json.dumps(summary, indent=1, default=str))
         (self.run_dir / 'journal.md').write_text(self.j.render_md(summary))
         self.save(); self.log(f'run finished: {summary["stop_reason"]} — champion node_{ch["n"]:03d} {ch["metrics"]["primary"]:.4f}')

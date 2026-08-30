@@ -11,7 +11,7 @@ from tests.fake_generations import fake_generations
 def test_one_fake_generation():
     run_id = '_test_fake'
     shutil.rmtree(C.RUNS / run_id, ignore_errors=True)
-    loop = Loop(run_id, FakeBrain(fake_generations()), k=3, max_generations=1, reseed_grey=False)
+    loop = Loop(run_id, FakeBrain(fake_generations()), k=3, max_generations=1, reseed_grey=False, final_reseed=False)
     summary = loop.run()
     recs = loop.j.records()
     nodes = [r for r in recs if r.get('action') in ('reproduce_baseline', 'improve')]

@@ -61,3 +61,13 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   all rejected, streak 1; 45 s for the generation (three full runs in parallel). Journal, diffs, summary written.
 - Git: commits are attributed to Yash only (`.claude/settings.json` attribution block); repo-local identity set to
   his GitHub no-reply address; branch `yash-attempt` pushed.
+- **Provider switch:** agents now run on OpenAI GPT-5.6 (`gpt-5.6-sol` for every role by default; `--cheap-roles`
+  puts diagnose/critique/fix/consolidate on `gpt-5.6-terra`). `brain.py` refactored into a shared `LLMBrain` with
+  `OpenAIBrain` (Responses API, reasoning effort per role, automatic prompt caching, per-call metering incl.
+  reasoning tokens) and `AnthropicBrain` kept as an alternative. Request/usage shape verified with one tiny live
+  call on `gpt-5.6-terra`. `.env` (OPENAI_API_KEY) is git-ignored and untracked.
+- **Evaluation clarity:** `referee.score` adds `ndcg5_disc` (nDCG@5 among discriminative users, the sharper
+  diagnostic); `loop.designate_final` re-ranks the top-3 valid nodes by 3-seed mean (AIRA's robust selection);
+  `--iteration-unit node|generation` decides what the 50 cap counts (ADR-0006 updated). Prompts refined
+  (calibration guidance for the Selector, runtime/vectorisation guidance for the Implementer, stricter contract
+  checks and "veto only for leakage" for the Critic). `kb/ARCHITECTURE.md` written as the reference.

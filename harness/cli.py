@@ -8,7 +8,11 @@ def main():
     sub = ap.add_subparsers(dest='cmd', required=True)
     r = sub.add_parser('run', help='start or resume an autonomous run')
     r.add_argument('--run-id', default=time.strftime('run_%Y%m%d-%H%M%S'))
-    r.add_argument('--brain', choices=['anthropic', 'fake'], default='anthropic')
+    r.add_argument('--brain', choices=['openai', 'anthropic', 'fake'], default='openai')
+    r.add_argument('--model', default=None, help='model id for every role (default gpt-5.6-sol / claude-opus-5)')
+    r.add_argument('--cheap-roles', action='store_true', help='diagnose/critique/fix/consolidate on gpt-5.6-terra')
+    r.add_argument('--iteration-unit', choices=['node', 'generation'], default='node', help='what the 50-iteration cap counts (ADR-0006)')
+    r.add_argument('--no-final-reseed', action='store_true', help='skip the multi-seed re-ranking of the top-3 at the end')
     r.add_argument('--k', type=int, default=3)
     r.add_argument('--max-generations', type=int, default=None)
     r.add_argument('--max-nodes', type=int, default=C.MAX_ITERS)
@@ -29,11 +33,18 @@ def main():
             from tests.fake_generations import fake_generations
             from .brain import FakeBrain
             brain = FakeBrain(fake_generations())
+        elif a.brain == 'openai':
+            from .brain import OpenAIBrain
+            models = {r: a.model for r in OpenAIBrain.DEFAULT_MODELS} if a.model else {}
+            if a.cheap_roles:
+                models.update({r: 'gpt-5.6-terra' for r in ('diagnose', 'critique', 'fix', 'consolidate')})
+            brain = OpenAIBrain(models=models, budget_usd=a.budget_usd)
         else:
             from .brain import AnthropicBrain
-            brain = AnthropicBrain(budget_usd=a.budget_usd)
+            brain = AnthropicBrain(models={r: a.model for r in AnthropicBrain.DEFAULT_MODELS} if a.model else None, budget_usd=a.budget_usd)
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
-                    parallel=not a.no_parallel, reseed_grey=not a.no_reseed)
+                    parallel=not a.no_parallel, reseed_grey=not a.no_reseed, final_reseed=not a.no_final_reseed,
+                    iteration_unit=a.iteration_unit)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         from .submit import make_submission

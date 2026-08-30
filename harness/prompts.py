@@ -55,8 +55,12 @@ risk of validation overfitting given the streak.""",
 Rules: each candidate targets ONE component (target_component in %s); the k candidates must have DIFFERENT
 target_components; if the Consolidator's plan lists slots (merge / retest / explore), fill those first, then use the
 remaining slots for the highest-expected-gain fresh improvements given the diagnosis; never repeat an idea already
-measured on the same parent unless it is a planned retest; expected_delta is a number (validation primary) with a
-one-sentence basis citing a menu entry, a data fact or a journal line; name one rejected alternative and why.
+measured on the same parent unless it is a planned retest; prefer the cheaper implementation when expected gains
+tie; in generation 1 at least one candidate must be the organizers' lead #1 (a ranking-aligned loss).
+Calibration: the baseline's seed noise is 0.0008, anything under 0.002 is noise, realistic single-change gains on
+this dataset are 0.002-0.010, and the whole remaining headroom is ~0.25 — do not promise more than that.
+expected_delta is a number (validation primary) with a one-sentence basis citing a menu entry, a data fact or a
+journal line; name one rejected alternative and why.
 Output exactly one fenced block:
 ```json
 {"selections": [{"type": "improve|merge|retest|explore", "card": "<menu entry or method name>",
@@ -70,16 +74,20 @@ the smallest coherent change that tests the hypothesis; keep everything else ide
 early stopping on validation primary, seed handling, SMOKE_EPOCHS). Requirements: numpy + stdlib only; must finish
 in < 30 minutes on CPU; predictions.csv and metrics.json exactly per contract (metrics.json must include the
 per-epoch history); deterministic given --seed; read only from --data-dir; never use an outcome column as a
-feature of the row being scored; history features only from rows strictly earlier in time. For a merge: combine
-the two parents' changes; where they touch the same code prefer the champion's version and say so.
+feature of the row being scored; history features only from rows strictly earlier in time (for valid rows every
+train row is earlier). Runtime: the baseline takes ~15 s; keep row-level work vectorised or precomputed outside the
+epoch loop — never a Python loop over a million rows per epoch. Print one line per epoch (the harness reads the log
+on failure). For a merge: combine the two parents' changes; where they touch the same code prefer the champion's
+version and say so.
 Output exactly: ```json {"change_summary": "<one line>"}``` followed by one ```python ... ``` block with the full script.""",
  'critique': """Role: CRITIC. Review the script before it runs. Check: (1) LEAKAGE — an outcome column (long_view, is_click,
 is_like, is_follow, is_comment, is_forward, is_hate, play_time_ms, profile_stay_time, comment_stay_time,
 is_profile_enter) used as a feature of the scored row; joins to future data; the statistic file; history features not
 strictly earlier in time; any reference to test data. (2) CONTRACT — outputs, SMOKE_EPOCHS honoured, determinism,
 runtime risk (pure-Python loops over a million rows inside the epoch loop, quadratic pair construction, etc.).
-(3) FIDELITY — the change implements the stated hypothesis and nothing else. (4) NOISE — is the expected_delta
-plausible against the 0.002 floor? Verdict: ok | revise (fixable — give exact instructions) | veto (leakage or
+(3) FIDELITY — the change implements the stated hypothesis and nothing else; predictions.csv row order and row_id
+logic untouched; SMOKE_EPOCHS caps EVERY training phase (pre-training, auxiliary heads, ensembles). (4) NOISE — is
+the expected_delta plausible against the 0.002 floor? Do not veto for style; veto only for leakage or test access. Verdict: ok | revise (fixable — give exact instructions) | veto (leakage or
 test access). Output exactly one fenced block:
 ```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<what to change, if revise>"}```""",
  'fix': """Role: FIXER. The script failed. Return the corrected WHOLE script with the minimal change that fixes the error
@@ -111,6 +119,10 @@ def stable_prefix():
             '# Method menu\n' + menu(),
         ])
     return _STABLE
+
+def system_text(role):
+    """Plain-string system prompt (OpenAI `instructions`): stable prefix first so automatic caching applies."""
+    return stable_prefix() + '\n\n' + ROLE_SYSTEM[role]
 
 def system_blocks(role):
     return [{'type': 'text', 'text': stable_prefix(), 'cache_control': {'type': 'ephemeral'}},

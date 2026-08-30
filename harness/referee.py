@@ -55,10 +55,26 @@ def read_predictions(path):
         raise ValueError(f'{len(scores)} rows, valid split has {len(uid)}')
     return scores
 
+_COHORTS = None
+def valid_cohorts():
+    """Shares of all-negative / all-positive / discriminative users in valid (constants of the split)."""
+    global _COHORTS
+    if _COHORTS is None:
+        uid, _, y = valid_index()
+        pos, cnt = {}, {}
+        for u, l in zip(uid, y):
+            pos[u] = pos.get(u, 0) + l; cnt[u] = cnt.get(u, 0) + 1
+        n = len(cnt); an = sum(1 for u in cnt if pos[u] == 0); ap = sum(1 for u in cnt if pos[u] == cnt[u])
+        _COHORTS = {'all_neg': an / n, 'all_pos': ap / n, 'disc': (n - an - ap) / n}
+    return _COHORTS
+
 def score(scores):
+    """Official metrics plus `ndcg5_disc`: nDCG@5 restricted to discriminative users, the sharper diagnostic
+    (nDCG = all_pos*1 + disc*ndcg_disc + all_neg*0)."""
     uid, _, y = valid_index()
-    m = evaluate(uid, y, scores)
-    return {'gauc': m['GAUC'], 'ndcg5': m['nDCG@5'], 'primary': m['primary']}
+    m = evaluate(uid, y, scores); c = valid_cohorts()
+    disc = (m['nDCG@5'] - c['all_pos']) / c['disc'] if c['disc'] else float('nan')
+    return {'gauc': m['GAUC'], 'ndcg5': m['nDCG@5'], 'primary': m['primary'], 'ndcg5_disc': disc}
 
 @dataclass
 class RunResult:
