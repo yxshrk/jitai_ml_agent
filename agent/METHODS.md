@@ -345,6 +345,47 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
+
+### swa-then-ensemble: Per-member weight averaging before seed ensembling
+- mechanism: For each ensemble member, average the weights of the last N half-epoch checkpoints (SWA; or a constant-LR tail) to flatten the member, THEN per-user rank-average across seed members. Distinct from the measured-dead plain EMA/SWA single-model attempt: here averaging is per-member inside an ensemble.
+- treats: overfit
+- citation: Izmailov et al. 2018 (SWA); Wortsman et al., Model Soups, ICML 2022.
+- expected_gain / cost: +0.0003..+0.001 on AUC-scale metrics in literature; unknown here / low.
+- status_pure: untried
+- status_1k: untried
+
+### freq-adaptive-reg: Frequency-adaptive embedding regularization / SSE
+- mechanism: Scale embedding weight decay inversely with ID frequency (rare user/author rows get stronger decay), or apply Stochastic Shared Embeddings (randomly swap embedding indices with small probability) on top of the package regularization.
+- treats: overfit
+- citation: Wu et al., Stochastic Shared Embeddings, NeurIPS 2019; adaptive sparse-embedding regularization literature.
+- expected_gain / cost: consistent small gains over uniform reg in papers; unknown here / low-med.
+- status_pure: untried
+- status_1k: untried
+
+### group-hard-pair-bpr: User-grouped hard-pair mining for the BPR term
+- mechanism: Batch by user and weight the hardest (max-violation) positive/negative pairs within each user group in the BPR loss, instead of uniform sampled pairs — aligns training pressure with GAUC exactly.
+- treats: metric-mismatch | flat-signal
+- citation: PDAOM (differentiable Group-AUC optimization); hierarchical group-wise ranking literature.
+- expected_gain / cost: GAUC gains reported over plain pairwise; likely small here / med.
+- status_pure: untried
+- status_1k: untried
+
+### adversarial-recency: Adversarial-validation importance weights instead of fixed half-life
+- mechanism: Train a small classifier to distinguish early-train vs late-train days (proxy for the test shift) using only train rows; use its per-row probability as importance weights in place of the hand-tuned exponential decay. Learns the shift shape instead of assuming it.
+- treats: data-shift
+- citation: adversarial validation practice (e.g. Lightweight Boosting with Adversarial Validation, 2023).
+- expected_gain / cost: replaces a hand dial with a learned one; unknown, plausibly +-0.0005 / low.
+- status_pure: untried
+- status_1k: untried
+
+### gbdt-diversity-member: LightGBM/CatBoost member for ensemble diversity
+- mechanism: Train a GBDT on train-only encodings of the 5 IDs (frequency counts, train-window rates per user/author/tab-duration) and add it as ONE member of the rank-average ensemble. Alone it will likely be weaker than the neural champion; the play is decorrelated errors. All encodings computed on the train window only (no leakage; no external data).
+- treats: flat-signal
+- citation: RecSys Challenge 2024 winning ensembles (NN + LightGBM + CatBoost); MLWave ensembling guide. NOTE: gbdt-lambdarank alone was measured weak here — this card is ONLY the diversity-member use.
+- expected_gain / cost: high-variance; frequently the biggest lever in challenge ensembles / med (needs lightgbm dependency — use sklearn GradientBoosting or pure-torch trees if lightgbm unavailable; stdlib+numpy+torch constraint applies).
+- status_pure: untried
+- status_1k: untried
+
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
