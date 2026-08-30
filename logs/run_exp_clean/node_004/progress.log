@@ -48,3 +48,6 @@
 {"best_epoch": 8, "k": 4, "member": 22, "phase": "dimension_probe", "primary": 0.6013442339656391, "seed": 22240}
 {"best_epoch": 7, "k": 4, "member": 23, "phase": "dimension_probe", "primary": 0.6015996308671923, "seed": 23249}
 {"config": {"epoch_limit": 8, "k": 4, "matched_seed_count": 24}, "gauc": 0.6679006458373011, "mean_individual_primary": 0.6008719696750515, "ndcg5": 0.5362239196878785, "primary": 0.6020622827625899, "type": "dimension_summary"}
+{"best_epoch": 7, "k": 6, "member": 0, "phase": "dimension_probe", "primary": 0.6019657604228856, "seed": 42}
+{"best_epoch": 8, "k": 6, "member": 1, "phase": "dimension_probe", "primary": 0.6014308133651023, "seed": 1051}
+{"best_epoch": 8, "k": 6, "member": 2, "phase": "dimension_probe", "primary": 0.6025982332317315, "seed": 2060}
