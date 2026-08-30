@@ -13,6 +13,18 @@ default, seed 42).
 
 
 
+
+## Search-scope policy (escape your own priors)
+Measured fact from this campaign: winning dials are often UNINTUITIVE — weight decay
+1e-3 (100x the canonical default), validation-best checkpoint at 0.5 epochs, lr 0.00168.
+Hand-picked grids of round numbers systematically miss such optima. Therefore stage-1
+of any dial search must be RANDOM SEARCH over WIDE log-uniform ranges (Bergstra &
+Bengio, JMLR 2012), not a grid of values you consider reasonable: sample >= 20 configs
+from lr 1e-4..1e-2 (log), weight decay 1e-6..3e-3 (log), dropout 0.05..0.5,
+recency half-life 2..21 days; checkpoint every half epoch from 0.5 onward and let the
+data pick the stopping point. Then refine (stage 2) locally around the best sample.
+Never narrow a range because a value "seems too extreme" — extremes have won here.
+
 ## Depth policy (overrides brevity instincts)
 Searches must be EXHAUSTIVE, not token gestures. Hard minimums when a search card is
 played with a generous timeout: stage-1 coarse pass >= 16 probe trainings; stage-2
