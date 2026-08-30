@@ -1,9 +1,16 @@
 # Final submission recipe (FINAL, Sun morning)
 
 ## DESIGNATED CHAMPIONS (agent-designated, compliant with "checkpoint at convergence")
-- **Pure: 0.60513** — run_desig_seeded_03 (confirmed by _04) node_001: 5-seed
-  rank-average ensemble of the frozen stack, seeds 42-46. Test CSV:
-  evidence/test_submission_pure.csv (170,588 rows, validated, train-only members).
+- **Pure: 0.60558 — run_bigclock_07 (coral) node_006, FULLY UNSEEDED.** Arc:
+  baseline 0.6018 -> two-stage random dial search over the DCN package (accepted
+  0.60424, clears epsilon) -> ensemble-design sweep (trained 7 members, agent
+  validation-selected 3: seeds 42-44, per-user rank average) -> 0.605575.
+  Config (agent-found, random-search dials): dropout 0.18, wd 9e-5, lr 0.001,
+  StepLR gamma 0.57 / step 2, recency half-life 7d, DCN-lite + 0.5 BPR hybrid.
+  6 iterations, 17 min wall, 115,315 tokens, zero interventions. Beats the seeded
+  champion (0.60513) with no seed-script caveat. Test CSV: REBUILD PENDING from
+  this recipe (train-only members).
+  [superseded: seeded run_desig_seeded_03 0.60513 -> now disclosed evidence]
 - **1K: 0.63874** — run_desig_1k_01 node_004: the AGENT scaled the ensemble from
   5 to 10 seeds (42-51) on its own after its seed node failed and it rebuilt the
   5-member version itself (0.63448). Test CSV: evidence/test_submission_1k.csv
