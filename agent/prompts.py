@@ -35,8 +35,10 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
   * compute metrics with `from harness.evaluate_provisional import evaluate` on
     the validation labels and write `<out-dir>/metrics.json` as
     {"gauc": ..., "ndcg5": ..., "primary": ...}.
-- Print nothing to stdout/stderr (no progress bars, no logging). Only write the
-  two output files.
+- Print nothing to stdout/stderr (no progress bars, no logging). Long-running
+  fan-out nodes SHOULD append one line per completed probe (config + score) to
+  `<out-dir>/progress.log` so the search is observable while it runs; besides
+  that, only write the two output files.
 - Stay within the runtime timeout (default 600s); prefer small/fast models.
 - Read environment variable `SMOKE_EPOCHS` as an integer when present and cap
   every training phase's epoch count to that value. `SMOKE_EPOCHS=1` is the
