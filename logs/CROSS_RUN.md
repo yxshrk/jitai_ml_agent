@@ -950,3 +950,109 @@ What the next run should try first
 First, reproduce node_001 exactly and audit the ensemble path. Evaluate the saved node_001 predictions directly, then pass the same predictions through a one-member and duplicated-member ensemble. All three scores should be identical. If not, fix ranking, user grouping, checkpoint loading, or evaluation alignment.
 
 Once validated, measure individual scores and prediction correlations for each seed, then build ensembles incrementally using only fixed saved predictions. If diversity is low or weaker members consistently reduce the score, stop spending fits on seed averaging and move to a genuinely different model or feature/loss ablation.
+
+## Run logs/run_unseeded_13
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: seed-ensemble | hypothesis: Because the parent peaks near epoch 8 and | primary: n/a | verdict: failed
+- node_002 | method: seed-ensemble | hypothesis: Correcting the per-user rank transform so higher scores | primary: 0.602561 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Overall assessment
+
+The run converged prematurely after exploring essentially one idea family. The only measured non-baseline result reached 0.6026 versus 0.601838, yet was rejected without a recorded reason. That ambiguity is the most important issue: either a potentially meaningful improvement was discarded, or the reported metric was not acceptance-valid.
+
+What the harness/policy did suboptimally
+
+- It spent most of the run repairing ensemble plumbing rather than testing distinct modeling hypotheses.
+- node_001 failed on a rank-transform invariant that should have been covered by a cheap unit test before training or evaluation.
+- node_002 improved the displayed primary by roughly 0.0008, substantially larger than the baseline’s reported sigma of 0.0001, but the journal does not state why it was rejected. Rejection criteria, secondary metrics, and reproducibility results must be logged.
+- Continuing from failed node_001 was reasonable for debugging, but after node_002 the policy should have either validated the apparent gain or branched to an orthogonal approach—not declared convergence.
+- node_003’s “proposal failed” suggests brittle proposal generation/parsing. A single malformed proposal should trigger repair or a safe fallback, not consume the remaining exploration path.
+- The ensemble selected checkpoints and filtered members using the same validation primary used for final comparison. This can introduce validation-selection bias, especially when targeting gains below 0.001.
+- An “unseeded” run is poorly matched to claims about four-seed robustness and tiny deltas.
+
+Scaffold changes
+
+- Add preflight tests for rank direction, exact ties, duplicate-member invariance, user grouping, missing users, and equivalence of a one-member ensemble to its source predictions.
+- Log explicit rejection reasons: acceptance threshold, uncertainty estimate, secondary regressions, invariant failures, and any mismatch between provisional and official scoring.
+- Require deterministic seeds and persist member checkpoints and prediction hashes.
+- Separate candidate selection from final evaluation, or preregister fixed checkpoints/epochs to reduce validation overfitting.
+- Reserve budget across multiple hypothesis families instead of allowing implementation debugging to consume nearly the whole run.
+- Add automatic proposal repair/fallback when generation fails.
+- Treat “converged” as requiring either several valid, diverse negative experiments or a verified winning candidate—not one baseline, one infrastructure failure, and one unexplained rejection.
+
+What the next run should try first
+
+First, reproduce node_002 exactly with fixed seeds and a clean acceptance audit. Evaluate the single champion, raw-score mean, and corrected per-user rank mean on identical saved predictions. Report uncertainty and every acceptance criterion. If the approximately +0.0008 gain repeats without secondary regressions, accept it; if it disappears, attribute the original result to seed or validation-selection noise.
+
+After that, test one orthogonal, low-risk baseline change rather than another elaborate ensemble—such as a small regularization or latent-dimension sweep with fixed checkpoint selection. This will provide more information than further optimizing a fragile rank-ensemble pipeline.
+
+## Run logs/run_unseeded_12
+dataset: pure
+stop_reason: converged
+best_primary: 0.603694
+- node_001 | method: seed-ensemble | hypothesis: Because the parent peaks around epoch 8 and | primary: 0.602620 | verdict: rejected
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Adding a 0.3-weight cumulative ordinal watch-ratio auxiliary loss | primary: 0.603694 | verdict: accepted
+self_critique:
+Run critique
+
+What was suboptimal
+
+- The run stopped too early. Only three attempted descendants were explored, one of which failed, so “converged” is not well supported.
+- The accepted best result is poorly attributed. Node_003 compares a hybrid BCE+BPR DCN-lite stack with an ordinal auxiliary loss against an FM baseline, while its direct parent has no metric. The gain may come from the architecture, base losses, regularization, auxiliary loss, or debugging changes—not specifically the claimed 0.3-weight ordinal objective.
+- Node_003 missed its stated effect target: 0.603694 is about +0.0019 over the 0.6018 baseline, below the hypothesized +0.0025. It can still be accepted as the best model, but the hypothesis itself should be marked only partially supported.
+- Acceptance semantics are unclear. Node_001 improved the point estimate by roughly +0.0008 but was rejected, while node_003 was accepted. The journal should record confidence intervals, seed variance, and the exact rejection rule.
+- An unseeded run is especially weak for gains of this size. The baseline’s reported sigma of 0.0001 does not substitute for matched multi-seed comparisons across candidates.
+- The ensemble experiment bundled several ideas—checkpoint selection, filtering, invariance checks, and rank averaging—so its rejection provides little actionable evidence about which component failed.
+
+What I would change in the scaffold
+
+- Require every accepted result to have a valid, measured parent and preserve exact code/config lineage after failures.
+- Separate “beats incumbent” from “confirms hypothesis.” Record predicted gain, observed gain, uncertainty, and hypothesis verdict independently.
+- Use matched seeds and paired evaluation for small deltas; report mean, standard deviation, and confidence interval rather than one point estimate.
+- Enforce one major intervention per node, or require explicit ablations when multiple changes are bundled.
+- Do not declare convergence after one failed branch and one improvement. Require a minimum exploration budget plus unsuccessful local follow-ups around the incumbent.
+- Archive complete configs, checkpoint-selection rules, and whether validation was reused for member filtering or weight tuning.
+
+What the next run should try first
+
+First, replicate node_003 across several fixed matched seeds and isolate the auxiliary loss:
+
+1. Hybrid DCN-lite BCE+BPR stack without the ordinal auxiliary.
+2. The same stack with auxiliary weights 0.1, 0.3, and 0.5.
+3. Optionally, BCE-only and BCE+BPR controls to quantify each loss contribution.
+
+Keep architecture, regularization, training budget, checkpointing, and evaluation identical. If the 0.3 auxiliary consistently improves the no-aux control, then tune its formulation or weight. Only after establishing that should the harness revisit ensembling, preferably as a simple seed ensemble of the validated node_003 configuration rather than the previous multi-component committee scheme.
+
+## Run logs/run_unseeded_16
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Averaging three independently seeded k=16 FM models, each | primary: 0.601694 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run critique
+
+- The harness declared “converged” far too early. Only one challenger produced a metric; two proposal-generation failures are infrastructure failures, not evidence that the search space is exhausted.
+- The accepted baseline appears effectively single-run and unseeded. Reporting sigma=0.0001 without multiple controlled repeats gives an unjustified impression of precision.
+- Node_002 tested an ensemble before establishing per-seed variance. Its 0.6017 result is only about 0.00014 below baseline and likely indistinguishable from noise.
+- Selecting each ensemble member at its own peak validation GAUC and then evaluating the ensemble on that same validation set introduces checkpoint-selection bias. Checkpoints should be selected by a fixed rule or on a separate selection split.
+- The failed node lineage is awkward: node_002 descends from failed node_001 rather than directly from the last valid node. Failed proposals should not become experimental ancestors.
+- The policy spent most of the run on proposal failures and a low-information ensemble experiment rather than controlled model or optimization changes.
+
+Scaffold changes
+
+- Validate and dry-run generated proposals before creating nodes; automatically repair or replace malformed proposals.
+- Keep failed infrastructure nodes out of scientific lineage and budget accounting.
+- Require a minimum number of valid experiments before allowing convergence.
+- Use fixed seeds, paired comparisons, and repeated baseline measurements. Report mean, spread, and full-precision deltas.
+- Separate checkpoint selection from final validation scoring.
+- Maintain fallback experiment templates—rank, regularization, learning rate, optimizer, and early-stopping sweeps—so generation failures do not halt exploration.
+
+Next run
+
+First reproduce the k=16 baseline across at least 3–5 fixed seeds using one predetermined checkpoint rule. Then run a small paired sweep over FM rank and regularization, for example ranks 8/16/32 and nearby L2 values, holding data splits and seeds constant. This will establish whether the observed 1e-4-scale differences are meaningful and is more informative than another seed ensemble.

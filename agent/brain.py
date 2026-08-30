@@ -245,7 +245,7 @@ class Brain:
         menu_text: str,
         provider: str | None = None,
         model_overrides: dict[str, str] | None = None,
-        max_code_tokens: int = 16000,  # reasoning models spend thinking tokens from this budget; whole-file replies need headroom
+        max_code_tokens: int = int(os.environ.get("AGENT_MAX_CODE_TOKENS", "16000")),  # reasoning models spend thinking tokens from this budget; whole-file replies need headroom (raise when reasoning effort is high)
         budget=None,
         knowledge_mode: str = "full",
     ) -> None:
