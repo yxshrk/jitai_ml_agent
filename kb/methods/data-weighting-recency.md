@@ -12,7 +12,7 @@ expected_delta_basis: mechanism-backed by measured drift; the organizers' own va
 cost: ~8 lines (per-row weight from date; weighted gradient); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0000}
+status: dead_under [official FM x2 (best Δ +0.0005); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0003)]
 evidence: [live_01:node_002, live_01:node_004, live_02:node_002, live_02:node_004]
 ---
 ## Claim
@@ -35,6 +35,7 @@ user x video embeddings are otherwise dominated by early traffic.
 - Interacts with early stopping: the effective dataset is smaller, so the peak epoch shifts.
 
 ## Measured
+_Verdict:_ never accepted in 4 measurements on 2 stack(s); official FM x2 (best Δ +0.0005); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0003)
 - live_01:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005 — rejected; 452 changed lines
 - live_01:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6039, single-seed Δ +0.0003 — rejected; 127 changed lines
 - live_02:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005, seed-mean Δ +0.0004 (t 1.5) — rejected; 13 changed lines

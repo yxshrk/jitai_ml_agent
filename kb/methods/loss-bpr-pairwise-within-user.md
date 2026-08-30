@@ -13,7 +13,7 @@ expected_delta_basis: organizers' lead #1; aligns the objective with the scored 
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
-status: alive
+status: alive — accepted on [official FM]
 evidence: [live_01:node_001, live_02:node_001, live_03:node_001]
 ---
 ## Claim
@@ -45,6 +45,7 @@ user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
   add a tiny logloss term or a small L2 to avoid exact ties.
 
 ## Measured
+_Verdict:_ ACCEPTED 3x (live_01:node_001 on [official FM] Δ +0.0022; live_02:node_001 on [official FM] Δ +0.0016; live_03:node_001 on [official FM] Δ +0.0017)
 - live_01:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022 — ACCEPTED; 433 changed lines
 - live_02:node_001 on [official FM]: primary 0.6031, single-seed Δ +0.0016, seed-mean Δ +0.0016 (t 8.22) — ACCEPTED; 34 changed lines
 - live_03:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (t 6.39) — ACCEPTED; 37 changed lines

@@ -1,0 +1,81 @@
+--- node_000.py
++++ node_002.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Variant This node replaces pointwise logloss with one-negative within-user BPR updates.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -23,7 +24,7 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
++    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+@@ -40,13 +41,16 @@
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+         return self.b + self.W[X].sum(1) + inter, E, S
+ 
+-    def step(self, X, y):
+-        B = len(y)
+-        z, E, S = self.logits(X)
+-        g = ((sigmoid(z) - y) / B).astype(np.float32)              # d(logloss)/d(logit)
++    def step(self, Xp, Xn):
++        B = len(Xp)
++        zp, Ep, Sp = self.logits(Xp)
++        zn, En, Sn = self.logits(Xn)
++        d = zp - zn
++        g = (-sigmoid(-d) / B).astype(np.float32)                  # d(BPR loss)/d(score_pos-score_neg)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+-        np.add.at(gW, X, g[:, None])
+-        np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
++        for X, E, S, h in ((Xp, Ep, Sp, g), (Xn, En, Sn, -g)):
++            np.add.at(gW, X, h[:, None])
++            np.add.at(gV, X, h[:, None, None] * (S[:, None, :] - E))
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+@@ -54,8 +58,7 @@
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+-        self.b -= self.lr * g.sum()
+-        return float(-np.mean(y * np.log(sigmoid(z) + 1e-9) + (1 - y) * np.log(1 - sigmoid(z) + 1e-9)))
++        return float(np.mean(np.logaddexp(0.0, -d)))
+ 
+     def predict(self, X, bs=200_000):
+         return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
+@@ -102,14 +105,26 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    neg_idx = np.flatnonzero(ytr == 0)
++    neg_idx = neg_idx[np.argsort(Xtr[neg_idx, 0], kind='stable')]
++    neg_users, neg_starts, neg_counts = np.unique(Xtr[neg_idx, 0], return_index=True, return_counts=True)
++    neg_start_by_user = np.zeros(dims[0], dtype=np.int64)
++    neg_count_by_user = np.zeros(dims[0], dtype=np.int64)
++    neg_start_by_user[neg_users] = neg_starts
++    neg_count_by_user[neg_users] = neg_counts
++    pair_pos = np.flatnonzero((ytr == 1) & (neg_count_by_user[Xtr[:, 0]] > 0))
++    pair_neg_start = neg_start_by_user[Xtr[pair_pos, 0]]
++    pair_neg_count = neg_count_by_user[Xtr[pair_pos, 0]]
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+     m = FM(dim, k=a.k, lr=a.lr, seed=a.seed); rng = np.random.default_rng(a.seed)
+     best, best_state, bad, history = -1.0, None, 0, []
+     for ep in range(1, epochs + 1):
+-        idx = rng.permutation(len(ytr))
+-        losses = [m.step(Xtr[idx[i:i + a.batch]], ytr[idx[i:i + a.batch]]) for i in range(0, len(idx), a.batch)]
++        pair_neg = neg_idx[pair_neg_start + rng.integers(0, pair_neg_count)]
++        idx = rng.permutation(len(pair_pos))
++        losses = [m.step(Xtr[pair_pos[idx[i:i + a.batch]]], Xtr[pair_neg[idx[i:i + a.batch]]])
++                  for i in range(0, len(idx), a.batch)]
+         r = evaluate(uva, yva, m.predict(Xva))
+         history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})

@@ -1,0 +1,996 @@
+{
+ "run_id": "live_04",
+ "n_next": 5,
+ "generation": 1,
+ "champion": 1,
+ "best": 0.6014687563529677,
+ "streak": 1,
+ "nodes": {
+  "0": {
+   "n": 0,
+   "generation": 0,
+   "parent": null,
+   "merge_parents": null,
+   "action": "reproduce_baseline",
+   "method": "official FM",
+   "target_component": null,
+   "hypothesis": "Reproduce the official FM baseline under the harness contract.",
+   "expected_delta": 0.0,
+   "expected_delta_basis": "published valid primary 0.6016",
+   "rejected_alternative": null,
+   "change_summary": null,
+   "wildcard": false,
+   "code_path": "nodes/000.py",
+   "diff_path": null,
+   "diff_lines": null,
+   "metrics": {
+    "gauc": 0.6671326321610643,
+    "ndcg5": 0.5358048805448711,
+    "primary": 0.6014687563529677,
+    "ndcg5_disc": 0.7213787463804301
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.639089406813894,
+     "val_gauc": 0.6466754117904603,
+     "val_ndcg5": 0.5271850953688951,
+     "val_primary": 0.5869302535796777
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5478637908186231,
+     "val_gauc": 0.6588507713909505,
+     "val_ndcg5": 0.5322875997651874,
+     "val_primary": 0.5955691855780689
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5129100065146174,
+     "val_gauc": 0.6641943934300241,
+     "val_ndcg5": 0.5344258054066774,
+     "val_primary": 0.5993100994183507
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5003835705774171,
+     "val_gauc": 0.6642205331536866,
+     "val_ndcg5": 0.5346307523334315,
+     "val_primary": 0.599425642743559
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.494123198730605,
+     "val_gauc": 0.6661276032071011,
+     "val_ndcg5": 0.5359638540231441,
+     "val_primary": 0.6010457286151225
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.48968474609511237,
+     "val_gauc": 0.6657969708252829,
+     "val_ndcg5": 0.5354271259749465,
+     "val_primary": 0.6006120484001147
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.48593335492270334,
+     "val_gauc": 0.6671326321610643,
+     "val_ndcg5": 0.5358048805448711,
+     "val_primary": 0.6014687563529677
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.482088355081422,
+     "val_gauc": 0.6664977916178049,
+     "val_ndcg5": 0.5359287477143124,
+     "val_primary": 0.6012132696660586
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.47836316909108845,
+     "val_gauc": 0.6665954732760578,
+     "val_ndcg5": 0.5347894579692735,
+     "val_primary": 0.6006924656226657
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4743812152317592,
+     "val_gauc": 0.6650439271014731,
+     "val_ndcg5": 0.5342296847939081,
+     "val_primary": 0.5996368059476906
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4704518760953631,
+     "val_gauc": 0.6640201495772833,
+     "val_ndcg5": 0.5340621126819299,
+     "val_primary": 0.5990411311296067
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 15.614715099334717,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "critic": null,
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": null,
+   "accepted": false,
+   "seed_confirmation": null
+  },
+  "1": {
+   "n": 1,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "field-aware FM embeddings",
+   "target_component": "model",
+   "hypothesis": "Replace each feature's shared FM embedding with field-specific embeddings so user-video, user-tab, and video-duration interactions can learn distinct representations without changing the ranking loss.",
+   "expected_delta": 0.0015,
+   "expected_delta_basis": "Field-aware Factorization Machines (Juan et al., RecSys 2016) improve sparse interaction modeling, while Data Fact #1's closed catalogue makes field-specific user and video embeddings estimable, though the flat embedding-size ablation warrants a conservative estimate.",
+   "rejected_alternative": {
+    "card": "repeat-exposure count and gap features",
+    "reason": "They directly address tied repeated user-video impressions but affect only 5.7% of validation rows and may encode exposure-policy behavior that drifts."
+   },
+   "change_summary": "Replace the champion BPR FM's shared latent vectors with field-aware feature-by-partner-field embeddings and pair-specific forward/gradient scatters.",
+   "wildcard": true,
+   "code_path": "nodes/001.py",
+   "diff_path": "diffs/001.patch",
+   "diff_lines": 46,
+   "metrics": {
+    "gauc": 0.6692424427076018,
+    "ndcg5": 0.5368379550588785,
+    "primary": 0.6030401988832401,
+    "ndcg5_disc": 0.7231667507427122
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6720732704122016,
+     "val_gauc": 0.6581881730560982,
+     "val_ndcg5": 0.5306232894685298,
+     "val_primary": 0.594405731262314
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6058886469678676,
+     "val_gauc": 0.665840324098517,
+     "val_ndcg5": 0.5343691204998727,
+     "val_primary": 0.6001047222991949
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5609190349883222,
+     "val_gauc": 0.6680030081032678,
+     "val_ndcg5": 0.5350909204781679,
+     "val_primary": 0.6015469642907179
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5366358401927542,
+     "val_gauc": 0.6686903381010435,
+     "val_ndcg5": 0.5365322690082585,
+     "val_primary": 0.602611303554651
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5144287246338864,
+     "val_gauc": 0.6692424427076018,
+     "val_ndcg5": 0.5368379550588785,
+     "val_primary": 0.6030401988832401
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.4895878034703275,
+     "val_gauc": 0.6669169127729169,
+     "val_ndcg5": 0.5352456666979333,
+     "val_primary": 0.6010812897354251
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.4654236829027216,
+     "val_gauc": 0.6647620173818489,
+     "val_ndcg5": 0.5346618295036576,
+     "val_primary": 0.5997119234427533
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.4402048689253787,
+     "val_gauc": 0.6623301975814279,
+     "val_ndcg5": 0.5341525190799455,
+     "val_primary": 0.5982413583306867
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.41686303501433514,
+     "val_gauc": 0.6591203866409234,
+     "val_ndcg5": 0.5324034550541317,
+     "val_primary": 0.5957619208475275
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 28.29994797706604,
+   "tokens_in": 113838,
+   "tokens_out": 18873,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "Scope violation: parent is the BPR champion, but this script reverts training to the pointwise-logloss baseline, changing the ranking loss in addition to the embedding architecture."
+     ],
+     "instructions": "Return the champion script unchanged except for the field-aware embedding edits: change V and its Adam states to shape (dim, n_fields, k), compute each pair as dot(V[x_f,j], V[x_j,f]), and scatter those pair-specific gradients inside the champion's existing BPR positive/negative update. Preserve its pair sampler, BPR loss, epochs, early stopping, encoding, and output logic exactly."
+    },
+    {
+     "round": 1,
+     "verdict": "revise",
+     "reasons": [
+      "The script reverted the champion\u2019s within-user BPR training to pointwise logloss, violating the fixed hypothesis and explicit scope requirement to preserve the ranking loss.",
+      "Its training loop, step signature, loss, and sampler are therefore substantially different from the parent rather than field-aware-only edits."
+     ],
+     "instructions": "Return the champion BPR script unchanged, then only: reshape V and its Adam states to (dim, len(FIELDS), k); compute each field pair as dot(V[x_f, j], V[x_j, f]); and in the existing BPR positive/negative update scatter the corresponding pair-specific gradients for both rows. Preserve the champion\u2019s pair sampler, BPR loss, epochs, early stopping, encoding, prediction/output logic, and SMOKE_EPOCHS handling exactly."
+    },
+    {
+     "round": 2,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or unauthorized data access; outcome labels are used only as training targets and validation evaluation labels.",
+      "The field-aware forward pass and pairwise gradients preserve the champion\u2019s BPR sampler, training loop, smoke cap, and output ordering."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00157,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6030401988832401,
+     0.6023209423995108,
+     0.6026079598478907
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00122,
+    "se": 0.00023,
+    "t": 5.22,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "2": {
+   "n": 2,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "loss-bpr-pairwise-within-user",
+   "target_component": "loss",
+   "hypothesis": "Replace pointwise logloss with within-user BPR pairs so optimization directly improves positive-negative ordering while cancelling metric-irrelevant user constants.",
+   "expected_delta": 0.0022,
+   "expected_delta_basis": "The card range is 0.002-0.010, and prior official-FM retests realized +0.0016 to +0.0022 with strong seed significance.",
+   "rejected_alternative": {
+    "card": "loss-listwise-softmax-within-user",
+    "reason": "It targets the same loss component, while BPR already has replicated positive evidence and is the diagnosis's designated next probe."
+   },
+   "change_summary": "Replaced pointwise FM logloss with pure within-user BPR, uniformly sampling one same-user negative per eligible positive each epoch while preserving validation early stopping and outputs.",
+   "wildcard": false,
+   "code_path": "nodes/002.py",
+   "diff_path": "diffs/002.patch",
+   "diff_lines": 37,
+   "metrics": {
+    "gauc": 0.6691530095869569,
+    "ndcg5": 0.5365043482798145,
+    "primary": 0.6028286789333857,
+    "ndcg5_disc": 0.7225893573715995
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6749543687130543,
+     "val_gauc": 0.6574596286558325,
+     "val_ndcg5": 0.5300482325026108,
+     "val_primary": 0.5937539305792217
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.6170179171765104,
+     "val_gauc": 0.6651647300378983,
+     "val_ndcg5": 0.5339029525753876,
+     "val_primary": 0.5995338413066429
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5731912546969474,
+     "val_gauc": 0.667847782974678,
+     "val_ndcg5": 0.5356275380683015,
+     "val_primary": 0.6017376605214897
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5573060271587778,
+     "val_gauc": 0.6691530095869569,
+     "val_ndcg5": 0.5365043482798145,
+     "val_primary": 0.6028286789333857
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5498637836030189,
+     "val_gauc": 0.6687025711703444,
+     "val_ndcg5": 0.536483926732446,
+     "val_primary": 0.6025932489513952
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5450548453533903,
+     "val_gauc": 0.6681242673949556,
+     "val_ndcg5": 0.5357091443816354,
+     "val_primary": 0.6019167058882955
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5396686449963995,
+     "val_gauc": 0.6692244797452661,
+     "val_ndcg5": 0.5364345049660473,
+     "val_primary": 0.6028294923556567
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.5351446676761547,
+     "val_gauc": 0.6685604340554423,
+     "val_ndcg5": 0.5364556583974476,
+     "val_primary": 0.6025080462264449
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 11.996649026870728,
+   "tokens_in": 37768,
+   "tokens_out": 6776,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or test access; long_view is used only as a training target and validation label.",
+      "Contract, deterministic same-user negative sampling, smoke cap, row ordering, and BPR-only scope are preserved."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00136,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6028286789333857,
+     0.6029525159912483,
+     0.601968666398895
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00114,
+    "se": 0.0003,
+    "t": 3.83,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "3": {
+   "n": 3,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Add leakage-safe bucketized user-by-author, user-by-tab, and user-by-duration historical long-view rates to improve ordering for sparse users.",
+   "expected_delta": 0.0015,
+   "expected_delta_basis": "The card range is 0.001-0.006 and Fact #2 reports a median of only 35 training rows per valid user, supporting smoothed aggregates but keeping the estimate in the lower third.",
+   "rejected_alternative": {
+    "card": "aux-targets-is-click",
+    "reason": "Click is nearly a duplicate threshold signal and previously reduced BPR primary by 0.0003, while history addresses an unused personalization source."
+   },
+   "change_summary": "Added three FM fields containing smoothed user-by-author, user-by-tab, and user-by-duration long-view-rate buckets, using strictly time-shifted train histories and full train totals for validation or extra scoring while preserving within-user BPR training.",
+   "wildcard": false,
+   "code_path": "nodes/003.py",
+   "diff_path": "diffs/003.patch",
+   "diff_lines": 128,
+   "metrics": {
+    "gauc": 0.6682049751240832,
+    "ndcg5": 0.5360498780641855,
+    "primary": 0.6021274265941343,
+    "ndcg5_disc": 0.7218027783619985
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6633982759840945,
+     "val_gauc": 0.6582409156550214,
+     "val_ndcg5": 0.5311085575531115,
+     "val_primary": 0.5946747366040664
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5822243208580828,
+     "val_gauc": 0.6646799327432121,
+     "val_ndcg5": 0.5347574179752478,
+     "val_primary": 0.59971867535923
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.555759883941488,
+     "val_gauc": 0.6681662396237696,
+     "val_ndcg5": 0.5354952982835818,
+     "val_primary": 0.6018307689536757
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.5491045231514788,
+     "val_gauc": 0.666894069725484,
+     "val_ndcg5": 0.5350211041775351,
+     "val_primary": 0.6009575869515096
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5458207916706166,
+     "val_gauc": 0.6681279618376861,
+     "val_ndcg5": 0.5357577319481593,
+     "val_primary": 0.6019428468929227
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.5419209282448951,
+     "val_gauc": 0.6675282693529062,
+     "val_ndcg5": 0.5355964157440417,
+     "val_primary": 0.601562342548474
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.5394342021739229,
+     "val_gauc": 0.667756691130358,
+     "val_ndcg5": 0.5359389744988833,
+     "val_primary": 0.6018478328146206
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.535730500170525,
+     "val_gauc": 0.6676943733397146,
+     "val_ndcg5": 0.5359124080966147,
+     "val_primary": 0.6018033907181646
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.5320214717946155,
+     "val_gauc": 0.6682049751240832,
+     "val_ndcg5": 0.5360498780641855,
+     "val_primary": 0.6021274265941343
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.5266399700590905,
+     "val_gauc": 0.6667977023354863,
+     "val_ndcg5": 0.5350159110922584,
+     "val_primary": 0.6009068067138723
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.5205780052124186,
+     "val_gauc": 0.6661030531585899,
+     "val_ndcg5": 0.5346635449808078,
+     "val_primary": 0.6003832990696989
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.5143607791433943,
+     "val_gauc": 0.6647139865262263,
+     "val_ndcg5": 0.5346736636768824,
+     "val_primary": 0.5996938251015543
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.5068600057287419,
+     "val_gauc": 0.6646164011900276,
+     "val_ndcg5": 0.5344652082416841,
+     "val_primary": 0.5995408047158559
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 25.725252151489258,
+   "tokens_in": 116991,
+   "tokens_out": 48176,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "revise",
+     "reasons": [
+      "The declared parent is the champion, but this script replaces the champion's BPR training with the official pointwise-logloss FM baseline. That is a large out-of-scope change."
+     ],
+     "instructions": "Return to the exact champion script, preserving its BPR pair sampler, pairwise update, hyperparameters, early stopping, prediction/output logic, and SMOKE_EPOCHS handling. Add only the strictly time-shifted history preprocessing, the three history fields (user-author, user-tab, user-duration), and their train/valid/extra encoding shown here."
+    },
+    {
+     "round": 1,
+     "verdict": "revise",
+     "reasons": [
+      "The script does not preserve the champion: it trains pointwise logloss with shuffled rows instead of the champion's within-user BPR pair sampler and pairwise update."
+     ],
+     "instructions": "Return to the exact champion BPR script. Preserve its pair construction, pairwise FM update, hyperparameters, early stopping, SMOKE_EPOCHS handling, and output logic unchanged; add only the strictly time-shifted history preprocessing and the three history categorical fields/encodings shown here."
+    },
+    {
+     "round": 2,
+     "verdict": "ok",
+     "reasons": [
+      "Historical labels are used only through strictly earlier time_ms aggregates; equal-time rows are deferred, and validation/extra use train-only totals.",
+      "Contract, BPR training, deterministic sampling, row order, and SMOKE_EPOCHS handling are preserved."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00066,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6021274265941343,
+     0.6026681982781319,
+     0.602684307383863
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00105,
+    "se": 0.00022,
+    "t": 4.83,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  },
+  "4": {
+   "n": 4,
+   "generation": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "regularization-embedding-dropout-l2",
+   "target_component": "regularization",
+   "hypothesis": "Increase sparse embedding L2 modestly so the model retains its epoch-7 ranking peak instead of fitting id-specific noise through epoch 11.",
+   "expected_delta": 0.001,
+   "expected_delta_basis": "The card range is 0.000-0.004, and the journal curve supplies specific overfitting evidence by falling from 0.6015 at epoch 7 to 0.5990 at epoch 11.",
+   "rejected_alternative": {
+    "card": "training-schedule-lr-decay-early-stop",
+    "reason": "Learning-rate decay already lost 0.0004 on the official FM, whereas the prior official-FM L2 attempt failed before producing a runnable measurement."
+   },
+   "change_summary": "Increase the FM embedding L2 default from 1e-6 to 1e-5 while retaining the existing training and best-epoch checkpoint logic.",
+   "wildcard": false,
+   "code_path": "nodes/004.py",
+   "diff_path": "diffs/004.patch",
+   "diff_lines": 2,
+   "metrics": {
+    "gauc": 0.6684913593708386,
+    "ndcg5": 0.536514481883161,
+    "primary": 0.6025029206269998,
+    "ndcg5_disc": 0.7226068962100312
+   },
+   "history": [
+    {
+     "epoch": 1,
+     "train_loss": 0.6397843130997249,
+     "val_gauc": 0.6458583897838303,
+     "val_ndcg5": 0.5268614476441232,
+     "val_primary": 0.5863599187139767
+    },
+    {
+     "epoch": 2,
+     "train_loss": 0.5518600940704346,
+     "val_gauc": 0.6579784945107905,
+     "val_ndcg5": 0.5318689421941408,
+     "val_primary": 0.5949237183524656
+    },
+    {
+     "epoch": 3,
+     "train_loss": 0.5186429977416992,
+     "val_gauc": 0.6633870607840876,
+     "val_ndcg5": 0.5342456415335461,
+     "val_primary": 0.5988163511588169
+    },
+    {
+     "epoch": 4,
+     "train_loss": 0.506933174601623,
+     "val_gauc": 0.6632508459843849,
+     "val_ndcg5": 0.5346582125700582,
+     "val_primary": 0.5989545292772216
+    },
+    {
+     "epoch": 5,
+     "train_loss": 0.5014660196644919,
+     "val_gauc": 0.6651386153090141,
+     "val_ndcg5": 0.5352954868507737,
+     "val_primary": 0.6002170510798939
+    },
+    {
+     "epoch": 6,
+     "train_loss": 0.49806947218520303,
+     "val_gauc": 0.6665559472912459,
+     "val_ndcg5": 0.5355481893963367,
+     "val_primary": 0.6010520683437913
+    },
+    {
+     "epoch": 7,
+     "train_loss": 0.49566552213260107,
+     "val_gauc": 0.6677164719850041,
+     "val_ndcg5": 0.535897925362691,
+     "val_primary": 0.6018071986738476
+    },
+    {
+     "epoch": 8,
+     "train_loss": 0.49346591042620797,
+     "val_gauc": 0.6682291670291696,
+     "val_ndcg5": 0.536531705409933,
+     "val_primary": 0.6023804362195513
+    },
+    {
+     "epoch": 9,
+     "train_loss": 0.4915579189147268,
+     "val_gauc": 0.6681881574655142,
+     "val_ndcg5": 0.5358098327491349,
+     "val_primary": 0.6019989951073246
+    },
+    {
+     "epoch": 10,
+     "train_loss": 0.4895794766289847,
+     "val_gauc": 0.6671062243748479,
+     "val_ndcg5": 0.5357759491328175,
+     "val_primary": 0.6014410867538327
+    },
+    {
+     "epoch": 11,
+     "train_loss": 0.4877323976584843,
+     "val_gauc": 0.6671474048353385,
+     "val_ndcg5": 0.5350902397535978,
+     "val_primary": 0.6011188222944681
+    },
+    {
+     "epoch": 12,
+     "train_loss": 0.485975880920887,
+     "val_gauc": 0.6684913593708386,
+     "val_ndcg5": 0.536514481883161,
+     "val_primary": 0.6025029206269998
+    },
+    {
+     "epoch": 13,
+     "train_loss": 0.4841425171920231,
+     "val_gauc": 0.66745865389632,
+     "val_ndcg5": 0.5356510671716798,
+     "val_primary": 0.6015548605339999
+    },
+    {
+     "epoch": 14,
+     "train_loss": 0.4821747481822968,
+     "val_gauc": 0.6673699954718414,
+     "val_ndcg5": 0.5357964871649008,
+     "val_primary": 0.601583241318371
+    },
+    {
+     "epoch": 15,
+     "train_loss": 0.48030678906611035,
+     "val_gauc": 0.6654203677362357,
+     "val_ndcg5": 0.5346937651011051,
+     "val_primary": 0.6000570664186704
+    },
+    {
+     "epoch": 16,
+     "train_loss": 0.47834564873150415,
+     "val_gauc": 0.66437336491091,
+     "val_ndcg5": 0.5344240576855601,
+     "val_primary": 0.5993987112982351
+    }
+   ],
+   "failure_stage": null,
+   "error": null,
+   "duration_s": 24.07635474205017,
+   "tokens_in": 37543,
+   "tokens_out": 2927,
+   "critic": [
+    {
+     "round": 0,
+     "verdict": "ok",
+     "reasons": [
+      "No leakage or contract violations; validation labels are used only for official scoring and checkpoint selection.",
+      "NOTE: the increased L2 also applies to W, not only embeddings, but this is minor scope over-reach."
+     ],
+     "instructions": ""
+    }
+   ],
+   "recovery": null,
+   "intervention": false,
+   "realized_delta": 0.00103,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6025029206269998,
+     0.6028729444838677,
+     0.6017090117891591
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00092,
+    "se": 0.00032,
+    "t": 2.86,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "single_seed_accept": false
+  }
+ },
+ "plan": {
+  "note": "Field-aware embeddings are the new champion, while BPR and stronger L2 each delivered confirmed gains from different target components.\nPrioritize orthogonal merges; retest history only because field-aware partner-specific embeddings may represent its added fields more effectively.",
+  "plan": [
+   {
+    "type": "merge",
+    "merge_parents": [
+     1,
+     2
+    ],
+    "hypothesis": "Combine field-aware embeddings with within-user BPR so the richer interaction representation is optimized directly for within-user ordering rather than pointwise calibration."
+   },
+   {
+    "type": "merge",
+    "merge_parents": [
+     1,
+     4
+    ],
+    "hypothesis": "Apply stronger embedding L2 to the field-aware champion; its expanded parameterization peaks sharply at epoch 5 and then degrades, making targeted shrinkage especially relevant."
+   },
+   {
+    "type": "retest",
+    "parent": "champion",
+    "card": "history-user-aggregates",
+    "hypothesis": "Add leakage-safe user-by-author, user-by-tab, and user-by-duration history fields to the field-aware champion, allowing each history signal to learn distinct interactions with row fields.",
+    "reason": "The stack changed from shared FM embeddings to field-aware embeddings, and history had a confirmed seed-mean gain despite a weak single-seed delta; the new representation may remove its prior interaction bottleneck."
+   }
+  ]
+ },
+ "parked": [],
+ "start": 1788092412.79289,
+ "interventions": 0,
+ "stop_reason": null,
+ "usage": {
+  "calls": 20,
+  "tokens_in": 374014,
+  "tokens_out": 84555,
+  "cache_read": 281808,
+  "cache_write": 0,
+  "cost_usd": 3.138584
+ },
+ "champion_seeds": {},
+ "last_generation": [
+  {
+   "n": 1,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "field-aware FM embeddings",
+   "target_component": "model",
+   "hypothesis": "Replace each feature's shared FM embedding with field-specific embeddings so user-video, user-tab, and video-duration interactions can learn distinct representations without changing the ranking loss.",
+   "change_summary": "Replace the champion BPR FM's shared latent vectors with field-aware feature-by-partner-field embeddings and pair-specific forward/gradient scatters.",
+   "expected_delta": 0.0015,
+   "metrics": {
+    "gauc": 0.6692424427076018,
+    "ndcg5": 0.5368379550588785,
+    "primary": 0.6030401988832401,
+    "ndcg5_disc": 0.7231667507427122
+   },
+   "realized_delta": 0.00157,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6030401988832401,
+     0.6023209423995108,
+     0.6026079598478907
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00122,
+    "se": 0.00023,
+    "t": 5.22,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 28.29994797706604,
+   "curve": [
+    0.5944,
+    0.6001,
+    0.6015,
+    0.6026,
+    0.603,
+    0.6011,
+    0.5997,
+    0.5982,
+    0.5958
+   ]
+  },
+  {
+   "n": 2,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "loss-bpr-pairwise-within-user",
+   "target_component": "loss",
+   "hypothesis": "Replace pointwise logloss with within-user BPR pairs so optimization directly improves positive-negative ordering while cancelling metric-irrelevant user constants.",
+   "change_summary": "Replaced pointwise FM logloss with pure within-user BPR, uniformly sampling one same-user negative per eligible positive each epoch while preserving validation early stopping and outputs.",
+   "expected_delta": 0.0022,
+   "metrics": {
+    "gauc": 0.6691530095869569,
+    "ndcg5": 0.5365043482798145,
+    "primary": 0.6028286789333857,
+    "ndcg5_disc": 0.7225893573715995
+   },
+   "realized_delta": 0.00136,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6028286789333857,
+     0.6029525159912483,
+     0.601968666398895
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00114,
+    "se": 0.0003,
+    "t": 3.83,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 11.996649026870728,
+   "curve": [
+    0.5938,
+    0.5995,
+    0.6017,
+    0.6028,
+    0.6026,
+    0.6019,
+    0.6028,
+    0.6025
+   ]
+  },
+  {
+   "n": 3,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "explore",
+   "method": "history-user-aggregates",
+   "target_component": "history",
+   "hypothesis": "Add leakage-safe bucketized user-by-author, user-by-tab, and user-by-duration historical long-view rates to improve ordering for sparse users.",
+   "change_summary": "Added three FM fields containing smoothed user-by-author, user-by-tab, and user-by-duration long-view-rate buckets, using strictly time-shifted train histories and full train totals for validation or extra scoring while preserving within-user BPR training.",
+   "expected_delta": 0.0015,
+   "metrics": {
+    "gauc": 0.6682049751240832,
+    "ndcg5": 0.5360498780641855,
+    "primary": 0.6021274265941343,
+    "ndcg5_disc": 0.7218027783619985
+   },
+   "realized_delta": 0.00066,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6021274265941343,
+     0.6026681982781319,
+     0.602684307383863
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00105,
+    "se": 0.00022,
+    "t": 4.83,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 25.725252151489258,
+   "curve": [
+    0.5947,
+    0.5997,
+    0.6018,
+    0.601,
+    0.6019,
+    0.6016,
+    0.6018,
+    0.6018,
+    0.6021,
+    0.6009,
+    0.6004,
+    0.5997,
+    0.5995
+   ]
+  },
+  {
+   "n": 4,
+   "parent": 0,
+   "merge_parents": null,
+   "action": "retest",
+   "method": "regularization-embedding-dropout-l2",
+   "target_component": "regularization",
+   "hypothesis": "Increase sparse embedding L2 modestly so the model retains its epoch-7 ranking peak instead of fitting id-specific noise through epoch 11.",
+   "change_summary": "Increase the FM embedding L2 default from 1e-6 to 1e-5 while retaining the existing training and best-epoch checkpoint logic.",
+   "expected_delta": 0.001,
+   "metrics": {
+    "gauc": 0.6684913593708386,
+    "ndcg5": 0.536514481883161,
+    "primary": 0.6025029206269998,
+    "ndcg5_disc": 0.7226068962100312
+   },
+   "realized_delta": 0.00103,
+   "accepted": true,
+   "seed_confirmation": {
+    "node_seeds": [
+     0.6025029206269998,
+     0.6028729444838677,
+     0.6017090117891591
+    ],
+    "champion_seeds": [
+     0.6014687563529677,
+     0.6017609746263709,
+     0.6010899806390073
+    ],
+    "delta_mean": 0.00092,
+    "se": 0.00032,
+    "t": 2.86,
+    "rule": "diff >= 0.0005 and t >= 2.5"
+   },
+   "failure_stage": null,
+   "error": null,
+   "recovery": null,
+   "duration_s": 24.07635474205017,
+   "curve": [
+    0.5864,
+    0.5949,
+    0.5988,
+    0.599,
+    0.6002,
+    0.6011,
+    0.6018,
+    0.6024,
+    0.602,
+    0.6014,
+    0.6011,
+    0.6025,
+    0.6016,
+    0.6016,
+    0.6001,
+    0.5994
+   ]
+  }
+ ]
+}

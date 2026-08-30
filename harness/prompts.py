@@ -1,7 +1,7 @@
 """Prompt assembly for the LLM roles. One stable, cacheable prefix (brief + rules + contract + data facts + method
 menu) plus a short role-specific system block and a dynamic user message. Never a growing transcript."""
 from __future__ import annotations
-import json
+import json, re
 from pathlib import Path
 from . import config as C
 
@@ -32,11 +32,32 @@ Measured dead by the organizers on FM + logloss (retest only with a changed stac
 CWM fields; embedding size k = 8 / 16 / 32.
 """
 
+def _front_fields(text):
+    m = re.match(r'---\n(.*?)\n---\n', text, re.S)
+    out = {}
+    if m:
+        for line in m.group(1).splitlines():
+            if line and not line.startswith(' ') and ':' in line:
+                k, v = line.split(':', 1); out[k.strip()] = v.strip()
+    return out
+
 def menu():
+    """All method cards, preceded by a status table so the Selector can see at a glance what is alive, what is dead
+    on which stack, and what is untried."""
     cards = sorted(p for p in (C.KB / 'methods').glob('*.md') if p.name != 'README.md') if (C.KB / 'methods').exists() else []
     if not cards:
         return FALLBACK_MENU
-    return '\n\n'.join(p.read_text() for p in cards)
+    rows = ['| card | component | status | card expected Δ |', '|---|---|---|---|']
+    for p in cards:
+        f = _front_fields(p.read_text())
+        st = f.get('status', 'untried').replace('official FM', 'FM').replace('loss-bpr-pairwise-within-user', 'BPR')
+        rows.append(f"| {f.get('id', p.stem)} | {f.get('target_component', '?')} | {st[:140]} | {f.get('expected_delta', '?')} |")
+    legend = ("Status legend: `alive` = accepted on the listed stack (build on it); `dead_under [stack xN (best Δ)]` = measured N "
+              "times on that stack and never accepted (best Δ = best seed-mean delta seen) — do not re-propose it on that stack; "
+              "a retest needs a stack not listed AND a stated reason (ADR-0004); `untried` = never measured. In stacks, FM = the "
+              "official FM baseline and BPR = loss-bpr-pairwise-within-user. Each card's `## Measured` section has the per-node "
+              "evidence: single-seed and seed-mean Δ, t statistic, verdict, diff size.")
+    return '## Card status at a glance\n' + '\n'.join(rows) + '\n\n' + legend + '\n\n## Cards\n\n' + '\n\n'.join(p.read_text() for p in cards)
 
 COMMON_PREAMBLE = """You are one role inside an autonomous ML-research harness for the KuaiRand-Pure within-user
 ranking task. The harness (deterministic code) runs the loop, scores every script with the official evaluate.py,

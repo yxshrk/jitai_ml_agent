@@ -12,7 +12,7 @@ expected_delta_basis: averaging the last few checkpoints (or an EMA of weights) 
 cost: ~15 lines (keep an EMA of V, W, b; evaluate the EMA copy); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-bpr-hard-negatives, regularization-embedding-dropout-l2, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0001}
+status: dead_under [official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0001)]
 evidence: [live_02:node_010, live_02:node_014]
 ---
 ## Claim
@@ -35,5 +35,6 @@ deltas unreliable here.
 - Gains are small by construction; confirm with seeds rather than reject on one.
 
 ## Measured
+_Verdict:_ never accepted in 2 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0001)
 - live_02:node_010 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6003, single-seed Δ -0.0027 — rejected; 29 changed lines
 - live_02:node_014 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6033, single-seed Δ +0.0002, seed-mean Δ +0.0001 (t 0.86) — rejected; 13 changed lines

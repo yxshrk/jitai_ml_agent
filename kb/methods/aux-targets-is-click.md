@@ -12,7 +12,7 @@ expected_delta_basis: extra supervision on shared embeddings helps sparse users,
 cost: ~30 lines (second bias vector + shared-V gradient); runtime ~1.2x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
-status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: -0.0003}
+status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)]
 evidence: [live_02:node_011]
 ---
 ## Claim
@@ -35,4 +35,5 @@ sees a smoother version of the label, which regularises sparse user vectors.
 - Two heads double the interaction computation; keep it vectorised.
 
 ## Measured
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0003)
 - live_02:node_011 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6028, single-seed Δ -0.0003 — rejected; 35 changed lines

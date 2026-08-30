@@ -37,4 +37,5 @@ representable without a deep net that would overfit 1.1 M rows.
 - 2–3x runtime: still ~40 s, but keep SMOKE_EPOCHS honoured.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

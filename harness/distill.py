@@ -27,6 +27,55 @@ def _stack(nodes, n):
         p = cur.get('parent'); cur = nodes.get(str(p)) if p is not None else None
     return ' + '.join(reversed(chain)) or 'official FM'
 
+MEASURED_RE = re.compile(r'^- (?P<ref>[\w-]+:node_\d+) on \[(?P<stack>[^\]]+)\]: (?P<rest>.*)$')
+DELTA_RE = re.compile(r'seed-mean Δ ([+-]?\d+\.\d+)|single-seed Δ ([+-]?\d+\.\d+)')
+
+def summarize(text):
+    """Recompute `status` and the one-line verdict at the top of ## Measured from all Measured lines."""
+    fm, body = _front(text)
+    if fm is None or '## Measured' not in body:
+        return text
+    head, tail = body.split('## Measured', 1)
+    lines = [l for l in tail.splitlines() if l.startswith('- ')]
+    per_stack, accepted, failed = {}, [], []
+    for l in lines:
+        m = MEASURED_RE.match(l)
+        if not m:
+            continue
+        ref, stack, rest = m.group('ref'), m.group('stack'), m.group('rest')
+        if rest.startswith('FAILED'):
+            failed.append(ref); continue
+        sm = re.search(r'seed-mean Δ ([+-]?\d+\.\d+)', rest); ss = re.search(r'single-seed Δ ([+-]?\d+\.\d+)', rest)
+        delta = float(sm.group(1)) if sm else (float(ss.group(1)) if ss else None)   # prefer the seed-mean
+        per_stack.setdefault(stack, []).append(delta)
+        if 'ACCEPTED' in rest:
+            accepted.append((ref, stack, delta))
+    if accepted:
+        status = 'alive — accepted on [' + '], ['.join(sorted({a[1] for a in accepted})) + ']'
+        verdict = (f"ACCEPTED {len(accepted)}x (" + '; '.join(f"{r} on [{st}] Δ {d:+.4f}" for r, st, d in accepted if d is not None) + ')')
+    elif per_stack:
+        parts = [f"{st} x{len(ds)} (best Δ {max(x for x in ds if x is not None):+.4f})" for st, ds in per_stack.items() if any(x is not None for x in ds)]
+        status = 'dead_under [' + '; '.join(parts) + ']'
+        verdict = f"never accepted in {sum(len(v) for v in per_stack.values())} measurements on {len(per_stack)} stack(s); " + '; '.join(parts)
+    else:
+        status = 'untried' + (f" (implementation failed: {', '.join(failed)})" if failed else '')
+        verdict = 'no measurement yet' + (f"; implementation failed in {', '.join(failed)}" if failed else '')
+    if failed and per_stack:
+        verdict += f"; implementation failed in {', '.join(failed)}"
+    fm = re.sub(r'^status:.*$', f'status: {status}', fm, flags=re.M)
+    tail_lines = [l for l in tail.splitlines() if not l.startswith('_Verdict:_') and l.strip() != '(none yet)']
+    body_tail = '\n_Verdict:_ ' + verdict + '\n' + '\n'.join(l for l in tail_lines if l.strip())
+    return f'---\n{fm}\n---\n{head}## Measured{body_tail}\n'
+
+def rebuild(methods_dir=None, log=print):
+    methods_dir = Path(methods_dir or C.KB / 'methods')
+    for card in sorted(methods_dir.glob('*.md')):
+        if card.name == 'README.md':
+            continue
+        new = summarize(card.read_text())
+        if new != card.read_text():
+            card.write_text(new); log(f'  {card.name}: status -> {re.search(r"^status: (.*)$", _front(new)[0], re.M).group(1)[:110]}')
+
 def distill(run_id, methods_dir=None, log=print):
     methods_dir = Path(methods_dir or C.KB / 'methods')
     run_dir = C.RUNS / run_id
@@ -73,10 +122,10 @@ def distill(run_id, methods_dir=None, log=print):
             body = head + '## Measured' + tail.rstrip('\n') + '\n' + line + '\n'
         else:
             body = body.rstrip('\n') + '\n\n## Measured\n' + line + '\n'
-        card.write_text(f'---\n{fm}\n---\n{body}')
+        card.write_text(summarize(f'---\n{fm}\n---\n{body}'))
         touched[card.name] = status or 'noted'
         log(f"  {card.name}: {status or 'noted'}  <- {ref}")
     return touched
 
 if __name__ == '__main__':
-    print(distill(sys.argv[1]))
+    rebuild() if sys.argv[1] == '--rebuild' else print(distill(sys.argv[1]))

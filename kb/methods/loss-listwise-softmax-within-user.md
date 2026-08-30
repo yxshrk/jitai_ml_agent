@@ -38,4 +38,5 @@ top-one probability loss is a proper surrogate for the permutation-level objecti
 - Plain softmax rewards ordering deep in the list too; nDCG@5 only cares about the top — see loss-lambdarank-pairs.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

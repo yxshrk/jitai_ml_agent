@@ -12,7 +12,7 @@ expected_delta_basis: uniform negatives waste gradient on pairs the model alread
 cost: ~25 lines on top of BPR (score-aware negative choice or n negatives per positive); runtime 1–2x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head, regularization-embedding-dropout-l2]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
-status: dead_under {run: live_02, stack: official FM + loss-bpr-pairwise-within-user, delta: +0.0001}
+status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0001)]
 evidence: [live_02:node_005]
 ---
 ## Claim
@@ -34,4 +34,5 @@ Hard negatives keep the gradient on the mis-ordered pairs that GAUC counts, so t
 - Extra forward passes cost time; keep m small.
 
 ## Measured
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ +0.0001)
 - live_02:node_005 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0006, seed-mean Δ +0.0001 (t 0.63) — rejected; 7 changed lines
