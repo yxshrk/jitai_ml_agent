@@ -57,7 +57,24 @@ def menu():
               "a retest needs a stack not listed AND a stated reason (ADR-0004); `untried` = never measured. In stacks, FM = the "
               "official FM baseline and BPR = loss-bpr-pairwise-within-user. Each card's `## Measured` section has the per-node "
               "evidence: single-seed and seed-mean Δ, t statistic, verdict, diff size.")
-    return '## Card status at a glance\n' + '\n'.join(rows) + '\n\n' + legend + '\n\n## Cards\n\n' + '\n\n'.join(p.read_text() for p in cards)
+    def render(p):
+        """Proven and untried cards in full; a card dead on every stack it was measured on is shown as front matter +
+        claim (the Selector needs its status and mechanism to argue a retest; the Implementer receives the full card
+        of the candidate it builds). Keeps the cached prefix bounded as the Archivist and Librarian add cards."""
+        text = p.read_text()
+        if not _front_fields(text).get('status', '').startswith('dead_under'):
+            return text
+        fm_end = text.index('\n---\n', 4) + 5
+        body = text[fm_end:]
+        claim = body[body.index('## Claim'):] if '## Claim' in body else body
+        for sec in ('## Mechanism', '## How to implement', '## Risks', '## Measured'):
+            if sec in claim:
+                claim = claim[:claim.index(sec)]
+        verdict = ''
+        if '_Verdict:_' in body:
+            v = body[body.index('_Verdict:_'):]; verdict = v.split('\n', 1)[0] + '\n'
+        return text[:fm_end] + claim.rstrip() + '\n' + verdict + '(mechanism, recipe and per-node evidence in the full card, given to the Implementer on selection)\n'
+    return '## Card status at a glance\n' + '\n'.join(rows) + '\n\n' + legend + '\n\n## Cards\n\n' + '\n\n'.join(render(p) for p in cards)
 
 COMMON_PREAMBLE = """You are one role inside an autonomous ML-research harness for the KuaiRand-Pure within-user
 ranking task. The harness (deterministic code) runs the loop, scores every script with the official evaluate.py and
@@ -296,6 +313,9 @@ def user_implement(ctx, selection, parent_code, extra_parent_code=None):
          f"Parent script node_{selection.get('parent_n', ctx['champion']['n']):03d}; its stack (everything it contains beyond the "
          f"official FM): [{ctx.get('parent_stack', 'official FM')}]. Nothing else on the menu is in it, whatever a card's status says. "
          f"Edit it for the candidate only.\n```python\n{parent_code}\n```\n")
+    card = (C.KB / 'methods' / f"{selection.get('card')}.md") if selection.get('card') else None
+    if card and card.exists():
+        s += f"\nThe full method card for this candidate (recipe, risks, prior measurements):\n```card\n{card.read_text()}\n```\n"
     if extra_parent_code:
         s += f"\nSecond parent script for the merge:\n```python\n{extra_parent_code}\n```\n"
     if ctx.get('history_for_implementer'):
