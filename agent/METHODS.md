@@ -25,6 +25,28 @@ recency half-life 2..21 days; checkpoint every half epoch from 0.5 onward and le
 data pick the stopping point. Then refine (stage 2) locally around the best sample.
 Never narrow a range because a value "seems too extreme" — extremes have won here.
 
+
+## Advanced search mechanics (use inside fan-out nodes)
+- SUCCESSIVE HALVING (Hyperband/ASHA, Li et al. 2018): launch ~2-3x more candidates
+  than you can afford full-length; evaluate all at a short budget (1-2 epochs), kill
+  the bottom half, double the survivors' budget, repeat. Same wall-clock, ~3x wider
+  search than equal-length probes. Preferred over plain random search when the
+  candidate count exceeds ~16.
+- SNAPSHOT ENSEMBLING (Huang et al., ICLR 2017): with a cyclic or restarted LR,
+  save several checkpoints from ONE training and use them as extra ensemble members
+  free of retraining cost. The ensemble-design sweep may mix seed-members and
+  snapshot-members and let validation pick the blend.
+- CAPACITY DIALS BELONG IN THE SEARCH SPACE: include embedding dim k {8..48} and MLP
+  width {64..256} in stage-1 random ranges alongside regularization — capacity x
+  regularization is the canonical interaction (deep CTR literature) and must be
+  searched jointly, not fixed by habit.
+- DATA-SIDE DIALS: recency SHAPE (exponential vs step vs linear decay), and
+  segment-weighted training (by tab or duration bucket) are legitimate searchable
+  families largely unexplored here; probe them in combo sweeps.
+- ARC REMINDER: after a dial-swept package is accepted, the combo-sweep card (add-on
+  mechanisms probed ON the tuned champion, incl. pairs) is the highest-expected-value
+  next play, BEFORE the ensemble close. The record run skipped it — do not.
+
 ## Depth policy (overrides brevity instincts)
 Searches must be EXHAUSTIVE, not token gestures. Hard minimums when a search card is
 played with a generous timeout: stage-1 coarse pass >= 16 probe trainings; stage-2
