@@ -64,7 +64,12 @@ def primary(y, s, user, tie_credit=0.5, rng=None):
 
 def main():
     node_dir, val_path = Path(sys.argv[1]), Path(sys.argv[2])
-    s = np.loadtxt(node_dir / "predictions.csv", delimiter=",", skiprows=1, usecols=3)
+    vals = []
+    with open(node_dir / "predictions.csv") as fh:
+        next(fh)
+        for line in fh:
+            vals.append(float(line.rsplit(",", 1)[1]))
+    s = np.asarray(vals, dtype=np.float64); del vals
     val = np.load(val_path, allow_pickle=False)
     y = val["y"].astype(int)
     user = val["user"]

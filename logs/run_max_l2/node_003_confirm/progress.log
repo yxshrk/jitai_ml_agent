@@ -36,3 +36,10 @@
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.571211, "val_gauc": 0.667314, "val_primary": 0.601433}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6673141858793461, "ndcg5": 0.5355522379348713, "primary": 0.6014332119071086}, "seed": 2042, "stage": "matched_recency_probe"}
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.571456, "val_gauc": 0.66796, "val_primary": 0.601694}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6679600024952242, "ndcg5": 0.5354289816163554, "primary": 0.6016944920557898}, "seed": 2043, "stage": "matched_recency_probe"}
 {"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.573486, "val_gauc": 0.667681, "val_primary": 0.601457}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6676814216543843, "ndcg5": 0.535233047872619, "primary": 0.6014572347635017}, "seed": 2044, "stage": "matched_recency_probe"}
+{"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.572797, "val_gauc": 0.66921, "val_primary": 0.602301}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6692102395187741, "ndcg5": 0.5353917681568612, "primary": 0.6023010038378176}, "seed": 2045, "stage": "matched_recency_probe"}
+{"best_checkpoint": {"epoch": 1.0, "lr": 0.001, "train_loss": 0.571684, "val_gauc": 0.667434, "val_primary": 0.601539}, "ess_fraction": 1.0, "floor": 1.0, "half_life_days": 7.0, "metrics": {"gauc": 0.6674344535199779, "ndcg5": 0.5356429088444431, "primary": 0.6015386811822105}, "seed": 2046, "stage": "matched_recency_probe"}
+{"floor": 0.2, "member": 0, "primary": 0.6010759024840626, "seed": 1042, "stage": "final"}
+{"floor": 0.2, "member": 1, "primary": 0.6019073245350697, "seed": 1043, "stage": "final"}
+{"floor": 0.2, "member": 2, "primary": 0.6015792540844207, "seed": 1044, "stage": "final"}
+{"floor": 0.2, "member": 3, "primary": 0.6015540264115974, "seed": 1045, "stage": "final"}
+{"floor": 0.2, "member": 4, "primary": 0.6016279234418698, "seed": 1046, "stage": "final"}

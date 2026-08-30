@@ -1,0 +1,1 @@
+{"candidate": 0, "config": {"dropout": 0.24, "gamma": 0.62, "half_life": 7.0, "lr": 0.0008, "step_size": 2, "weight_decay": 0.00025}, "epochs": 1, "fraction": 1.0, "gauc": 0.607919, "pair_mining": "complete_user_max_violation", "phase": "smoke_final", "primary": 0.559241, "seed": 42}

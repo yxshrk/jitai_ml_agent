@@ -398,12 +398,13 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_1k: untried
 
 
-### gauge-fixed-bce: User-centered BCE (within-user gauge fixing)
+### gauge-fixed-bce: User-centered BCE (within-user gauge fixing)  [MEASURED WIN]
 - mechanism: Batch complete user slates; replace the pointwise BCE logits with user-centered logits (logit minus that user's batch-mean logit, plus one learned global bias). Gradient of the pointwise term then sums to zero within each user, so it can only learn relative deviations — the only thing GAUC/nDCG measure. Keep the BPR term unchanged.
 - treats: metric-mismatch
 - citation: gauge-fixing rationale (per-user constant shifts leave the metric invariant); pairwise-consistency literature.
-- expected_gain / cost: +0.0002..+0.0008 speculative; very cheap / low.
-- status_pure: untried
+- expected_gain / cost: MEASURED +0.0026 over a 0.6018-family parent (run_novel_r1
+  node_003, accepted 0.60447); very cheap / low.
+- status_pure: measured-win (novel_r1)
 - status_1k: untried
 
 ### signed-sketch-residual: Signed co-consumption sketch rank blend
