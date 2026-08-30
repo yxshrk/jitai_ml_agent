@@ -183,7 +183,10 @@ def encode(rows, history_length):
 
 
 class SequenceDeepFM(nn.Module):
-    def __init__(self, field_dimensions, author_padding, embedding_dim, hidden_dim, dropout, history_recency_decay):
+    def __init__(
+        self, field_dimensions, author_padding, embedding_dim, hidden_dim, dropout,
+        history_recency_decay, history_encoder, history_length,
+    ):
         super().__init__()
         self.embeddings = nn.ModuleList(
             [
@@ -201,6 +204,9 @@ class SequenceDeepFM(nn.Module):
         self.auxiliary_out = nn.Linear(hidden_dim, len(AUXILIARY_TASKS))
         self.bias = nn.Parameter(torch.zeros(()))
         self.history_recency_decay = history_recency_decay
+        self.history_encoder = history_encoder
+        self.history_length = history_length
+        self.history_positions = nn.Embedding(history_length, embedding_dim) if history_encoder == "candidate_attention" else None
         # PyTorch's default unit-variance embedding initialization makes the FM
         # interaction term explode with eight categorical fields.  Match the
         # organizer FM's small 0.01 initialization so the neural extension
@@ -213,6 +219,8 @@ class SequenceDeepFM(nn.Module):
             nn.init.zeros_(linear.weight)
             if linear.padding_idx is not None:
                 linear.weight.data[linear.padding_idx].zero_()
+        if self.history_positions is not None:
+            nn.init.normal_(self.history_positions.weight, mean=0.0, std=0.01)
         for layer in list(self.deep_hidden) + [self.deep_out, self.auxiliary_out]:
             if isinstance(layer, nn.Linear):
                 nn.init.xavier_uniform_(layer.weight)
@@ -225,7 +233,19 @@ class SequenceDeepFM(nn.Module):
         linear = sum(layer(features[:, index]).squeeze(1) for index, layer in enumerate(self.linear))
         history_embeddings = self.embeddings[2](history_authors)
         history_mask = (history_authors != self.embeddings[2].padding_idx).unsqueeze(-1)
-        if self.history_recency_decay:
+        if self.history_encoder == "candidate_attention":
+            # Relative positions are recomputed per row: zero is the oldest
+            # observed event and history_length - 1 is the most recent one.
+            positions = torch.arange(history_authors.shape[1], device=history_authors.device).view(1, -1)
+            lengths = history_mask.squeeze(-1).sum(dim=1, keepdim=True)
+            relative = (positions - lengths + self.history_length).clamp(0, self.history_length - 1)
+            keys = history_embeddings + self.history_positions(relative)
+            query = embeddings[2].unsqueeze(1)
+            scores = (keys * query).sum(dim=2) / np.sqrt(keys.shape[2])
+            scores = scores.masked_fill(~history_mask.squeeze(-1), -1e9)
+            weights = torch.softmax(scores, dim=1).unsqueeze(-1) * history_mask
+            history_mean = (history_embeddings * weights).sum(dim=1)
+        elif self.history_recency_decay:
             positions = torch.arange(history_authors.shape[1], device=history_authors.device).view(1, -1, 1)
             lengths = history_mask.sum(dim=1, keepdim=True)
             weights = torch.exp((positions - lengths + 1) * self.history_recency_decay) * history_mask
@@ -268,7 +288,8 @@ def run(args):
     train_x, train_history, train_y, train_auxiliary, train_users = encoded["train"]
     valid_x, valid_history, valid_y, _, valid_users = encoded["valid"]
     model = SequenceDeepFM(
-        field_dimensions, author_padding, args.embedding_dim, args.hidden_dim, args.dropout, args.history_recency_decay
+        field_dimensions, author_padding, args.embedding_dim, args.hidden_dim, args.dropout,
+        args.history_recency_decay, args.history_encoder, args.history_length,
     ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
@@ -362,6 +383,7 @@ def run(args):
         "hypothesis": HYPOTHESIS,
         "fields": FIELDS,
         "history_length": args.history_length,
+        "history_encoder": args.history_encoder,
         "best": best_event,
         "trajectory": trajectory,
         "error_or_recovery": None,
@@ -394,6 +416,10 @@ def parse_args():
     parser.add_argument(
         "--history_recency_decay", type=float, default=0.0,
         help="Exponential preference for newer authors in the causal history; zero is uniform pooling.",
+    )
+    parser.add_argument(
+        "--history_encoder", choices=("mean", "candidate_attention"), default="mean",
+        help="Pool causal author history uniformly/recency-weighted, or attend using the candidate author.",
     )
     parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--weight_decay", type=float, default=1e-6)

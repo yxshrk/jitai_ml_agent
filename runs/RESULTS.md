@@ -31,5 +31,6 @@ All decisions below use only the fixed train and validation splits. No test metr
 | BCE then within-user pairwise DeepFM, seed 5 | 0.604773 | Reject: near-tie, not a robust gain |
 | Multi-task DeepFM, auxiliary weight 0.1, seed 5 | 0.604308 | Reject: auxiliary feedback transfer hurt |
 | Positive-only causal author history, seed 5 | 0.604659 | Reject: lower than all-exposure history |
+| Candidate-conditioned author-history attention, seed 5 | 0.604519 | Reject: lower than mean-pool control |
 
 The contextual fields only help as a group. The next research iteration should prioritize train-history features with strict time ordering and out-of-fold safeguards; retain the validation-only model-selection rule and record each outer experiment's hypothesis, diff, metrics, and any recovery event.

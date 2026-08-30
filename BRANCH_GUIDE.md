@@ -111,6 +111,7 @@ maintained in `runs/RESULTS.md`.
 | BCE then within-user pairwise DeepFM | 0.604773 (seed 5) | Reject; direct pairwise refinement was only a near-tie |
 | Multi-task DeepFM (click/profile/like/follow) | 0.604308 (seed 5) | Reject; this first shared-head weighting hurt |
 | Positive-only causal author history | 0.604659 (seed 5) | Reject; below all-exposure author history |
+| Candidate-conditioned author-history attention | 0.604519 (seed 5) | Reject; below mean-pool control |
 
 ## Commit checkpoints
 
