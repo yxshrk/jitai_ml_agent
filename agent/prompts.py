@@ -46,6 +46,11 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
   impression: usable as auxiliary training TARGETS only, never as input features,
   and never read from val.csv except long_view for the metrics computation.
 - Allowed libraries: numpy, torch, stdlib only.
+- DEVICE: select the best available torch device at startup —
+  cuda if torch.cuda.is_available() else cpu — and run all training on it.
+  On a GPU, probes are 5-10x faster: use the saved time for deeper search
+  (more cells, longer probes), not for finishing early. GPU-hours are
+  report-only in this challenge; wall-clock is what is scored.
 
 Propose ONE falsifiable change per iteration relative to the parent script,
 stated as a hypothesis. Default to an atomic change; a change may instead be a
