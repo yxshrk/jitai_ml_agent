@@ -27,5 +27,9 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Corrected Sequence DeepFM, seeds 5–8 | 0.604735 / 0.604594 / 0.604555 / 0.604551 | Four-seed mean **0.604609** |
 | Four-member Sequence DeepFM ensemble | 0.604483 logits / 0.604559 per-user ranks | Reject: neither improves on member mean |
 | Rolling earlier-validation author metadata, seed 5 | 0.603923 | Reject: causal metadata update is weaker than frozen train history |
+| Recency-weighted author pooling, seeds 5-8 | 0.604776 / 0.604661 / 0.604452 / 0.604577 | Reject: four-seed mean 0.604616, indistinguishable from leader |
+| BCE then within-user pairwise DeepFM, seed 5 | 0.604773 | Reject: near-tie, not a robust gain |
+| Multi-task DeepFM, auxiliary weight 0.1, seed 5 | 0.604308 | Reject: auxiliary feedback transfer hurt |
+| Positive-only causal author history, seed 5 | 0.604659 | Reject: lower than all-exposure history |
 
 The contextual fields only help as a group. The next research iteration should prioritize train-history features with strict time ordering and out-of-fold safeguards; retain the validation-only model-selection rule and record each outer experiment's hypothesis, diff, metrics, and any recovery event.

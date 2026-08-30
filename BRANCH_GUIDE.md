@@ -107,6 +107,10 @@ maintained in `runs/RESULTS.md`.
 | Corrected Sequence DeepFM | 0.604735 / 0.604594 | Current leading architecture |
 | Four-member Sequence DeepFM ensemble | 0.604483 logits / 0.604559 per-user ranks | Reject; averaging did not add signal |
 | Rolling earlier-validation author metadata | 0.603923 (seed 5) | Reject; strictly causal metadata updates were weaker than frozen train history |
+| Recency-weighted author pooling | 0.604776 / 0.604661 / 0.604452 / 0.604577 | Reject; four-seed mean 0.604616 is a noise-level tie |
+| BCE then within-user pairwise DeepFM | 0.604773 (seed 5) | Reject; direct pairwise refinement was only a near-tie |
+| Multi-task DeepFM (click/profile/like/follow) | 0.604308 (seed 5) | Reject; this first shared-head weighting hurt |
+| Positive-only causal author history | 0.604659 (seed 5) | Reject; below all-exposure author history |
 
 ## Commit checkpoints
 
