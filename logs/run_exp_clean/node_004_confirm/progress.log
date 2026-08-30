@@ -99,3 +99,13 @@
 {"best_epoch": 7, "k": 8, "member": 23, "phase": "dimension_probe", "primary": 0.6020182014310127, "seed": 24249}
 {"config": {"epoch_limit": 8, "k": 8, "matched_seed_count": 24}, "gauc": 0.6690495110493386, "mean_individual_primary": 0.601711529803299, "ndcg5": 0.536842495684872, "primary": 0.6029460033671052, "type": "dimension_summary"}
 {"best_epoch": 7, "k": 10, "member": 0, "phase": "dimension_probe", "primary": 0.6016205991116728, "seed": 1042}
+{"best_epoch": 8, "k": 10, "member": 1, "phase": "dimension_probe", "primary": 0.6019293624780049, "seed": 2051}
+{"best_epoch": 7, "k": 10, "member": 2, "phase": "dimension_probe", "primary": 0.6015803061343854, "seed": 3060}
+{"best_epoch": 6, "k": 10, "member": 3, "phase": "dimension_probe", "primary": 0.6008441701646585, "seed": 4069}
+{"best_epoch": 6, "k": 10, "member": 4, "phase": "dimension_probe", "primary": 0.6013471826066725, "seed": 5078}
+{"best_epoch": 6, "k": 10, "member": 5, "phase": "dimension_probe", "primary": 0.6012961481220638, "seed": 6087}
+{"best_epoch": 8, "k": 10, "member": 6, "phase": "dimension_probe", "primary": 0.6018538844788831, "seed": 7096}
+{"best_epoch": 7, "k": 10, "member": 7, "phase": "dimension_probe", "primary": 0.6018991454808469, "seed": 8105}
+{"best_epoch": 5, "k": 10, "member": 8, "phase": "dimension_probe", "primary": 0.6006700883703255, "seed": 9114}
+{"best_epoch": 8, "k": 10, "member": 9, "phase": "dimension_probe", "primary": 0.6021711875747349, "seed": 10123}
+{"best_epoch": 7, "k": 10, "member": 10, "phase": "dimension_probe", "primary": 0.601525745111728, "seed": 11132}

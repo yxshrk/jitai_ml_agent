@@ -93,9 +93,14 @@ run's progress.log). The productive basin for the DCN package:
 Champion configs measured: (0.18, 9e-5, lr 0.001, gamma 0.57/2, hl 7.0) -> 0.6042
 single / 0.6056 ensembled.
 Guidance: draw ~50% of stage-1 samples from this basin, ~50% wide exploration
-(basins can move with architecture changes); refine locally as usual. On 1K the
-known-good point is (dropout 0.21, wd 4e-5, lr 0.00168, k 24, hl 7) -> 0.621
-single; ensembling gains are LARGE on 1K (0.632-0.639 measured).
+(basins can move with architecture changes); refine locally as usual. On 1K the regime INVERTS vs Pure
+(measured, run_max_1k_c 48-cell factorial + fresh-seed confirmed): PURE LOGLOSS
+beats the BPR hybrid by ~0.05 (bpr-hybrid cells mean 0.593 vs logloss 0.646);
+NO recency weighting wins (half_life None); best known config = dcn-lite,
+logloss, dropout 0.13, k 24, lr 0.00168, StepLR gamma 0.95 -> single 0.648-0.650,
+2-member rank ensemble 0.6524. gauge-fixed-bce is UNTRIED on 1K and is the top
+candidate rider given the pointwise loss dominates there. 1K has large remaining
+headroom — deeper search pays there (unlike Pure).
 
 ## Measured campaign digest (this benchmark, cross-run memory — full seed tables in zoo/EXPERIMENTS*.md)
 
