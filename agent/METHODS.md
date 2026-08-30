@@ -169,15 +169,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: running-elsewhere (C3 campaign in CURRENT DIRECTIVE dead-list ledger)
 - status_1k: untried
 
-### listwise-softmax: Per-user listwise softmax
-- mechanism: Apply a temperature-scaled softmax across every impression for one user and cross-entropy toward that user's positive mass. Hybridize with BCE only as specified by the measured implementation.
-- treats: metric-mismatch | flat-signal
-- reference_primary: 0.5991
-- preconditions: Full user histories must remain intact inside batches and one-class groups must be skipped for the listwise term.
-- citation: ListNet; PSL (arXiv:2411.00163); sampled-softmax work (arXiv:2201.02327); run_real_04 node_003
-- expected_gain / cost: Expected parity with BPR, but measured primary 0.5991 versus FM baseline 0.6018 / low-medium.
-- status_pure: measured-dead (0.5991 primary, run 04)
-- status_1k: untried
 
 ### dcn-lite: DCNv2-lite interaction head
 - mechanism: Add one or two explicit cross layers and a small MLP over the five field embeddings. This supplies bounded higher-order interactions without the parameter cost of xDeepFM/AutoInt.
@@ -209,25 +200,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: running-elsewhere (kept in known-best stack)
 - status_1k: untried
 
-### ordinal-watch-ratio-fm: Ordinal watch-ratio auxiliary on FM
-- mechanism: Divide play time by min(duration, 18s), bucket the ratio, and train cumulative threshold heads beside long_view BCE. It exposes graded watch depth while preserving the binary scoring head.
-- treats: flat-signal | metric-mismatch
-- reference_primary: 0.6033
-- preconditions: Training outcomes only; cap/clean ratios and preserve ordinal threshold consistency. This card covers the measured FM auxiliary, not a future DCN-native ordinal main objective.
-- citation: TPM, KDD 2023 (arXiv:2306.03392); run_real_04 node_002 and run_real_05 node_003
-- expected_gain / cost: Best measured FM-aux primary 0.6033, below epsilon over 0.6018 baseline; run-04 form scored 0.6026 / low.
-- status_pure: measured-dead (0.6033 best primary as FM auxiliary)
-- status_1k: untried
 
-### cwm-censored-fm: CWM-style censored auxiliary on FM
-- mechanism: Regress observed truncated watch time from shared FM representations; completed plays are right-censored lower bounds and penalize underprediction only. Combine with the long_view BCE head.
-- treats: flat-signal | metric-mismatch | data-shift
-- reference_primary: 0.6022
-- preconditions: Correct censoring at duration and training-only play_time; this measured card is only the cheap FM auxiliary, not the full counterfactual CWM likelihood.
-- citation: Zhao et al., CWM, KDD 2024 (arXiv:2406.07932); run_real_04 node_001
-- expected_gain / cost: Published watch-time GAUC is ~0.713-0.715, but the hackathon FM auxiliary measured 0.6022 and failed confirmation / medium.
-- status_pure: measured-dead (0.6022 primary as FM auxiliary)
-- status_1k: untried
 
 ### regularization-schedule: Compound dropout, row-L2, weight decay, and LR decay
 - mechanism: Apply MLP dropout around 0.3, accessed-row embedding L2, AdamW decay for dense weights, and decay LR on plateau/epoch. The compound package aims to keep validation ranking alive past epoch 2-3.
@@ -521,35 +494,8 @@ Proposer invocation pattern: generate a node that execs `zoo/ensemble_node.py` a
 - choosing N: N is YOUR decision, not a default. More members cancel more seed variance but cost linearly more wall-clock (a scored resource); returns diminish beyond ~5. Reason from your observed seed spread and remaining time budget, and state the choice in your hypothesis.
 - member diversity: At run time, reason about whether seed diversity is enough or whether to write a custom node instead of calling `zoo/ensemble_node.py`. A custom node may train members with deliberately varied configurations around the champion (for example, different dropout, learning rate, or half-life choices) and rank-average their outputs. Configuration diversity can cancel correlated errors that seed diversity alone cannot, but one bad or outlier member can drag down the whole committee, so keep variations modest. This is an agent decision, not a prescribed range.
 
-### item-aggregates: Train-window item/author target aggregates
-- mechanism: Add Bayesian-smoothed video/author long_view rates computed only on training dates. Item-varying rates can affect within-user order, unlike user-only rates.
-- treats: flat-signal | data-shift
-- reference_primary: 0.6038
-- preconditions: Strict train-window computation with no full-period statistic files or validation leakage.
-- citation: standard target encoding; `zoo/EXPERIMENTS.md` E4
-- expected_gain / cost: Measured 0.6038 versus 0.6047 without aggregates / low.
-- status_pure: measured-dead (0.6038 primary; Pure-only popularity-prior blends also failed)
-- status_1k: untried
 
-### content-features: Video content categorical features
-- mechanism: Add video_type, upload_type, frequent music ID, and first-tag categorical embeddings to provide cold-item semantics beyond video ID.
-- treats: flat-signal | data-shift
-- reference_primary: 0.6039
-- preconditions: Features must be impression-time legal and available for validation; avoid full-period counters.
-- citation: KuaiRand feature schema; `zoo/EXPERIMENTS.md` E6
-- expected_gain / cost: Measured 0.6039 versus 0.6048 without content / medium.
-- status_pure: measured-dead (0.6039 primary)
-- status_1k: untried
 
-### lightgbm-lambdarank: LightGBM LambdaRank and NN blend
-- mechanism: Train user-grouped LambdaRank on legal categorical and train-only aggregate features, then rank-average it with the neural model. Lambda gradients target nDCG ordering directly.
-- treats: metric-mismatch | flat-signal
-- reference_primary: 0.5974
-- preconditions: Requires LightGBM plus careful grouped sorting and leakage-safe engineered features; unavailable under the generated-script numpy/torch-only contract.
-- citation: LightGBM LambdaRank documentation; `zoo/EXPERIMENTS.md` E8
-- expected_gain / cost: Alone measured 0.5974; all tested NN blends were worse (best 0.6034) / medium.
-- status_pure: measured-dead (0.5974 primary alone; 0.6034 best blend)
-- status_1k: untried
 
 ## Lower-confidence cards (selectable; screen at ONE seed before investing)
 Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5 impressions/user, so nDCG@5 is full-slate ordering, not top-of-many); full-slate-gauc-loss contradicts the measured "additional negatives hurt" evidence.
@@ -568,5 +514,67 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - citation: AUC-consistent pairwise surrogates (Gao & Zhou). CAVEAT: our measured evidence that adding sampled negatives HURT argues against a big gain — treat as a probe, screen at 1 seed first.
 - expected_gain / cost: 0..+0.0008 / low.
 - status_pure: untried
+- status_1k: untried
+
+## Measured-dead archive (NOT selectable — verdicts preserved for the record)
+
+#### [dead] listwise-softmax: Per-user listwise softmax
+- mechanism: Apply a temperature-scaled softmax across every impression for one user and cross-entropy toward that user's positive mass. Hybridize with BCE only as specified by the measured implementation.
+- treats: metric-mismatch | flat-signal
+- reference_primary: 0.5991
+- preconditions: Full user histories must remain intact inside batches and one-class groups must be skipped for the listwise term.
+- citation: ListNet; PSL (arXiv:2411.00163); sampled-softmax work (arXiv:2201.02327); run_real_04 node_003
+- expected_gain / cost: Expected parity with BPR, but measured primary 0.5991 versus FM baseline 0.6018 / low-medium.
+- status_pure: measured-dead (0.5991 primary, run 04)
+- status_1k: untried
+
+#### [dead] ordinal-watch-ratio-fm: Ordinal watch-ratio auxiliary on FM
+- mechanism: Divide play time by min(duration, 18s), bucket the ratio, and train cumulative threshold heads beside long_view BCE. It exposes graded watch depth while preserving the binary scoring head.
+- treats: flat-signal | metric-mismatch
+- reference_primary: 0.6033
+- preconditions: Training outcomes only; cap/clean ratios and preserve ordinal threshold consistency. This card covers the measured FM auxiliary, not a future DCN-native ordinal main objective.
+- citation: TPM, KDD 2023 (arXiv:2306.03392); run_real_04 node_002 and run_real_05 node_003
+- expected_gain / cost: Best measured FM-aux primary 0.6033, below epsilon over 0.6018 baseline; run-04 form scored 0.6026 / low.
+- status_pure: measured-dead (0.6033 best primary as FM auxiliary)
+- status_1k: untried
+
+#### [dead] cwm-censored-fm: CWM-style censored auxiliary on FM
+- mechanism: Regress observed truncated watch time from shared FM representations; completed plays are right-censored lower bounds and penalize underprediction only. Combine with the long_view BCE head.
+- treats: flat-signal | metric-mismatch | data-shift
+- reference_primary: 0.6022
+- preconditions: Correct censoring at duration and training-only play_time; this measured card is only the cheap FM auxiliary, not the full counterfactual CWM likelihood.
+- citation: Zhao et al., CWM, KDD 2024 (arXiv:2406.07932); run_real_04 node_001
+- expected_gain / cost: Published watch-time GAUC is ~0.713-0.715, but the hackathon FM auxiliary measured 0.6022 and failed confirmation / medium.
+- status_pure: measured-dead (0.6022 primary as FM auxiliary)
+- status_1k: untried
+
+#### [dead] item-aggregates: Train-window item/author target aggregates
+- mechanism: Add Bayesian-smoothed video/author long_view rates computed only on training dates. Item-varying rates can affect within-user order, unlike user-only rates.
+- treats: flat-signal | data-shift
+- reference_primary: 0.6038
+- preconditions: Strict train-window computation with no full-period statistic files or validation leakage.
+- citation: standard target encoding; `zoo/EXPERIMENTS.md` E4
+- expected_gain / cost: Measured 0.6038 versus 0.6047 without aggregates / low.
+- status_pure: measured-dead (0.6038 primary; Pure-only popularity-prior blends also failed)
+- status_1k: untried
+
+#### [dead] content-features: Video content categorical features
+- mechanism: Add video_type, upload_type, frequent music ID, and first-tag categorical embeddings to provide cold-item semantics beyond video ID.
+- treats: flat-signal | data-shift
+- reference_primary: 0.6039
+- preconditions: Features must be impression-time legal and available for validation; avoid full-period counters.
+- citation: KuaiRand feature schema; `zoo/EXPERIMENTS.md` E6
+- expected_gain / cost: Measured 0.6039 versus 0.6048 without content / medium.
+- status_pure: measured-dead (0.6039 primary)
+- status_1k: untried
+
+#### [dead] lightgbm-lambdarank: LightGBM LambdaRank and NN blend
+- mechanism: Train user-grouped LambdaRank on legal categorical and train-only aggregate features, then rank-average it with the neural model. Lambda gradients target nDCG ordering directly.
+- treats: metric-mismatch | flat-signal
+- reference_primary: 0.5974
+- preconditions: Requires LightGBM plus careful grouped sorting and leakage-safe engineered features; unavailable under the generated-script numpy/torch-only contract.
+- citation: LightGBM LambdaRank documentation; `zoo/EXPERIMENTS.md` E8
+- expected_gain / cost: Alone measured 0.5974; all tested NN blends were worse (best 0.6034) / medium.
+- status_pure: measured-dead (0.5974 primary alone; 0.6034 best blend)
 - status_1k: untried
 
