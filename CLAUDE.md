@@ -40,12 +40,15 @@ present, or ask). Sync helper copies with rsync (NOT git), excluding
   this file current.
 
 ## State (Mon 31 Aug ~02:00, live session)
-DESIGNATION POLICY (settled with Rohan 31 Aug): prefer a CLEAN run (no --seed-scripts)
-for the Pure designation if one converges >= ~0.6050; bigclock_07 (0.605575, seeded
-with human-tuned frozen_stack) is the disclosed fallback only if clean runs fall short.
-Rationale: brief says agent "draw[s] on established methods" — method CARDS are the
-clean knowledge channel; seed scripts (esp. human-tuned frozen_stack) weaken the
-autonomy exhibit even though they are legal, disclosed launch config.
+DESIGNATION POLICY (settled with Rohan 31 Aug): prefer CLEAN runs (no --seed-scripts).
+VERIFIED 31 Aug ~02:15: bigclock_07 IS CLEAN — journal roots baseline->node_000, no
+seed nodes, bigclock_queue.sh has no --seed-scripts (Claude briefly mis-stated it as
+seeded from a runbook template; run record + memory both say unseeded. Check the RUN
+RECORD, not command templates). So current designation already satisfies the policy.
+Method CARDS are the sanctioned knowledge channel (brief: "drawing on established
+methods"); seed scripts remain legal disclosed config but are for experiments only
+(combo_r1), never the designation exhibit. temporal-pair-kernel was INVENTED by
+novel_l1 (not in its card library) — card written after the fact from its journal.
 
 TERMINOLOGY (do not re-confuse):
 - "search 40-80" = IN-NODE probe budget: agent/METHODS.md digest — opener quality
@@ -55,7 +58,7 @@ TERMINOLOGY (do not re-confuse):
   k=16 is measured optimal. Neither number is an iteration cap (official rule governs).
 
 DESIGNATIONS (unchanged so far):
-- Pure: run_bigclock_07 0.605575 (fallback; seeded). Test CSV built (predict_test_bc07).
+- Pure: run_bigclock_07 0.605575 (CLEAN, verified). Test CSV built (predict_test_bc07).
 - 1K: run_max_1k_c 0.6524. Test CSV built (predict_test_1k_winner).
 
 FLEET (watchdog /tmp/fleet_watchdog.sh, relaunch via run_in_background after any clear):
