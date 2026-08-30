@@ -30,8 +30,10 @@ def test_closed_mechanisms_hard_groups_and_rules(tmp_path, monkeypatch):
     lp = _loop(tmp_path, monkeypatch)
     assert lp._closed_mechanisms() == {'long-duration-matched-pairs': [5], 'tab-4-specialist': [6]}
     assert lp._hard_groups() == {'dur>180s': [5, 6]}                     # two rejected deepens on one group
+    lp.state['nodes']['6']['target_group'] = 'dur > 180 s'                 # same group, written differently
+    assert lp._hard_groups() == {'dur>180s': [5, 6]}
     sels = [{'type': 'deepen', 'mechanism': 'long duration MATCHED pairs', 'target_group': 'all', 'hypothesis': 'dose 2.5%'},
-            {'type': 'deepen', 'mechanism': 'fresh idea', 'target_group': 'dur>180s', 'hypothesis': 'hard group'},
+            {'type': 'deepen', 'mechanism': 'fresh idea', 'target_group': 'dur > 180s', 'hypothesis': 'hard group'},
             {'type': 'deepen', 'mechanism': 'fresh idea', 'target_group': 'tab=4', 'hypothesis': 'ok deepen'},
             {'type': 'explore', 'wildcard': True, 'new_signal': 'none', 'hypothesis': 'capacity only'},
             {'type': 'explore', 'wildcard': True, 'new_signal': 'same-author run length from earlier exposures', 'hypothesis': 'info'},
@@ -39,6 +41,22 @@ def test_closed_mechanisms_hard_groups_and_rules(tmp_path, monkeypatch):
     kept = [s['hypothesis'] for s in lp._apply_rules(sels)]
     assert kept == ['ok deepen', 'info', 'free slot']
     assert 'user_id' in lp.inputs_of(2) and 'author_id' not in lp.inputs_of(2)
+    (lp.j.node_path(2)).write_text('import numpy as np\n# user_id onehot_feat3 register_days_range\n')
+    assert {'user_id', 'onehot_feat', 'register_days'} <= set(lp.inputs_of(2))
+
+
+def test_free_slot_survives_wildcard_collision(tmp_path, monkeypatch):
+    from harness import prompts as P
+    lp = _loop(tmp_path, monkeypatch, k=3)
+    monkeypatch.setattr(P, 'untried_cards', lambda: ['features-exposure-session']); monkeypatch.setattr(P, 'proven_cards', lambda: [])
+    sels = [{'type': 'improve', 'card': 'features-exposure-session', 'target_component': 'features', 'hypothesis': 'free'},
+            {'type': 'deepen', 'card': 'x', 'target_component': 'loss', 'hypothesis': 'deepen'}]
+    assert lp._free_slot_ok(sels) and sels[0].get('free_slot')
+    wild = {'type': 'explore', 'wildcard': True, 'card': 'w', 'target_component': 'features', 'hypothesis': 'wild', 'new_signal': 'session position'}
+    kept = lp._diversify([wild] + sels)                                   # the loop prepends the wildcard
+    assert [s['hypothesis'] for s in kept] == ['free', 'deepen']          # the free slot wins the collision, not the wildcard
+    kept = lp._diversify([wild, {'type': 'improve', 'card': 'y', 'target_component': 'features', 'hypothesis': 'plain'}])
+    assert [s['hypothesis'] for s in kept] == ['wild']                    # an ordinary candidate still loses to it
 
 
 def test_free_slot_rule(tmp_path, monkeypatch):

@@ -20,6 +20,10 @@ def _slug(x):
     s = re.sub(r'[^a-z0-9]+', '-', str(x or '').lower()).strip('-')
     return s or None
 
+def _gkey(x):
+    """Normalise a breakdown-group name for comparison: 'dur>180s', 'dur > 180 s' and 'DUR>180S' are one group."""
+    return re.sub(r'[^a-z0-9]', '', str(x or '').lower()) or None
+
 def pick_champion(results):
     """The accepted node with the largest seed-mean gain (falls back to the single-seed delta), or None.
     A rejected node with the best single seed must not block an accepted one (ADR-0012)."""
@@ -433,14 +437,21 @@ class Loop:
                 cache[f'{m}:{sd}'] = val
 
     def _diversify(self, selections):
-        """Enforce distinct target_components (portfolio diversity); keep the first of each."""
-        seen, out = set(), []
+        """Enforce distinct target_components (portfolio diversity); keep the first of each — except that the free-slot
+        candidate (ADR-0014, tagged by _free_slot_ok) outranks the wildcard on a collision: an information-adding
+        wildcard and an untried features/history card share a component more often than not, and the free slot is
+        the rule that keeps untried cards from being locked out."""
+        seen, out = {}, []
         for s in selections:
             tc = s.get('target_component')
             if tc in seen and s.get('type') != 'merge':
+                prev = out[seen[tc]]
+                if s.get('free_slot') and prev.get('wildcard'):
+                    self.log(f"  free-slot candidate {s.get('card')!r} outranks the wildcard on {tc!r}; dropping the wildcard")
+                    out[seen[tc]] = s; continue
                 self.log(f'  dropping duplicate target_component {tc!r}: {s.get("hypothesis", "")[:60]}')
                 continue
-            seen.add(tc); out.append(s)
+            seen[tc] = len(out); out.append(s)
         return out[:self.k]
 
     def _node_ref(self, x):
@@ -470,7 +481,7 @@ class Loop:
             code = self.code_of(n)
         except Exception:      # noqa: BLE001
             return []
-        return [c for c in self.INPUT_COLUMNS if re.search(r'\b' + re.escape(c) + r'\b', code)]
+        return [c for c in self.INPUT_COLUMNS if re.search(r'\b' + re.escape(c) + r'(\d+|_range)?\b', code)]
 
     def _proven_not_on_stack(self):
         stack = self.stack_of(self.state['champion'])
@@ -490,19 +501,23 @@ class Loop:
 
     def _hard_groups(self):
         """breakdown group -> rejected deepen nodes, for groups with >= HARD_GROUP_REJECTS of them."""
-        cnt = {}
+        cnt, names = {}, {}
         for r in self._rejected_deepens():
-            g_ = str(r.get('target_group') or 'all').strip()
-            if g_.lower() not in ('all', '', 'none'):
-                cnt.setdefault(g_, []).append(r['n'])
-        return {g_: ns for g_, ns in cnt.items() if len(ns) >= C.HARD_GROUP_REJECTS}
+            g_ = str(r.get('target_group') or 'all').strip(); k_ = _gkey(g_)
+            if g_.lower() not in ('all', '', 'none') and k_:
+                names.setdefault(k_, g_); cnt.setdefault(k_, []).append(r['n'])   # 'dur>180s' and 'dur > 180 s' are one group
+        return {names[k_]: ns for k_, ns in cnt.items() if len(ns) >= C.HARD_GROUP_REJECTS}
 
     def _free_slot_ok(self, selections):
         """From FREE_SLOT_FROM_GENERATION on, one candidate must take an untried card or a proven card not on the stack."""
         eligible = set(P.untried_cards()) | set(self._proven_not_on_stack())
         if not eligible:
             return True
-        return any(s.get('card') in eligible and s.get('type') in ('improve', 'retest', 'explore') for s in selections)
+        for s in selections:
+            if s.get('card') in eligible and s.get('type') in ('improve', 'retest', 'explore'):
+                s['free_slot'] = True          # _diversify lets it outrank the wildcard on a component collision
+                return True
+        return False
 
     def _apply_rules(self, selections):
         """Drop candidates the rules forbid: a deepen of a closed mechanism or of a hard group, a wildcard without new_signal."""
@@ -513,9 +528,9 @@ class Loop:
                 m = _slug(s.get('mechanism'))
                 if m and m in closed:
                     self.log(f"  dropping deepen of closed mechanism {m!r} (rejected in node(s) {closed[m]}): {h}"); continue
-                g_ = str(s.get('target_group') or 'all').strip()
-                if g_ in hard:
-                    self.log(f"  dropping deepen on hard group {g_!r} (rejected deepens {hard[g_]}): {h}"); continue
+                g_ = str(s.get('target_group') or 'all').strip(); hit = next((k_ for k_ in hard if _gkey(k_) == _gkey(g_)), None)
+                if hit is not None:
+                    self.log(f"  dropping deepen on hard group {g_!r} (rejected deepens {hard[hit]}): {h}"); continue
             if s.get('wildcard'):
                 sig = str(s.get('new_signal') or '').strip()
                 if len(sig) < 8 or sig.lower() in ('none', 'n/a', 'null'):
