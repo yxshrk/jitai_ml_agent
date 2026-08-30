@@ -92,6 +92,20 @@ journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: se
 session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
 SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
 
+OVERNIGHT AUTONOMOUS PLAN (Rohan asleep, ~05:45 Mon; standing orders: squeeze Pure+1K,
+NO new laptop work):
+1) Harvest+log each finisher (watchdog: novel_l1/final_s1/clean_r3; ruby audit watcher:
+   2 omega replications + shuffle audit).
+2) 1K: if shuffle audit holds (replications already trending 0.674-0.677 on fresh seeds),
+   proceed with PRE-AUTHORIZED re-designation prep: build predict-test for omega_1k n5
+   recipe (train-window only, session features), rebuild 1K test CSV, update docs —
+   Rohan confirms final designation in the morning.
+3) Pure: when ruby audit chain frees GPU, launch one more clean full-library run
+   (run_final_r4, GPU-fast twin of final_s1). Wait on random-probe head-to-head until
+   all finalists known (agreed with Rohan). novel_l1 winner already recorded: 0.605496
+   (7-member rank ensemble; confirm can only accept/reject, not raise).
+4) Refresh site rundata/RESULTS/RUNS as designations settle; commit+push everything.
+
 REMAINING before Tue 1 Sep 12:00 noon SGT:
 1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
    (policy above; ask Rohan); rebuild test CSV via designated run recipe if changed.
