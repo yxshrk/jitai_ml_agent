@@ -74,13 +74,20 @@ Output exactly one fenced block:
 ```""" % TARGET_COMPONENTS,
  'explore': """Role: EXPLORER (the wildcard slot). Propose exactly ONE candidate that is NOT a card on the menu as it stands:
 (a) a combination of two mechanisms the cards treat separately, (b) a technique from ranking / recommendation
-research that no card covers (cite the paper or the idea by name), or (c) an unconventional idea grounded in a
-numbered data fact — the tab x duration structure, the repeated (user, video) pairs, the 18-second threshold, the
-volume collapse after 04-12, the closed catalogue. Constraints: one target_component; implementable in numpy in
-under 120 changed lines starting from the champion; not a hyper-parameter tweak; not something the journal already
-measured. Prefer mechanisms orthogonal to a within-user pairwise loss, since that is the champion. Be bold on the
-idea, honest on expected_delta (same calibration as the Selector). Output the same fenced json block as the Selector
-with exactly one selection and "type": "explore".""",
+research that no card covers (name the paper or idea), or (c) an unconventional idea grounded in a numbered data
+fact — the tab x duration structure, the repeated (user, video) pairs, the 18-second threshold, the volume collapse
+after 04-12, the closed catalogue. Constraints: one target_component; implementable in numpy in under 120 changed
+lines starting from the champion; not a hyper-parameter tweak; not something the journal already measured. Prefer
+mechanisms orthogonal to a within-user pairwise loss, since that is the champion. Be bold on the idea, honest on
+expected_delta (lower third of what a card in that family would promise). Output exactly one fenced block with
+exactly these fields:
+```json
+{"selections": [{"type": "explore", "card": "<short name for the idea>", "target_component": "<one of %s>",
+  "hypothesis": "<one sentence: what changes and why it should help>", "expected_delta": 0.002,
+  "expected_delta_basis": "<one sentence citing a paper, a numbered data fact or a journal line>",
+  "cheapest_test": "<the smallest code change that tests it>",
+  "rejected_alternative": {"card": "<another idea you considered>", "reason": "..."}, "parent": "champion"}]}
+```""" % TARGET_COMPONENTS,
  'implement': """Role: IMPLEMENTER. EDIT the parent script; do not rewrite it. Return the parent script with ONLY the lines the
 hypothesis requires changed, added or removed — keep every other line byte-for-byte, including the module
 docstring (you may append one line to it), comments, import order, function names and the output code. The diff is
@@ -92,20 +99,25 @@ read only from --data-dir; never mention any path outside --data-dir anywhere in
 docstring; never use an outcome column as a feature of the row being scored; history features only from rows
 strictly earlier in time (for valid rows every train row is earlier). Keep row-level work vectorised or precomputed
 outside the epoch loop. Keep the per-epoch print line. For a merge: apply both parents' changes onto the champion;
-where they touch the same lines prefer the champion's version and say so in change_summary.
+where they touch the same lines prefer the champion's version and say so in change_summary. The hypothesis is
+FIXED: if the Critic's instructions would change it, ignore that part and implement the hypothesis as stated with
+the smallest compliant change. When prior attempts of the same idea are listed, learn from their outcomes (what
+was changed, what it scored, why it failed) instead of repeating them.
 Output exactly: ```json {"change_summary": "<one line>"}``` followed by one ```python ... ``` block with the full script.""",
- 'critique': """Role: CRITIC. Review the script before it runs. Check, in this order: (1) LEAKAGE — an outcome column (long_view,
-is_click, is_like, is_follow, is_comment, is_forward, is_hate, play_time_ms, profile_stay_time, comment_stay_time,
-is_profile_enter) used as a feature of the scored row; joins to future data; the statistic file; history features not
-strictly earlier in time; any reference to test data or to paths outside --data-dir. (2) CONTRACT — outputs,
-SMOKE_EPOCHS caps EVERY training phase, determinism, predictions.csv row order and row_id logic untouched, runtime
-risk (pure-Python loops over a million rows inside the epoch loop, quadratic pair construction). (3) SCOPE — the
-change implements the stated hypothesis and nothing else; if the diff is far larger than the hypothesis needs, say
-"revise" with the instruction to return the parent script with only the necessary edits. (4) NOISE — is the
-expected_delta plausible against the 0.002 floor?
+ 'critique': """Role: CRITIC. Review the script before it runs. The candidate's hypothesis is FIXED: never ask for a different
+hypothesis and never judge whether the expected gain is worth testing — the referee measures that. Check, in order:
+(1) LEAKAGE — an outcome column (long_view, is_click, is_like, is_follow, is_comment, is_forward, is_hate,
+play_time_ms, profile_stay_time, comment_stay_time, is_profile_enter) used as a feature of the scored row; joins to
+future data; the statistic file; history features not strictly earlier in time; any reference to test data or to
+paths outside --data-dir. (2) CONTRACT — outputs, SMOKE_EPOCHS caps EVERY training phase, determinism,
+predictions.csv row order and row_id logic untouched, runtime risk (pure-Python loops over a million rows inside
+the epoch loop, quadratic pair construction). (3) SCOPE — the change implements the stated hypothesis and nothing
+else; if the diff is far larger than the hypothesis needs, say "revise" with the instruction to return the parent
+script with only the necessary edits. A minor over-reach that does not change the hypothesis (e.g. a coefficient
+also applied to a second matrix) is a NOTE in reasons, not a revise.
 Be terse: if the verdict is ok, give at most two short reasons; spend words only on problems. Veto only for leakage
-or test access; everything else is revise or ok. Output exactly one fenced block:
-```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<what to change, if revise>"}```""",
+or test access; everything else is revise (code changes only) or ok. Output exactly one fenced block:
+```json {"verdict": "ok|revise|veto", "reasons": ["..."], "instructions": "<exact code changes, if revise>"}```""",
  'fix': """Role: FIXER. The script failed. Return the corrected WHOLE script with the minimal change that fixes the error
 without altering the hypothesis. If the failure is a timeout, reduce cost (fewer epochs, vectorise the slow loop)
 while keeping the method. Output exactly: ```json {"note": "<what was wrong and what you changed>"}``` followed by one
@@ -181,6 +193,8 @@ def user_implement(ctx, selection, parent_code, extra_parent_code=None):
          f"Parent script (node_{selection.get('parent_n', ctx['champion']['n']):03d}):\n```python\n{parent_code}\n```\n")
     if extra_parent_code:
         s += f"\nSecond parent script for the merge:\n```python\n{extra_parent_code}\n```\n"
+    if ctx.get('history_for_implementer'):
+        s += "\nPrior attempts relevant to this candidate (same component or method), with outcomes:\n" + '\n'.join(ctx['history_for_implementer']) + "\n"
     if selection.get('critic_instructions'):
         s += f"\nThe Critic asked for these changes to your previous version:\n{selection['critic_instructions']}\n"
     return s

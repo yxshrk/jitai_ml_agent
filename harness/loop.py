@@ -52,15 +52,15 @@ class Loop:
              'last_generation': self.state.get('last_generation', []), 'parent_code': self.code_of(ch['n'])}
         d.update(extra); return d
 
-    def _brain(self, fn, *args, what=''):
-        """Call a brain role with one retry on transient errors; returns (result, error)."""
-        for attempt in (1, 2):
+    def _brain(self, fn, *args, what='', attempts=2):
+        """Call a brain role with retries on transient errors; returns (result, error)."""
+        for attempt in range(1, attempts + 1):
             try:
                 return fn(*args), None
             except (ParseError, RuntimeError, Exception) as e:   # noqa: BLE001 — anything from the API layer
                 err = f'{type(e).__name__}: {str(e)[:300]}'
                 self.log(f'  {what} failed (attempt {attempt}): {err}')
-                if attempt == 2 or 'budget exhausted' in err:
+                if attempt == attempts or 'budget exhausted' in err:
                     return None, err
                 time.sleep(2)
 
@@ -124,7 +124,7 @@ class Loop:
         selections, err = self._brain(self.brain.select, self.ctx(diagnosis=diagnosis, k=n_sel), n_sel, what='select')
         selections = selections or []
         if self.wildcard:
-            wild, werr = self._brain(self.brain.explore, self.ctx(diagnosis=diagnosis), what='explore')
+            wild, werr = self._brain(self.brain.explore, self.ctx(diagnosis=diagnosis), what='explore', attempts=1)
             if wild:
                 wild['type'] = 'explore'; wild['wildcard'] = True
                 selections = [wild] + selections          # first, so _diversify keeps it
@@ -137,27 +137,38 @@ class Loop:
         selections = self._diversify(selections)
         gen_tokens_in, gen_tokens_out, _ = self._tokens_since(snap)
 
-        # 2. implement + critique each candidate (sequential LLM calls), write node files
+        # 2. implement + critique each candidate — the k chains run in parallel threads; tokens are attributed per node
         nodes = []
         for sel in selections:
-            n = self._new_node_id(); node_snap = self.brain.usage.snapshot()
+            n = self._new_node_id()
             parent_n, merge_parents = self._resolve_parents(sel)
             sel['parent_n'] = parent_n
-            parent_code = self.code_of(parent_n); extra = self.code_of(merge_parents[1]) if merge_parents else None
-            code, critic, err = self._implement_with_critic(sel, parent_code, extra)
-            tokens = self._tokens_since(node_snap)[:2]
-            if code is None:
-                res = None
-                self.j.node_path(n).write_text(parent_code)          # keep the tree consistent
-                nodes.append({'n': n, 'sel': sel, 'parent': parent_n, 'merge_parents': merge_parents, 'res': None,
-                              'diff': None, 'tokens': tokens, 'critic': critic, 'recovery': None,
-                              'error': err or 'implementer produced no script'})
-                continue
-            self.j.node_path(n).write_text(code)
-            diff = self.j.write_diff(n, parent_n, parent_code, code)
             nodes.append({'n': n, 'sel': sel, 'parent': parent_n, 'merge_parents': merge_parents, 'res': None,
-                          'diff': diff, 'tokens': list(tokens), 'critic': critic, 'recovery': None, 'error': None,
-                          'parent_code': parent_code})
+                          'diff': None, 'tokens': [0, 0], 'critic': None, 'recovery': None, 'error': None,
+                          'parent_code': self.code_of(parent_n),
+                          'extra_code': self.code_of(merge_parents[1]) if merge_parents else None})
+        def build(nd):
+            self.brain.set_tag(nd['n'])
+            hist = self._history_for(nd['sel'])
+            code, critic, err = self._implement_with_critic(nd['sel'], nd['parent_code'], nd['extra_code'], hist)
+            nd['critic'] = critic
+            if code is None:
+                self.j.node_path(nd['n']).write_text(nd['parent_code'])          # keep the tree consistent
+                nd['error'] = err or 'implementer produced no script'
+            else:
+                self.j.node_path(nd['n']).write_text(code)
+                nd['diff'] = self.j.write_diff(nd['n'], nd['parent'], nd['parent_code'], code)
+            return nd
+        if self.parallel and len(nodes) > 1:
+            with ThreadPoolExecutor(max_workers=len(nodes)) as ex:
+                list(ex.map(build, nodes))
+        else:
+            for nd in nodes:
+                build(nd)
+        self.brain.set_tag(None)
+        for nd in nodes:   # token attribution from tagged calls
+            calls = [c for c in getattr(self.brain, 'calls', []) if c.get('tag') == nd['n']]
+            nd['tokens'] = [sum(c['tokens_in'] for c in calls), sum(c['tokens_out'] for c in calls)]
 
         # 3. smoke tests (parallel) with one fixer attempt each
         runnable = [nd for nd in nodes if nd['error'] is None]
@@ -172,7 +183,10 @@ class Loop:
             if not nd['res'].ok and nd['recovery'] is None:
                 self._try_fix(nd, stage='full')
 
-        # 5. referee + journal
+        # 5. referee + journal (confirmation seeds for every positive delta are prefetched in parallel)
+        champ_p = self.champion['metrics']['primary']
+        if self.confirm_seeds:
+            self._prefetch_seeds([nd['n'] for nd in nodes if nd['res'] is not None and nd['res'].ok and nd['res'].metrics['primary'] > champ_p])
         results = []
         for nd in nodes:
             rec = self._record(nd['n'], g, nd['parent'], nd['sel'], nd['res'], nd['diff'], tuple(nd['tokens']),
@@ -228,6 +242,38 @@ class Loop:
         return improved
 
     # ---------------- pieces ----------------
+    def _history_for(self, sel, limit=8):
+        """Journal lines of earlier nodes with the same target_component or method — what the Implementer should learn from."""
+        out = []
+        for r in self.j.records():
+            if r.get('n') is None or r.get('action') in ('event', 'generation'):
+                continue
+            if r.get('target_component') == sel.get('target_component') or (r.get('method') and r.get('method') == sel.get('card')):
+                m = r.get('metrics') or {}; c = r.get('seed_confirmation') or {}
+                res = (f"primary {m['primary']:.4f}, Δ {r.get('realized_delta'):+.4f}" + (f", seed-mean {c['delta_mean']:+.4f}" if c else '')
+                       + f", {'accepted' if r.get('accepted') else 'rejected'}") if m else f"FAILED: {str(r.get('error'))[:100]}"
+                out.append(f"- node_{r['n']:03d} [{r.get('target_component')}] {r.get('method')}: {str(r.get('change_summary') or r.get('hypothesis'))[:160]} -> {res}")
+        return out[-limit:]
+
+    def _prefetch_seeds(self, node_ids):
+        """Run all missing confirmation seeds (nodes + champion) in parallel; _confirm_with_seeds then reads the cache."""
+        cache = self.state['champion_seeds']; jobs = []
+        for m in list(node_ids) + [self.state['champion']]:
+            for i in range(1, C.CONFIRM_SEEDS + 1):
+                sd = self.seed + i
+                if f'{m}:{sd}' not in cache:
+                    jobs.append((m, sd))
+        if not jobs:
+            return
+        def run(job):
+            m, sd = job
+            r = R.run_script(self.j.node_path(m), self.j.out_dir(m, f'_seed{sd}'), seed=sd, threads=max(1, (os.cpu_count() or 2) // max(1, min(len(jobs), 5))))
+            return job, (r.metrics['primary'] if r.ok else None)
+        workers = min(len(jobs), 5) if self.parallel else 1
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            for (m, sd), val in ex.map(run, jobs):
+                cache[f'{m}:{sd}'] = val
+
     def _diversify(self, selections):
         """Enforce distinct target_components (portfolio diversity); keep the first of each."""
         seen, out = set(), []
@@ -248,11 +294,11 @@ class Loop:
             return p, None
         return ch, None
 
-    def _implement_with_critic(self, sel, parent_code, extra):
+    def _implement_with_critic(self, sel, parent_code, extra, hist=None):
         """Implementer -> static firewall -> Critic; up to two 'revise' rounds; veto ends the candidate."""
         critic_log = []
         for round_ in range(3):
-            out, err = self._brain(self.brain.implement, self.ctx(), sel, parent_code, extra, what='implement')
+            out, err = self._brain(self.brain.implement, self.ctx(history_for_implementer=hist), sel, parent_code, extra, what='implement')
             if out is None:
                 return None, critic_log, err
             code = out['code']; sel['change_summary'] = out.get('change_summary')

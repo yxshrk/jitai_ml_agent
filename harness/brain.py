@@ -5,7 +5,7 @@ Every role is a single call with a narrow contract; the loop (code) decides the 
 a score. Code-producing roles answer with a ```json header block followed by a ```python block, which avoids
 escaping whole files inside JSON."""
 from __future__ import annotations
-import json, os, re, time
+import json, os, re, threading, time
 from dataclasses import dataclass, asdict
 from . import config as C
 from . import prompts as P
@@ -63,6 +63,7 @@ class Brain:
     def fix(self, ctx, code, error, log_tail) -> dict: raise NotImplementedError
     def consolidate(self, ctx, results) -> dict: raise NotImplementedError
     def explore(self, ctx): return None          # wildcard slot; backends may override
+    def set_tag(self, tag): pass
 
 class FakeBrain(Brain):
     """Scripted brain: `generations` is a list (one per generation) of lists of (selection, code) pairs.
@@ -90,9 +91,19 @@ class LLMBrain(Brain):
 
     def __init__(self, models=None, efforts=None, budget_usd=None, log=print):
         super().__init__()
+        self._lock = threading.Lock(); self._tl = threading.local()   # calls may run from parallel branches
         self.models = dict(self.DEFAULT_MODELS, **(models or {}))
         self.efforts = dict(self.DEFAULT_EFFORT, **(efforts or {}))
         self.budget_usd = budget_usd; self.log = log
+
+    def set_tag(self, tag):
+        """Tag subsequent calls from this thread (the loop uses the node id) so tokens can be attributed per node."""
+        self._tl.tag = tag
+
+    def _record(self, model, tin_uncached, tout, cached, cw, call):
+        with self._lock:
+            self.usage.add(model, tin_uncached, tout, cached, cw)
+            call['tag'] = getattr(self._tl, 'tag', None); self.calls.append(call)
 
     def _check_budget(self):
         if self.budget_usd is not None and self.usage.cost_usd > self.budget_usd:
@@ -131,9 +142,14 @@ class LLMBrain(Brain):
             if not isinstance(sels, list) or not sels:
                 raise ParseError('"selections" must contain exactly one wildcard candidate')
             s = sels[0]
+            for want, aliases in (('card', ('name', 'method', 'idea', 'title')), ('expected_delta_basis', ('basis', 'rationale', 'evidence')),
+                                  ('hypothesis', ('description', 'proposal'))):
+                if want not in s:
+                    for a in aliases:
+                        if a in s: s[want] = s[a]; break
             for f in ('card', 'target_component', 'hypothesis', 'expected_delta', 'expected_delta_basis'):
                 if f not in s:
-                    raise ParseError(f'wildcard missing field "{f}"')
+                    raise ParseError(f'wildcard missing field "{f}" (fields present: {sorted(s)})')
             if s['target_component'] not in P.TARGET_COMPONENTS:
                 raise ParseError(f'unknown target_component {s["target_component"]!r}')
             s['expected_delta'] = float(s['expected_delta']); s['type'] = 'explore'
@@ -189,10 +205,10 @@ class OpenAIBrain(LLMBrain):
         u = r.usage
         cached = getattr(getattr(u, 'input_tokens_details', None), 'cached_tokens', 0) or 0
         reasoning = getattr(getattr(u, 'output_tokens_details', None), 'reasoning_tokens', 0) or 0
-        self.usage.add(model, u.input_tokens - cached, u.output_tokens, cached)
-        self.calls.append({'role': role, 'model': r.model, 'tokens_in': u.input_tokens, 'tokens_out': u.output_tokens,
-                           'cached': cached, 'reasoning_tokens': reasoning, 'seconds': round(time.time() - t0, 1),
-                           'status': r.status, 'response_id': r.id})
+        self._record(model, u.input_tokens - cached, u.output_tokens, cached, 0,
+                     {'role': role, 'model': r.model, 'tokens_in': u.input_tokens, 'tokens_out': u.output_tokens,
+                      'cached': cached, 'reasoning_tokens': reasoning, 'seconds': round(time.time() - t0, 1),
+                      'status': r.status, 'response_id': r.id})
         if r.status != 'completed':
             why = getattr(getattr(r, 'incomplete_details', None), 'reason', r.status)
             raise ParseError(f'{role}: response {r.status} ({why}); max_output_tokens={self.MAX_TOKENS[role]}')
@@ -229,9 +245,9 @@ class AnthropicBrain(LLMBrain):
             raise
         u = msg.usage
         cr = getattr(u, 'cache_read_input_tokens', 0) or 0; cw = getattr(u, 'cache_creation_input_tokens', 0) or 0
-        self.usage.add(model, u.input_tokens, u.output_tokens, cr, cw)
-        self.calls.append({'role': role, 'model': msg.model, 'tokens_in': u.input_tokens + cr + cw, 'tokens_out': u.output_tokens,
-                           'cached': cr, 'seconds': round(time.time() - t0, 1), 'stop_reason': msg.stop_reason})
+        self._record(model, u.input_tokens, u.output_tokens, cr, cw,
+                     {'role': role, 'model': msg.model, 'tokens_in': u.input_tokens + cr + cw, 'tokens_out': u.output_tokens,
+                      'cached': cr, 'seconds': round(time.time() - t0, 1), 'stop_reason': msg.stop_reason})
         if msg.stop_reason == 'refusal':
             raise RuntimeError(f'{role}: the model refused')
         if msg.stop_reason == 'max_tokens':

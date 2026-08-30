@@ -1,0 +1,10 @@
+--- node_000.py
++++ node_002.py
+@@ -119,6 +119,7 @@
+             best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
+         else:
+             bad += 1
++            m.lr *= 0.5
+             if bad >= a.patience:
+                 break
+     m.V, m.W, m.b = best_state

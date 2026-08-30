@@ -14,7 +14,7 @@ cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of posi
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
 status: alive
-evidence: [live_01:node_001, live_02:node_001]
+evidence: [live_01:node_001, live_02:node_001, live_03:node_001]
 ---
 ## Claim
 Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
@@ -47,3 +47,4 @@ user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
 ## Measured
 - live_01:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022 — ACCEPTED; 433 changed lines
 - live_02:node_001 on [official FM]: primary 0.6031, single-seed Δ +0.0016, seed-mean Δ +0.0016 (t 8.22) — ACCEPTED; 34 changed lines
+- live_03:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (t 6.39) — ACCEPTED; 37 changed lines

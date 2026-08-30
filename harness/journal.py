@@ -49,9 +49,10 @@ class Journal:
             if r.get('error'):
                 tail = f"ERROR at {r.get('failure_stage')}: {str(r['error'])[:90]} (recovery: {r.get('recovery')})"
             else:
-                d = r.get('realized_delta')
+                d = r.get('realized_delta'); c = r.get('seed_confirmation') or {}; e = r.get('expected_delta')
                 tail = (f"primary {m.get('primary', 0):.4f} GAUC {m.get('gauc', 0):.4f} nDCG@5 {m.get('ndcg5', 0):.4f}"
-                        + (f" (\u0394{d:+.4f} vs champion, {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else ''))
+                        + (f" (\u0394{d:+.4f}" + (f", seed-mean \u0394{c['delta_mean']:+.4f}" if c else '') + (f", expected {e:+.4f}" if isinstance(e, (int, float)) else '')
+                           + f" \u2192 {'ACCEPTED' if r.get('accepted') else 'rejected'})" if d is not None else ''))
             parent = r.get('parent'); parent = f"node_{parent:03d}" if isinstance(parent, int) else 'root'
             out.append(f"n={r['n']} node_{r['n']:03d} <- {parent} [{a}/{r.get('target_component')}{' WILDCARD' if r.get('wildcard') else ''}] {r.get('method') or ''}: "
                        f"{(r.get('hypothesis') or '')[:140]} | {tail}")

@@ -1,0 +1,27 @@
+--- node_000.py
++++ node_004.py
+@@ -6,12 +6,13 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++This node adds one categorical tab-by-duration-bucket cross while leaving training unchanged.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+-FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket']
++FIELDS = ['user_id', 'video_id', 'author_id', 'tab', 'dur_bucket', 'tab_x_dur']
+ 
+ def read_rows(path, cols):
+     """Rows of `path` restricted to `cols`, as lists of strings, in file order."""
+@@ -86,7 +87,8 @@
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+     def raw(user, video, tab, dur):
+-        return [user, video, vid2author.get(video, 'UNK'), tab, str(int(np.searchsorted(edges, float(dur))))]
++        dur_bucket = str(int(np.searchsorted(edges, float(dur))))
++        return [user, video, vid2author.get(video, 'UNK'), tab, dur_bucket, f'{tab}|{dur_bucket}']
+     vocabs = [dict() for _ in FIELDS]
+     for x in tr:
+         for i, v in enumerate(raw(x[0], x[1], x[2], x[3])):
