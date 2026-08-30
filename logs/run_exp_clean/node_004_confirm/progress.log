@@ -83,3 +83,19 @@
 {"best_epoch": 6, "k": 8, "member": 7, "phase": "dimension_probe", "primary": 0.6008988934240773, "seed": 8105}
 {"best_epoch": 6, "k": 8, "member": 8, "phase": "dimension_probe", "primary": 0.6009687442696419, "seed": 9114}
 {"best_epoch": 7, "k": 8, "member": 9, "phase": "dimension_probe", "primary": 0.6017370176068519, "seed": 10123}
+{"best_epoch": 7, "k": 8, "member": 10, "phase": "dimension_probe", "primary": 0.600867979828545, "seed": 11132}
+{"best_epoch": 5, "k": 8, "member": 11, "phase": "dimension_probe", "primary": 0.6013418891965826, "seed": 12141}
+{"best_epoch": 8, "k": 8, "member": 12, "phase": "dimension_probe", "primary": 0.6015232427299328, "seed": 13150}
+{"best_epoch": 7, "k": 8, "member": 13, "phase": "dimension_probe", "primary": 0.6022140217304345, "seed": 14159}
+{"best_epoch": 7, "k": 8, "member": 14, "phase": "dimension_probe", "primary": 0.602225065823702, "seed": 15168}
+{"best_epoch": 6, "k": 8, "member": 15, "phase": "dimension_probe", "primary": 0.6007779345576327, "seed": 16177}
+{"best_epoch": 8, "k": 8, "member": 16, "phase": "dimension_probe", "primary": 0.6014842371559745, "seed": 17186}
+{"best_epoch": 6, "k": 8, "member": 17, "phase": "dimension_probe", "primary": 0.6020542479120197, "seed": 18195}
+{"best_epoch": 8, "k": 8, "member": 18, "phase": "dimension_probe", "primary": 0.6023605285582618, "seed": 19204}
+{"best_epoch": 7, "k": 8, "member": 19, "phase": "dimension_probe", "primary": 0.6024709113586615, "seed": 20213}
+{"best_epoch": 7, "k": 8, "member": 20, "phase": "dimension_probe", "primary": 0.6026402675239645, "seed": 21222}
+{"best_epoch": 8, "k": 8, "member": 21, "phase": "dimension_probe", "primary": 0.6021538885028053, "seed": 22231}
+{"best_epoch": 8, "k": 8, "member": 22, "phase": "dimension_probe", "primary": 0.6012636385930771, "seed": 23240}
+{"best_epoch": 7, "k": 8, "member": 23, "phase": "dimension_probe", "primary": 0.6020182014310127, "seed": 24249}
+{"config": {"epoch_limit": 8, "k": 8, "matched_seed_count": 24}, "gauc": 0.6690495110493386, "mean_individual_primary": 0.601711529803299, "ndcg5": 0.536842495684872, "primary": 0.6029460033671052, "type": "dimension_summary"}
+{"best_epoch": 7, "k": 10, "member": 0, "phase": "dimension_probe", "primary": 0.6016205991116728, "seed": 1042}
