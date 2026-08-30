@@ -145,6 +145,11 @@ class Loop:
     def prepare_workspace(self) -> None:
         self.nodes_dir.mkdir(parents=True, exist_ok=True)
         self.workspace.mkdir(parents=True, exist_ok=True)
+        try:
+            from harness.manifest import write_manifest
+            write_manifest(self.run_dir, self.config)
+        except Exception:
+            pass
         required = ["train.csv", "val.csv"]
         optional = ["train.npz", "val.npz"]
         for split in required:
