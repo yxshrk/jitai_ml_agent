@@ -106,6 +106,16 @@ NO new laptop work):
    (7-member rank ensemble; confirm can only accept/reject, not raise).
 4) Refresh site rundata/RESULTS/RUNS as designations settle; commit+push everything.
 
+1K RE-DESIGNATION DECISION (morning, Rohan): audits ALL PASSED (replications 0.6766/0.6762,
+shuffle floor 0.6652). Artifact question: (a) FAITHFUL = node_005 single-model checkpoint
+(designated 0.66892; our seed-42 train-only reproduction scored 0.6772 — node's final fit
+likely used fewer epochs; reconcile before claiming exact reproduction) vs (b) RECIPE
+ENSEMBLE = 3-seed rank average, validation 0.680195 — better, but is an improved artifact,
+not the converged checkpoint (same trap ChatGPT flagged re Pure 5-seed). Default lean:
+(a) faithful unless Rohan prefers documenting (b) as the declared submission recipe.
+CSV builder: tools/predict_test_1k_omega.py (fidelity-asserted session features; test
+hourmin export verified aligned). CSV building on ruby now.
+
 REMAINING before Tue 1 Sep 12:00 noon SGT:
 1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
    (policy above; ask Rohan); rebuild test CSV via designated run recipe if changed.
