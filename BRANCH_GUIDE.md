@@ -27,14 +27,16 @@ The strongest independently developed architecture is the corrected causal
 | result | GAUC | nDCG@5 | primary | interpretation |
 |---|---:|---:|---:|---|
 | Sequence DeepFM, seed 5 | 0.671280 | 0.538190 | **0.604735** | Best observed single-model validation result |
-| Sequence DeepFM, seed 6 | 0.671516 | 0.537671 | **0.604594** | Independent seed confirmation |
-| Sequence DeepFM, seeds 5–6 mean | — | — | **0.604664** | Most credible current estimate; no DeepFM ensemble has been selected yet |
+| Sequence DeepFM, seed 6 | 0.671516 | 0.537671 | **0.604594** | Fixed-seed confirmation |
+| Sequence DeepFM, seed 7 | 0.671093 | 0.538018 | **0.604555** | Fixed-seed confirmation |
+| Sequence DeepFM, seed 8 | 0.671206 | 0.537896 | **0.604551** | Fixed-seed confirmation |
+| Sequence DeepFM, seeds 5–8 mean | — | — | **0.604609** | Current credible estimate; no DeepFM ensemble has been selected yet |
 | Contextual FM mean-logit ensemble, seeds 0–2 | 0.668811 | 0.536968 | 0.602890 | Earlier stable leader |
 | 70% contextual-FM + 30% contextual-BPR, seed 3 | 0.669634 | 0.537047 | 0.603341 | Best non-neural blend, but validation-selected and provisional |
 | Same fixed blend, BPR seed 4 | 0.669030 | 0.536838 | 0.602934 | Confirmation; two-seed blend mean 0.603137 |
 
-The next sensible action after the pause is a predeclared multi-seed DeepFM
-ensemble, followed by a fresh-seed confirmation. It has **not** been run yet.
+The next sensible action is a predeclared multi-seed DeepFM ensemble, followed
+by a fresh-seed confirmation. It has **not** been run yet.
 
 ## Architecture used by the leading Sequence DeepFM
 
@@ -128,4 +130,3 @@ is disciplined but not represented as a single fully autonomous harness.
 training, hand-built rate histories, class weighting, heavy regularization,
 larger FM embeddings, and explicit wide feature crosses. Their exact scores
 are above and in `runs/RESULTS.md`.
-
