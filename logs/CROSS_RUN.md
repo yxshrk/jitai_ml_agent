@@ -722,3 +722,150 @@ First, verify that the duration residual heads are a real single-model improveme
 Use the same five seeds for every variant and compare both individual-model means and equal-size ensembles. This directly tests whether node 002 added transferable structure or merely benefited from noise and ensemble interaction.
 
 If the residual-head gain survives, the next priority should be replacing the arbitrary hard threshold with a smoother duration-conditioned interaction. If it does not, return to the shared FM and explore regularization/capacity using paired seeds rather than adding further specialized heads.
+
+## Run logs/run_unseeded_08
+dataset: pure
+stop_reason: converged
+best_primary: 0.602811
+- node_001 | method: seed-ensemble | hypothesis: Because the parent peaks near epoch 8 and | primary: 0.602811 | verdict: accepted
+- node_002 | method: regularization-schedule | hypothesis: An aggressive regularization schedule combining 0.30 embedding dropout, | primary: 0.593630 | verdict: rejected
+- node_003 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+self_critique:
+Run assessment
+
+The only real improvement came from variance reduction: rank-averaging three unchanged FM runs raised primary from 0.6018 to 0.602811. That gain is plausible but small and cost 3× training. The run did not establish whether it is robust across seed sets or merely favorable validation noise.
+
+What was suboptimal
+
+- The harness declared convergence after only one successful follow-up, one badly overpacked rejection, and one proposal failure. A failed node should trigger repair or fallback, not contribute to convergence.
+- node_002 changed four things simultaneously: heavy dropout, embedding L2, AdamW decay, and rapid LR decay. The large regression is unsurprising and provides almost no diagnostic information.
+- The regularization settings were overly aggressive, especially 0.30 embedding dropout plus halving the LR every epoch. This tested a destructive corner rather than a useful neighborhood around the baseline.
+- The claimed effect sizes were too precise without prior evidence. Predictions such as “+0.0025” were not calibrated to observed run-to-run variance.
+- The ensemble gain was not validated with repeated ensemble compositions or uncertainty estimates. The baseline sigma alone is insufficient.
+- Compute efficiency was not considered explicitly. A +0.001 gain at 3× cost may be worthwhile, but the run should report the accuracy/compute tradeoff.
+- There was no ablation, hyperparameter locality, model-capacity exploration, or checkpoint-averaging test despite the observation that performance peaks near epoch 8.
+
+Scaffold changes
+
+- Require single-factor or tightly scoped experiments unless explicitly running a factorial design.
+- After a failed proposal, automatically repair it or substitute a known-valid conservative experiment.
+- Do not stop for convergence until several independent local directions have been tested.
+- Use paired seeds and report mean, spread, and confidence around deltas.
+- Cache per-seed/per-checkpoint predictions so ensemble variants can be evaluated without retraining.
+- Track runtime and inference cost alongside primary score.
+- Generate hypotheses as ranges, not unjustifiably precise point gains.
+- Separate exploration branches: mild regularization, capacity, optimizer schedule, and ensembling.
+
+What the next run should try first
+
+Reuse the three trained seeds and test rank-averaging neighboring checkpoints around each seed’s peak, such as epochs 7–9, both within seed and across seeds. This directly targets the observed checkpoint variance and may improve stability with little or no retraining.
+
+If saved checkpoints are unavailable, run one conservative ablation at a time, starting with mild embedding regularization only—e.g. dropout around 0.05–0.10 or a small accessed-row L2 term—while keeping the optimizer and LR schedule unchanged. Then test five-seed ensembling only if the marginal gain over three seeds justifies the added cost.
+
+## Run logs/run_unseeded_07
+dataset: pure
+stop_reason: converged
+best_primary: 0.602811
+- node_001 | method: seed-ensemble | hypothesis: The validation peak at epoch 8 followed by | primary: 0.602811 | verdict: accepted
+- node_002 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_003 | method: none | hypothesis: Adding a 0.3-weight cumulative ordinal watch-ratio auxiliary loss | primary: 0.603075 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found a small gain, but convergence was premature. Only one valid idea beyond baseline was accepted, and that gain came from a 3x-cost seed ensemble rather than a stronger model. The run did not establish whether the improvement exceeds seed/evaluation noise robustly.
+
+Harness/policy issues
+
+- node_003 scored approximately 0.6031, nominally above the recorded best of 0.602811, yet was rejected. If rejection was due to failing its promised +0.002 threshold, that is the wrong criterion: proposal forecasts should not override measured improvement. If validity, cost, or significance caused rejection, the journal needed to record that explicitly.
+- node_003 descended from failed node_002. Failed proposals should not become experimental parents; the harness should rebase on the latest valid checkpoint.
+- A proposal-generation failure consumed a large fraction of this very short search. It should have been retried automatically and excluded from convergence accounting.
+- Stopping after baseline, one ensemble, one failed proposal, and one rejected experiment is too aggressive. There was almost no exploration of regularization, architecture, loss, or feature interactions.
+- The accepted result trades roughly 3x inference/training cost for only about +0.001. The policy did not report a cost-adjusted score or compare against a single model trained with equivalent compute.
+- The stated sigma of 0.0001 is not credible unless it came from repeated full evaluations. Seed variance and evaluation uncertainty should be reported separately.
+- node_003 bundled several changes—DCN-lite, BCE/BPR, regularization, and an ordinal auxiliary loss—so its outcome is not attributable to the stated hypothesis.
+
+Scaffold changes
+
+- Enforce valid-parent lineage and automatically rebase/retry malformed proposals.
+- Separate forecast accuracy from experiment acceptance. Accept based on measured score, uncertainty, validity, and cost; score overconfident forecasts separately.
+- Require one primary intervention per experiment, with explicit parent, control, compute budget, and ablation.
+- Use repeated seeds for close results and confidence-aware promotion. Preserve unrounded metrics in the journal.
+- Add a minimum exploration budget before declaring convergence, and do not count infrastructure/proposal failures as evidence of convergence.
+- Track both raw primary and cost-adjusted primary. Reserve seed ensembling for late-stage consolidation.
+- Log precise rejection reasons, especially when a rejected node has the highest nominal metric.
+
+What the next run should try first
+
+First, reproduce node_003 correctly from the best valid single-model parent, isolating only the cumulative ordinal watch-ratio auxiliary loss. Keep architecture, optimizer, regularization, and main loss fixed, and test auxiliary weights including 0, 0.1, and 0.3 across multiple matched seeds. This directly investigates the only substantive idea that produced a nominally better score.
+
+In parallel, rerun the baseline and accepted ensemble seeds to estimate actual seed variance. If the auxiliary loss survives replication, then test DCN-lite and BCE/BPR as separate follow-ups. Only after selecting the best single model should the run apply rank averaging or blending.
+
+## Run logs/run_unseeded_09
+dataset: pure
+stop_reason: converged
+best_primary: 0.601838
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: A five-seed rank-averaged ensemble of otherwise identical k=16 | primary: 0.595102 | verdict: rejected
+- node_003 | method: regularization-schedule | hypothesis: The parent learning curve diagnoses overfitting after its | primary: 0.595390 | verdict: rejected
+self_critique:
+The run converged prematurely and learned little beyond “the baseline is hard to beat.”
+
+What was suboptimal
+
+- Only two substantive alternatives were evaluated before stopping. That is insufficient evidence for convergence, especially when both proposals were high-risk.
+- node_001 was a proposal-generation failure. The harness should have retried proposal construction rather than creating a failed lineage; node_002 being recorded as a child of that failed node is also structurally misleading.
+- The ensemble experiment was poorly targeted. Five otherwise identical FM models add compute but little useful diversity, and rank averaging can discard meaningful score calibration. Its 0.0067 regression was much larger than the hypothesized 0.002 gain.
+- node_003 bundled four changes: dropout, embedding L2, AdamW decay, and aggressive LR decay. This made the result uninterpretable. Any one component—or their interaction—could explain the regression.
+- The claimed diagnosis of overfitting after epoch 8 should first have led to best-checkpoint restoration or early stopping, not a large regularization package.
+- The baseline’s reported sigma of 0.0001 appears inconsistent with the large degradation of the multi-seed ensemble. The harness should verify what sigma measures and establish a true multi-seed baseline distribution before making millesimal improvement claims.
+
+Scaffold changes
+
+- Require a valid proposal retry instead of spending a node on proposal failure.
+- Do not branch experiments from failed/no-metric nodes.
+- Establish baseline mean and variance across several controlled seeds, retaining per-seed metrics and checkpoints.
+- Prefer one-factor ablations, with at most one or two tightly related changes per node.
+- Save and evaluate the best validation checkpoint; log epoch-wise train/validation metrics.
+- Use explicit acceptance thresholds based on repeated-seed uncertainty rather than a single score.
+- Reserve ensembles for models with demonstrated individual strength and diversity; compare score averaging against rank averaging.
+- Add a minimum experiment budget before declaring convergence unless repeated local tests show no improvement.
+
+What the next run should try first
+
+Reproduce the baseline across 3–5 seeds with best-checkpoint early stopping around the observed epoch-8 peak. Compare that directly with the current final-checkpoint baseline. If early stopping is already implemented, make the first intervention a small, isolated regularization sweep—preferably embedding L2 or interaction dropout alone at mild values—while holding optimizer and LR schedule fixed. This is cheaper, interpretable, and directly tests the only useful diagnosis produced by this run.
+
+## Run logs/run_unseeded_10
+dataset: pure
+stop_reason: converged
+best_primary: 0.602936
+- node_001 | method: none | hypothesis: (proposal failed) | primary: n/a | verdict: failed
+- node_002 | method: none | hypothesis: Adding a 0.3-weight CWM-style censored watch-time auxiliary loss | primary: 0.599888 | verdict: rejected
+- node_003 | method: seed-ensemble | hypothesis: Because validation primary peaks at epoch 8 and | primary: 0.602936 | verdict: accepted
+self_critique:
+Run critique
+
+The only improvement came from variance reduction: five-seed rank averaging raised primary from 0.6018 to 0.602936, about +0.0011, well below the predicted +0.004 and at 5× training cost. This is useful but not strong evidence of a better learner.
+
+The policy was suboptimal in several ways:
+- It declared convergence after very little exploration: one failed proposal, one harmful complex change, and one expensive ensemble.
+- node_001 failed yet remained in the ancestry for node_002. Failed proposal-generation nodes should not become experimental parents.
+- node_002 changed too many factors at once: model class, BCE/BPR objective, and censored watch-time auxiliary loss. Its -0.0019 result cannot identify which component failed.
+- The censoring premise needed stronger validation. Treating completed plays as right-censored may be appropriate only under a clearly specified latent watch-intent model.
+- The ensemble gain was evaluated on the same validation surface used to notice epoch-8 overfitting and select the method. There was no independent replication or uncertainty estimate across ensemble seed groups.
+- The reported baseline sigma of 0.0001 appears inconsistent with initialization variance being large enough for ensembling to matter; the scaffold should distinguish metric/bootstrap noise from training-seed variance.
+- Compute efficiency was not considered in acceptance. A +0.0011 gain at 5× cost may or may not be worthwhile.
+
+Scaffold changes
+
+I would:
+- Prevent failed nodes from entering lineage and automatically retry malformed proposals.
+- Require one-factor experiments or explicit ablations for compound proposals.
+- Track training-seed variance separately from evaluation-set uncertainty.
+- Require replication of small gains using disjoint seed sets before acceptance.
+- Report gain per unit compute and maintain both unconstrained and compute-matched leaders.
+- Add ensemble diagnostics: individual-model scores, pairwise prediction correlation, ensemble size curves, and rank averaging versus probability/logit averaging.
+- Avoid convergence until a minimum set of orthogonal experiment families has been tested.
+
+Next run
+
+First, verify the ensemble result. Train a fresh pool of FM replicas with preregistered seeds and fixed epoch selection, then measure performance for ensemble sizes 1, 2, 3, and 5 using rank, probability, and logit averaging. Repeat with at least two disjoint seed groups. If the +0.001-level gain replicates, optimize diversity and determine whether three models recover most of the five-model benefit. If it does not replicate, return to the single FM and tune early stopping, regularization, and latent dimension one factor at a time.

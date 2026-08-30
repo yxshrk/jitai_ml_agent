@@ -621,14 +621,14 @@ class Loop:
 
         Mirrors AIDE-style seeding: the agent's search starts from the documented
         best-known configuration instead of re-deriving it. Fully recorded in the
-        journal as 'team-provided reference implementation'."""
+        journal with its provenance (seed script name)."""
         n = start_n
         for script in self.config.seed_scripts:
             n += 1
             start = time.time()
             self._best_before_iter = self.champion.primary if self.champion else 0.0
             node = Node(f"node_{n:03d}", "node_000", "draft",
-                        f"team-provided reference implementation: {script.name} (from MENU frozen stack)",
+                        f"seed script (disclosed initial draft): {script.name}",
                         self.nodes_dir / f"{n:03d}.py")
             node.code_path.write_text(script.read_text())
             recovery = None
