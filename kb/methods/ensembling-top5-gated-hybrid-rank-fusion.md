@@ -7,8 +7,8 @@ applies_when:
   - two ensemble branches already produce normalized within-user ranks
   - branch disagreements near the top five are suspected to matter more than disagreements deeper in the list
   - linear rank blending is the current fusion rule and deterministic row-level tie-breaking is available
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated probe lost 0.00016 primary on the multiseed heterogeneous ensemble; no positive
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0002 over 1 measurement(s), so the promise is capped at the record; was: the isolated probe lost 0.00016 primary on the multiseed heterogeneous ensemble; no positive
   seed-mean measurement exists, so this mechanism currently supports no attributable gain
 cost: ~30 changed lines; fusion-only runtime negligible, though parent ensemble training measured 256 s; numpy only
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings]

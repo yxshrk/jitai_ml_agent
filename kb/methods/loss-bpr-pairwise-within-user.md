@@ -7,14 +7,14 @@ applies_when:
   - the metric is within-user ranking (task.md) — GAUC is literally the fraction of correctly ordered (pos, neg) pairs
   - most training users have both positives and negatives (facts §7: 92.7 % of train users are discriminative)
   - the model produces a per-row score that can be differenced (any FM/DCN head)
-expected_delta: [0.002, 0.010]
-expected_delta_basis: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
+expected_delta: [0.0, 0.0022]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0022 over 8 measurement(s), so the promise is capped at the record; was: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
   captures the user x video signal, so the gain is in ordering not calibration — do not expect more than 0.01
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
 status: proven — accepted on [official FM]
-evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006, live_05:node_002, live_06:node_002, live_07:node_003]
+evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006, live_05:node_002, live_06:node_002, live_07:node_003, live_06:node_011, live_06:node_016, live_06:node_019]
 ---
 ## Claim
 Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
@@ -54,3 +54,6 @@ _Verdict:_ ACCEPTED 7x (live_01:node_001 on [official FM] Δ +0.0022; live_02:no
 - live_05:node_002 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (z 6.49) — ACCEPTED; 34 changed lines
 - live_06:node_002 on [official FM]: primary 0.6028, single-seed Δ +0.0014, seed-mean Δ +0.0013 (z 3.59) — ACCEPTED; 36 changed lines
 - live_07:node_003 on [official FM]: primary 0.6031, single-seed Δ +0.0016, seed-mean Δ +0.0016 (z 5.87) — ACCEPTED; 44 changed lines
+- live_06:node_011 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average] (variant: loss-bpr-pairwise-within-user — Replace 10% of ordinary same-user BPR samples with positive-negative pairs for which both impressions have): primary 0.6039, single-seed Δ -0.0000 — rejected; 16 changed lines
+- live_06:node_016 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average] (variant: loss-bpr-pairwise-within-user — Replace 5% of ordinary same-user BPR pairs with same-user, same-tab positive-negative pairs where both impress): primary 0.6038, single-seed Δ -0.0002 — rejected; 19 changed lines
+- live_06:node_019 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average] (variant: loss-bpr-pairwise-within-user — Replace 2.5% of ordinary same-user BPR samples with same-user positive-negative pairs for which both impressio): primary 0.6041, single-seed Δ +0.0002, seed-mean Δ -0.0000 (z -0.04) — rejected; 18 changed lines

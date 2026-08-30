@@ -7,15 +7,15 @@ applies_when:
   - training dates have sharply unequal row counts, so high-volume logging days dominate ordinary empirical risk
   - each training row exposes its date as legal show-time metadata
   - the learner supports per-example weights in its pointwise loss and gradient
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated pointwise-FM probe supplied negative rather than positive evidence, so equal-day
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0026 over 1 measurement(s), so the promise is capped at the record; was: the isolated pointwise-FM probe supplied negative rather than positive evidence, so equal-day
   gradient mass has no attributable expected gain until a materially changed stack demonstrates otherwise
 cost: ~20 changed lines; measured runtime ~1.5x the official FM; one float32 weight per training row; numpy only
 composes_with: [features-duration-unknown-flag, aux-targets-is-click, model-dcn-cross-head,
   regularization-embedding-dropout-l2]
 conflicts_with: [data-weighting-recency]
 status: dead_under [official FM x1 (best Δ -0.0026)]
-evidence: [live_06:node_001]
+evidence: [live_06:node_001, ceiling:oracle]
 ---
 ## Claim
 Weight each training row inversely to the number of impressions on its date, normalized to mean one, so every
@@ -44,3 +44,4 @@ parameters. Those row-varying terms can alter within-user order even though date
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM x1 (best Δ -0.0026)
 - live_06:node_001 on [official FM]: primary 0.5989, single-seed Δ -0.0026 — rejected; 20 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11 row 'video / author side, any period': valid-week LOO rate from the valid labels +0.0003, the whole-month statistics file +0.0000 (facts §11, kb/data/screens/CEILING.md)

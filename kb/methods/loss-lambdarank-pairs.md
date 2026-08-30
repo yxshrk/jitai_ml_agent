@@ -6,8 +6,8 @@ source: kb/literature/losses/burges2010_ranknet-lambdarank-lambdamart.pdf (Lambd
 applies_when:
   - nDCG@5 is half of the score and is top-heavy (scoring.md); BPR treats all pairs of a user equally
   - a pairwise loss is already in place (loss-bpr-pairwise-within-user) — this card is its top-weighted refinement
-expected_delta: [0.001, 0.006]
-expected_delta_basis: the metric's nDCG half rewards top positions; LambdaRank's weighting targets exactly that;
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0005 over 3 measurement(s), so the promise is capped at the record; was: the metric's nDCG half rewards top positions; LambdaRank's weighting targets exactly that;
   with ~7 rows per user in valid the list is short, so the top-weighting matters less than in web search
 cost: ~40 lines on top of the BPR card (per-user ranks each step via lexsort); runtime ~1.5x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]

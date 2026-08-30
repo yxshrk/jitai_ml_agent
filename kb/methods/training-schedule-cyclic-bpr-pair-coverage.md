@@ -7,8 +7,8 @@ applies_when:
   - same-user BPR draws one negative per positive each epoch
   - each mixed-label user has a reusable negative pool
   - repeated random draws may leave some eligible negatives uncovered across epochs
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the only measurement lost 0.00040 primary on one seed and had no fresh-seed confirmation,
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0004 over 1 measurement(s), so the promise is capped at the record; was: the only measurement lost 0.00040 primary on one seed and had no fresh-seed confirmation,
   so deterministic cyclic coverage has no attributable positive expected gain
 cost: 14 changed lines; unchanged update count; measured runtime 84 s on a five-member ensemble; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average]

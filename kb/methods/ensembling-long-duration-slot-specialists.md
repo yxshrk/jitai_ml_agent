@@ -7,8 +7,8 @@ applies_when:
   - a seed-averaged within-user BPR ranker already provides the global ordering
   - duration_ms is available at show time and the >180 s cohort has weak within-user ranking
   - enough same-user positive-negative training pairs exist with both durations above 180 s
-expected_delta: [0.000, 0.00027]
-expected_delta_basis: the exact three-specialist recipe measured fresh-seed mean Δ +0.00027 over a five-seed
+expected_delta: [0.0, 0.0003]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0004 over 1 measurement(s), so the promise is capped at the record; was: the exact three-specialist recipe measured fresh-seed mean Δ +0.00027 over a five-seed
   FM-BPR ensemble (seed-0 Δ +0.00042), but z = 0.60 and the gain was not accepted
 cost: ~68 changed lines; three additional BPR training phases; measured runtime 64 s versus 45 s (~1.4x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-fine-duration-and-tab-cross]

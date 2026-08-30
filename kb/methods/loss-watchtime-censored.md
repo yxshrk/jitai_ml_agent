@@ -7,8 +7,8 @@ applies_when:
   - the label is a deterministic function of watch time and length: long_view = play_time_ms >= min(duration_ms, 18 s) (facts §3)
   - 17.2 % of train rows are completed plays, i.e. censored observations of watch time (facts §3)
   - play_time_ms is available on train rows as a target (task.md: outcome columns are legal targets)
-expected_delta: [0.001, 0.008]
-expected_delta_basis: predicting the mechanism that generates the label rather than the label; CWM reports gains on
+expected_delta: [0.0, 0.0003]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0004 over 2 measurement(s), so the promise is capped at the record; was: predicting the mechanism that generates the label rather than the label; CWM reports gains on
   KuaiRand-Pure on its own label, but our FM already sees duration_ms via dur_bucket, so treat 0.008 as the ceiling
 cost: ~90 lines (second head sharing V, censored loss, transform of play time); runtime ~1.3x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]

@@ -7,14 +7,14 @@ applies_when:
   - repeated user-video impressions exist and otherwise receive identical static features
   - time_ms is available so exposure history can be restricted to strictly earlier impressions
   - evaluation rows follow training rows chronologically
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the only measurement was a single-seed primary loss of 0.00050 on field-aware FM with BPR;
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0005 over 1 measurement(s), so the promise is capped at the record; was: the only measurement was a single-seed primary loss of 0.00050 on field-aware FM with BPR;
   without seed confirmation there is no attributable positive gain to bracket
 cost: ~56 lines; runtime ~1.6x versus the field-aware parent (44 s measured); numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, data-weighting-recency]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0005)]
-evidence: [live_04:node_005]
+evidence: [live_04:node_005, ceiling:oracle]
 ---
 ## Claim
 Add categorical fields for the number of strictly prior user-video exposures and the logarithmic time since the
@@ -52,3 +52,4 @@ vs 0.389), and composes with `history-same-author-run-features`; retest on a sta
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0005)
 - live_04:node_005 on [official FM + field-aware FM embeddings]: primary 0.6025, single-seed Δ -0.0005 — rejected; 56 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

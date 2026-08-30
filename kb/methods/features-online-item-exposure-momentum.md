@@ -7,15 +7,15 @@ applies_when:
   - impression timestamps permit global video and author exposure histories to be computed strictly online
   - item or author exposure intensity changes over time and static identity embeddings cannot represent that drift
   - the model accepts low-cardinality categorical fields alongside video, author, tab, and duration
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the only probe measured single-seed Δ -0.00012 on a five-seed FM-BPR ensemble, trading
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0001 over 1 measurement(s), so the promise is capped at the record; was: the only probe measured single-seed Δ -0.00012 on a five-seed FM-BPR ensemble, trading
   GAUC −0.0008 for nDCG@5 +0.0006; without fresh-seed evidence, no positive net gain is attributable
 cost: 97 changed lines; four categorical fields; measured runtime 157 s versus 51 s for the parent; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session,
   model-lightgbm-lambdarank]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]
-evidence: [live_07:node_016]
+evidence: [live_07:node_016, ceiling:oracle]
 ---
 ## Claim
 Append trailing-24-hour exposure-count and previous-exposure-gap buckets for the current video and author, using
@@ -48,3 +48,4 @@ from a dormant one even when their static embeddings are unchanged.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)
 - live_07:node_016 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 97 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11 row 'video / author side, any period': valid-week LOO rate from the valid labels +0.0003, the whole-month statistics file +0.0000 (facts §11, kb/data/screens/CEILING.md)

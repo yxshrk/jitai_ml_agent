@@ -239,7 +239,9 @@ them); ## Measured contains only "(none yet)"; at most 60 lines. Attribute hones
 diff also contains a mechanism a sibling node measured on the same parent (e.g. a loss change), say so in Risks and bracket
 expected_delta by the part this card's mechanism can claim. If the node is really an existing card (same mechanism), answer with
 duplicate_of and no card block. Output exactly: ```json {"id": "<id>", "duplicate_of": null, "family": "<family>"}``` followed by one
-```card ... ``` block holding the complete card text (front matter + body)."""
+```card ... ``` block holding the complete card text (front matter + body). A node whose signal is already a card's — the same inputs and mechanism family with a different dose, gate,
+threshold or cohort (live_06 minted six cards for variants of two mechanisms) — is NOT a new card: answer duplicate_of
+that card and the harness files the measurement on it. Mint a card only for a signal or mechanism no card has."""
 
 ROLE_SYSTEM['librarian'] = """Role: LIBRARIAN. Extend the menu with PUBLISHED methods that fit this problem's measured facts and the evidence in
 the run journal (what is alive, what died on which stack, what nobody tried). Use web search to find concrete sources — papers,

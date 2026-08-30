@@ -7,8 +7,8 @@ applies_when:
   - scored rows expose legal show-time feature duration_ms
   - duration_ms = 0 is known to imply long_view = 0
   - predictions are evaluated only by within-user ordering
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated FM+BPR probe lost 0.00045 primary on one seed and had no seed confirmation;
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0004 over 1 measurement(s), so the promise is capped at the record; was: the isolated FM+BPR probe lost 0.00045 primary on one seed and had no seed confirmation;
   therefore no positive attributable gain is supported
 cost: ~20 changed lines; deterministic prediction-time transform; negligible runtime; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, ensembling-multiseed-heterogeneous-rank-blend]

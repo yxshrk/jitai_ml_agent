@@ -7,14 +7,14 @@ applies_when:
   - video tags are legally available from video_features_basic.csv
   - training rows have time_ms so user-tag outcomes can be restricted to strictly earlier impressions
   - user-author history is sparse enough that semantic sharing across creators may be useful
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated five-seed FM-BPR ensemble probe lost 0.00037 primary on seed 0 and received no
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0004 over 1 measurement(s), so the promise is capped at the record; was: the isolated five-seed FM-BPR ensemble probe lost 0.00037 primary on seed 0 and received no
   fresh-seed confirmation, so this exact ordered, smoothed, bucketized construction has no attributable positive gain
 cost: 83 changed lines; equal-time-safe history preprocessing plus one FM field; 65 s measured on a five-model ensemble
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0004)]
-evidence: [live_06:node_014]
+evidence: [live_06:node_014, ceiling:oracle]
 ---
 ## Claim
 Add a categorical field representing the user's smoothed prior long-view rate for the current video's tags,
@@ -47,3 +47,4 @@ user-author history is unavailable.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0004)
 - live_06:node_014 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6036, single-seed Δ -0.0004 — rejected; 83 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

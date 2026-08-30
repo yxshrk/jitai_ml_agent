@@ -7,8 +7,8 @@ applies_when:
   - two independently selected models have similar primary scores but structurally different representations
   - raw score scales are not comparable, while evaluation depends only on within-user ordering
   - runtime permits training and retaining both parent models
-expected_delta: [0.000, 0.00056]
-expected_delta_basis: the archived field-aware-FM plus standard-FM BPR rank blend gained +0.00056 seed-mean,
+expected_delta: [0.0, 0.0006]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0006 over 1 measurement(s), so the promise is capped at the record; was: the archived field-aware-FM plus standard-FM BPR rank blend gained +0.00056 seed-mean,
   narrowly missing acceptance at t=2.43; claim no larger gain until a changed stack or stronger averaging confirms it
 cost: ~77 lines; runtime ~1.7x versus the field-aware parent (49 s measured); numpy only
 composes_with: [ensembling-seed-average, model-field-aware-fm-embeddings, model-dcn-cross-head, regularization-embedding-dropout-l2]

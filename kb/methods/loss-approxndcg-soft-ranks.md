@@ -7,8 +7,8 @@ applies_when:
   - nDCG@5 is exactly half the primary metric, but the BPR champion's improvements remain larger on GAUC than nDCG (journal nodes 003 and 009)
   - evaluation lists are short (Foundations §1: about 7 impressions per valid user), making quadratic soft-rank computation cheap
   - LambdaRank pairs and ListNet failed, but neither directly differentiated an approximation of the scored nDCG@5 formula
-expected_delta: [0.000, 0.0012]
-expected_delta_basis: direct metric alignment is attractive, but two related ranking losses already failed and no
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0005 over 1 measurement(s), so the promise is capped at the record; was: direct metric alignment is attractive, but two related ranking losses already failed and no
   new information is added; expect at most an acceptance-scale nDCG improvement
 cost: ~80 lines; one sampled listwise pass per epoch; approximately 1.5–2x single-model BPR runtime; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-dcn-cross-head, features-exposure-session]

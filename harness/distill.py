@@ -27,7 +27,7 @@ def _stack(nodes, n):
         p = cur.get('parent'); cur = nodes.get(str(p)) if p is not None else None
     return ' + '.join(reversed(chain)) or 'official FM'
 
-MEASURED_RE = re.compile(r'^- (?P<ref>[\w-]+:node_\d+) on \[(?P<stack>[^\]]+)\]: (?P<rest>.*)$')
+MEASURED_RE = re.compile(r'^- (?P<ref>[\w-]+:node_\d+) on \[(?P<stack>[^\]]+)\](?P<variant> \(variant: [^)]*\))?: (?P<rest>.*)$')   # variant = a deepen of the card
 DELTA_RE = re.compile(r'seed-mean Δ ([+-]?\d+\.\d+)|single-seed Δ ([+-]?\d+\.\d+)')
 # ADR-0015: a feature screen measured on valid before any node — evidence, but not a training measurement
 SCREEN_RE = re.compile(r'^- (?P<ref>[\w-]+:screen-g\d+) on \[(?P<stack>[^\]]+)\]: SCREENED (?P<kept>kept|DROPPED) best_gain (?P<gain>[+-]?\d+\.\d+)')
@@ -216,6 +216,70 @@ def archive(run_id, brain, methods_dir=None, log=print):
         log(f"  node_{r['n']:03d} -> new card {cid} ({status})")
     return made
 
+def _measured_gains(text):
+    """Every seed-mean (else single-seed) Δ in a card's ## Measured section."""
+    fm, body = _front(text)
+    if fm is None or '## Measured' not in body:
+        return []
+    out = []
+    for l in body.split('## Measured', 1)[1].splitlines():
+        m = MEASURED_RE.match(l)
+        if not m or m.group('rest').startswith('FAILED'):
+            continue
+        rest = m.group('rest')
+        sm = re.search(r'seed-mean Δ ([+-]?\d+\.\d+)', rest); ss = re.search(r'single-seed Δ ([+-]?\d+\.\d+)', rest)
+        if sm or ss:
+            out.append(float((sm or ss).group(1)))          # the seed-mean when there is one, else the single seed
+    return out
+
+def calibrate(methods_dir=None, bounds_path=None, log=print):
+    """ADR-0018: the record replaces the promise. (a) A card with measurements gets expected_delta = [0, max measured
+    seed-mean gain] (0 if never positive) — the Selector's calibration line showed predicted 0.006/0.004/0.003 realised
+    +0.0022/+0.0005/−0.0003 while every accepted gain in five runs was +0.0009…+0.0017. (b) A card without measurements in a
+    signal family with an oracle bound (facts §11, family_bounds.json) gets its upper capped at the bound. (c) Every card
+    mapped to a bounded family carries one `ceiling:oracle` Measured line so the bound is visible where the evidence is.
+    Idempotent; run at the end of every distill."""
+    methods_dir = Path(methods_dir or C.KB / 'methods')
+    bounds = json.loads(Path(bounds_path or methods_dir / 'family_bounds.json').read_text()) if (bounds_path or (methods_dir / 'family_bounds.json')).exists() else {'bounds': {}, 'cards': {}, 'stack': 'official FM'}
+    changed = {}
+    for card in sorted(methods_dir.glob('*.md')):
+        if card.name == 'README.md':
+            continue
+        text = card.read_text(); fm, body = _front(text)
+        if fm is None:
+            continue
+        cid = (re.search(r'^id:\s*(.*)$', fm, re.M) or [None, card.stem])[1].strip()
+        gains = _measured_gains(text)
+        ed = re.search(r'^expected_delta:\s*\[(.*?)\]\s*$', fm, re.M)
+        basis = re.search(r'^expected_delta_basis:(.*)$', fm, re.M)
+        new_fm = fm
+        if gains:
+            hi = round(max(0.0, max(gains)), 4)
+            new_fm = re.sub(r'^expected_delta:.*$', f'expected_delta: [0.0, {hi:.4f}]', new_fm, flags=re.M)
+            tag = f'measured (ADR-0018): best seed-mean gain {max(gains):+.4f} over {len(gains)} measurement(s), so the promise is capped at the record'
+            if basis and 'measured (ADR-0018)' not in basis.group(1):
+                new_fm = re.sub(r'^expected_delta_basis:.*$', f'expected_delta_basis: {tag}; was: ' + basis.group(1).strip(), new_fm, count=1, flags=re.M)
+        sig = bounds.get('cards', {}).get(cid)
+        if sig and sig in bounds.get('bounds', {}):
+            b = bounds['bounds'][sig]
+            if not gains and ed:
+                nums = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?', ed.group(1))]
+                if nums and max(nums) > b['bound']:
+                    new_fm = re.sub(r'^expected_delta:.*$', f"expected_delta: [0.0, {b['bound']:.4f}]", new_fm, flags=re.M)
+                    if basis and 'bounded (ADR-0018)' not in basis.group(1):
+                        new_fm = re.sub(r'^expected_delta_basis:.*$', f"expected_delta_basis: bounded (ADR-0018) at {b['bound']:+.4f} by the oracle for '{sig}' — {b['source']}; was: " + basis.group(1).strip(), new_fm, count=1, flags=re.M)
+        if new_fm != fm:
+            card.write_text(f'---\n{new_fm}\n---\n{body}'); changed[card.name] = 'calibrated'
+        if sig and sig in bounds.get('bounds', {}):
+            b = bounds['bounds'][sig]
+            line = (f"- ceiling:oracle on [{bounds.get('stack', 'official FM')}]: BOUNDED <= {b['bound']:+.4f} for the signal family '{sig}' — "
+                    f"{b['source']} (facts §11, kb/data/screens/CEILING.md)")
+            if _add_measurement(card, 'ceiling:oracle', line, None, log):
+                changed[card.name] = changed.get(card.name, '') + '+oracle'
+    for name, what in changed.items():
+        log(f'  {name}: {what}')
+    return changed
+
 def rebuild(methods_dir=None, log=print):
     methods_dir = Path(methods_dir or C.KB / 'methods')
     for card in sorted(methods_dir.glob('*.md')):
@@ -264,6 +328,7 @@ def distill(run_id, methods_dir=None, log=print):
         if _add_measurement(card, ref, line, status, log):
             touched[card.name] = status or 'noted'
             log(f"  {card.name}: {status or 'noted'}  <- {ref}")
+    calibrate(methods_dir, log=log)              # ADR-0018: promises capped at the record / the oracle bounds
     return touched
 
 if __name__ == '__main__':

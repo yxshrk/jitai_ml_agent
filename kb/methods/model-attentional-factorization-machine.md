@@ -41,4 +41,5 @@ and duration embeddings vary across a user's rows, the attention distribution al
 - Do not feed user-only side features into the attention block unless they interact with row-varying fields.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

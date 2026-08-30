@@ -7,14 +7,14 @@ applies_when:
   - training rows have timestamps permitting target statistics from strictly earlier impressions
   - video and author identities recur across splits, and tab varies within users
   - the model can consume bucketized categorical fields
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated single-seed probe was negative, so this encoding currently has no attributable
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0004 over 1 measurement(s), so the promise is capped at the record; was: the isolated single-seed probe was negative, so this encoding currently has no attributable
   positive gain; retain it only for materially changed model or smoothing stacks
 cost: ~57 lines; measured runtime ~2x the field-aware parent; numpy and standard library only
 composes_with: [loss-listwise-softmax-within-user, model-dcn-cross-head, data-weighting-recency]
 conflicts_with: [history-user-aggregates]
 status: dead_under [official FM + field-aware FM embeddings x1 (best Δ -0.0004)]
-evidence: [live_04:node_009]
+evidence: [live_04:node_009, ceiling:oracle]
 ---
 ## Claim
 Append categorical buckets representing ordered, smoothed long-view rates for `video×tab` and `author×tab`,
@@ -46,3 +46,4 @@ prevents a training row's label, including labels at the same timestamp, from en
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings x1 (best Δ -0.0004)
 - live_04:node_009 on [official FM + field-aware FM embeddings]: primary 0.6027, single-seed Δ -0.0004 — rejected; 57 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11 row 'video / author side, any period': valid-week LOO rate from the valid labels +0.0003, the whole-month statistics file +0.0000 (facts §11, kb/data/screens/CEILING.md)

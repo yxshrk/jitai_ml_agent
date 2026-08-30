@@ -6,8 +6,8 @@ source: kb/literature/losses/cao2007_listnet.pdf (ListNet, top-one probability);
 applies_when:
   - the metric is within-user ranking (task.md) and users have several rows each (facts: train mean 43.5 rows/user)
   - users have mixed labels (facts §7: 92.7 % of train users are discriminative)
-expected_delta: [0.001, 0.008]
-expected_delta_basis: organizers list listwise next to pairwise as lead #1; ListNet optimises the whole per-user
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0029 over 1 measurement(s), so the promise is capped at the record; was: organizers list listwise next to pairwise as lead #1; ListNet optimises the whole per-user
   ordering, closest in spirit to nDCG, but plain softmax is not top-heavy — expect BPR-like gains, not more
 cost: ~70 lines (per-user grouping + softmax gradient); runtime ~1x if segment ops are vectorised; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]

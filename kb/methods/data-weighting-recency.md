@@ -6,14 +6,14 @@ source: kb/data/facts.md §5 (volume 280 K/day -> 20 K/day; positive rate 0.34 -
 applies_when:
   - training data drifts toward the evaluation period (facts §5: the last four train days resemble valid/test)
   - early days dominate the row count (04-10/04-11 hold 44 % of train rows)
-expected_delta: [0.001, 0.006]
-expected_delta_basis: mechanism-backed by measured drift; the organizers' own valid->test gap (−0.007) shows the
+expected_delta: [0.0, 0.0005]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 4 measurement(s), so the promise is capped at the record; was: mechanism-backed by measured drift; the organizers' own valid->test gap (−0.007) shows the
   distribution moves; a re-weighting cannot add information, only re-balance it, so cap expectations at 0.006
 cost: ~8 lines (per-row weight from date; weighted gradient); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]
 conflicts_with: []
 status: dead_under [official FM x2 (best Δ +0.0005); official FM + loss-bpr-pairwise-within-user x2 (best Δ +0.0003)]
-evidence: [live_01:node_002, live_01:node_004, live_02:node_002, live_02:node_004]
+evidence: [live_01:node_002, live_01:node_004, live_02:node_002, live_02:node_004, ceiling:oracle]
 ---
 ## Claim
 Weight each training row by exp(−age / tau) (half-life 3 / 7 / 14 days from 2022-04-21) so the model fits the recent
@@ -40,3 +40,4 @@ _Verdict:_ never accepted in 4 measurements on 2 stack(s); official FM x2 (best 
 - live_01:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6039, single-seed Δ +0.0003 — rejected; 127 changed lines
 - live_02:node_002 on [official FM]: primary 0.6019, single-seed Δ +0.0005, seed-mean Δ +0.0004 (t 1.5) — rejected; 13 changed lines
 - live_02:node_004 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6031, single-seed Δ +0.0000, seed-mean Δ -0.0000 (t -0.01) — rejected; 15 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'item-side' — facts §11 row 'video / author side, any period': valid-week LOO rate from the valid labels +0.0003, the whole-month statistics file +0.0000 (facts §11, kb/data/screens/CEILING.md)

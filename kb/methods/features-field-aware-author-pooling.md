@@ -7,8 +7,8 @@ applies_when:
   - author_id is legally joined from video_features_basic.csv and has no evaluation cold start
   - a heterogeneous ensemble contains a field-aware branch and a separate standard-FM branch
   - author identity is already encoded, but extra author-specific capacity is being tested only in the field-aware branch
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated five-seed-per-branch experiment measured seed-mean Δ -0.00002 (t -0.09);
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated five-seed-per-branch experiment measured seed-mean Δ -0.00002 (t -0.09);
   the positive seed-0 movement was only +0.00012 and provides no attributable evidence above zero
 cost: 26 changed lines; one extra field and author-sized id range in five field-aware members; numpy only
 composes_with: [model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend]

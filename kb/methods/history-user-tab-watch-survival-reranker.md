@@ -7,14 +7,14 @@ applies_when:
   - training rows provide play_time_ms as a legal target and scored rows provide duration_ms
   - the label threshold is min(duration_ms, 18000), allowing threshold-specific reach probabilities
   - a base ranker exists whose within-user ranks can be blended with a train-only reranking statistic
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated 15% reranker changed primary by −0.00008 on the multiseed heterogeneous ensemble;
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0000 over 2 measurement(s), so the promise is capped at the record; was: the isolated 15% reranker changed primary by −0.00008 on the multiseed heterogeneous ensemble;
   without seed confirmation or positive movement, no attributable gain should be expected
 cost: ~59 lines; measured total runtime 318 s versus 143 s for the parent ensemble; numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, ensembling-multiseed-heterogeneous-rank-blend, features-duration-unknown-flag]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x2 (best Δ +0.0000)]
-evidence: [live_04:node_019, live_04:node_026]
+evidence: [live_04:node_019, live_04:node_026, ceiling:oracle]
 ---
 ## Claim
 Estimate each user-tab group's probability of reaching a candidate-specific watch threshold from train-only play
@@ -49,3 +49,4 @@ can vary across one user's rows and legally change their ordering.
 _Verdict:_ never accepted in 2 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x2 (best Δ +0.0000)
 - live_04:node_019 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6044, single-seed Δ -0.0001 — rejected; 59 changed lines
 - live_04:node_026 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6045, single-seed Δ +0.0000, seed-mean Δ +0.0000 (t 0.02) — rejected; 36 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

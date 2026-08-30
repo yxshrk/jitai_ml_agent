@@ -7,8 +7,8 @@ applies_when:
   - the useful signal is heterogeneous, engineered features (target statistics, duration, session position, exposure counts) rather than id embeddings — facts §1, §3, §4, §10: tab, duration and session context dominate; user × author taste is unobservable for 96.6 % of valid rows
   - the metric is within-user ranking, so a per-query (per-user) listwise objective fits directly
   - the FM family has plateaued (three runs at 0.6044 with BPR + seed averaging) — capacity on the five ids is not the bottleneck
-expected_delta: [0.001, 0.006]
-expected_delta_basis: trees over engineered features usually beat factorization models on logs like this once context features exist, but raw high-cardinality ids (user_id 26 K values) are weak as tree splits, so the gain depends on the feature block (features-exposure-session, target statistics); a blend with the BPR ensemble is the safer target
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0022 over 1 measurement(s), so the promise is capped at the record; was: trees over engineered features usually beat factorization models on logs like this once context features exist, but raw high-cardinality ids (user_id 26 K values) are weak as tree splits, so the gain depends on the feature block (features-exposure-session, target statistics); a blend with the BPR ensemble is the safer target
 cost: ~120 lines (feature builder + lightgbm.train with a callback that scores valid every 25 rounds); runtime 1–3 min at 4 threads (100 trees on 200 K × 20 measured at 0.5 s); library: lightgbm 4.6 (installed; linked to torch's libomp, see README setup)
 composes_with: [features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average, loss-bpr-pairwise-within-user, history-user-aggregates]
 conflicts_with: [model-din-history-attention]

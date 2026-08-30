@@ -8,13 +8,13 @@ applies_when:
   - the model has no session or exposure-sequence feature (node_000 has none; the five fields are all row-static)
   - the feature must vary WITHIN a user's impression set — session position and density do (a user's ~5 valid rows span several sessions)
   - measured, train, tab 1 only (label-free): P(long_view) by position in session 1st 0.418 · 2nd–3rd 0.387 · 4th–10th 0.333 · 11th–30th 0.243 · >30th 0.137; by impressions in the previous 10 min 0 → 0.413 · 1–3 → 0.350 · 4–10 → 0.207 · >10 → 0.120; gap since previous impression < 0.5 min 0.361 vs 10–60 min 0.399 vs > 60 min 0.417
-expected_delta: [0.0005, 0.003]
-expected_delta_basis: the largest label-free effect measured on this data (0.42 → 0.12 within tab 1) and it varies within users; but the FM can only use it as bucketed ids, and the related same-author / repeat-exposure features measured −0.0005 (live_04:node_005) — expect the upper half only when a tree model (model-lightgbm-lambdarank) consumes it raw
+expected_delta: [0.0, 0.0009]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 3 measurement(s), so the promise is capped at the record; was: the largest label-free effect measured on this data (0.42 → 0.12 within tab 1) and it varies within users; but the FM can only use it as bucketed ids, and the related same-author / repeat-exposure features measured −0.0005 (live_04:node_005) — expect the upper half only when a tree model (model-lightgbm-lambdarank) consumes it raw
 cost: ~50 lines (sort by user and time over train + the scored split's feature rows, running counters, 3–4 bucketed categorical fields); runtime 1.1x; numpy only (pandas optional)
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-lightgbm-lambdarank, model-din-history-attention, history-same-author-run-features, history-repeat-exposure-fatigue]
 conflicts_with: []
 status: proven — accepted on [official FM + loss-bpr-pairwise-within-user]
-evidence: [live_07:node_002, live_07:node_010, live_07:node_013]
+evidence: [live_07:node_002, live_07:node_010, live_07:node_013, ceiling:oracle]
 ---
 ## Claim
 Where an impression sits in the user's session — first after a break, or the 15th in a fast scroll — predicts
@@ -52,3 +52,4 @@ _Verdict:_ ACCEPTED 1x (live_07:node_010 on [official FM + loss-bpr-pairwise-wit
 - live_07:node_002 on [official FM]: primary 0.6014, single-seed Δ -0.0001 — rejected; 65 changed lines
 - live_07:node_010 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6034, single-seed Δ +0.0003, seed-mean Δ +0.0009 (z 3.14) — ACCEPTED; 65 changed lines
 - live_07:node_013 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6046, single-seed Δ +0.0005, seed-mean Δ +0.0003 (z 0.97) — rejected; 67 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11 row 1: pairs within 10 minutes are 2 % of the error mass; session features measured +0.0009 on BPR (live_07 node_010), +0.0002 on the seed blend (node_013) (facts §11, kb/data/screens/CEILING.md)

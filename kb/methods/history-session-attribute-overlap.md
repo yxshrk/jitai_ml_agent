@@ -7,15 +7,15 @@ applies_when:
   - impressions have `time_ms` and can be ordered per user with equal-time groups processed together
   - video tags, music IDs, and video types are legally available from `video_features_basic.csv`
   - the model accepts categorical fields whose values vary across a user's scored impressions
-expected_delta: [0.000, 0.00022]
-expected_delta_basis: the originating five-seed FM-BPR wildcard measured fresh-seed mean Δ +0.00022
+expected_delta: [0.0, 0.0002]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0002 over 1 measurement(s), so the promise is capped at the record; was: the originating five-seed FM-BPR wildcard measured fresh-seed mean Δ +0.00022
   (seed-0 Δ +0.00019, z 0.82); no larger attributable gain is supported
 cost: 83 changed lines; runtime 123 s versus 51 s for the five-seed parent (~2.4x); numpy and standard library
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session,
   history-same-author-run-features]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0002)]
-evidence: [live_07:node_011]
+evidence: [live_07:node_011, ceiling:oracle]
 ---
 ## Claim
 Append capped counts of tag, music-ID, and video-type overlap between the candidate and the user's five most
@@ -47,3 +47,4 @@ short-term session context rather than long-term user preference.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0002)
 - live_07:node_011 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6043, single-seed Δ +0.0002, seed-mean Δ +0.0002 (z 0.82) — rejected; 83 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11 row 1: pairs within 10 minutes are 2 % of the error mass; session features measured +0.0009 on BPR (live_07 node_010), +0.0002 on the seed blend (node_013) (facts §11, kb/data/screens/CEILING.md)

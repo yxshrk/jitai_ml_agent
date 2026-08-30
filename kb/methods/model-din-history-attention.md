@@ -7,13 +7,13 @@ applies_when:
   - users have a usable but short history: median 35 train rows, p90 103 (facts §2) — attention over ≤ 50 items is cheap
   - 96.6 % of valid rows are authors the user never saw in train (facts §10.3), so history must be matched by ATTRIBUTES (author, tag, duration bucket, tab), not by id — the DIN query/key must be attribute embeddings
   - the champion is a BPR FM whose user × item term is a single dot product; attention adds a candidate-conditioned summary of what this user long-viewed before
-expected_delta: [0.0, 0.004]
-expected_delta_basis: history-user-aggregates (a crude, unconditioned version of the same information) measured +0.0008–0.0010 on the FM and 0 on BPR; attention conditions the history on the candidate, which is what those aggregates lack; the ceiling is bounded by how much taste the 35-row histories carry
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0001 over 1 measurement(s), so the promise is capped at the record; was: history-user-aggregates (a crude, unconditioned version of the same information) measured +0.0008–0.0010 on the FM and 0 on BPR; attention conditions the history on the candidate, which is what those aggregates lack; the ceiling is bounded by how much taste the 35-row histories carry
 cost: ~110 lines (torch module with FM logit + attention branch, BPR training loop, history padding); runtime 3–6 min on CPU at 4 threads; library: torch 2.8 CPU (installed)
 composes_with: [loss-bpr-pairwise-within-user, features-exposure-session, ensembling-seed-average, ensembling-heterogeneous-rank-average]
 conflicts_with: [model-lightgbm-lambdarank]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)]
-evidence: [live_07:node_017]
+evidence: [live_07:node_017, ceiling:oracle]
 ---
 ## Claim
 Scoring a candidate against a candidate-weighted summary of the user's earlier long-views (attention keyed by
@@ -50,3 +50,4 @@ cancels, so the branch is forced to learn candidate-specific ordering.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0001)
 - live_07:node_017 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 137 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

@@ -8,8 +8,8 @@ applies_when:
   - impressions expose `user_id`, `tab`, and `time_ms`, permitting legal per-user temporal ordering
   - current tab is already modeled but the immediately previous tab and same-tab streak are absent
   - scored splits can initialize each user's transition state from their final strictly earlier training exposure
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the originating five-seed FM-BPR probe had seed-0 Δ +0.00003 but fresh-seed mean
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0000 over 1 measurement(s), so the promise is capped at the record; was: the originating five-seed FM-BPR probe had seed-0 Δ +0.00003 but fresh-seed mean
   Δ -0.00032 (z -1.30), so this exact two-field construction has no attributable positive expected gain
 cost: 69 changed lines; preprocessing plus two small categorical fields; measured runtime 86 s versus 51 s
   for the five-member parent; numpy only
@@ -17,7 +17,7 @@ composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features
   history-same-author-run-features]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)]
-evidence: [live_07:node_021]
+evidence: [live_07:node_021, ceiling:oracle]
 ---
 ## Claim
 Append the previous-tab→current-tab transition and capped same-tab streak as categorical fields, allowing otherwise
@@ -49,3 +49,4 @@ share the same pre-group state and therefore cannot become one another's history
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ -0.0003)
 - live_07:node_021 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6041, single-seed Δ +0.0000, seed-mean Δ -0.0003 (z -1.3) — rejected; 69 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11 row 1: pairs within 10 minutes are 2 % of the error mass; session features measured +0.0009 on BPR (live_07 node_010), +0.0002 on the seed blend (node_013) (facts §11, kb/data/screens/CEILING.md)

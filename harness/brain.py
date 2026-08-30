@@ -134,7 +134,9 @@ class LLMBrain(Brain):
         return self._call('diagnose', P.user_diagnose(ctx)).strip()
 
     def select(self, ctx, k):
+        known = set(P.card_index()); attempts = {'n': 0}
         def parse(t):
+            attempts['n'] += 1
             sels = parse_header(t).get('selections')
             if not isinstance(sels, list) or not sels:
                 raise ParseError('"selections" must be a non-empty list')
@@ -145,6 +147,13 @@ class LLMBrain(Brain):
                 if s['target_component'] not in P.TARGET_COMPONENTS:
                     raise ParseError(f'unknown target_component {s["target_component"]!r}; use one of {P.TARGET_COMPONENTS}')
                 s['expected_delta'] = float(s['expected_delta'])
+                # ADR-0018 (#4): no free-text card names in a role's output — a card-typed candidate must name a card id
+                # (a deepen may add ' — <variant>'); one format reminder, then the name is accepted and flagged
+                base = str(s['card']).split(' — ')[0].strip()
+                if s.get('type') in ('improve', 'retest', 'deepen') and known and base not in known:
+                    if attempts['n'] == 1:
+                        raise ParseError(f'"card" {s["card"]!r} is not a card id; use one of the menu ids exactly (a deepen may append " — <variant>")')
+                    s['card_unknown'] = True
             return sels[:k]
         return self._with_retry('select', P.user_select(ctx), parse)
 

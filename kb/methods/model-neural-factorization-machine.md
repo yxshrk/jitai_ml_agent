@@ -45,4 +45,5 @@ still cannot affect the ordering.
 - The head may improve calibration rather than order; BPR training is preferred so user-constant effects cancel.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

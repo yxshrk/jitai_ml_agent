@@ -7,14 +7,14 @@ applies_when:
   - within-user BPR currently draws one pair per positive, thereby weighting users approximately by positive count
   - training has mixed-label users from which both positive and negative examples can be sampled
   - the objective should balance GAUC's positive weighting against nDCG@5's equal per-user weighting
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated wildcard lost 0.00192 primary on the ten-model field-aware/standard-FM rank
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0019 over 1 measurement(s), so the promise is capped at the record; was: the isolated wildcard lost 0.00192 primary on the ten-model field-aware/standard-FM rank
   ensemble; there is no attributable positive evidence for this fixed 50/50 sampling recipe
 cost: 9 lines; unchanged pair count and approximately 1x training cost; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-bpr-hard-negatives, model-field-aware-fm-embeddings, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user]
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0019)]
-evidence: [live_04:node_022]
+evidence: [live_04:node_022, ceiling:oracle]
 ---
 ## Claim
 Construct each BPR epoch from an equal mixture of the usual positive-proportional sample and positives drawn by
@@ -44,3 +44,4 @@ per-user weighting while every pair still changes only within-user order.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0019)
 - live_04:node_022 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6026, single-seed Δ -0.0019 — rejected; 9 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0003 for the signal family 'same-tab-pairs' — facts §11 §3: same-tab BPR negatives at 30 / 70 / 100 % score 0.6030 / 0.6024 / 0.5880; cross-tab pairs are already solved (error 0.186) (facts §11, kb/data/screens/CEILING.md)

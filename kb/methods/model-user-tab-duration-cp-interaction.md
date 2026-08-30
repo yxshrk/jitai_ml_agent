@@ -7,8 +7,8 @@ applies_when:
   - the ranker exposes categorical user, tab, and duration-bucket fields
   - pairwise FM interactions cannot represent a user's duration preference changing by tab
   - same-user BPR training and analytic embedding-gradient updates are available
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated probe gained only +0.00007 on seed 0 and had fresh-seed mean Δ -0.00069,
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated probe gained only +0.00007 on seed 0 and had fresh-seed mean Δ -0.00069,
   so no positive attributable gain is supported for this exact rank-k cubic construction
 cost: 27 changed lines; one additional `(dim, k)` table and Adam states; measured runtime 17 s (~1.2x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, features-fine-duration-and-tab-cross, regularization-embedding-dropout-l2, ensembling-seed-average]

@@ -7,8 +7,8 @@ applies_when:
   - two model branches already produce competitive, complementary within-user rankings
   - the current ensemble linearly averages normalized ranks and nDCG@5 lags GAUC
   - branch score scales are irrelevant or incomparable, so fusion should operate on within-user positions
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated replacement measured single-seed Δ -0.00001 on the five-seed field-aware/standard
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: the isolated replacement measured single-seed Δ -0.00001 on the five-seed field-aware/standard
   BPR ensemble; nDCG@5 rose only 0.00007 while GAUC fell 0.00004, providing no attributable positive primary gain
 cost: ~16 lines; fusion overhead only, but total runtime inherits the underlying ensemble (~316 s measured); numpy only
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings, model-dcn-cross-head]

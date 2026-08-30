@@ -6,14 +6,14 @@ source: kb/literature/models/1706.06978_din.pdf (user-behaviour interest; GAUC);
 applies_when:
   - users have a train history to aggregate (facts §2: median 35 train rows, p10 = 6) — enough for rates, too few for attention models
   - the catalogue is closed (facts §1), so per-user rates by author / tab / duration bucket are well defined on train
-expected_delta: [0.001, 0.006]
-expected_delta_basis: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
+expected_delta: [0.0, 0.0010]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0007 over 6 measurement(s), so the promise is capped at the record; was: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
   first-order part of what DIN/SIM learn; histories are short, so cap expectations at 0.006
 cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketised fields); runtime ~1.5x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: proven — accepted on [official FM]
-evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004]
+evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004, ceiling:oracle]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -46,3 +46,4 @@ _Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010)
 - live_04:node_011 on [official FM + field-aware FM embeddings]: primary 0.6017, single-seed Δ -0.0014 — rejected; 69 changed lines
 - live_05:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0006 (z 1.89) — rejected; 87 changed lines
 - live_06:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0008 (z 1.85) — rejected; 75 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

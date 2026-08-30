@@ -45,4 +45,5 @@ Unlike the rejected max-of-m hard-negative probe, both the stopping time and est
 - Harmonic weights can create large gradients; normalize them and clip the effective pair weight at five.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

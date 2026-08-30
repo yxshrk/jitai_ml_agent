@@ -6,8 +6,8 @@ source: kb/literature/multitask/1804.07931_esmm.pdf (shared embeddings, multi-ta
 applies_when:
   - other feedback columns exist on train rows as legal targets (task.md)
   - is_click correlates 0.76 with long_view and is present on 46 % of rows (facts §6); the rarer signals (like 1.9 %, follow 0.1 %) are too sparse
-expected_delta: [0.000, 0.005]
-expected_delta_basis: extra supervision on shared embeddings helps sparse users, but P(click | long_view) = 0.996
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0003 over 1 measurement(s), so the promise is capped at the record; was: extra supervision on shared embeddings helps sparse users, but P(click | long_view) = 0.996
   means is_click carries little information the label does not — gains may be within noise; test cheaply
 cost: ~30 lines (second bias vector + shared-V gradient); runtime ~1.2x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]

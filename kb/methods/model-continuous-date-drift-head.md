@@ -7,15 +7,15 @@ applies_when:
   - impression date is available as a legal show-time feature
   - training and evaluation periods exhibit temporal drift in volume or positive rate
   - the ranker supports row-specific numeric terms and gradients, such as same-user BPR
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated date-head probe on standard FM+BPR had fresh-seed mean Δ -0.00001 despite
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated date-head probe on standard FM+BPR had fresh-seed mean Δ -0.00001 despite
   single-seed Δ +0.00013, providing no attributable positive evidence for this linear extrapolation recipe
 cost: ~61 changed lines; one scalar and one dim-sized slope array with Adam states; measured runtime ~1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, data-weighting-recency, model-field-aware-fm-embeddings,
   regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)]
-evidence: [live_05:node_013]
+evidence: [live_05:node_013, ceiling:oracle]
 ---
 ## Claim
 Add a normalized continuous-date term
@@ -44,3 +44,4 @@ a user's compared rows occur on different dates.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user x1 (best Δ -0.0000)
 - live_05:node_013 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6038, single-seed Δ +0.0001, seed-mean Δ -0.0000 (z -0.02) — rejected; 61 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0000 for the signal family 'day-state' — facts §11 row 'user state that day': user × date from the other half of the user's own valid rows +0.0000; day-level label-free context <= +0.0002 (facts §11, kb/data/screens/CEILING.md)

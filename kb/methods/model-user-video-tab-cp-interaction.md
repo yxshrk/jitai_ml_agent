@@ -8,8 +8,8 @@ applies_when:
   - user_id, video_id, and tab are legal row features and tab varies within users
   - the catalogue is closed, so user-video factors can be estimated without item cold start
   - an FM ranker supports analytic gradients for an additional factorized interaction term
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated addition measured fresh-seed mean Δ -0.00053 and seed-0 Δ +0.00006 on the
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: the isolated addition measured fresh-seed mean Δ -0.00053 and seed-0 Δ +0.00006 on the
   five-seed FM-BPR ensemble, providing no attributable positive evidence
 cost: 27 changed lines; one additional `(dim, k)` table plus Adam states; measured runtime 56 s versus 45 s for
   the parent; numpy only

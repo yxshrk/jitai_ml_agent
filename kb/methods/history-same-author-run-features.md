@@ -7,13 +7,13 @@ applies_when:
   - impressions carry `time_ms`, so a user's exposures can be ordered and runs of consecutive same-author exposures counted (facts §10.2)
   - the model has no exposure-sequence feature (node_000 has none)
   - `tab` is already a field, so the feature must add WITHIN-tab information (facts §10.2: tab 1 0.268 vs 0.389; tab 4 0.393 vs 0.501)
-expected_delta: [0.0, 0.0008]
-expected_delta_basis: affects 2.7 % of valid rows; large within-tab lift where it applies but the FM already has tab; the related exposure-count features measured −0.0005 on one seed (live_04:node_005)
+expected_delta: [0.0, 0.0002]
+expected_delta_basis: bounded (ADR-0018) at +0.0002 by the oracle for 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage; was: affects 2.7 % of valid rows; large within-tab lift where it applies but the FM already has tab; the related exposure-count features measured −0.0005 on one seed (live_04:node_005)
 cost: ~40 lines (sort by user and time, run-so-far encoding, one or two categorical fields); runtime 1.1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, history-repeat-exposure-fatigue]
 conflicts_with: []
 status: untried
-evidence: []
+evidence: [ceiling:oracle]
 ---
 ## Claim
 A user shown the same author twice in a row is far less likely to long-view the second exposure (0.142 vs 0.337
@@ -40,4 +40,5 @@ its interactions with tab and duration.
 - Rows at a user's first exposure of the window have no history; encode as level 0, not as missing.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

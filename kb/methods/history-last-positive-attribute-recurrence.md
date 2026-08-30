@@ -7,15 +7,15 @@ applies_when:
   - training outcomes and time_ms can identify each user's latest strictly earlier positive impression
   - video tag, music_id, and video_type are legally available from the basic side table
   - candidate attributes vary within users and can therefore change their impression ordering
-expected_delta: [0.0005, 0.0009]
-expected_delta_basis: on pointwise official FM, the exact four-field construction measured fresh-seed mean
+expected_delta: [0.0, 0.0009]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 2 measurement(s), so the promise is capped at the record; was: on pointwise official FM, the exact four-field construction measured fresh-seed mean
   Δ +0.0009 (seed-0 Δ +0.0005, z 3.12); do not attribute more than that confirmed gain
 cost: 86 changed lines; 34 s measured versus 15 s parent (~2.3x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session,
   model-dcn-cross-head]
 conflicts_with: [model-din-history-attention, history-ordered-user-tag-affinity]
 status: proven — accepted on [official FM]
-evidence: [live_07:node_001, live_07:node_023]
+evidence: [live_07:node_001, live_07:node_023, ceiling:oracle]
 ---
 ## Claim
 Append categorical matches between the candidate and the user's latest strictly earlier positive video's first
@@ -48,3 +48,4 @@ when the exact author has never appeared in the user's history.
 _Verdict:_ ACCEPTED 1x (live_07:node_001 on [official FM] Δ +0.0009)
 - live_07:node_001 on [official FM]: primary 0.6020, single-seed Δ +0.0005, seed-mean Δ +0.0009 (z 3.12) — ACCEPTED; 86 changed lines
 - live_07:node_023 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6039, single-seed Δ -0.0002 — rejected; 88 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'taste-train-history' — facts §11 row 'train-history taste, item-kNN, repeats, weekday/hour': <= +0.0002 each; user × author / music taste is +0.0021 / +0.0016 only with same-week labels at 3 % coverage (facts §11, kb/data/screens/CEILING.md)

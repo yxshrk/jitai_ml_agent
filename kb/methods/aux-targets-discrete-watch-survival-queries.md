@@ -7,8 +7,8 @@ applies_when:
   - play_time_ms is available as a legal training-only target
   - scored rows provide duration_ms, allowing the required threshold min(duration_ms, 18000) to be encoded
   - a shared FM can consume a categorical watch-threshold query field
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated pointwise-FM probe supplied no positive fresh-seed evidence, so this exact
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0000 over 1 measurement(s), so the promise is capped at the record; was: the isolated pointwise-FM probe supplied no positive fresh-seed evidence, so this exact
   three-query construction has no attributable expected gain until a materially changed stack confirms otherwise
 cost: ~30 changed lines; expanded training batches measured at ~4.5x baseline runtime; numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-dcn-cross-head, model-field-aware-fm-embeddings, data-weighting-recency]

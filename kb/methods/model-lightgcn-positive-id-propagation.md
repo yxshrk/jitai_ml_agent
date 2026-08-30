@@ -7,14 +7,14 @@ applies_when:
   - train outcomes may define a positive-only user-video graph without using validation or test outcomes
   - user and video ids recur across splits, making propagated endpoint embeddings usable at scoring time
   - a standard-FM branch already contains a raw user-video dot product that can be replaced in isolation
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the only probe lost 0.0002 primary without seed confirmation when replacing the standard-FM
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0002 over 1 measurement(s), so the promise is capped at the record; was: the only probe lost 0.0002 primary without seed confirmation when replacing the standard-FM
   branch inside a multiseed heterogeneous ensemble, so there is no attributable positive gain to bracket
 cost: ~42 changed lines; measured runtime 423 s versus 143 s for the ensemble parent; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: dead_under [official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)]
-evidence: [live_04:node_024]
+evidence: [live_04:node_024, ceiling:oracle]
 ---
 ## Claim
 Replace a standard FM's raw user-video dot product with one layer of degree-normalized propagation over the
@@ -47,3 +47,4 @@ users; because candidate videos vary within a user, this term can change the sco
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + field-aware FM embeddings + heterogeneous-node-rank-average x1 (best Δ -0.0002)
 - live_04:node_024 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6043, single-seed Δ -0.0002 — rejected; 42 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0002 for the signal family 'cf-add-on' — facts §11: item-kNN over train positives / negatives / watch fraction / co-exposure adds 0 on the champion (facts §11, kb/data/screens/CEILING.md)

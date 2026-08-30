@@ -7,14 +7,14 @@ applies_when:
   - a seed-averaged BPR ranker and a matching branch with features-exposure-session are both available
   - session features improve specific legal cohorts but are flat or harmful globally
   - duration_ms and tab are available at scoring time to define the fixed gate
-expected_delta: [0.000, 0.00049]
-expected_delta_basis: the complete base/session two-branch gate measured fresh-seed mean Δ +0.00049 over the
+expected_delta: [0.0, 0.0005]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 1 measurement(s), so the promise is capped at the record; was: the complete base/session two-branch gate measured fresh-seed mean Δ +0.00049 over the
   five-seed BPR champion, but z=1.94; part of that movement may come from the session branch rather than fusion alone
 cost: 42 changed lines on the session parent; ten FM-BPR training phases; measured runtime 203 s; numpy only
 composes_with: [features-exposure-session, loss-bpr-pairwise-within-user, ensembling-seed-average]
 conflicts_with: [ensembling-top5-gated-hybrid-rank-fusion, ensembling-long-duration-slot-specialists]
 status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)]
-evidence: [live_07:node_019]
+evidence: [live_07:node_019, ceiling:oracle]
 ---
 ## Claim
 Train parallel five-seed base and session-feature BPR ensembles, then substitute the session ensemble's within-user
@@ -47,3 +47,4 @@ mismatch; a final rank transform restores a deterministic, tie-free ordering.
 ## Measured
 _Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)
 - live_07:node_019 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6046, single-seed Δ +0.0005, seed-mean Δ +0.0005 (z 1.94) — rejected; 42 changed lines
+- ceiling:oracle on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: BOUNDED <= +0.0010 for the signal family 'session-context' — facts §11 row 1: pairs within 10 minutes are 2 % of the error mass; session features measured +0.0009 on BPR (live_07 node_010), +0.0002 on the seed blend (node_013) (facts §11, kb/data/screens/CEILING.md)

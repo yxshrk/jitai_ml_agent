@@ -8,8 +8,8 @@ applies_when:
   - leakage-safe session position and prior-10-minute density features are already available
   - same-user BPR training supports an additional pair stream
   - duration_ms and tab are available to restrict the heuristic to long-duration or tab-4 impressions
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the exact 0.1-weight auxiliary stream reduced single-seed primary by 0.00234 on a five-seed
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0023 over 1 measurement(s), so the promise is capped at the record; was: the exact 0.1-weight auxiliary stream reduced single-seed primary by 0.00234 on a five-seed
   FM-BPR ensemble; no fresh-seed or positive evidence supports an attributable gain
 cost: 51 changed lines; an extra logistic pair stream per BPR batch; measured runtime 137 s; numpy only
 composes_with: [features-exposure-session, loss-bpr-pairwise-within-user, ensembling-seed-average]

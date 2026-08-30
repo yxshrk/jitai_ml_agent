@@ -40,4 +40,5 @@ the row-varying video, author, tab, and duration interactions support a stable o
 - Do not perturb only user biases: additive user terms cannot alter either metric.
 
 ## Measured
-(none yet)
+_Verdict:_ no measurement yet
+

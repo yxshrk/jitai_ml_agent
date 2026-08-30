@@ -6,8 +6,8 @@ source: kb/data/facts.md §3 (duration_ms = 0 rows are always long_view = 0; 1.9
 applies_when:
   - duration_ms = 0 rows exist in valid/test features (they do: same log, same column)
   - the current encoding sends duration 0 into the shortest bucket together with genuinely short videos (node_000: searchsorted on quantile edges)
-expected_delta: [0.001, 0.004]
-expected_delta_basis: mechanism-backed but small — it only reorders rows for users who were shown an unknown-length
+expected_delta: [0.0, 0.0002]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0000 over 4 measurement(s), so the promise is capped at the record; was: mechanism-backed but small — it only reorders rows for users who were shown an unknown-length
   video; those rows are always negative, so pushing them down can only help nDCG for such users
 cost: 2 lines in raw(); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head]

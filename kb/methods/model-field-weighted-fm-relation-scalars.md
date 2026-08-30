@@ -7,8 +7,8 @@ applies_when:
   - the ranker is an FM over distinct categorical fields
   - field-pair relations may differ substantially, as with tab and duration context
   - full field-aware embeddings would add too many parameters
-expected_delta: [0.000, 0.000]
-expected_delta_basis: the isolated probe on standard FM+BPR lost 0.00018 primary on seed 0 and received no seed
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0002 over 1 measurement(s), so the promise is capped at the record; was: the isolated probe on standard FM+BPR lost 0.00018 primary on seed 0 and received no seed
   confirmation; therefore no positive attributable gain is currently supported
 cost: 23 changed lines; ten scalar parameters for five fields; measured runtime 24 s (~1.3x parent); numpy only
 composes_with: [loss-bpr-pairwise-within-user, features-fine-duration-and-tab-cross, regularization-embedding-dropout-l2]

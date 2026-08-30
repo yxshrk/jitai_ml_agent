@@ -6,8 +6,8 @@ source: kb/literature/losses/1205.2618_bpr.pdf (LearnBPR sampling); standard pra
 applies_when:
   - a within-user pairwise loss is already the champion (live_01: node_001 BPR accepted)
   - users have several negatives to choose from (facts: train mean 43.5 rows/user, positive rate 0.34)
-expected_delta: [0.000, 0.004]
-expected_delta_basis: uniform negatives waste gradient on pairs the model already orders; sampling negatives the
+expected_delta: [0.0, 0.0001]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0006 over 1 measurement(s), so the promise is capped at the record; was: uniform negatives waste gradient on pairs the model already orders; sampling negatives the
   model currently ranks high (or several negatives per positive) is a classic pairwise-ranking booster — small here
 cost: ~25 lines on top of BPR (score-aware negative choice or n negatives per positive); runtime 1–2x; numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head, regularization-embedding-dropout-l2]
