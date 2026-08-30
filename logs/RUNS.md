@@ -43,3 +43,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | final_s4 | coral | converged | 3 | 0.60521 | context-stratified-pairs FIRST WIN +0.0015 in one node; converged before any close — close-on-top untried |
 | 1k_push | ruby | converged | 7 | 0.65977 | 2nd independent 1K run: session features +0.022 from different base; below omega designation |
 | novel_l1 | laptop | max_hours | 5 | 0.60524 | CLEAN researcher run: invented-card pair-kernel +0.0014; its 0.6055 ensemble FAILED fresh-seed confirm (discipline held); official best node_004 |
+| final_r6 | ruby | converged | 3 | 0.60258 | weak dial-sweep draw; gap-conditioned-recency +0.0003 sub-eps (first measurement) |
