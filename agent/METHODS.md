@@ -259,7 +259,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Compute using current/past impressions only, preserve row order, and never use future session events; hour/day basics may already be in the parent.
 - citation: KuaiRand schema/research notes; MENU temporal-context item 9; run_omega_1k n5 journal (exact recipe: gap edges [1,5,15,30,60,180,720]min, position edges [1,2,3,5,8,16], 30-min session cut, hour*tab + weekday*tab crosses, causal running state)
 - expected_gain / cost: MEASURED +0.0192 on 1K (expected only +0.0025 — biggest overshoot of campaign); on Pure untested, prior +0.001-0.005 / medium.
-- status_pure: untried (selector-rejected in novel wave, never measured — HIGH-PRIORITY untried)
+- status_pure: measured-weak (run_final_s1 n2: +0.0002 as plain fields — consult prediction confirmed; do NOT re-propose plain form on Pure)
 - status_1k: measured-win (run_omega_1k n5: 0.6497->0.6689, independently re-evaluated exact-match)
 
 ### recency-weighting: Exponential training recency weighting
@@ -608,7 +608,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - preconditions: Include anchor, +session, +session+pair ablation fits before the final fit; Pure sessions are sparse (85% of validation rows are position 0) so expect most gain from position 1-8 rows.
 - citation: run_omega_1k n5 journal; gpt-5.6-sol consult 31 Aug (gap/position bucket redesign for Pure density; gradient routing)
 - expected_gain / cost: +0.0018-0.0032 est. (consult); session-alone est +0.0014 — composite needed to clear eps / medium.
-- status_pure: untried
+- status_pure: untried — NOTE plain session fields measured +0.0002 on Pure (run_final_s1 n2); the gating/gradient-routing IS the hypothesis, not the fields
 - status_1k: variant measured-win
 
 ### context-stratified-pairs: Same-context BPR negative stratification

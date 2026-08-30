@@ -34,3 +34,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | combo_r1 | ruby | converged | 4 | 0.60496 | SEEDED composition test: pair-kernel+frozen-stack = +0.0003 over frozen alone — mechanisms barely stack; disclosed experiment, not designation-eligible per policy |
 | omega_1k | ruby | converged | 8 | 0.66892 | 1K BREAKTHROUGH: causal session features (+0.0192); independent eval exact-match; fresh-seed replication in flight; re-designation pending |
 | clean_c2 | coral | converged | 3 | 0.60335 | clean cards-only run, safe path, no threat |
+| final_s1 | coral | converged | 3 | 0.60184 | 3 straight rejections incl. session-time-features +0.0002 on Pure (weak-transfer confirmed); gated variant untried |
