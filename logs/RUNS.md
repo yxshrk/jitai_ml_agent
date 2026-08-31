@@ -63,3 +63,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | cpu_c2 | cpupod | converged | 4 | 0.60399 | quiet path |
 | decision replay | laptop | evidence | 3 decisions | 0.60599 | selector choices executed faithfully from cached tuned artifacts (dial->ctxpairs->design-searched close, 0.7 composite+0.3 pairkern): agent judgment reaches 0.6060-class; live gap = close-node codegen fidelity |
 | ruby_y3 | ruby | converged | 3 | 0.60400 | pre-bench library run; grey-accepted freq (+0.0008 with z-pass — floor-v2 working as intended) then converged |
+| cpu_c1 | cpupod | converged | 5 | 0.60403 | 2nd genuine composite adoption held as peak; close never landed |
