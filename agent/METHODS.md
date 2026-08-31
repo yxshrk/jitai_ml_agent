@@ -724,6 +724,6 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - reference_primary: singles 0.6051-0.6058 across 7 seeds; 2-member mean-logit 0.606116 (INDEPENDENTLY re-verified exact on our evaluator from saved score files) — teammate research branch codex/project-2-kuairand-agent runs/RESULTS.md
 - preconditions: Implement the FULL package — a partial port measured only 0.6033 (run_menu_m4): the context fields, causal history discipline, and aux head must all be present. 2-member selection from a 7-seed sweep carries selection optimism ~0.0003-5; prefer predeclared consecutive seeds.
 - citation: teammate research (Aditya), independently verified; DeepFM (Guo et al. 2017); censored watch-time modeling (CWM, KDD'24)
-- expected_gain / cost: package 0.6055-0.6061 validation (vs 0.6016 baseline) if faithfully implemented / high (complex node; use full timeout, log epoch history).
+- expected_gain / cost: package 0.6043-0.6045 as agent-implemented (probe: 3-seed rank-avg 0.60477 — close adds only +0.0003, members correlated); teammate reference 0.6055-0.6061 requires FULL fidelity (context fields + aux head + logit averaging) / high.
 - status_pure: measured-win-external (verified scores; not yet reproduced under this harness — HIGHEST-PRIORITY target)
 - status_1k: untried

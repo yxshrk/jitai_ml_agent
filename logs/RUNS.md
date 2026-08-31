@@ -57,3 +57,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | ruby_x2 | ruby | converged | 4 | 0.60401 | 3rd genuine composite adoption (0.60454, grey-confirm miss); close executed but weak |
 | ruby_y1 | ruby | converged | 3 | 0.60362 | phase guidance WORKED (opened with composite) but weak impl (+0.0018 sub-eps) -> fast convergence |
 | ruby_x3 | ruby | converged | 3 | 0.60425 | 4th genuine composite adoption; converged before close |
+| composite-close probe | ruby | evidence | - | 0.60477 | 3-seed rank-avg of x1s agent-authored composite: close pays only +0.0003 on this family (correlated members); chain ceiling ~0.0048 short of hopes; gap to teammate reference = implementation depth |
