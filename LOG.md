@@ -308,3 +308,31 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   every family 'open' at the campaign log line (the ledger statuses live in the ledger; cosmetic).
 - Next: the designation-time train + valid refit (approved; facts §11 window experiment: the last week ≈ +0.003 on
   valid, expected +0.001–0.003 on the hidden test), then the submission decision.
+
+### live_09 — converged, and the best confirmed model of the project
+- Relaunched after live_08's wall-clock stop, with `caffeinate` holding the machine awake so the official 6 h budget
+  measures work rather than sleep. **Converged at generation 7** (ADR-0012 rule): 25 nodes, 116 min, $19.66,
+  4.02 M input tokens (2.72 M cached) / 393 K output, 54 → 72 calls, zero interventions.
+- **Champion and designated node_014: a ten-member within-user rank blend — five independently early-stopped
+  field-aware-FM BPR members and five standard-FM BPR members, fused 0.6/0.4 on tie-free within-user ranks.**
+  Valid primary 0.6043, **fresh-seed mean 0.60458 at z 4.6 over the BPR champion (+0.00145)** — +0.0031 over the
+  baseline's fresh-seed mean and the first time any run has cleared the 0.6043–0.6044 plateau with a confirmed number.
+  `submission.csv` is now this node (organizers' `--check` passed, 170,588 rows).
+- The new machinery earned its place: **six screens** closed candidates for the price of a probe (the four-run-old
+  untried card `history-same-author-run-features` — run length varies within a user for 3 % of users, GAUC 0.5003,
+  additive −0.0005; the empirical-Bayes user × music affinity the oracle had bounded — −0.0000; a user-constant
+  lifecycle cohort — varies 0.0); **campaigns** ran history (closed after 2 flat generations) then ensembling (the
+  champion, then closed) then model; **strict designation** excluded node_017's unconfirmed 0.60469 and journalled it;
+  the **card-id validator** caught three invented names; the **free-slot rule** fired three times.
+- Screen honesty check: the screen kept `history-user-aggregates` at +0.0008 and the trained node then measured
+  +0.0004 at z 1.4 (rejected). The screen is a floor, not a predictor — as ADR-0015 calibrated it.
+- **ADR-0019 refit, first real use**: node_014 refit on train + valid (1,266,021 rows) at its validated 7 epochs;
+  the organizers' `--check` passed and the ordering moved as expected (Spearman 0.932 against the train-only file).
+  The refit file is kept aside; whether it is what we hand in is Yash's decision (unmeasurable on valid by design).
+- Fix list from this run: the free slot must be filled from the campaign family (name the eligible ids in the
+  violation message); a campaign candidate should be able to declare a new mechanism without inventing a card id;
+  the screen's additive test is the wrong instrument for a gate (restrict screening to feature-type candidates).
+- **ADR-0020 (research session, reviewed here)**: the acceptance test no longer blends the cross-run seed-SD prior —
+  a run decides on its own seed evidence (Yash: "selection decisions purely within iterations … way more
+  explainable"). The prior sat below every run's true seed SD, so removing it makes the test stricter; the replay
+  flips exactly one verdict per run and changes no champion, so live_09's result stands as reported.
