@@ -766,3 +766,22 @@ sys.exit(0)
     assert not (loop.run_dir / "node_001").exists()
     assert "SMOKE_EPOCHS" in prompts.TASK_BRIEF
     assert "cap" in prompts.TASK_BRIEF
+
+
+
+def test_normalize_history_flattens_sweeps_and_aliases_keys():
+    from harness.loop import normalize_history
+    flat = [{"epoch": 1, "train_loss": 0.5, "val_gauc": 0.66, "val_primary": 0.60}]
+    assert normalize_history(flat)[0]["val_primary"] == 0.60
+    aliased = [{"epoch": 1, "loss": 0.5, "gauc": 0.66, "primary": 0.61}]
+    assert normalize_history(aliased)[0]["val_primary"] == 0.61
+    sweep = [
+        {"config": "a", "epochs": [{"epoch": 1, "gauc": 0.65, "primary": 0.590},
+                                   {"epoch": 2, "gauc": 0.66, "primary": 0.600}]},
+        {"config": "b", "epochs": [{"epoch": 1, "gauc": 0.66, "primary": 0.601},
+                                   {"epoch": 2, "gauc": 0.67, "primary": 0.604}]},
+    ]
+    rows = normalize_history(sweep)
+    assert [r["val_primary"] for r in rows] == [0.601, 0.604]  # best config's curve
+    assert normalize_history([{"config": "x"}]) == []
+    assert normalize_history("garbage") == []

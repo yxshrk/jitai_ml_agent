@@ -116,6 +116,48 @@ class LoopConfig:
             raise ValueError("knowledge_mode must be 'full' or 'clean'")
 
 
+def normalize_history(history) -> list[dict]:
+    """Coerce a node's recorded history into the contract's flat per-epoch curve.
+
+    Scripts sometimes log a sweep (a list of config entries each carrying a nested
+    'epochs'/'checkpoints' list) or use bare 'gauc'/'primary' keys. The selector
+    can only diagnose a flat curve with epoch/train_loss/val_gauc/val_primary, so
+    flatten the best-scoring nested curve and alias the keys. Returns [] when no
+    usable curve exists (which then correctly reads as insufficient telemetry)."""
+    if isinstance(history, dict):  # fan-out nodes may group history by stage
+        history = [e for v in history.values() if isinstance(v, list)
+                   for e in v if isinstance(e, dict)]
+    if not isinstance(history, list):
+        return []
+    entries = [e for e in history if isinstance(e, dict)]
+    if not entries:
+        return []
+    def flat(e: dict) -> dict:
+        return {
+            "epoch": e.get("epoch"),
+            "train_loss": e.get("train_loss", e.get("loss")),
+            "val_gauc": e.get("val_gauc", e.get("gauc")),
+            "val_primary": e.get("val_primary", e.get("primary")),
+        }
+    def usable(rows: list[dict]) -> bool:
+        return any(r.get("val_primary") is not None for r in rows)
+    direct = [flat(e) for e in entries]
+    if usable(direct):
+        return direct
+    # sweep-shaped: pick the nested curve whose best val_primary is highest
+    best_rows: list[dict] = []
+    best_score = float("-inf")
+    for e in entries:
+        nested = e.get("epochs") or e.get("checkpoints") or []
+        rows = [flat(x) for x in nested if isinstance(x, dict)]
+        if not usable(rows):
+            continue
+        top = max(r["val_primary"] for r in rows if r.get("val_primary") is not None)
+        if top > best_score:
+            best_score, best_rows = top, rows
+    return best_rows
+
+
 class LeakageError(RuntimeError):
     pass
 
@@ -1052,12 +1094,7 @@ class Loop:
             node.method_selection = parent.method_selection
         recovery: str | None = None
         try:
-            parent_history = (parent.metrics or {}).get("history", [])
-            if isinstance(parent_history, dict):  # fan-out nodes may group history by stage
-                parent_history = [e for v in parent_history.values()
-                                  if isinstance(v, list) for e in v if isinstance(e, dict)]
-            elif not isinstance(parent_history, list):
-                parent_history = []
+            parent_history = normalize_history((parent.metrics or {}).get("history", []))
             if mode in ("draft", "improve"):
                 node.method_selection = self.select_method(parent_history, streak_state, mode)
             spec = self.brain.propose(
