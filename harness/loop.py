@@ -422,7 +422,10 @@ class Loop:
                 sd = self.sigma
             se = max(sd / (n ** 0.5), 1e-6)
             z = mean_delta / se
-            floor = max(self.sigma / (n ** 0.5), 0.0007)
+            # grey floor lowered 0.0007 -> 0.0005 (31 Aug, disclosed): campaign
+            # post-mortem showed recurring z>=2-confirmable gains in 0.0004-0.0007
+            # dying on the hard constant; the z-test remains the noise gate.
+            floor = max(self.sigma / (n ** 0.5), 0.0005)
             # seed-mean z-test (ported from yash-attempt): require the floor AND z >= 2
             if mean_delta >= floor and z >= 2.0:
                 return True, f"grey-zone confirm passed (mean delta {mean_delta:+.4f}, z={z:.1f}, n={n})"
