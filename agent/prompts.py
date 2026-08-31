@@ -243,7 +243,10 @@ def selector_user_prompt(
             "diagnosis; OPPORTUNITY cards are diagnosis-independent upgrades — weigh "
             "them by their measured evidence every iteration, especially when your "
             "diagnosis is low-confidence (e.g. missing or unusable learning-curve "
-            "telemetry)."
+            "telemetry). Phase guidance an expert follows: OPEN with the strongest "
+            "unapplied opportunity for this problem class; once opportunities plateau, "
+            "DIAGNOSE and treat what the evidence shows; CLOSE with an ensemble card "
+            "before the convergence rule ends the run."
         ),
         _streak_section(streak_state),
         diversity,
