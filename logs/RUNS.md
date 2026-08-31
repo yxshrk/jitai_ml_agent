@@ -53,3 +53,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | v2_1k | ruby | converged | 3 | 0.62110 (baseline) | steered 1K run failed: session node crashed on impl, no in-run ensemble -> 1K artifact = faithful A-form per policy |
 | pod experiment | runpod | terminated | - | - | 2x 2xRTX4090 secure pods: CPU quota oversubscribed (~1 effective core/trainer despite caps) — unusable for CPU-bound loop; ~$1.8 spent; lesson: GPU pods != CPU capacity |
 | menu_m3/m5 | coral | DIED (disk full) | - | - | coral disk refilled to 100%; coral retired as run host |
+| ruby_x1 | ruby | converged | 6 | 0.60443 | GENUINE composite adoption (+0.0026 one node); close attempted but node bug produced parent-identical predictions — no-op guard correctly rejected |
