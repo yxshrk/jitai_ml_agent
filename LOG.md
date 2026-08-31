@@ -287,3 +287,24 @@ Chronological. Decisions are written up in `kb/adr/`; agent-run journals will li
   the run (facts §11: ≤ +0.001 on valid, the last week worth ~0.003 in the window experiment).
 - Honest expectation for live_08 (both sessions' calibration): +0.0005 realistic (0.605 on valid), 0.606 only with
   a member carrying information the seed blend does not already remove; 0.61 out of reach with legal data.
+
+### live_08 — first run on the reviewed stack; stopped by the wall-clock with the search already flat
+- 4 generations / 16 nodes, $11.21, 2.17 M input (1.27 M cached) / 203 K out, 54 calls; ~75 min of computation — the
+  machine slept ~7.5 h inside generation 4 and the official 6 h wall-clock backstop (which counts wall time, as the
+  rules require) stopped the run at streak 2, one flat generation short of formal convergence. The literal ε rule had
+  not converged either. Scientifically nothing was lost: the ensembling campaign had already closed.
+- Generation 1 (breadth): BPR +0.0010 (z 3.7), L2 +0.0010 (z 3.3), seed average +0.0013 (z 4.1) accepted; the model
+  slot −0.0004; the history wildcard **screened out** in 15 s (−0.0001 on valid). Generation 2 (ensembling campaign,
+  chosen by the ledger): the BPR + seed-average merge node_006 accepted at +0.0016 (z 5.6, fresh-seed mean 0.6043),
+  two more members accepted on the way. Generations 3–4: every heterogeneous member / gate ≤ +0.0004 unconfirmed
+  (node_012 the best at 0.6047, z 1.5); one gated deepen screened out; two out-of-family candidates dropped in code;
+  the card-id validator caught two invented names; the campaign closed after 2 flat generations.
+- **Designation (strict, first live use)**: journaled "node_012 leads on fresh-seed mean (0.60465) but was not
+  accepted; excluded — accepted lineage only"; champion and designated node_006 (0.6043). The confirmed maximum
+  across eight runs is 0.6043–0.6044 on valid — the ceiling holding exactly where facts §11 put it.
+- Post-run notes for the next batch: (a) the screen's additive test is the wrong instrument for gated blends (a gate
+  is not a feature) — restrict screening to feature-type candidates or let the Probe decline; (b) inside a campaign a
+  Consolidator retest lost a component-key collision with the wildcard — allow both; (c) `state['families']` shows
+  every family 'open' at the campaign log line (the ledger statuses live in the ledger; cosmetic).
+- Next: the designation-time train + valid refit (approved; facts §11 window experiment: the last week ≈ +0.003 on
+  valid, expected +0.001–0.003 on the hidden test), then the submission decision.
