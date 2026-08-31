@@ -92,26 +92,28 @@ journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: se
 session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
 SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
 
-MORNING STATE (Mon ~05:30, campaign COMPLETE — all machines idle):
-- Pure: bigclock_07 0.605575 UNBEATEN over 9 overnight challengers (novel_l1 0.60524
-  after its 0.6055 ensemble FAILED fresh-seed confirm; s4 0.60521 context-pairs win
-  +0.0015; s2 0.60499 hetero-close win +0.0010; rest lower). Random probe moot.
-  RECOMMEND: designate bigclock_07 (already built CSV), feature novel_l1 as
-  researcher-story run, s4/s2 as knowledge-loop evidence.
-- 1K: omega_1k 0.66892 triple-audited (replications 0.6766/0.6762 fresh seeds,
-  shuffle floor 0.6652, exact independent recompute). Second independent run
-  (1k_push 0.65977) re-validated session mechanism +0.022. CSV BUILT + checker-OK:
-  evidence/test_submission_1k_omega.csv (3-seed ensemble form, val 0.6802); old
-  max_1k_c CSV preserved. DECISIONS FOR ROHAN: (1) confirm 1K re-designation,
-  (2) artifact form faithful-vs-ensemble (see decision note above), (3) Pure sign-off.
-- New measured knowledge tonight (all carded): context-stratified-pairs +0.0015 (best
-  new Pure mechanism), hetero-ensemble close +0.0010, gated-session +0.0006 sub-eps,
-  plain session on Pure +0.0002, gap-conditioned-recency +0.0003 sub-eps,
-  session-on-1K re-validated +0.022.
-- After sign-off: fill {{TBD}} slots (DEVPOST/README/RESULTS/VIDEO_SCRIPT), refresh
-  site rail 1K number + rebuild rundata if desired, then video + Devpost + README
-  contributions (Rohan), GitHub Pages, repo public. Keys rotation + data deletion
-  post-submission.
+CURRENT STATE (Mon 31 Aug ~13:00):
+- Pure designation: bigclock_07 0.605575 (clean) UNBEATEN over ~20 challengers.
+  Near-misses: novel_l1 0.60524 (ensemble failed confirm), final_s4 0.60521
+  (context-pairs +0.0015, no close attempted), final_s2 0.60499 (hetero close).
+- STALE-KNOWLEDGE FIX (midday, see postmortem): MENU CURRENT DIRECTIVE was stale
+  (dead watch-time themes) since Fri; --draft-tiers never reached selectors
+  (proposer-only — steering illusion); 17 card statuses were obsolete (champion
+  components "running-elsewhere", winning closes "untried"). ALL FIXED; grey floor
+  0.0005 (z-gate kept); tests 121/121.
+- LIVE FINAL WAVE: menu_m3+m4 (coral, first runs with fully-correct knowledge,
+  unsteered — the best-designed runs of the campaign), v2_r9 (ruby, old knowledge,
+  lottery), v2_1k (ruby, mid session-node; if it designates an in-run ensemble close
+  that is the preferred 1K artifact "C").
+- 1K: omega_1k 0.66892 triple-audited; artifact policy in SUBMISSION_RECIPE.md
+  (C in-run > A faithful-checkpoint [reconcile 0.6772-vs-0.66892 replay gap first!]
+  > B post-run ensemble = evidence only). Probe disclosure: evidence/PROBE_MANIFEST.md.
+- Teammate: Adi claims 0.6061 on branch codex/project-2-kuairand-agent — branch
+  evidence tops at 0.6050 (seq-DeepFM 0.6046 x4 seeds, carded as
+  seq-deepfm-author-history). AWAITING his push to verify; if real+eligible it is
+  designation-relevant.
+- Docs at fill-in-the-blank readiness (DEVPOST/README/RESULTS/VIDEO_SCRIPT {{TBD}}
+  slots); ChatGPT drafting README/video/judge-QA (check Rohan's downloads).
 
 REMAINING before Tue 1 Sep 12:00 noon SGT:
 1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
