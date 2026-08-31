@@ -264,7 +264,7 @@ literature-reported expectations only.
 - kind: opportunity
 - treats: flat-signal | insufficient-telemetry
 - mechanism: One fan-out node implements several small candidate mechanisms (for example a pairwise-loss term, an interaction head, recency weighting, item aggregates) as toggles, probes each alone and in a few pairs with short trainings, and promotes only the strongest combination to a full-fidelity final training. This converts uncertainty over which mechanism family fits the dataset into a cheap measured ranking.
-- preconditions: Each toggle must be independently correct and leakage-safe; keep probes short and comparable; record the full probe matrix in metrics history.
+- preconditions: Each toggle must be independently correct and leakage-safe; keep probes short and comparable; record the full probe matrix in metrics history. IMPLEMENTATION INVARIANTS (screens fail on plumbing, not ML): reuse the parent's proven trainer and evaluation scaffolding, varying only the mechanism under test; any count/frequency feature built on train must bound-check ids unseen in the eval split; honor SMOKE_EPOCHS by shrinking the probe budget so the final training still runs.
 - citation: Bergstra & Bengio, JMLR 2012; Hyperband/ASHA (Li et al. 2018); ablation-matrix practice in FuxiCTR/BARS benchmark literature
 - expected_gain / cost: Benchmark-suite literature reports that measured screening across mechanism families avoids committing budget to a mismatched family and typically finds the dataset's dominant lever early / medium runtime, one node.
 - status_pure: untried

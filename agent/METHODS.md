@@ -523,7 +523,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - reference_primary: none (ensemble level tracks its parent; no fixed reference)
 - preconditions: A champion config must already exist and all promising single-model moves must be exhausted. This is a CLOSING move, not an opening move.
 - citation: Deep ensembles literature (Lakshminarayanan et al. 2017)
-- expected_gain / cost: Measured Pure primary 0.6058; five full member fits cost roughly five times one champion run / high training, low implementation.
+- expected_gain / cost: BASE-DEPENDENT (measured 1 Sep): +0.0014 off a 0.6042 single (bigclock n6 -> 0.6056) but only +0.0002 off a 0.6051 heavily-tuned single (f9 5-seed exhibit -> 0.6053) — the gain shrinks as the single approaches the 0.6055-0.6060 ceiling because tuning already banked the variance profit. Five member fits cost ~5x one champion run / high training, low implementation.
 - status_pure: measured-alive
 - status_1k: measured-alive (0.6323)
 
@@ -627,7 +627,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - kind: opportunity
 - treats: variance | plateau
 - reference_primary: 0.605938 (direct evidence probe: EQUAL-WEIGHT rank blend of one pair-kernel member 0.60515 + two composite seeds 0.6044-0.6047 = 0.605938; champion-ens + one composite seed = 0.605886; many cross-family combos cluster 0.6058-0.6059 — decorrelated families are where closes pay)
-- preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage; select on validation only.
+- preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage AS EXISTING ARTIFACTS (measured 1 Sep: in-run fresh-member versions scored only 0.6041/0.6046 — f7 n4, f9 n4; the 0.6059 reference uses polished cross-run artifacts); select on validation only.
 - citation: run_bigclock_07 n6 (jitter close +0.0013); evidence/blend_audit.md (caveat)
 - expected_gain / cost: +0.0005-0.0020 primary / medium (several member trainings).
 - status_pure: measured-win (run_final_s2 n4 +0.0010; cross-family blend probe 0.605828 evidence) — the endgame play: build members from BOTH the DCN package and seq-deepfm families, then rank-aggregate across families
@@ -736,7 +736,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - reference_primary: 0.605863 (selection-free ALL-family equal blend of one member per clean run; best combos 0.6060-0.6065)
 - verdict_pure: external-win
 - evidence_primary: 0.605863
-- preconditions: This is a CLOSING move, never an opener: its members must be derived from an already-established champion script (a strong single model measured in THIS run); members written cold from the baseline at iteration 1 are untested code and measured as broken (gauc below 0.5) or weak, and the executor then falls back to the incumbent, spending the iteration for nothing. Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
+- preconditions: MEMBER SOURCE CALIBRATION (measured 1 Sep): the 0.6058-0.6065 reference evidence blends POLISHED artifacts that each took a full run to produce. Members freshly written inside one node measured 0.5975-0.6046 (f7 n3, f8 n3, f9 n3 all fell back to the incumbent) — first-draft fidelity tax 0.001-0.004. PREFER script_source members from THIS run's own trained nodes (a rejected sibling within ~0.002 of the champion is a finished, measured member); expect the reference-class gain ONLY when >=2 strong distinct artifacts already exist in the lineage. This is a CLOSING move, never an opener: its members must be derived from an already-established champion script (a strong single model measured in THIS run); members written cold from the baseline at iteration 1 are untested code and measured as broken (gauc below 0.5) or weak, and the executor then falls back to the incumbent, spending the iteration for nothing. Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
 - citation: team evidence probes 31 Aug (logs/RUNS.md recipe-search line); component recipes: package-dial-sweep, temporal-pair-kernel, seq-deepfm-composite, recency-weighting cards.
 - expected_gain / cost: +0.0035-0.0045 over baseline IN ONE NODE (eps-clearing) if >=3 members admit; degrades gracefully to the best single member / high runtime (one node, plan 60-90 min).
 - status_pure: untried as a single node (every component + the blend measured separately)
