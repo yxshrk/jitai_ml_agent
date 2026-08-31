@@ -123,4 +123,4 @@ by measured evidence in your menu. Weigh opportunities every iteration.
   nDCG ordering? No - also within-user). Spend features on item-side variation.
 - Improvements < 0.002 on validation are within noise (baseline seed std 0.0008;
   official epsilon = 0.002). Acceptance rule: keep a change only if val primary
-  improves >= 0.002, else revert.
+Acceptance: >=0.002 accepts outright; smaller positive deltas enter a 2-reseed z-tested grey confirm (floor 0.0005). Regressions revert.

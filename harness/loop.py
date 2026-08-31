@@ -736,13 +736,20 @@ class Loop:
                             "vectors.")
                         if fixed != original_code and not self.check_code_leakage(fixed):
                             node.code_path.write_text(fixed)
-                            retry, _ = self.run_experiment(node, self.config.timeout_s)
+                            retry, retry_stage = self.run_experiment(node, self.config.timeout_s)
                             if retry.ok:
                                 node.failure_stage = None
+                                node.recovery = "noop-fixer: repaired and re-run"
                                 result = retry
                                 node.metrics = retry.metrics
                                 node.primary = retry.metrics["primary"]
                                 accepted, note = self.acceptance(node, result.metrics)
+                            else:
+                                # transactional: keep the ORIGINAL (working) code and
+                                # record why the repair attempt failed
+                                node.code_path.write_text(original_code)
+                                node.recovery = (f"noop-fixer retry failed at "
+                                                 f"{retry_stage}: {str(retry.error)[:200]}")
                     except BudgetExhausted:
                         self.stop_reason = "budget_exhausted"
                     except Exception as exc:
@@ -965,13 +972,20 @@ class Loop:
                             "vectors.")
                         if fixed != original_code and not self.check_code_leakage(fixed):
                             node.code_path.write_text(fixed)
-                            retry, _ = self.run_experiment(node, self.config.timeout_s)
+                            retry, retry_stage = self.run_experiment(node, self.config.timeout_s)
                             if retry.ok:
                                 node.failure_stage = None
+                                node.recovery = "noop-fixer: repaired and re-run"
                                 result = retry
                                 node.metrics = retry.metrics
                                 node.primary = retry.metrics["primary"]
                                 accepted, note = self.acceptance(node, result.metrics)
+                            else:
+                                # transactional: keep the ORIGINAL (working) code and
+                                # record why the repair attempt failed
+                                node.code_path.write_text(original_code)
+                                node.recovery = (f"noop-fixer retry failed at "
+                                                 f"{retry_stage}: {str(retry.error)[:200]}")
                     except BudgetExhausted:
                         self.stop_reason = "budget_exhausted"
                     except Exception as exc:

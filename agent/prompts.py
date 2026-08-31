@@ -80,8 +80,9 @@ Respond with a single JSON object and nothing else:
 PROPOSER_MODE = {
     "draft": (
         "Mode: DRAFT. Write a fresh script derived from the parent (the current "
-        "baseline family) implementing one idea from the menu tier named in the "
-        "directive. Keep everything else identical to the parent."
+        "baseline family) implementing the SELECTED card (or, when a launch "
+        "directive names a tier, that directive). Keep everything else identical "
+        "to the parent."
     ),
     "improve": (
         "Mode: IMPROVE. Apply one change to the parent script (the current best "

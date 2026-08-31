@@ -337,6 +337,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_1k: untried
 
 ### ensemble-design-sweep: Ensemble configuration search at close
+- kind: opportunity
 - reference_primary: 0.605575 (run_bigclock_07 n6 close, +0.0013)
 - GATE (measured + reviewed): seed-ensembling pays only when members are competent
   AND usefully diverse. Before accepting any ensemble: (1) drop any member >0.0010
@@ -655,6 +656,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_1k: variant measured-win
 
 ### context-stratified-pairs: Same-context BPR negative stratification
+- kind: opportunity
 - mechanism: Draw a fraction of BPR negatives from the SAME (user, date, hour) or (user, date, tab) context as the positive (~30% same-context on Pure — sparser sessions than 1K; fall back same-day, then uniform). Pairs the model must separate are the ones the metric actually scores: contemporaneous impressions in one slate. Distinct from temporal-pair-kernel (soft day-distance kernel); this is hard context stratification.
 - treats: ranking-mismatch | data-shift
 - reference_primary: none on Pure
