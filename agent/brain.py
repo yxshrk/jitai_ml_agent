@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MODELS_PATH = Path(__file__).resolve().parent / "models.toml"
 METHODS_PATH = Path(__file__).resolve().parent / "METHODS.md"
 CLEAN_METHODS_PATH = Path(__file__).resolve().parent / "METHODS_CLEAN.md"
+REFERENCE_IMPL_PATH = Path(__file__).resolve().parent / "REFERENCE_IMPL.md"
 
 
 def load_model_config(path: Path = MODELS_PATH) -> dict:
@@ -380,6 +381,12 @@ class Brain:
         methods_path = CLEAN_METHODS_PATH if knowledge_mode == "clean" else METHODS_PATH
         self.methods_text = methods_path.read_text()
         self.method_cards = parse_method_cards(self.methods_text)
+        # Citation-style reference snippets (paper-faithful only; see file policy).
+        # Shown to the proposer ONLY for the selected card, never in the menu.
+        self.reference_impls = (
+            parse_method_cards(REFERENCE_IMPL_PATH.read_text())
+            if REFERENCE_IMPL_PATH.exists() else {}
+        )
         self.max_code_tokens = max_code_tokens
         self.meter = TokenMeter()
         # Byte-identical static prefix -> prompt cache hits on both providers.
@@ -431,16 +438,19 @@ class Brain:
         parent_code_path: str | None = None,
     ) -> dict:
         selected_card = None
+        reference_impl = None
         if method_selection:
             method_id = method_selection.get("chosen_method_id")
             selected_card = self.method_cards.get(method_id)
             if selected_card is None:
                 raise ValueError(f"selector chose unknown method card {method_id!r}")
+            reference_impl = self.reference_impls.get(method_id)
         user = prompts.proposer_user_prompt(
             journal_lines, mode, parent_id, parent_code, directive, focus_note, traceback_tail,
             parent_history=parent_history,
             method_selection=method_selection,
             selected_method_card=selected_card,
+            reference_impl=reference_impl,
             streak_state=streak_state,
             context_mode=context_mode,
             full_context=full_context,

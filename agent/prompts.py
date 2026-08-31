@@ -383,6 +383,7 @@ def proposer_user_prompt(
     parent_history: list | None = None,
     method_selection: dict | None = None,
     selected_method_card: str | None = None,
+    reference_impl: str | None = None,
     streak_state: dict | None = None,
     context_mode: str = "compact",
     parent_code_path: str | None = None,
@@ -410,6 +411,15 @@ def proposer_user_prompt(
             f"selector diagnosis: {method_selection.get('diagnosis', '')}\n"
             f"selector why: {method_selection.get('why', '')}"
         )
+        if reference_impl:
+            parts.append(
+                "## Reference implementation (paper-faithful, citation-style)\n"
+                "Adapt this canonical snippet to the parent script; keep its "
+                "invariants (pairing scope, causality, censoring, averaging target) "
+                "exactly. Do NOT paste it verbatim or drop the parent's working "
+                "pieces.\n"
+                f"{reference_impl}"
+            )
         if method_selection.get("chosen_method_id") in (
                 "diverse-family-farm-close", "heterogeneous-ensemble-design"):
             parts.append(FARM_CLOSE_PLAN_CONTRACT)

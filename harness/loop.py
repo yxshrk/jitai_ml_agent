@@ -279,12 +279,43 @@ class Loop:
             )
             if not smoke.ok:
                 return smoke, "smoke"
+            gate_error = self._smoke_sanity_error(smoke.metrics or {})
+            if gate_error:
+                return RunResult(False, error=gate_error,
+                                 duration_s=smoke.duration_s), "smoke"
         return (
             self.run_script(
                 node.code_path, self.run_dir / node.node_id, self.config.seed, timeout_s
             ),
             "full",
         )
+
+    def _smoke_sanity_error(self, metrics: dict) -> str | None:
+        """Smoke sanity gate: reject clearly-broken code on its 1-epoch probe.
+
+        Two checks (both generous -- catch broken code, not weak ideas):
+        below-chance GAUC, and primary far below the baseline's own 1-epoch
+        probe (smoke_reference.json, written during calibration when available).
+        The failure is fixer-eligible via the normal "smoke" stage path."""
+        gauc = metrics.get("gauc")
+        if isinstance(gauc, (int, float)) and gauc < 0.5:
+            return (f"smoke sanity gate: 1-epoch GAUC {gauc:.4f} is below chance (0.5); "
+                    "the script likely mis-wires labels, user grouping, or score signs")
+        ref_path = self.run_dir / "smoke_reference.json"
+        if ref_path.exists():
+            try:
+                ref = json.loads(ref_path.read_text())
+            except json.JSONDecodeError:
+                return None
+            margin = 0.005  # 1-epoch probes are noisy; flag pipeline breakage only
+            ref_primary, primary = ref.get("primary"), metrics.get("primary")
+            if (isinstance(ref_primary, (int, float)) and isinstance(primary, (int, float))
+                    and primary < ref_primary - margin):
+                return (f"smoke sanity gate: 1-epoch primary {primary:.4f} is more than "
+                        f"{margin} below the baseline's own 1-epoch probe "
+                        f"{ref_primary:.4f}; the change likely breaks the pipeline "
+                        "rather than merely underperforming")
+        return None
 
     # ---------- calibration ----------
 
@@ -321,6 +352,16 @@ class Loop:
             self.sigma = self.config.sigma
         else:
             self.sigma = float(np.std(primaries))
+        # Smoke sanity reference (ledger spec): the baseline's own 1-epoch probe,
+        # so defective experiment code can be rejected at the smoke stage instead
+        # of after a full training. Failure to build it just disables that check.
+        try:
+            smoke_ref = self.run_script(node.code_path, self.run_dir / "node_000_smoke",
+                                        self.config.seed, 360, smoke_epochs=1)
+            if smoke_ref.ok:
+                (self.run_dir / "smoke_reference.json").write_text(json.dumps(smoke_ref.metrics))
+        except Exception as exc:
+            print(f"[loop] smoke reference unavailable: {exc}", file=sys.stderr)
         node.status = "accepted"
         node.change_summary = "baseline FM reproduction and seed-noise calibration"
         self.nodes[node.node_id] = node

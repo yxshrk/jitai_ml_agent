@@ -42,7 +42,7 @@ a = p.parse_args()
 if os.environ.get("SMOKE_EPOCHS"):
     a.out_dir.mkdir(parents=True, exist_ok=True)
     (a.out_dir / "predictions.csv").write_text("row_id,user_id,video_id,score\\n")
-    (a.out_dir / "metrics.json").write_text(json.dumps({"gauc": .5, "ndcg5": .5, "primary": .5}))
+    (a.out_dir / "metrics.json").write_text(json.dumps({"gauc": .9, "ndcg5": .9, "primary": .9}))
 else:
     time.sleep(30)
 '''
@@ -785,3 +785,73 @@ def test_normalize_history_flattens_sweeps_and_aliases_keys():
     assert [r["val_primary"] for r in rows] == [0.601, 0.604]  # best config's curve
     assert normalize_history([{"config": "x"}]) == []
     assert normalize_history("garbage") == []
+
+
+# ---------- reference implementations (citation-style) ----------
+
+def test_reference_impl_snippets_are_citation_clean():
+    from agent.brain import REFERENCE_IMPL_PATH
+    text = REFERENCE_IMPL_PATH.read_text()
+    # no campaign-measured values, run names, or status verdicts may leak in
+    assert __import__("re").findall(r"0\.6\d+", text) == []
+    for token in ("bigclock", "omega", "run_final", "measured-win", "status_pure"):
+        assert token not in text
+    impls = parse_method_cards(text)
+    full_cards = parse_method_cards(METHODS_PATH.read_text())
+    assert impls, "reference impl file parsed to zero sections"
+    assert set(impls) <= set(full_cards), "snippet ids must match real card ids"
+
+
+def test_proposer_prompt_injects_reference_impl_only_for_selected_card():
+    selection = {"chosen_method_id": "bpr-hybrid", "diagnosis": "d", "why": "w"}
+    card = "### bpr-hybrid: t\n- mechanism: m"
+    with_impl = prompts.proposer_user_prompt(
+        [], "improve", "node_000", "code", None, None, None,
+        method_selection=selection, selected_method_card=card,
+        reference_impl="```python\nloss = alpha * bpr_term\n```",
+    )
+    assert "Reference implementation" in with_impl
+    assert "alpha * bpr_term" in with_impl
+    without = prompts.proposer_user_prompt(
+        [], "improve", "node_000", "code", None, None, None,
+        method_selection=selection, selected_method_card=card,
+    )
+    assert "Reference implementation" not in without
+
+
+# ---------- smoke sanity gate ----------
+
+BAD_SMOKE_SCRIPT = '''\
+import argparse, json, os
+from pathlib import Path
+p = argparse.ArgumentParser()
+p.add_argument("--data-dir")
+p.add_argument("--out-dir", type=Path, required=True)
+p.add_argument("--seed")
+a = p.parse_args()
+a.out_dir.mkdir(parents=True, exist_ok=True)
+(a.out_dir / "predictions.csv").write_text("row_id,user_id,video_id,score\\n")
+g = 0.40 if os.environ.get("SMOKE_EPOCHS") else 0.90
+(a.out_dir / "metrics.json").write_text(json.dumps({"gauc": g, "ndcg5": .5, "primary": g}))
+'''
+
+
+def test_smoke_sanity_gate_rejects_below_chance_gauc(tmp_path):
+    brain = fake_brain(scripts=[{"hypothesis": "broken wiring", "code": BAD_SMOKE_SCRIPT}],
+                       fixes=[])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    assert (loop.run_dir / "smoke_reference.json").exists()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert not record["accepted"]
+    assert "smoke sanity gate" in (record["error"] or "")
+    assert record["failure_stage"] == "smoke"
+
+
+def test_smoke_sanity_gate_passes_healthy_script(tmp_path):
+    good = canned_script("healthy", 'r["video_id"]', root=str(ROOT))
+    brain = fake_brain(scripts=[{"hypothesis": "healthy", "code": good}])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["error"] is None or "smoke sanity gate" not in record["error"]
