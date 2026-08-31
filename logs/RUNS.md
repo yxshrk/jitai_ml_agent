@@ -66,3 +66,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | cpu_c1 | cpupod | converged | 5 | 0.60403 | 2nd genuine composite adoption held as peak; close never landed |
 | ruby_w1 | ruby | converged | 4 | 0.60412 | FIRST live farm-close execution: accepted, no collapse (contracts held); gain small (+0.0002) from weak member base |
 | pure_clean | cpupod | converged | 3 | 0.60284 | old-doctrine clean (literature-only knowledge): reg-package win node_001 (+0.0010, 4 coupled dials via probe sweep), then converged; self-critique flags early convergence + bundled-factor attribution — provenance-tier exhibit |
+| showcase | ruby | converged | 3 | 0.60426 | final full-stack showcase run: regularized package accepted then converged; 111.9k tokens, 109 min |
