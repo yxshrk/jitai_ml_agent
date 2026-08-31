@@ -74,6 +74,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
+    run.add_argument("--resume-from", type=Path, default=None,
+                     help="prior run dir to continue from (disclosed experiment lineage)")
+    run.add_argument("--at", type=int, default=0,
+                     help="with --resume-from: continue from just before this iteration (>= 1)")
     farm = sub.add_parser(
         "farm-close", help="execute one validated typed farm-close plan directly"
     )
@@ -133,6 +137,8 @@ def main(argv: list[str] | None = None) -> int:
         context_mode=args.context_mode,
         dataset=args.dataset,
         knowledge_mode=args.knowledge,
+        **({"resume_from": args.resume_from.resolve(), "resume_at": args.at}
+           if args.resume_from else {}),
         plan_budget=args.plan_budget,
     )
     if args.dry_run:

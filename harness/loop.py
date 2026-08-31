@@ -104,6 +104,8 @@ class LoopConfig:
     knowledge_mode: str = "full"
     cross_run_path: Path = CROSS_RUN_PATH
     plan_budget: bool = False
+    resume_from: Path | None = None  # prior run dir to continue from (disclosed experiment lineage)
+    resume_at: int = 0  # continue from just before this iteration (>= 1)
 
     def __post_init__(self) -> None:
         if self.context_mode not in ("compact", "full"):
@@ -840,14 +842,131 @@ class Loop:
                 + (f"primary={node.primary:.4f} {status}" if node.primary else status))
         return n
 
+    def resume_from_run(self, src: Path, at: int) -> int:
+        """Continue a prior run from just before iteration `at`.
+
+        Copies the prior run's artifacts for iterations < at, replays its journal
+        records verbatim (plus a lineage marker), and reconstructs the loop state
+        those records imply (nodes, champion, sigma, official convergence streak)
+        using the loop's own rules, so the CURRENT agent code faces exactly the
+        state the prior agent faced. Budgets start fresh for the new run. A
+        resumed run is a disclosed experiment lineage, never a designation
+        candidate. Returns the iteration counter to continue from (at - 1)."""
+        src = Path(src)
+        journal = src / "journal.jsonl"
+        if at < 1:
+            raise ValueError("--at must be >= 1 (iteration 0 is the baseline)")
+        if not journal.exists():
+            raise FileNotFoundError(f"resume source has no journal: {journal}")
+        records = [json.loads(line) for line in journal.read_text().splitlines() if line.strip()]
+        by_n = {int(r["n"]): r for r in records}
+        if 0 not in by_n:
+            raise ValueError("resume source journal lacks the baseline record (n=0)")
+        max_n = max(by_n)
+        if at > max_n + 1:
+            raise ValueError(f"--at {at} exceeds the source run's recorded iterations ({max_n})")
+        missing = [k for k in range(at) if k not in by_n]
+        if missing:
+            raise ValueError(f"resume source journal is missing iterations {missing}")
+        for k in range(1, at):
+            if not (src / "nodes" / f"{k:03d}.py").exists():
+                raise FileNotFoundError(f"resume source lacks nodes/{k:03d}.py")
+
+        # --- copy artifacts for iterations < at
+        for item in sorted(src.iterdir()):
+            name = item.name
+            if name.startswith("calib_seed") and item.is_dir():
+                shutil.copytree(item, self.run_dir / name, dirs_exist_ok=True)
+            elif name.startswith("node_") and item.is_dir():
+                try:
+                    k = int(name.split("_")[1][:3])
+                except ValueError:
+                    continue
+                if k < at:
+                    shutil.copytree(item, self.run_dir / name, dirs_exist_ok=True)
+        for k in range(at):
+            script = src / "nodes" / f"{k:03d}.py"
+            if script.exists():
+                shutil.copy2(script, self.nodes_dir / f"{k:03d}.py")
+
+        # --- replay journal verbatim + lineage marker
+        with self.journal_path.open("w") as handle:
+            for k in range(at):
+                handle.write(json.dumps(by_n[k]) + "\n")
+            handle.write(json.dumps({
+                "resumed_from": str(src), "resumed_at": at, "intervention": False,
+                "note": "resumed lineage: continued from the prior run's state under "
+                        "current agent code; experiment, not a designation candidate",
+            }) + "\n")
+
+        # --- reconstruct state with the loop's own rules
+        base = by_n[0]
+        self.sigma = float((base.get("baseline_reproduction") or {}).get("sigma")
+                           or self.config.sigma or 0.0)
+        self.calibration_result = base.get("baseline_reproduction")
+        node0 = Node("node_000", "baseline", "draft", "baseline FM (zoo/fm_torch.py)",
+                     self.nodes_dir / "000.py")
+        node0.metrics = base.get("metrics") or {}
+        node0.primary = float(node0.metrics.get("primary", 0.0))
+        node0.status = "accepted"
+        node0.change_summary = base.get("change_summary", "")
+        self.nodes[node0.node_id] = node0
+        self.champion = node0
+        self.journal_lines.append(
+            f'node_000 [baseline] draft "baseline FM" primary={node0.primary:.4f} '
+            f"ACCEPTED (sigma={self.sigma:.4f})"
+        )
+        self.no_improve_streak = 0
+        for k in range(1, at):
+            r = by_n[k]
+            node = Node(r["node_id"], r.get("parent", "node_000"), r.get("action", "draft"),
+                        r.get("hypothesis", ""), self.nodes_dir / f"{k:03d}.py")
+            metrics = dict(r.get("metrics") or {})
+            if r.get("history"):
+                metrics["history"] = r["history"]
+            failed = bool(r.get("error")) or (
+                not r.get("accepted") and float(metrics.get("primary", 0.0) or 0.0) == 0.0)
+            node.metrics = None if failed else metrics
+            node.primary = None if failed else float(metrics.get("primary"))
+            node.status = "accepted" if r.get("accepted") else ("failed" if failed else "rejected")
+            node.error = r.get("error")
+            node.method_selection = r.get("method_selection")
+            node.change_summary = r.get("change_summary", "")
+            node.recovery = r.get("recovery")
+            best_before = self.champion.primary
+            if node.status == "accepted":
+                self.accepted_deltas.append(node.primary - best_before)
+                self.champion = node
+            improvement = self.champion.primary - best_before
+            if improvement > self.config.epsilon:
+                self.no_improve_streak = 0
+            else:
+                self.no_improve_streak += 1
+            self.nodes[node.node_id] = node
+            metric_text = f"primary={node.primary:.4f}" if node.primary is not None else "no-metric"
+            self.journal_lines.append(
+                f'{node.node_id} [<-{node.parent}] {node.action} "{node.hypothesis}" '
+                f"{metric_text} {node.status.upper()}"
+            )
+        self.initial_draft_slots = min(self.initial_draft_slots,
+                                       len([n for n in self.nodes.values()
+                                            if n.action == "draft" and n.node_id != "node_000"]))
+        print(f"[loop] resumed {src} at iteration {at}: best {self.champion.node_id} "
+              f"{self.champion.primary:.6f}, streak {self.no_improve_streak}, sigma {self.sigma:.4f}",
+              file=sys.stderr)
+        return at - 1
+
     def run(self) -> dict:
         self.prior_runs = self.read_cross_run()
         self.prepare_workspace()
-        self.calibrate()
-        if self.config.plan_budget:
-            self.plan_exploration_budget()
-        n = 0
-        n = self.seed_reference_nodes(n)
+        if self.config.resume_from is not None:
+            n = self.resume_from_run(self.config.resume_from, self.config.resume_at)
+        else:
+            self.calibrate()
+            if self.config.plan_budget:
+                self.plan_exploration_budget()
+            n = 0
+            n = self.seed_reference_nodes(n)
         while n < self.config.max_iters:
             reason = self.budget_exceeded()
             if reason:
@@ -883,6 +1002,10 @@ class Loop:
         }
         if self.exploration_plan is not None:
             summary["exploration_plan"] = self.exploration_plan
+        if self.config.resume_from is not None:
+            summary["resumed_from"] = str(self.config.resume_from)
+            summary["resumed_at"] = self.config.resume_at
+            summary["lineage"] = "resumed experiment; not a designation candidate"
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         self.append_cross_run(summary, self_critique)
         return summary
