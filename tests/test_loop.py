@@ -874,3 +874,14 @@ def test_cli_accepts_fast_forward_epochs():
     args = build_parser().parse_args(
         ["run", "--data-dir", str(DATA_DIR), "--fast-forward-epochs", "1"])
     assert args.fast_forward_epochs == 1
+
+
+def test_smoke_sanity_gate_covers_debug_action(tmp_path):
+    # a proposal labeled action=debug must not bypass the smoke stage/gate
+    brain = fake_brain(scripts=[{"hypothesis": "broken, labeled debug",
+                                 "action": "debug", "code": BAD_SMOKE_SCRIPT}], fixes=[])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert not record["accepted"]
+    assert "smoke sanity gate" in (record["error"] or "")

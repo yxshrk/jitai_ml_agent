@@ -278,7 +278,7 @@ class Loop:
 
     def run_experiment(self, node: Node, timeout_s: int) -> tuple[RunResult, str]:
         """Run the mandatory smoke stage, then the full experiment if it passes."""
-        if node.action in ("draft", "improve") and node.execution_kind == "script":
+        if node.action in ("draft", "improve", "debug") and node.execution_kind == "script":
             smoke = self.run_script(
                 node.code_path,
                 self.run_dir / f"{node.node_id}_smoke",
