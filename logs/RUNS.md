@@ -54,3 +54,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | pod experiment | runpod | terminated | - | - | 2x 2xRTX4090 secure pods: CPU quota oversubscribed (~1 effective core/trainer despite caps) — unusable for CPU-bound loop; ~$1.8 spent; lesson: GPU pods != CPU capacity |
 | menu_m3/m5 | coral | DIED (disk full) | - | - | coral disk refilled to 100%; coral retired as run host |
 | ruby_x1 | ruby | converged | 6 | 0.60443 | GENUINE composite adoption (+0.0026 one node); close attempted but node bug produced parent-identical predictions — no-op guard correctly rejected |
+| ruby_x2 | ruby | converged | 4 | 0.60401 | 3rd genuine composite adoption (0.60454, grey-confirm miss); close executed but weak |
