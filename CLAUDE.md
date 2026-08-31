@@ -92,6 +92,25 @@ journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: se
 session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
 SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
 
+NEXT BUILD (user-approved, post-context-clear priority): the PARALLEL FARM-CLOSE node
+as a first-class capability — one node: (P1) probe-fidelity members of 5-6 diverse
+families trained CONCURRENTLY (~6-8 min on ruby), evaluate all blend combos of probe
+scores (nearly free) to map complementarity; (P2) full-train the 2-3 complementary
+families in parallel; (P3) full-fidelity re-verified blend, emit. Feasibility: fits one
+2h node / 6h run; validation-tuning is rules-legal (organizer: tune on validation);
+honest transferable ceiling ~0.6059 (last ~0.0005 of any searched blend = selection
+shine, per measured winner's-curse). ChatGPT Pro build-plan was requested (prompt via
+clipboard); implement per that plan + external review's "typed ensemble plan +
+harness-owned assembler" suggestion. Card already carries the 3-phase description
+(diverse-family-farm-close).
+
+CONTEXT-CLEAR PICKUP: remote nohup runs SURVIVE clears; local watchers DIE — re-arm
+with `bash /tmp/fleet_watchdog.sh` (ruby: z1 z2 showcase pure_clean2) and
+`bash /tmp/cpupod_watch.sh` (pod: c3 pure_clean) via run_in_background; /tmp/jsweep.py
+is the status helper (scp'd on both machines). Harvest pattern: on DONE -> pull
+summary+journal (rsync --exclude workspace --exclude '*.pt'), append logs/RUNS.md,
+commit+push. cpu_c1/c2 already harvested.
+
 CURRENT STATE (Mon 31 Aug ~18:00 — read this first; RUNS.md = scoreboard, postmortem = lessons):
 - DESIGNATIONS unchanged: Pure bigclock_07 0.605575 (clean; CSV built predict_test_bc07);
   1K omega_1k 0.66892 (triple-audited; submit FAITHFUL A-form CSV test_submission_1k_faithful.csv
