@@ -193,7 +193,7 @@ def two_tier_methods_text(methods_text: str) -> str:
         win = status.startswith("measured-win")
         ref = meta["reference_primary"]
         if ref is None:  # annotated reference lines (e.g. "0.6047 single / ...") still rank
-            m = _re.search(r"^- reference_primary:\s*([0-9]+\.[0-9]+)", card, _re.MULTILINE)
+            m = _re.search(r"^- reference_primary:[^\n]*?([0-9]+\.[0-9]+)", card, _re.MULTILINE)
             ref = float(m.group(1)) if m else 0.0
         return (0 if win else 1, -(ref or 0.0))
     opportunities.sort(key=rank)
