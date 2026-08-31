@@ -117,7 +117,9 @@ FARM_CLOSE_PLAN_CONTRACT = """\
 ## Typed farm-close plan (HARNESS-EXECUTED; overrides whole-script output)
 The selected method is a cross-family ensemble strategy (farm-close or
 heterogeneous ensemble design). Do NOT write an orchestration script or include
-top-level `code`. Return the ordinary
+top-level `code`. Every member must carry its own `code` field: write each
+member's single-fit script yourself (you cannot see the filesystem, so never
+reference a script path you have not been shown in this conversation). Return the ordinary
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
 {"execution_kind":"farm_close",
@@ -129,8 +131,10 @@ harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
    "full_member_limit":3, "min_probe_blend_gain":0.0,
    "members":[
      {"family":"<distinct-family-id>",
-      "script_source":"<existing repo-relative .py path>",
-      "config":{"epochs":8,"batch_size":4096,"dropout":0.2}, "seed":42}
+      "code":"<a COMPLETE single-fit training script as a JSON string, per the
+node contract: reads --data-dir/--out-dir/--seed, honors SMOKE_EPOCHS, ONE
+training trajectory, no internal search or ensembling>",
+      "config":{}, "seed":42}
    ],
    "blend":{"weights":"equal","aggregations":[
      {"method":"rank_average","scope":"per_user"}]}}}
