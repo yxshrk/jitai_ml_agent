@@ -173,3 +173,13 @@ retained (methodology-tier, harmless) but claims about it must be negative.
 Full memory audit of METHODS.md completed: six contradictions fixed (see
 commit "memory audit"); pyflakes sweep clean except archival tools; f10/c10
 launched on the audited memory.
+
+## 1 Sep ~07:30 — human-assisted chain exhibit: bigclock dials + context-pairs (NEGATIVE)
+tools/chain_bigclock_ctx.py (f8's ctx-pairs trainer with bigclock_07's exact dials,
+no search), 3 seeds on coral: singles 0.602878 / 0.602681 / 0.603368; 3-seed
+rank-avg 0.60405 (z-avg 0.603942) — BELOW bigclock's plain single (0.6042) and far
+below its close (0.605575). The same sampler at its own swept dials scored
+0.6047 (f8 n2) / 0.6051 (f9 n2): sampler changes shift the optimal dials, so
+compounding requires re-sweeping the package WITH the new mechanism (combo-sweep
+principle), not grafting onto fixed dials. Evidence only; artifacts in
+logs/chain/ (laptop) and coral:~/mle-agent/logs/chain/.
