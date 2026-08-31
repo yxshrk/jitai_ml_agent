@@ -1,0 +1,1368 @@
+{
+  "api": {
+    "calls": 5,
+    "cap_usd": 25.0,
+    "decisions": [
+      {
+        "input_tokens": 1856,
+        "output_tokens": 189,
+        "phase": "probe_batch_1",
+        "raw_output": "{\"candidate_ids\":[1,2,4,6,8,11]}",
+        "response": {
+          "candidate_ids": [
+            1,
+            2,
+            4,
+            6,
+            8,
+            11
+          ]
+        }
+      },
+      {
+        "input_tokens": 1760,
+        "output_tokens": 252,
+        "phase": "probe_batch_2",
+        "raw_output": "{\"candidate_ids\":[3,16,5,12,13,18]}",
+        "response": {
+          "candidate_ids": [
+            3,
+            16,
+            5,
+            12,
+            13,
+            18
+          ]
+        }
+      },
+      {
+        "input_tokens": 1667,
+        "output_tokens": 227,
+        "phase": "probe_batch_3",
+        "raw_output": "{\"candidate_ids\":[7,9,10,14,17,20]}",
+        "response": {
+          "candidate_ids": [
+            7,
+            9,
+            10,
+            14,
+            17,
+            20
+          ]
+        }
+      },
+      {
+        "input_tokens": 1573,
+        "output_tokens": 333,
+        "phase": "probe_batch_4",
+        "raw_output": "{\"candidate_ids\":[0,15,19,21,22,23]}",
+        "response": {
+          "candidate_ids": [
+            0,
+            15,
+            19,
+            21,
+            22,
+            23
+          ]
+        }
+      },
+      {
+        "input_tokens": 5908,
+        "output_tokens": 254,
+        "phase": "finalist_selection",
+        "raw_output": "{\"candidate_ids\":[4,18]}",
+        "response": {
+          "candidate_ids": [
+            4,
+            18
+          ]
+        }
+      }
+    ],
+    "estimated_spend_usd": 0.005701,
+    "input_tokens": 12764,
+    "model": "gpt-5-mini",
+    "output_tokens": 1255
+  },
+  "base_config": {
+    "dropout": 0.1,
+    "embedding_dim": 16,
+    "hidden_dim": 64,
+    "history_length": 8,
+    "learning_rate": 0.001,
+    "watchtime_aux_weight": 0.02,
+    "weight_decay": 1e-06
+  },
+  "candidate_menu": [
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 0
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.01,
+        "weight_decay": 1e-06
+      },
+      "id": 1
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-06
+      },
+      "id": 2
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.04,
+        "weight_decay": 1e-06
+      },
+      "id": 3
+    },
+    {
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 4
+    },
+    {
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 5
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 6
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00115,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 7
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-07
+      },
+      "id": 8
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "id": 9
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 4,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 10
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 11
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 48,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 12
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 96,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 13
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 12,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 14
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 20,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 15
+    },
+    {
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-06
+      },
+      "id": 16
+    },
+    {
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.01,
+        "weight_decay": 1e-06
+      },
+      "id": 17
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "id": 18
+    },
+    {
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 19
+    },
+    {
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 48,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "id": 20
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 20,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "id": 21
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 12,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 3e-06
+      },
+      "id": 22
+    },
+    {
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.00115,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-07
+      },
+      "id": 23
+    }
+  ],
+  "confirmation_results": [
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6722745895385742,
+          "nDCG@5": 0.5382652282714844,
+          "primary": 0.6052699089050293,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5244059
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 62.651628124993294,
+      "id": -1,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2001
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6733115315437317,
+          "nDCG@5": 0.538945734500885,
+          "primary": 0.6061286330223083,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5193584
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 75.02229095890652,
+      "id": -1,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2002
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6723190546035767,
+          "nDCG@5": 0.538284182548523,
+          "primary": 0.6053016185760498,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5191868
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 74.97350887500215,
+      "id": -1,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2003
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6729875206947327,
+          "nDCG@5": 0.5384353399276733,
+          "primary": 0.6057114601135254,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5191794
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 72.99203420802951,
+      "id": -1,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2004
+    },
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6723514199256897,
+          "nDCG@5": 0.5383709073066711,
+          "primary": 0.6053611636161804,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5237236
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 61.99587379198056,
+      "id": 4,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2001
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6723096966743469,
+          "nDCG@5": 0.538295328617096,
+          "primary": 0.6053025126457214,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5189645
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 73.91247637500055,
+      "id": 4,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2002
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6725344657897949,
+          "nDCG@5": 0.5385364294052124,
+          "primary": 0.6055354475975037,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5188498
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 74.41684633400291,
+      "id": 4,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2003
+    },
+    {
+      "best": {
+        "epoch": 6,
+        "metrics": {
+          "GAUC": 0.6725126504898071,
+          "nDCG@5": 0.5385448336601257,
+          "primary": 0.605528712272644,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5161311
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 79.95116616704036,
+      "id": 4,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2004
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6721208095550537,
+          "nDCG@5": 0.5383908152580261,
+          "primary": 0.6052558422088623,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5215673
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 68.33391991606914,
+      "id": 18,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2001
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6730037927627563,
+          "nDCG@5": 0.538771390914917,
+          "primary": 0.6058875918388367,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5200901
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 73.87338408303913,
+      "id": 18,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2002
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6725853681564331,
+          "nDCG@5": 0.5386248826980591,
+          "primary": 0.6056051254272461,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5201228
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 72.99859358300455,
+      "id": 18,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2003
+    },
+    {
+      "best": {
+        "epoch": 6,
+        "metrics": {
+          "GAUC": 0.6734060645103455,
+          "nDCG@5": 0.5387679934501648,
+          "primary": 0.6060870289802551,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5183508
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 76.38011416699737,
+      "id": 18,
+      "ok": true,
+      "phase": "confirm",
+      "seed": 2004
+    }
+  ],
+  "elapsed_seconds": 2432.793160125031,
+  "phase": "session_watchtime_api_directed_one_hour_search",
+  "probe_results": [
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6724891066551208,
+          "nDCG@5": 0.5385606288909912,
+          "primary": 0.6055248975753784,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.512128
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.01,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 59.2374799590325,
+      "id": 1,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1001
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6717556118965149,
+          "nDCG@5": 0.5383061766624451,
+          "primary": 0.60503089427948,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5337435
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 65.54467333306093,
+      "id": 2,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1002
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6730121970176697,
+          "nDCG@5": 0.5390254259109497,
+          "primary": 0.6060187816619873,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5191225
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 67.20930425007828,
+      "id": 4,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1004
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6715914011001587,
+          "nDCG@5": 0.5381912589073181,
+          "primary": 0.604891300201416,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.519603
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 66.24020679201931,
+      "id": 6,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1006
+    },
+    {
+      "best": {
+        "epoch": 6,
+        "metrics": {
+          "GAUC": 0.672095000743866,
+          "nDCG@5": 0.5380799770355225,
+          "primary": 0.6050875186920166,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5159275
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-07
+      },
+      "duration_seconds": 74.841183291981,
+      "id": 8,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1008
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.672956109046936,
+          "nDCG@5": 0.5381314754486084,
+          "primary": 0.6055437922477722,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.519128
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 71.17874658294022,
+      "id": 11,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1011
+    },
+    {
+      "best": {
+        "epoch": 2,
+        "metrics": {
+          "GAUC": 0.6710845828056335,
+          "nDCG@5": 0.5376750826835632,
+          "primary": 0.6043798327445984,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.561024
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.04,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 51.09637212497182,
+      "id": 3,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1003
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.672762393951416,
+          "nDCG@5": 0.5388760566711426,
+          "primary": 0.6058192253112793,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5221562
+      },
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 61.755104542011395,
+      "id": 5,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1005
+    },
+    {
+      "best": {
+        "epoch": 2,
+        "metrics": {
+          "GAUC": 0.6716164350509644,
+          "nDCG@5": 0.5383657813072205,
+          "primary": 0.60499107837677,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5337833
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 48,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 49.81363679096103,
+      "id": 12,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1012
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6725983023643494,
+          "nDCG@5": 0.5386390686035156,
+          "primary": 0.6056187152862549,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5212174
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 96,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 65.12632195802871,
+      "id": 13,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1013
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6723856925964355,
+          "nDCG@5": 0.5382853150367737,
+          "primary": 0.6053354740142822,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5302053
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 69.9882324578939,
+      "id": 16,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1016
+    },
+    {
+      "best": {
+        "epoch": 7,
+        "metrics": {
+          "GAUC": 0.6737419962882996,
+          "nDCG@5": 0.5389478206634521,
+          "primary": 0.6063449382781982,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5169038
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 73.12868337496184,
+      "id": 18,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1018
+    },
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6728912591934204,
+          "nDCG@5": 0.5384981632232666,
+          "primary": 0.6056947112083435,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5245246
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00115,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 56.50097666599322,
+      "id": 7,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1007
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6716164350509644,
+          "nDCG@5": 0.538532555103302,
+          "primary": 0.6050745248794556,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5220998
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 62.88695854099933,
+      "id": 9,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1009
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6719315052032471,
+          "nDCG@5": 0.5384402275085449,
+          "primary": 0.605185866355896,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5185915
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 4,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 67.97822258307133,
+      "id": 10,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1010
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6724321246147156,
+          "nDCG@5": 0.5380738973617554,
+          "primary": 0.6052529811859131,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.519781
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 12,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 66.55123395798728,
+      "id": 14,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1014
+    },
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.672019898891449,
+          "nDCG@5": 0.5387316942214966,
+          "primary": 0.6053757667541504,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5122534
+      },
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.01,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 54.735426208004355,
+      "id": 17,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1017
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6720329523086548,
+          "nDCG@5": 0.5385533571243286,
+          "primary": 0.6052931547164917,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5211361
+      },
+      "config": {
+        "dropout": 0.05,
+        "embedding_dim": 16,
+        "hidden_dim": 48,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 66.95301500009373,
+      "id": 20,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1020
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6731148958206177,
+          "nDCG@5": 0.5385400056838989,
+          "primary": 0.6058274507522583,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.522287
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 62.55194158293307,
+      "id": 0,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1000
+    },
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6722252368927002,
+          "nDCG@5": 0.5387187600135803,
+          "primary": 0.6054719686508179,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.524755
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 20,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 64.73281812504865,
+      "id": 15,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1015
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6722719073295593,
+          "nDCG@5": 0.5382581949234009,
+          "primary": 0.6052650213241577,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5192512
+      },
+      "config": {
+        "dropout": 0.15,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 1e-06
+      },
+      "duration_seconds": 71.28906387498137,
+      "id": 19,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1019
+    },
+    {
+      "best": {
+        "epoch": 3,
+        "metrics": {
+          "GAUC": 0.6726601719856262,
+          "nDCG@5": 0.5385794043540955,
+          "primary": 0.6056197881698608,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5253346
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 20,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.001,
+        "watchtime_aux_weight": 0.02,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 61.971350666019134,
+      "id": 21,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1021
+    },
+    {
+      "best": {
+        "epoch": 5,
+        "metrics": {
+          "GAUC": 0.6719523072242737,
+          "nDCG@5": 0.5380575060844421,
+          "primary": 0.6050049066543579,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5329279
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 12,
+        "hidden_dim": 64,
+        "history_length": 8,
+        "learning_rate": 0.00085,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 3e-06
+      },
+      "duration_seconds": 67.11432591697667,
+      "id": 22,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1022
+    },
+    {
+      "best": {
+        "epoch": 4,
+        "metrics": {
+          "GAUC": 0.6726065874099731,
+          "nDCG@5": 0.5384862422943115,
+          "primary": 0.6055464148521423,
+          "rows": 124909.0,
+          "users": 22377.0
+        },
+        "train_loss": 0.5329882
+      },
+      "config": {
+        "dropout": 0.1,
+        "embedding_dim": 16,
+        "hidden_dim": 64,
+        "history_length": 12,
+        "learning_rate": 0.00115,
+        "watchtime_aux_weight": 0.03,
+        "weight_decay": 1e-07
+      },
+      "duration_seconds": 65.64014499995392,
+      "id": 23,
+      "ok": true,
+      "phase": "probe",
+      "seed": 1023
+    }
+  ],
+  "selection_split": "validation",
+  "test_data_used": false,
+  "wall_clock_cap_seconds": 3600
+}

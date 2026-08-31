@@ -123,6 +123,7 @@ maintained in `runs/RESULTS.md`.
 | Click-to-long-view probability-product inference | 0.604316 (seed 5) | Reject; the explicit event cascade ranked worse than direct long-view prediction |
 | Causal session metadata + watch-time auxiliary | 0.605754 / 0.605179 / 0.605601 / 0.605380 / 0.605366 / 0.605115 / 0.605614 (seeds 5--11) | Keep; outcome-free session context is a new complementary signal |
 | Selected session-aware watch-time ensemble (seeds 5, 7) | **0.606116** | Current validation leader; simple equal-weight mean of saved logits |
+| API-directed session/watch-time search | 0.605603 fresh baseline / 0.605709 best fresh-seed candidate mean | Keep the existing leader: the lower-LR/stronger-decay candidate gained only 0.000106, below a convincing promotion threshold |
 
 ## Commit checkpoints
 
@@ -136,7 +137,9 @@ maintained in `runs/RESULTS.md`.
 | `c7a735d` / `2c0dc48` / `b40cb6b` / `7f83a89` | Recorded negative causal-history, objective, attention, and content controls |
 | `0e0fbbb` | Added the censor-aware watch-time head and selected validation ensemble |
 | `e4d3be2` | Added the click-cascade control and its non-complementary blend result |
-| pending next commit | Add causal session metadata, the seven-seed sweep, and the 0.606116 validation ensemble |
+| `589a5ed` | Added causal session metadata, the seven-seed sweep, and the 0.606116 validation ensemble |
+| `63cce35` | Added the bounded API-directed search harness around the current leader |
+| pending next commit | Record the completed 24-probe, fresh-seed API-directed search |
 
 ## Useful answers for team questions
 

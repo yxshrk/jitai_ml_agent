@@ -41,5 +41,8 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Click-to-long-view probability-product inference, seed 5 | 0.604316 | Reject: directly ranking by the learned click cascade was weaker than the direct long-view head |
 | Causal session metadata + watch-time auxiliary, seeds 5--11 | 0.605754 / 0.605179 / 0.605601 / 0.605380 / 0.605366 / 0.605115 / 0.605614 | Keep: prior-impression gap and within-session position are outcome-free but useful context |
 | Selected two-member session-aware watch-time mean-logit ensemble (5, 7) | **0.606116** | Current validation leader; selected from a fixed seven-seed sweep, so confirm on an earlier chronological holdout before submission |
+| API-directed local search: 24 probes + four fresh-seed confirmations | 0.605603 baseline / 0.605432 low-dropout / 0.605709 lower-LR + stronger-decay | Do not promote: the paired optimizer change gained only 0.000106 over its fresh baseline mean and remains below the 0.606116 leader |
 
 The current leader adds censor-aware, training-only watch-time supervision and causal, label-free session context to the Sequence DeepFM. It averages the independently trained seed-5 and seed-7 members. The next research iteration should validate this fixed recipe on an earlier chronological holdout and retain the validation-only model-selection rule.
+
+The API-directed search used five bounded Structured Output decisions (about $0.0057 estimated), selected only from a locally fixed configuration menu, and never received code, raw data, or test results. It exhausted its planned 24 probes and 12 confirmations in 2,433 seconds, below the one-hour cap.
