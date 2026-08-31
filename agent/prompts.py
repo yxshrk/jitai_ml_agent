@@ -233,7 +233,10 @@ CONVERGENCE_PRESSURE = (
     "close was just REJECTED for a gain that did not repeat, its members were "
     "too close to the incumbent: re-rolling the same blend with new seeds is not "
     "a new experiment; add a stronger, distinct member first (a measured package "
-    "from another family) and close again afterwards. Do not "
+    "from another family) and close again afterwards. Strengthening means a NEW "
+    "mechanism or family member: a component the champion stack ALREADY CONTAINS "
+    "(check its accepted lineage) is not a strengthener, and re-applying it is a "
+    "no-op, not a treatment. Do not "
     "change what counts as an iteration in response to the streak."
 )
 
