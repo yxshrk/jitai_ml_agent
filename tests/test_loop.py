@@ -885,3 +885,15 @@ def test_smoke_sanity_gate_covers_debug_action(tmp_path):
     record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
     assert not record["accepted"]
     assert "smoke sanity gate" in (record["error"] or "")
+
+
+# ---------- rewrite gate (artifact persistence) ----------
+
+def test_rewrite_ratio_scores_edits_vs_rewrites():
+    from harness.loop import rewrite_ratio
+    parent = "\n".join(f"line{i} = {i}" for i in range(50))
+    small_edit = parent.replace("line10 = 10", "line10 = 999")
+    rewrite = "\n".join(f"other{i} = {i*2}" for i in range(50))
+    assert rewrite_ratio(parent, small_edit) > 0.9
+    assert rewrite_ratio(parent, rewrite) < 0.1
+    assert rewrite_ratio(parent, parent) == 1.0

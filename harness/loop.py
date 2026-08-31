@@ -77,6 +77,19 @@ class Node:
     execution_kind: str = "script"
 
 
+def rewrite_ratio(parent_code: str, code: str) -> float:
+    """Line-level similarity between parent and proposed script (0..1).
+
+    Improve/debug proposals must EDIT the champion artifact, not replace it:
+    a debugged trainer that survives across nodes is how implementation
+    quality compounds (the append-only property of human research). Enforced
+    in iterate(); the prompt contract already calls rewrites defects."""
+    import difflib
+    return difflib.SequenceMatcher(
+        a=parent_code.splitlines(), b=code.splitlines(), autojunk=False
+    ).ratio()
+
+
 @dataclass
 class LoopConfig:
     data_dir: Path
@@ -1207,6 +1220,45 @@ class Loop:
                 if any(key in spec for key in ("farm_close_plan", "ensemble_plan")):
                     raise ValueError("script proposal must not carry a farm-close plan")
                 code = spec["code"]
+                if mode == "improve" and parent.action != "baseline":
+                    # The rule protects the agent's OWN accepted artifacts;
+                    # the first improve on the organizer baseline is the
+                    # agent's first authorship and may restructure freely.
+                    # Minimal-diff enforcement: the proposal must evolve the parent
+                    # artifact. One retry with an explicit directive, then hard fail.
+                    MIN_KEEP = 0.40  # fraction of parent lines that must survive
+                    ratio = rewrite_ratio(parent.code_path.read_text(), code)
+                    if ratio < MIN_KEEP:
+                        retry = self.brain.propose(
+                            self.journal_lines, mode, parent.node_id,
+                            parent.code_path.read_text(),
+                            directive=(
+                                f"Your previous proposal kept only {ratio:.0%} of the "
+                                "parent script's lines. That discards a debugged, "
+                                "accepted artifact. Re-emit the parent file with the "
+                                "SMALLEST edit implementing the same hypothesis; do "
+                                "not restructure working sections."),
+                            focus_note=self.focus_note,
+                            traceback_tail=None,
+                            parent_history=parent_history,
+                            method_selection=node.method_selection,
+                            streak_state=streak_state,
+                            context_mode=self.config.context_mode,
+                            prior_runs=self.prior_runs,
+                            timeout_s=self.config.timeout_s,
+                        )
+                        retry_code = retry.get("code")
+                        if retry_code:
+                            retry_ratio = rewrite_ratio(
+                                parent.code_path.read_text(), retry_code)
+                            if retry_ratio >= ratio:
+                                spec, code, ratio = retry, retry_code, retry_ratio
+                                recovery = "rewrite-gate: retried for minimal diff"
+                        if ratio < MIN_KEEP:
+                            raise ValueError(
+                                f"rewrite gate: improve proposal kept only {ratio:.0%} "
+                                "of the parent script after retry; improve must edit "
+                                "the champion artifact, not replace it")
                 node.execution_kind = "script"
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             expected_delta = spec.get("expected_delta")
