@@ -237,6 +237,8 @@ CONVERGENCE_PRESSURE = (
     "improves best-so-far by at least epsilon, then a move whose own evidence caps "
     "its gain below epsilon cannot extend the run no matter how proven it is; on "
     "such an iteration prefer the eligible move with the largest evidence-supported "
+    "(implementation-dead is not evidence-dead: two failed BUILDS of a card mean "
+    "pivot to a mechanically simpler card, not a third build attempt) "
     "expected gain at or above epsilon, and among qualifying moves prefer the one "
     "whose evidence clears epsilon with the widest margin: a move whose evidence "
     "only just reaches the bar fails it about half the time, so bare arithmetic "

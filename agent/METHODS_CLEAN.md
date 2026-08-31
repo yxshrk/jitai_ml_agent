@@ -18,6 +18,13 @@ literature-reported expectations only.
   most of a search node on probes and reserve the remainder for the final
   full-length training. Finishing a search node early is wasted information,
   not efficiency.
+- IMPLEMENTATION-DEAD IS NOT EVIDENCE-DEAD, AND BOTH FORCE A PIVOT. A method
+  whose implementations keep FAILING (crashes, gate rejections) in this run has
+  taught you nothing about the method but plenty about your ability to build it
+  now: after two failed builds of the same card, pivot to a mechanically simpler
+  card that tests a related hypothesis instead of attempting a third build. A
+  method that built correctly and measured flat is evidence-dead: record it and
+  do not retry variants.
 - KEEP YOUR OWN LEDGER. In-run measurements on THIS dataset outrank any
   literature prior. When the journal shows a mechanism produced an accepted
   gain, exploit it: tune, regularize, or compose within that direction before

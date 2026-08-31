@@ -105,3 +105,26 @@ def ema_update(model, decay=0.999):
 # Start averaging only near the validation peak; score model_with(ema) vs the raw
 # best checkpoint and keep whichever validates higher.
 ```
+
+### mechanism-screen: reference implementation
+```python
+# Canonical cheap-probe screen (random search: Bergstra & Bengio 2012;
+# successive halving budget: Jamieson & Talwalkar / Hyperband 2018).
+# STRUCTURE ONLY — ranges and mechanisms come from the cards you screen.
+budget_s = total_budget_s * 0.6            # most budget on probes, rest on final
+results = []
+for cfg in sample_configs(rng, n=N):       # wide log-uniform sampling
+    score = train_and_eval(cfg, epochs=PROBE_EPOCHS, subsample=0.5)
+    results.append((score, cfg))           # LOG EVERY PROBE to metrics history
+    if time_left() < est_final_train_time():
+        break                              # never let probes starve the final
+top = sorted(results, reverse=True)[:K]    # successive halving: re-probe top-K
+top = [(train_and_eval(c, epochs=2 * PROBE_EPOCHS), c) for _, c in top]
+best = max(top)[1]
+final = train_full(best)                   # FULL-length final train of winner
+# Invariants that break screens when violated:
+# - index features built on TRAIN must handle ids unseen in the eval split
+#   (bound-check / default bucket, never counts[x_val] directly)
+# - the emitted predictions/metrics come from the FULL final train, not a probe
+# - honor SMOKE_EPOCHS: when set, skip/shrink probes so the final still trains
+```
