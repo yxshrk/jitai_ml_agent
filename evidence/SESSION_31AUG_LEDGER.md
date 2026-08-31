@@ -109,3 +109,26 @@ nohup env PATH=~/techjam27k/.venv/bin:$PATH OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 
 ```
 Budget caps: laptop .env and ruby .env BUDGET_USD=200 (raised twice tonight).
 Post-deadline: rotate both API keys, delete KuaiRand data copies, terminate cpupod.
+
+## Added after 00:40 (same night)
+- Retry-close principle in selector guidance + fixture `close_rejected_strengthen_first`
+  (f6r post-rejection state); verification result in logs/bench_retryclose.out on ruby.
+- tools/watch_run.sh and tools/harvest_run.sh (repo-resident; /tmp scripts vanish).
+
+## NEXT HARNESS CHANGE (spec for whoever picks this up): fair confirm for farm nodes
+Problem: the grey-zone confirm reruns a farm node script with a new --seed; the
+wrapper re-executes the WHOLE farm (probes + selection + full trains) with all
+members reseeded, and the acceptance z-test compares the reseeded blend to the
+ORIGINAL incumbent. Reseeded members drift ~0.0005, the blend loses to the incumbent,
+executor falls back, confirm primary == parent, gain "not repeatable" (f6r iter 4:
+blend 0.60497 vs best member 0.60443 rejected this way). Cost is also 3x a farm node.
+Fix: in harness/farm_close.run_plan, when execution_seed != base_seed (a confirm
+rerun) AND a frozen recipe.json exists for the base seed in a sibling node dir,
+REPLAY the frozen recipe: keep the anchor member (script_source) at its original
+seed, reseed only the code members, skip probes/selection, retrain the recipe's
+members, blend with the recipe's weights, emit. Then in Loop.acceptance, for farm
+nodes compare the confirm blend against the confirm-run's own best singleton as
+well as the incumbent, and require the blend > both (repeatability of the BLEND
+effect, not of an absolute number). Tests: a FakeBrain farm run where confirm
+replays (no probe phase in confirm dirs) and a blend accepted when it repeats.
+Estimated 45-60 min. Not started.
