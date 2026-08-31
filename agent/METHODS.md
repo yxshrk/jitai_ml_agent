@@ -49,17 +49,17 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
   mechanisms probed ON the tuned champion, incl. pairs) is the highest-expected-value
   next play, BEFORE the ensemble close. The record run skipped it — do not.
 
-## Depth policy (MODERATE — calibrated by measured dose-response)
-Measured across ~30 runs: opener quality flattens past ~50-80 WELL-RANKED probes
-(59 probes -> 0.60426; 133 -> 0.60436; 208 without full-fidelity finals -> 0.60238
-FAIL; 600+ -> timeout/uncommitted). Therefore:
-- Stage-1: 40-80 FULL-FIDELITY probes, half from the measured basins, half wide;
-  STOP EARLY when the best-found has not improved over the last 15 probes.
-- One refinement pass (~10-15 probes) around the winner; top 3-4 candidates get
+## Depth policy (FAST — measured 1 Sep: depth buys variance, not score)
+Measured openers: 14 probes -> 0.6042 (bigclock_07), 48 probes -> 0.6051 (f9),
+48 probes -> 0.6036 (f10b). Beyond ~20 well-ranked probes the sweep's outcome is
+dominated by the random draw, not by depth, while wall-clock is a scored resource.
+Therefore:
+- Stage-1: 16-24 SHORT probes (2-3 epochs), half from the measured basins, half
+  wide; STOP EARLY when the best-found has not improved over the last 8 probes.
+- One refinement pass (4-6 probes) around the winner; the top 2 candidates get
   full-length final trainings; commit only on full-length scores.
-- RESERVE the remainder of the node budget for the final training; and reserve a
-  later iteration for the gated ensemble close. Never let a sweep consume the
-  whole node budget (measured failure mode).
+- Target: an opener node in ~10-15 minutes. Spend the saved clock on the NEXT
+  iterations (a re-swept rider mechanism, then the close), not on more probes.
 
 ## Depth policy (overrides brevity instincts)
 - PROBE PARALLELISM: probes are small models — run them CONCURRENTLY, not one at a
