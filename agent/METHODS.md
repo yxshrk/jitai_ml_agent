@@ -626,7 +626,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - mechanism: Train members under DIFFERENT mechanisms (e.g. temporal-pair-kernel, gauge-fixed-bce, decayed-positive, frozen regularized stack) rather than jittered copies of one recipe; validation-select the member subset and aggregation (rank vs probability average, optional per-member weights) before scoring. Diversity across mechanisms is the untested axis — jittered same-recipe closes are measured at +0.0013.
 - kind: opportunity
 - treats: variance | plateau
-- reference_primary: 0.605828 (CROSS-FAMILY evidence probe 31 Aug: rank-blend of a composite member 0.60443 with the DCN-package ensemble 0.605575 scores 0.605717 at 50/50 and 0.605828 at 25/75 — decorrelated families are where closes pay; same-family composite seeds pay only +0.0003)
+- reference_primary: 0.605938 (direct evidence probe: EQUAL-WEIGHT rank blend of one pair-kernel member 0.60515 + two composite seeds 0.6044-0.6047 = 0.605938; champion-ens + one composite seed = 0.605886; many cross-family combos cluster 0.6058-0.6059 — decorrelated families are where closes pay)
 - preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage; select on validation only.
 - citation: run_bigclock_07 n6 (jitter close +0.0013); evidence/blend_audit.md (caveat)
 - expected_gain / cost: +0.0005-0.0020 primary / medium (several member trainings).

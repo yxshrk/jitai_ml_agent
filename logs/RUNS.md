@@ -59,3 +59,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | ruby_x3 | ruby | converged | 3 | 0.60425 | 4th genuine composite adoption; converged before close |
 | composite-close probe | ruby | evidence | - | 0.60477 | 3-seed rank-avg of x1s agent-authored composite: close pays only +0.0003 on this family (correlated members); chain ceiling ~0.0048 short of hopes; gap to teammate reference = implementation depth |
 | ruby_y2 | ruby | converged | 3 | 0.60361 | quiet path (gauge accept, no composite pick) |
+| recipe search | laptop | evidence | - | 0.605938 | direct equal-weight cross-family blends over agent-authored members: pairkern+comp42+comp43 best; robust cluster 0.6058-0.6059; evidence-only (team-mixed), agent path = in-run hetero close |
