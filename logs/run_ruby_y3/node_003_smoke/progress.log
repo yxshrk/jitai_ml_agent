@@ -1,0 +1,2 @@
+{"adaptive_reg_lambda": 0.0, "best_epoch": 1, "frequency_power": 0.0, "primary": 0.6015075322281644, "probe": 1, "tail_enabled": false}
+{"adaptive_reg_lambda": 0.0, "best_epoch": 1, "frequency_power": 0.0, "primary": 0.6010369566515438, "probe": 2, "tail_enabled": true}
