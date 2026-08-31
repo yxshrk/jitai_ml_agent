@@ -682,3 +682,13 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: +0.0002-0.0008 est / low.
 - status_pure: untried
 - status_1k: untried
+
+### seq-deepfm-author-history: Causal pooled author-history DeepFM
+- mechanism: DeepFM over the 5 base fields + hour/weekday/is_rand context, plus a POOLED CAUSAL AUTHOR-HISTORY representation: for each impression, mean-pool embeddings of the user's previous N=12 authors (strictly past rows only). Reference config: embedding_dim 12, hidden 48, history_length 12, lr 0.00115, wd 3e-6, dropout 0.05, ~10-12 epochs with best-checkpoint selection.
+- treats: flat-signal | data-shift
+- reference_primary: 0.604735 single / 0.604609 4-seed mean (teammate branch codex/project-2-kuairand-agent, runs/RESULTS.md — independent codebase, validation-only discipline documented)
+- preconditions: strict causality of the history window (past rows only); guard cold-start rows (empty history -> zero vector). NOTE: our earlier DIN-lite refutation targeted attention-style sequence heads; this pooled form is measured to work — do not conflate.
+- citation: teammate research branch (Aditya), 4-seed replication; DeepFM (Guo et al. 2017)
+- expected_gain / cost: +0.0025-0.0030 single vs baseline measured externally; untried under our harness/ensemble close / medium.
+- status_pure: measured-win-external (not yet reproduced under this harness)
+- status_1k: untried
