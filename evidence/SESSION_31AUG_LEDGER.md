@@ -132,3 +132,26 @@ well as the incumbent, and require the blend > both (repeatability of the BLEND
 effect, not of an absolute number). Tests: a FakeBrain farm run where confirm
 replays (no probe phase in confirm dirs) and a blend accepted when it repeats.
 Estimated 45-60 min. Not started.
+
+## 1 Sep ~02:30 — f8-reach exhibit (human-assisted, EVIDENCE ONLY)
+Manual per-user rank-average of saved validation predictions (no training):
+f8 node_002 (context-stratified pairs, 0.604672 by provisional eval) +
+bigclock_07 node_006 (0.605575) + novel_l1 node_004 (0.605146) = 0.605765;
+without the f8 member the best pair reaches only 0.605488, so f8's champion is
+blend-complementary (+0.0003). Best of 11 combos on val (selection optimism
+~0.0001-3). Human-assisted tier, NOT designation-eligible; shows the state f8
+reached extends past the designation with the standard close its 503-killed
+iteration 4 would have attempted. Script: inline (this session); inputs are the
+four predictions.csv files named above.
+
+## 1 Sep ~03:10 — f9 endgame exhibits (human-assisted, EVIDENCE ONLY)
+f9 converged at 0.605102 (4 iters; single-model champion from a 48-probe sweep).
+Manually executed its declined endgame moves: 5-seed ensemble of the champion
+config (seeds 42-46, singles 0.60498-0.60530) = 0.605303 z-avg / 0.605225
+rank-avg — only +0.0002, NOT the digest's +0.0004..+0.001 (diminishing returns:
+the tuned single had already banked most ensemble profit; bigclock's +0.0014
+came off a weaker 0.6042 single). All-own-artifacts blend (5 seeds + rejected
+ctx-pairs node) = 0.60546. CONCLUSION: even perfect endgame banking leaves f9
+~0.0001-0.0005 short of the 0.605575 designation; the single-run ceiling
+0.6055-0.6060 stands. Cross-run blend WITH other runs' artifacts (earlier
+exhibit) = 0.605765 remains the only number above the designation tonight.

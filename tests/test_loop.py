@@ -797,9 +797,10 @@ def test_reference_impl_snippets_are_citation_clean():
     for token in ("bigclock", "omega", "run_final", "measured-win", "status_pure"):
         assert token not in text
     impls = parse_method_cards(text)
-    full_cards = parse_method_cards(METHODS_PATH.read_text())
+    known = set(parse_method_cards(METHODS_PATH.read_text())) | set(
+        parse_method_cards(CLEAN_METHODS_PATH.read_text()))
     assert impls, "reference impl file parsed to zero sections"
-    assert set(impls) <= set(full_cards), "snippet ids must match real card ids"
+    assert set(impls) <= known, "snippet ids must match real card ids (either library)"
 
 
 def test_proposer_prompt_injects_reference_impl_only_for_selected_card():
