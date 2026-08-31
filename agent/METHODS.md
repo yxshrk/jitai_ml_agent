@@ -692,3 +692,13 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: +0.0025-0.0030 single vs baseline measured externally; untried under our harness/ensemble close / medium.
 - status_pure: measured-win-external (not yet reproduced under this harness)
 - status_1k: untried
+
+### seq-deepfm-composite: Sequence DeepFM + watch-time aux + session context (full package)
+- mechanism: The complete measured composite on top of seq-deepfm-author-history: (a) base Sequence DeepFM — 5 fields + hour/weekday/is_rand context + mean-pooled causal 12-author history; (b) censor-aware watch-time AUXILIARY head (play_time treated as censored at duration; training-only supervision) — NOTE: watch-time aux is measured DEAD on FM/DCN architectures but measured ALIVE (+0.0005) on this DeepFM base — the dead-list is architecture-conditional; (c) causal session metadata fields (gap-since-previous-impression buckets, within-session position); (d) close: mean-LOGIT average of 2-3 independently seeded members.
+- treats: flat-signal | data-shift | variance
+- reference_primary: singles 0.6051-0.6058 across 7 seeds; 2-member mean-logit 0.606116 (INDEPENDENTLY re-verified exact on our evaluator from saved score files) — teammate research branch codex/project-2-kuairand-agent runs/RESULTS.md
+- preconditions: Implement the FULL package — a partial port measured only 0.6033 (run_menu_m4): the context fields, causal history discipline, and aux head must all be present. 2-member selection from a 7-seed sweep carries selection optimism ~0.0003-5; prefer predeclared consecutive seeds.
+- citation: teammate research (Aditya), independently verified; DeepFM (Guo et al. 2017); censored watch-time modeling (CWM, KDD'24)
+- expected_gain / cost: package 0.6055-0.6061 validation (vs 0.6016 baseline) if faithfully implemented / high (complex node; use full timeout, log epoch history).
+- status_pure: measured-win-external (verified scores; not yet reproduced under this harness — HIGHEST-PRIORITY target)
+- status_1k: untried
