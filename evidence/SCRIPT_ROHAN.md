@@ -161,3 +161,144 @@ We are Team JIT AI. Thank you.
 ## Editing note
 
 Version 1 is intentionally untouched. Make future edits in Version 2 or duplicate it into a new version so the original dictation remains recoverable.
+
+---
+
+## Version 3 — Filled and verified
+
+Target: 3:00. The spoken text is 603 words by strict count (numbers included). At 180 words per minute that is 3:21; at 160 wpm it is 3:46. Apply the priority cut list under the shot list (about 70 words) to land at 3:00 at 180 wpm; measure the first take and cut further from the same list if needed. Every number below has a
+file behind it; see the corrections log after this section. Bracketed stage directions are
+not spoken. Present at http://localhost:8642/present.html (scene ids in the shot list).
+
+### Opening (0:00 to 0:20)
+
+Hi, we're team jit.ai, and this is our submission for TikTok TechJam 2026, Track 2.
+
+We built an autonomous research agent that trains models to rank videos by how likely a user is to long-watch them. In one clean run, with zero mid-run interventions, it took the official baseline from 0.6016 to 0.6056.
+
+Our team is Rohan Kulshrestha, Aditya Ghosh, Yash Raj Khandelwal and Avinash Parthiban Elangovan. Let's get into it.
+
+### The loop (0:20 to 0:33)
+
+Every iteration has four steps: diagnose, treat, retrain, measure.
+
+The agent reads the last model's validation curve and names the failure mode, then picks a treatment aimed at it. The harness rewrites the script, retrains and measures, and that measurement feeds the next diagnosis.
+
+### Architecture and stopping rule (0:33 to 0:55)
+
+Here is the full system. The agent proposes; the harness executes, scores and journals.
+
+The competition's convergence rule ends the run: an iteration only counts as progress if it beats the best so far by more than 0.002. Three in a row that fail, and the run stops. Hard cap fifty iterations, six hours. Whether a single change is kept is a separate, noise-calibrated gate.
+
+Every iteration is journaled: what it saw, hypothesised, changed, and whether it worked, so later iterations don't relearn it.
+
+### A real clean run (0:55 to 1:47)
+
+Now the run we submitted. Six iterations, seventeen minutes, on a CPU.
+
+It reproduces the baseline at 0.6018.
+
+Iteration one: the diagnosis is overfit, validation peaks at epoch eight then declines. It tries a stage-matrix sweep across architecture, loss and regularisation. 0.6020. Dead end.
+
+Iteration two: recency weighting alone. 0.6017. Dead end. That's two strikes.
+
+Iteration three: a package-dial sweep, tuning the regularised DCN-lite package jointly with its own two-stage search inside one iteration. 0.6042. Accepted, strikes reset.
+
+Iteration four: the proposal crashes. The harness logs it as void and the loop carries on.
+
+Iteration five: an ordinal watch-ratio auxiliary loss. 0.6030. Dead end.
+
+Iteration six: an ensemble-design sweep. Seven seed members trained, three validation-selected, per-user rank average. 0.6056. Accepted, but under 0.002, so third strike. The rule fires and the run stops itself.
+
+No person chose an experiment, edited a script, or restarted anything.
+
+### Why the harness matters (1:47 to 2:17)
+
+The agent's judgment matters, but the harness matters just as much. Six things.
+
+One, a structural leakage guard. The hidden test window is never mounted in the agent's workspace.
+
+Two, an acceptance gate. Three baseline seeds calibrate the noise floor; borderline gains must repeat.
+
+Three, method cards. Exactly 42, from cited literature and our own measured evidence, each carrying its measured status from about 250 cells across 139 completed runs. One card was invented by a run itself.
+
+Four, a decision bench. We test the agent's choices on frozen scenarios without paying for a run.
+
+Five, deterministic ensemble planning. The agent writes a typed plan: families, seeds, blend rule. A deterministic executor probes, enumerates every blend, re-verifies, and keeps the incumbent if nothing beats it. No LLM in the measurement path.
+
+Six, telemetry-gated diagnosis. Secondary curves are only trusted when recorded well enough to support a conclusion.
+
+### Principles and model (2:17 to 2:42)
+
+Our first principle is the clean run. We never learn the recipe ourselves and hand it to the agent; that's giving someone the map and watching them walk out of the maze. Every turn you just saw was the agent's own.
+
+The model is gpt-5.6-sol at medium effort. High and extra-high made proposals truncate and fail in earlier runs. Low passed routine decisions on our bench but failed the endgame epsilon arithmetic. Medium was the measured sweet spot.
+
+### Close (2:42 to 3:00)
+
+That run: six of a possible fifty iterations, seventeen minutes wall-clock, 115 thousand LLM tokens, no GPU, zero mid-run interventions. From 0.6016 to 0.6056, plus 0.0040 on validation primary.
+
+We're team jit.ai. Thank you.
+
+### Optional 15-second beat (only if the recording comes in under 2:45)
+
+Insert after "Four, a decision bench" or replace the model paragraph:
+
+> We test the agent's judgment the way you test code. When a live run made a wrong endgame call, we froze that exact decision state as a bench fixture, fixed the guidance with a general principle rather than a scenario-specific answer, verified the bench passed, and resumed the run at the point of failure.
+
+Source: logs/RUNS.md rows farm_f1, farm_f2, farm_f3; evidence/DEVPOST.md "Testing the agent's judgment like code".
+
+### Timed shot list (present.html scenes, about 3:00)
+
+| # | Time | Scene (present.html) | On screen | Narration | Sec |
+|---|---|---|---|---|---|
+| 1 | 0:00 | `#s-title` | Title card, team name and four names, headline 0.605575 | Opening, through "Let's get into it." | 20 |
+| 2 | 0:20 | `#s-loop` | Four stage cards cycling: diagnose, treat, retrain, measure | The loop | 13 |
+| 3 | 0:33 | `#s-arch` | Architecture SVG: agent row, harness row, hidden-test exclusion; point at the convergence check | Architecture and stopping rule | 22 |
+| 4 | 0:55 | `#s-log` | Log replay, one keypress per iteration: baseline, then nodes 1 to 6 (green accepted, red dead ends, amber VOID) | Run walkthrough, one keypress per "Iteration N" | 52 |
+| 5 | 1:47 | `#s-harness` | Six harness deep-dive cards; hover each as it is named | Six harness items | 30 |
+| 6 | 2:17 | `#s-methods` then `#s-decisions` | 42-card library scrolling, then design-decisions scene for the clean-run principle and model choice | Principles and model | 25 |
+| 7 | 2:42 | `#s-receipts` | Receipts grid: 6 iterations, 17.0 min, 115,315 tokens, 0 GPU, 0 interventions, 0.6016 to 0.605575, +0.0040 | Close | 18 |
+
+Total 180 seconds with the priority cuts below applied. Cut in this order until the take lands at 3:00:
+
+1. Scene 3: drop the journaling sentence ("Every iteration is journaled ... don't relearn it."). About 7 s. The log replay in scene 4 shows the journal anyway.
+2. Scene 6: drop the maze sentence ("that's giving someone the map ..."), keep "We never learn the recipe ourselves and hand it to the agent." About 5 s.
+3. Scene 5: drop item six (telemetry-gated diagnosis) and say "Five things" instead of "Six things". About 6 s.
+4. Scene 4: cut "across architecture, loss and regularisation" from iteration one and "with its own two-stage search inside one iteration" from iteration three. About 5 s.
+5. Scene 5: shorten item five to "Five, deterministic ensemble planning. The agent writes a typed plan; a deterministic executor runs it and keeps the incumbent if nothing beats it. No LLM in the measurement path." About 5 s.
+
+---
+
+## Changes and corrections log
+
+Each line: what V2 said, what V3 says, and the source file that settles it.
+
+1. Convergence rule: V2 said "an improvement below 0.0002". V3 says the run ends after three consecutive iterations that fail to improve the best-so-far by more than 0.002, with a hard cap of 50 iterations and 6 h wall. Sources: ../RULES.md line 25; harness/loop.py lines 89 to 91 and 725 to 729 (`epsilon = 0.002`, `n_converge = 3`, "accepted, rejected, or errored all count", improvement measured vs best-so-far).
+2. Acceptance vs convergence: V2 conflated the acceptance gate with the convergence rule. V3 states they are separate: acceptance is a calibrated gate (three baseline seeds set sigma; grey-zone floor 0.0005 with a repeat-seed check). Sources: evidence/DEVPOST.md "Methodology rigor"; harness/loop.py line 486; CLAUDE.md "floor-v2 grey accept".
+3. X, Y, delta: X = 0.6016 (official validation baseline), Y = 0.605575 spoken as 0.6056, delta +0.0040 (RESULTS file gives +0.00398) validation primary. Source: evidence/RESULTS_AND_RESOURCES.md results table.
+4. Run statistics: V2's "about 17 minutes per run" and "roughly six iterations on average" described as averages. V3 attributes 17.0 min (1,019 s), 6 of 50 iterations, 115,315 tokens, 0 GPU, 0 mid-run interventions to this run, run_bigclock_07, and never says "on average". Source: evidence/RESULTS_AND_RESOURCES.md resource table; site/rundata.js meta.
+5. Team name: "Team JIT AI" replaced by "team jit.ai". Source: site/present.html line 85, site/index.html line 13.
+6. Team names: V2 had "Rohan Kulshreshth" and "Yashraj Khandelwal". V3 uses the site's spelling: Rohan Kulshrestha, Yash Raj Khandelwal. FLAGGED for Rohan, not decided (see open questions). Source: site/present.html line 88.
+7. Autonomy claim: "zero human intervention" replaced by "zero mid-run interventions" (official definition: only behaviour-changing actions during a run count). Source: ../webinar-transcript-28aug.md lines 53 to 54; evidence/DEVPOST.md "Autonomy & feasibility"; site/CLAUDE.md hard rules.
+8. Card count and provenance: "more than 42 targeted methods, primarily grounded in cited academic literature" replaced by "exactly 42 cards, compiled from cited literature and this campaign's own measured evidence; one card invented by a run itself". Sources: `grep -c "^### " agent/METHODS.md` = 42; site/methods.js; site/present.html scene caption "one card was invented by a run itself"; CLAUDE.md (temporal-pair-kernel invented by run_novel_l1, carded after the fact); agent/METHODS.md line 430.
+9. "Tried countless times" (V1) and V2's checklist item: replaced by "each card carries its measured status, from about 250 measured cells across 139 completed runs". Source: evidence/DEVPOST.md line 23; README.md line 60.
+10. "Thousands of experiments": replaced by 139 completed disclosed runs and about 250 measured experiment cells. Source: evidence/DEVPOST.md line 23; evidence/RESULTS_AND_RESOURCES.md disclosure section.
+11. "More than 139 runs": V2 said more than 139 runs with the latest version alone. V3 says 139 completed runs (the whole campaign snapshot, 31 Aug). Source: evidence/RESULTS_AND_RESOURCES.md; README.md line 60.
+12. Model and effort: V2's "high overthought the evidence in blending" replaced by the measured version: gpt-5.6-sol at medium; high and xhigh caused proposals to truncate or fail in earlier runs; low passed the routine scenarios but failed endgame_eps_math; gpt-5.6-terra passed all six scenarios at both efforts (not spoken, but available); temperature is rejected by these models (HTTP 400). Sources: logs/RUNS.md line 19 (effort grid runs 16-22, 27, 28: truncation failure); logs/bench_sweep_sol_temp.out (sol low: endgame_eps_math BAD; temp=0.2: HTTP 400); logs/bench_sweep_run.out (sol medium: 4 good, 1 ok, 0 bad); logs/bench_model_sweep.json (terra 6/6 at low and medium); CLAUDE.md conventions.
+13. Model name capitalisation: "GPT-5.6-Sol" replaced by "gpt-5.6-sol" as written in the repo. Source: evidence/DEVPOST.md; agent/models.toml.
+14. Ensemble planning: V2's "the blend is selected mathematically; no LLM chooses the weights" replaced by the typed-plan description (agent writes plan: families, seeds, blend rule; deterministic executor runs probes, enumerates blends, full-trains complementary families, re-verifies, keeps incumbent on tie or loss). Sources: agent/METHODS.md card diverse-family-farm-close (line 731); logs/bench_farm_close.json (13/13 checks including tie-retains-incumbent, determinism, blend-math); evidence/DEVPOST.md "Testing the agent's judgment like code". Honesty note kept out of the spoken script but recorded here: the designated run's close was the classic ensemble-design sweep (site/rundata.js node_006, chosen_method_id "ensemble-design-sweep"); the farm-close capability has one live execution (logs/RUNS.md ruby_w1, accepted, +0.0002) and the 13/13 assembler bench, but its live autonomous execution is still being tested (farm_f3 plan failed on script_source).
+15. Run walkthrough (new): every value verified in site/rundata.js. node_000 0.601838 (three seeds, mean 0.6018, sigma 0.0001); node_001 stage-matrix-sweep 0.601962 rejected (grey-zone confirm failed, mean delta +0.0006); node_002 recency-weighting 0.601681 rejected; node_003 package-dial-sweep 0.604237 accepted (delta +0.0024; two-stage coarse then refine probes visible in the node); node_004 error true, "proposal unparseable/failed", VOID; node_005 ordinal watch-ratio auxiliary 0.602957 rejected; node_006 ensemble-design-sweep 0.605575 accepted (delta +0.0013; 7 members seeds 42 to 48, selected 3 seeds 42 to 44, per_user_rank_average). Stop reason "converged" (logs/run_bigclock_07/summary.json). Strike arithmetic: node_004, node_005 and node_006 (accepted but +0.0013 < 0.002) are three consecutive non-improving iterations under the official rule (harness/loop.py line 727 to 729, 1329 to 1335).
+16. "Stage matrix" name: confirmed as the card `stage-matrix-sweep` ("Cross-stage combination search"). Source: agent/METHODS.md line 317; site/rundata.js node_001 chosen_method_id.
+17. Event styling: "TechJam" (one word). Source: site/CLAUDE.md, evidence/VIDEO_SCRIPT.md, CLAUDE.md, ../RULES.md all use TechJam.
+18. Evaluation results placeholder (V2 "SHOW EVALUATION RESULTS HERE"): removed from the spoken script; the close uses the resource table instead. Bench numbers available if wanted: decision bench 8/8 full-knowledge, 10/10 clean-mode (CLAUDE.md EVAL TOOLING), farm-close assembler 13/13 (logs/bench_farm_close.json). The full-knowledge bench cannot distinguish the agent from an always-pick-close constant policy (CLAUDE.md), so do not present it as a headline.
+19. Unsupported softeners dropped: "these are only some of the available methods" (the 42 are the complete library), "many, many runs knowing the right recipe" (kept as the maze metaphor without a count).
+
+## Open questions for Rohan
+
+1. Surname spelling: the site says "Rohan Kulshrestha"; your dictation and V2 say "Kulshreshth". V3 uses the site spelling because it is the published one. Confirm which is correct and fix the other place, not just the script.
+2. First name: site says "Yash Raj Khandelwal"; you said "Yashraj". V3 follows the site. Confirm.
+3. gpt-5.6-sol at medium was never run on the endgame_eps_math scenario in the saved sweeps (logs/bench_sweep_run.out ran only 5 scenarios for sol medium; endgame_eps_math was added to the fixture set afterwards). The script says medium was the "measured sweet spot", which is supported by the truncation failures at high and the low-effort endgame failure, but if you want to say "medium passed the endgame scenario" someone should run tools/bench_model_sweep.py for sol medium first.
+4. Farm-close: V3 describes the capability in the harness section (item five) because it is built and benched, but the run you narrate closed with the classic ensemble-design sweep. If you would rather not describe a capability the designated run did not use, replace item five with V2's shorter wording: "the ensemble is chosen deterministically from validation; no LLM picks the members or the weights", which is exactly what node_006 did.
+5. The optional 15-second judgment beat is not in the 3:00 timing. Include only if the first take lands under 2:45.
+6. The 1K bonus result (0.66892, triple-audited) is not mentioned at all in your structure. It is the second-strongest number we have; a one-line mention in the close ("on the bonus 1K dataset, 0.669, triple-audited") costs about five seconds if you want it. Source: evidence/RESULTS_AND_RESOURCES.md.
