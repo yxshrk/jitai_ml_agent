@@ -1,0 +1,409 @@
+{
+ "run_id": "live_09",
+ "stop_reason": "converged: 3 generations without a >= 0.001 cumulative rise of the champion fresh-seed mean (ADR-0012)",
+ "generations": 7,
+ "nodes": 25,
+ "champion": 14,
+ "champion_metrics": {
+  "gauc": 0.6710025969968142,
+  "ndcg5": 0.5376505409925081,
+  "primary": 0.6043265689946611,
+  "ndcg5_disc": 0.7245731422220862,
+  "by_group": {
+   "dur18-60s": {
+    "rows": 33235,
+    "gauc": 0.6461,
+    "ndcg5": 0.4602,
+    "primary": 0.5531
+   },
+   "dur60-180s": {
+    "rows": 46565,
+    "gauc": 0.6496,
+    "ndcg5": 0.4878,
+    "primary": 0.5687
+   },
+   "dur<18s": {
+    "rows": 20101,
+    "gauc": 0.7012,
+    "ndcg5": 0.4053,
+    "primary": 0.5532
+   },
+   "dur=0": {
+    "rows": 2107,
+    "gauc": 0.6153,
+    "ndcg5": 0.0865,
+    "primary": 0.3509
+   },
+   "dur>180s": {
+    "rows": 22901,
+    "gauc": 0.6279,
+    "ndcg5": 0.378,
+    "primary": 0.503
+   },
+   "tab=0": {
+    "rows": 13726,
+    "gauc": 0.5778,
+    "ndcg5": 0.0635,
+    "primary": 0.3207
+   },
+   "tab=1": {
+    "rows": 92672,
+    "gauc": 0.6211,
+    "ndcg5": 0.5415,
+    "primary": 0.5813
+   },
+   "tab=2": {
+    "rows": 3834,
+    "gauc": 0.6428,
+    "ndcg5": 0.5158,
+    "primary": 0.5793
+   },
+   "tab=4": {
+    "rows": 7877,
+    "gauc": 0.5781,
+    "ndcg5": 0.5474,
+    "primary": 0.5628
+   },
+   "tab=6": {
+    "rows": 5170,
+    "gauc": 0.6361,
+    "ndcg5": 0.1059,
+    "primary": 0.371
+   }
+  },
+  "by_pair": {
+   "same_tab": {
+    "share": 0.735,
+    "err": 0.381,
+    "contrib": 0.2796
+   },
+   "diff_tab": {
+    "share": 0.265,
+    "err": 0.186,
+    "contrib": 0.0494
+   },
+   "tab1_x_tab1": {
+    "share": 0.686,
+    "err": 0.38,
+    "contrib": 0.2603
+   },
+   "same_date": {
+    "share": 0.236,
+    "err": 0.335,
+    "contrib": 0.0793
+   },
+   "diff_date": {
+    "share": 0.764,
+    "err": 0.327,
+    "contrib": 0.2497
+   },
+   "gap>1d": {
+    "share": 0.618,
+    "err": 0.326,
+    "contrib": 0.2017
+   },
+   "gap<10min": {
+    "share": 0.02,
+    "err": 0.34,
+    "contrib": 0.0068
+   },
+   "pos_shorter": {
+    "share": 0.513,
+    "err": 0.298,
+    "contrib": 0.1529
+   },
+   "pos_longer": {
+    "share": 0.485,
+    "err": 0.363,
+    "contrib": 0.1759
+   },
+   "total_err": 0.329
+  }
+ },
+ "baseline_valid_primary": 0.6014687563529677,
+ "delta_vs_baseline_valid": 0.00286,
+ "top3_valid": [
+  {
+   "n": 16,
+   "primary": 0.6046305106501695
+  },
+  {
+   "n": 17,
+   "primary": 0.6046125157576204
+  },
+  {
+   "n": 18,
+   "primary": 0.604511966159397
+  }
+ ],
+ "designated": 14,
+ "final_ranking": [
+  {
+   "n": 14,
+   "valid_primary": 0.6043265689946611,
+   "fresh_seeds": [
+    0.6046725943624534,
+    0.6043597781166279,
+    0.604702099707588
+   ],
+   "accepted": true,
+   "mean": 0.6045781573955564,
+   "std": 0.00018969652987572085,
+   "n_seeds": 3
+  },
+  {
+   "n": 1,
+   "valid_primary": 0.6036463694691105,
+   "fresh_seeds": [
+    0.6031184279276939,
+    0.6027235946155616,
+    0.6035425471235136
+   ],
+   "accepted": true,
+   "mean": 0.603128189888923,
+   "std": 0.00040956351703431667,
+   "n_seeds": 3
+  },
+  {
+   "n": 3,
+   "valid_primary": 0.6021140948752941,
+   "fresh_seeds": [
+    0.6024596194372596,
+    0.6023584723292854,
+    0.6025516371872324
+   ],
+   "accepted": true,
+   "mean": 0.6024565763179258,
+   "std": 9.661837826147237e-05,
+   "n_seeds": 3
+  },
+  {
+   "n": 2,
+   "valid_primary": 0.6025029206269998,
+   "fresh_seeds": [
+    0.6028729444838677,
+    0.6017090117891591,
+    0.6020694898356386,
+    0.6027857969882158,
+    0.6026234157272281
+   ],
+   "accepted": true,
+   "mean": 0.6024121317648219,
+   "std": 0.0005020946538723934,
+   "n_seeds": 5
+  },
+  {
+   "n": 17,
+   "valid_primary": 0.6046125157576204,
+   "fresh_seeds": [
+    0.604866487530594,
+    0.6044991650533298,
+    0.6047135229100419
+   ],
+   "accepted": false,
+   "mean": 0.6046930584979886,
+   "std": 0.00018451434821281203,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  },
+  {
+   "n": 16,
+   "valid_primary": 0.6046305106501695,
+   "fresh_seeds": [
+    0.6047709032427752,
+    0.6043679844221574,
+    0.6043433445432675
+   ],
+   "accepted": false,
+   "mean": 0.6044940774027334,
+   "std": 0.00024005455670337398,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  },
+  {
+   "n": 18,
+   "valid_primary": 0.604511966159397,
+   "fresh_seeds": [
+    0.6043267291880454,
+    0.6037250220169611,
+    0.6042217611481353
+   ],
+   "accepted": false,
+   "mean": 0.6040911707843806,
+   "std": 0.0003214082485916658,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  }
+ ],
+ "usage": {
+  "calls": 92,
+  "tokens_in": 4018861,
+  "tokens_out": 393023,
+  "cache_read": 2716484,
+  "cache_write": 0,
+  "cost_usd": 19.660816999999998
+ },
+ "wall_clock_s": 6977.4,
+ "champion_seed_mean": 0.60458,
+ "best_single_seed": 0.6046305106501695,
+ "convergence_rule": "ADR-0012 (revised): 3 generations without a seed-confirmed champion change",
+ "official_rule": {
+  "best_single_seed": 0.6036463694691105,
+  "streak": 6,
+  "converged_at_generation": 4,
+  "champion_at_stop": 14
+ },
+ "official_rule_submission": {
+  "node": 14,
+  "generation": 4,
+  "valid_primary": 0.6043265689946611,
+  "fresh_seed_mean": 0.60458,
+  "fresh_seeds": 3
+ },
+ "convergence_switch": "confirmed",
+ "campaigns": true,
+ "families": {
+  "aux-targets": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "data-weighting": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "encoding": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "ensembling": {
+   "status": "closed",
+   "generations": [
+    4,
+    5,
+    6
+   ],
+   "nodes": [
+    14,
+    16,
+    18,
+    20,
+    21
+   ],
+   "best_gain": 0.00145,
+   "flat_streak": 2,
+   "evidence": "closed at generation 6: 2 campaign generations without an accepted node (nodes [14, 16, 18, 20, 21], best gain 0.00145)"
+  },
+  "features": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "history": {
+   "status": "closed",
+   "generations": [
+    2,
+    3
+   ],
+   "nodes": [
+    7,
+    8,
+    11,
+    12
+   ],
+   "best_gain": 7e-05,
+   "flat_streak": 2,
+   "evidence": "closed at generation 3: 2 campaign generations without an accepted node (nodes [7, 8, 11, 12], best gain 7e-05)"
+  },
+  "ranking-loss": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "watch-time": {
+   "status": "exhausted",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": "nothing left to measure on this stack"
+  },
+  "model": {
+   "status": "open",
+   "generations": [
+    7
+   ],
+   "nodes": [
+    23,
+    24
+   ],
+   "best_gain": 0.0001,
+   "flat_streak": 1,
+   "evidence": ""
+  },
+  "sequential-model": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "regularization": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "training-schedule": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  }
+ },
+ "designation_rule": "strict",
+ "designation_events": [
+  "designation (strict): node_017 leads on fresh-seed mean (0.60469) but was not accepted; excluded \u2014 accepted lineage only"
+ ],
+ "best_unaccepted": {
+  "n": 17,
+  "mean": 0.60469,
+  "valid_primary": 0.6046125157576204,
+  "n_seeds": 3
+ },
+ "tokens": {
+  "in_total": 4018861,
+  "in_cached": 2716484,
+  "in_uncached": 1302377,
+  "out": 393023
+ },
+ "interventions": 0,
+ "k": 5,
+ "k_later": 3,
+ "eps": 0.002,
+ "n_converge": 3,
+ "iteration_unit": "node",
+ "iterations_used": 25
+}

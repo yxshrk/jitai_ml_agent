@@ -1,0 +1,22 @@
+--- node_014.py
++++ node_016.py
+@@ -7,7 +7,7 @@
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user logistic BPR with one uniformly sampled negative per positive impression.
+-Ensemble Five field-aware and five standard members blended by tie-free within-user ranks.
++Ensemble Ten field-aware and ten standard members blended by tie-free within-user ranks.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -154,8 +154,8 @@
+     # ---- train with early stopping on valid primary ----
+     models, member_curves, member_best_epochs = [[], []], [[], []], [[], []]
+     for branch, field_aware in enumerate((True, False)):
+-        for member in range(5):
+-            member_seed = a.seed + branch * 5 + member
++        for member in range(10):
++            member_seed = a.seed + branch * 10 + member
+             m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, field_aware=field_aware)
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_epoch, best_loss, best_pred, bad, curve = -1.0, None, 0, None, None, 0, []

@@ -7,13 +7,13 @@ applies_when:
   - a champion exists whose remaining error is partly seed variance (std 0.0008 per seed on this dataset)
   - runtime allows N x training (baseline 15 s x 5 = 75 s) — always true here; use as a CLOSING move once the search has plateaued
 expected_delta: [0.0, 0.0016]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0016 over 10 measurement(s), so the promise is capped at the record; was: averaging N seeds removes ~sqrt(N) of the seed noise from the score and slightly improves the
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0016 over 13 measurement(s), so the promise is capped at the record; was: averaging N seeds removes ~sqrt(N) of the seed noise from the score and slightly improves the
   ordering; with std 0.0008 the ceiling is small but nearly free
 cost: ~20 lines (loop over seeds, average logits or within-user ranks); runtime N x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, loss-watchtime-censored, features-duration-unknown-flag, features-fine-duration-and-tab-cross, data-weighting-recency, aux-targets-is-click, history-user-aggregates, model-dcn-cross-head, regularization-embedding-dropout-l2, training-schedule-lr-decay-early-stop]
 conflicts_with: []
 status: proven — accepted on [official FM], [official FM + loss-bpr-pairwise-within-user]
-evidence: [live_02:node_015, live_05:node_005, live_06:node_005, live_06:node_007, live_07:node_005, live_07:node_009, live_07:node_014, live_07:node_024, live_08:node_003, live_08:node_009]
+evidence: [live_02:node_015, live_05:node_005, live_06:node_005, live_06:node_007, live_07:node_005, live_07:node_009, live_07:node_014, live_07:node_024, live_08:node_003, live_08:node_009, live_09:node_003, live_09:node_009, live_09:node_016]
 ---
 ## Claim
 Train the champion's script N = 5 times with seeds seed..seed+4 and average the prediction scores (or average
@@ -34,7 +34,7 @@ part. This is variance reduction, not new signal — hence the small but reliabl
 - Averaging a good model with a clearly worse one hurts; only ensemble nodes within ~0.002 of each other.
 
 ## Measured
-_Verdict:_ ACCEPTED 5x (live_06:node_005 on [official FM] Δ +0.0013; live_06:node_007 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0016; live_07:node_005 on [official FM] Δ +0.0013; live_07:node_009 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0013; live_08:node_003 on [official FM] Δ +0.0013)
+_Verdict:_ ACCEPTED 6x (live_06:node_005 on [official FM] Δ +0.0013; live_06:node_007 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0016; live_07:node_005 on [official FM] Δ +0.0013; live_07:node_009 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0013; live_08:node_003 on [official FM] Δ +0.0013; live_09:node_003 on [official FM] Δ +0.0010)
 - live_02:node_015 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0006, seed-mean Δ +0.0009 (t 5.35) — rejected; 49 changed lines
 - live_05:node_005 on [official FM]: primary 0.6025, single-seed Δ +0.0011, seed-mean Δ +0.0008 (z 2.85) — rejected; 65 changed lines
 - live_06:node_005 on [official FM]: primary 0.6029, single-seed Δ +0.0015, seed-mean Δ +0.0013 (z 3.22) — ACCEPTED; 68 changed lines
@@ -45,3 +45,6 @@ _Verdict:_ ACCEPTED 5x (live_06:node_005 on [official FM] Δ +0.0013; live_06:no
 - live_07:node_024 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6040, single-seed Δ -0.0001 — rejected; 2 changed lines
 - live_08:node_003 on [official FM]: primary 0.6029, single-seed Δ +0.0014, seed-mean Δ +0.0013 (z 4.05) — ACCEPTED; 71 changed lines
 - live_08:node_009 on [official FM + ensembling-seed-average]: primary 0.6023, single-seed Δ -0.0006 — rejected; 25 changed lines
+- live_09:node_003 on [official FM]: primary 0.6021, single-seed Δ +0.0006, seed-mean Δ +0.0010 (z 3.3) — ACCEPTED; 49 changed lines
+- live_09:node_009 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6041, single-seed Δ +0.0005, seed-mean Δ +0.0005 (z 1.95) — rejected; 54 changed lines
+- live_09:node_016 on [official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend]: primary 0.6046, single-seed Δ +0.0003, seed-mean Δ -0.0001 (z -0.27) — rejected; 6 changed lines

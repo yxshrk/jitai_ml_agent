@@ -8,13 +8,13 @@ applies_when:
   - most training users have both positives and negatives (facts §7: 92.7 % of train users are discriminative)
   - the model produces a per-row score that can be differenced (any FM/DCN head)
 expected_delta: [0.0, 0.0022]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0022 over 13 measurement(s), so the promise is capped at the record; was: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0022 over 14 measurement(s), so the promise is capped at the record; was: organizers' lead #1; aligns the objective with the scored metric; the pointwise FM already
   captures the user x video signal, so the gain is in ordering not calibration — do not expect more than 0.01
 cost: ~60 lines in FM.step + a pair sampler; runtime ~1x (pairs ~ number of positives per epoch); numpy only
 composes_with: [features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, model-dcn-cross-head]
 conflicts_with: [loss-listwise-softmax-within-user, loss-lambdarank-pairs]
 status: proven — accepted on [official FM], [official FM + loss-bpr-pairwise-within-user]
-evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006, live_05:node_002, live_06:node_002, live_07:node_003, live_06:node_011, live_06:node_016, live_06:node_019, live_08:node_001, live_08:node_007]
+evidence: [live_01:node_001, live_02:node_001, live_03:node_001, live_04:node_002, live_04:node_006, live_05:node_002, live_06:node_002, live_07:node_003, live_06:node_011, live_06:node_016, live_06:node_019, live_08:node_001, live_08:node_007, live_09:node_001]
 ---
 ## Claim
 Training on within-user (positive, negative) pairs with loss −log σ(s_pos − s_neg) optimises the pairwise ordering
@@ -45,7 +45,7 @@ user; BPR maximises a smooth lower bound of exactly that quantity (paper §3.1).
   add a tiny logloss term or a small L2 to avoid exact ties.
 
 ## Measured
-_Verdict:_ ACCEPTED 9x (live_01:node_001 on [official FM] Δ +0.0022; live_02:node_001 on [official FM] Δ +0.0016; live_03:node_001 on [official FM] Δ +0.0017; live_04:node_002 on [official FM] Δ +0.0011; live_05:node_002 on [official FM] Δ +0.0017; live_06:node_002 on [official FM] Δ +0.0013; live_07:node_003 on [official FM] Δ +0.0016; live_08:node_001 on [official FM] Δ +0.0010; live_08:node_007 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0011)
+_Verdict:_ ACCEPTED 10x (live_01:node_001 on [official FM] Δ +0.0022; live_02:node_001 on [official FM] Δ +0.0016; live_03:node_001 on [official FM] Δ +0.0017; live_04:node_002 on [official FM] Δ +0.0011; live_05:node_002 on [official FM] Δ +0.0017; live_06:node_002 on [official FM] Δ +0.0013; live_07:node_003 on [official FM] Δ +0.0016; live_08:node_001 on [official FM] Δ +0.0010; live_08:node_007 on [official FM + loss-bpr-pairwise-within-user] Δ +0.0011; live_09:node_001 on [official FM] Δ +0.0017)
 - live_01:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022 — ACCEPTED; 433 changed lines
 - live_02:node_001 on [official FM]: primary 0.6031, single-seed Δ +0.0016, seed-mean Δ +0.0016 (t 8.22) — ACCEPTED; 34 changed lines
 - live_03:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (t 6.39) — ACCEPTED; 37 changed lines
@@ -59,3 +59,4 @@ _Verdict:_ ACCEPTED 9x (live_01:node_001 on [official FM] Δ +0.0022; live_02:no
 - live_06:node_019 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average] (variant: loss-bpr-pairwise-within-user — Replace 2.5% of ordinary same-user BPR samples with same-user positive-negative pairs for which both impressio): primary 0.6041, single-seed Δ +0.0002, seed-mean Δ -0.0000 (z -0.04) — rejected; 18 changed lines
 - live_08:node_001 on [official FM]: primary 0.6030, single-seed Δ +0.0016, seed-mean Δ +0.0010 (z 3.73) — ACCEPTED; 33 changed lines
 - live_08:node_007 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6038, single-seed Δ +0.0008, seed-mean Δ +0.0011 (z 4.11) — ACCEPTED; 73 changed lines
+- live_09:node_001 on [official FM]: primary 0.6036, single-seed Δ +0.0022, seed-mean Δ +0.0017 (z 6.04) — ACCEPTED; 38 changed lines

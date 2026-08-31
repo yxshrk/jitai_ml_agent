@@ -1,0 +1,37 @@
+--- node_004.py
++++ node_011.py
+@@ -123,6 +123,7 @@
+     np.divide(user_p, user_n, out=user_prior, where=user_n > 0)
+     hist_tr = np.zeros((len(tr), 3), dtype=np.int8)
+     hist_edges, relation_totals = [], []
++    support_edges = np.array([2, 7], dtype=np.float32)
+     relation_values = [author_code, tab_code, dur_code]
+     relation_widths = [len(author_hist_vocab), len(tab_hist_vocab), 10]
+     for j, (values, width) in enumerate(zip(relation_values, relation_widths)):
+@@ -131,7 +132,7 @@
+         rate = (rp + 5.0 * user_prior) / (rn + 5.0)
+         seen = rn > 0
+         q = np.quantile(rate[seen], np.linspace(0, 1, 11)[1:-1])
+-        hist_tr[seen, j] = 1 + np.searchsorted(q, rate[seen], side='right')
++        hist_tr[seen, j] = 1 + np.searchsorted(q, rate[seen], side='right') + 10 * np.searchsorted(support_edges, rn[seen], side='left')
+         hist_edges.append(q); relation_totals.append(total)
+ 
+     def mapped(values, vocab, n):
+@@ -157,7 +158,7 @@
+             keys = np.where((uc >= 0) & (values >= 0), uc * width + values, -1)
+             rn, rp = lookup(keys, totals)
+             rate = (rp + 5.0 * prior) / (rn + 5.0)
+-            hist[:, j] = np.where(rn > 0, 1 + np.searchsorted(hist_edges[j], rate, side='right'), 0)
++            hist[:, j] = np.where(rn > 0, 1 + np.searchsorted(hist_edges[j], rate, side='right') + 10 * np.searchsorted(support_edges, rn, side='left'), 0)
+         return hist
+ 
+     hist_va = history_fields(va, 1, 2, 3, 4)
+@@ -166,7 +167,7 @@
+                 str(int(np.searchsorted(edges, float(dur))))] + list(hist)
+     vocabs = [dict() for _ in FIELDS]
+     for i in range(5, len(FIELDS)):
+-        vocabs[i].update((j, j) for j in range(11))
++        vocabs[i].update((j, j) for j in range(31))
+     for n, x in enumerate(tr):
+         for i, v in enumerate(raw(x[0], x[1], x[2], x[3], hist_tr[n])):
+             if v not in vocabs[i]:

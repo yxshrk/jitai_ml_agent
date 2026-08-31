@@ -12,8 +12,8 @@ expected_delta_basis: bounded (ADR-0018) at +0.0002 by the oracle for 'taste-tra
 cost: ~40 lines (sort by user and time, run-so-far encoding, one or two categorical fields); runtime 1.1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, model-field-aware-fm-embeddings, history-repeat-exposure-fatigue]
 conflicts_with: []
-status: untried
-evidence: []
+status: untried (screened out on [official FM + loss-bpr-pairwise-within-user]: best_gain -0.0001 on valid, no node built)
+evidence: [live_09:screen-g02]
 ---
 ## Claim
 A user shown the same author twice in a row is far less likely to long-view the second exposure (0.142 vs 0.337
@@ -40,4 +40,5 @@ its interactions with tab and duration.
 - Rows at a user's first exposure of the window have no history; encode as level 0, not as missing.
 
 ## Measured
-_Verdict:_ no measurement yet
+_Verdict:_ screened 1x before any node (live_09:screen-g02 DROPPED -0.0001)
+- live_09:screen-g02 on [official FM + loss-bpr-pairwise-within-user]: SCREENED DROPPED best_gain -0.0001 (stack); stack -0.0001; same_author_run_so_far_cap5: varies 0.03, GAUC 0.5003, additive -0.0005

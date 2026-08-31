@@ -1,0 +1,126 @@
+--- node_014.py
++++ node_015.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user logistic BPR with one uniformly sampled negative per positive impression.
+ Ensemble Five field-aware and five standard members blended by tie-free within-user ranks.
++Creator Field-aware members alone add a pooled creator-role|candidate-format|tab cross.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -42,10 +43,11 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False, field_count=None):
+         rng = np.random.default_rng(seed)
+         self.field_aware = field_aware
+-        shape = (dim, len(FIELDS), k) if field_aware else (dim, k)
++        self.field_count = len(FIELDS) if field_count is None else field_count
++        shape = (dim, self.field_count, k) if field_aware else (dim, k)
+         self.V = rng.normal(0, 0.01, shape).astype(np.float32)
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+@@ -57,8 +59,8 @@
+     def logits(self, X):
+         if self.field_aware:
+             inter = np.zeros(len(X), dtype=np.float32)
+-            for i in range(len(FIELDS)):
+-                for j in range(i + 1, len(FIELDS)):
++            for i in range(self.field_count):
++                for j in range(i + 1, self.field_count):
+                     inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+             return self.b + self.W[X].sum(1) + inter, None, None
+         E = self.V[X]                                              # (B, F, k)
+@@ -77,8 +79,8 @@
+         np.add.at(gW, Xn, -g[:, None])
+         if self.field_aware:
+             for X, h in ((Xp, g), (Xn, -g)):
+-                for i in range(len(FIELDS)):
+-                    for j in range(i + 1, len(FIELDS)):
++                for i in range(self.field_count):
++                    for j in range(i + 1, self.field_count):
+                         Ei, Ej = self.V[X[:, i], j], self.V[X[:, j], i]
+                         np.add.at(gV[:, j], X[:, i], h[:, None] * Ej)
+                         np.add.at(gV[:, i], X[:, j], h[:, None] * Ei)
+@@ -116,7 +118,12 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
++    video_rows = read_rows(f'{a.data_dir}/video_features_basic.csv',
++                           ['video_id', 'author_id', 'video_type', 'upload_type'])
++    vid2author = {x[0]: x[1] for x in video_rows}
++    vid2format = {x[0]: (x[2], x[3]) for x in video_rows}
++    user2role = {x[0]: (x[1], x[2]) for x in read_rows(
++        f'{a.data_dir}/user_features.csv', ['user_id', 'is_video_author', 'is_live_streamer'])}
+     tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+     va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+ 
+@@ -139,6 +146,22 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    def role_format(user, video, tab):
++        role = user2role.get(user, ('UNK', 'UNK'))
++        fmt = vid2format.get(video, ('UNK', 'UNK'))
++        return '|'.join(role + fmt + (tab,))
++    cross_vocab = {}
++    for x in tr:
++        v = role_format(x[0], x[1], x[2])
++        if v not in cross_vocab:
++            cross_vocab[v] = len(cross_vocab)
++    cross_unk = len(cross_vocab)
++    def cross_encode(rows, ui, vi, ti):
++        return np.array([cross_vocab.get(role_format(x[ui], x[vi], x[ti]), cross_unk) + dim
++                         for x in rows], dtype=np.int32)
++    Xtr_field = np.column_stack((Xtr, cross_encode(tr, 0, 1, 2))).astype(np.int32, copy=False)
++    Xva_field = np.column_stack((Xva, cross_encode(va, 1, 2, 3))).astype(np.int32, copy=False)
++    field_dim = dim + len(cross_vocab) + 1
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     neg_rows = np.flatnonzero(ytr == 0)
+@@ -154,17 +177,20 @@
+     # ---- train with early stopping on valid primary ----
+     models, member_curves, member_best_epochs = [[], []], [[], []], [[], []]
+     for branch, field_aware in enumerate((True, False)):
++        Xtr_branch = Xtr_field if field_aware else Xtr
++        Xva_branch = Xva_field if field_aware else Xva
+         for member in range(5):
+             member_seed = a.seed + branch * 5 + member
+-            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, field_aware=field_aware)
++            m = FM(field_dim if field_aware else dim, k=a.k, lr=a.lr, seed=member_seed,
++                   field_aware=field_aware, field_count=Xtr_branch.shape[1])
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_epoch, best_loss, best_pred, bad, curve = -1.0, None, 0, None, None, 0, []
+             for ep in range(1, epochs + 1):
+                 neg_idx = neg_rows[pos_neg_start + (rng.random(len(pos_rows)) * pos_neg_count).astype(np.int64)]
+                 idx = rng.permutation(len(pos_rows))
+-                losses = [m.step(Xtr[pos_rows[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
++                losses = [m.step(Xtr_branch[pos_rows[idx[i:i + a.batch]]], Xtr_branch[neg_idx[idx[i:i + a.batch]]])
+                           for i in range(0, len(idx), a.batch)]
+-                sva_ep = m.predict(Xva); r = evaluate(uva, yva, sva_ep)
++                sva_ep = m.predict(Xva_branch); r = evaluate(uva, yva, sva_ep)
+                 print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+                       f"primary {r['primary']:.4f}", flush=True)
+                 if r['primary'] > best + 1e-5:
+@@ -193,7 +219,7 @@
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+ 
+     # ---- outputs ----
+-    field_va = [m.predict(Xva) for m in models[0]]
++    field_va = [m.predict(Xva_field) for m in models[0]]
+     standard_va = [m.predict(Xva) for m in models[1]]
+     sva = rank_blend(uva, standard_va, field_va); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+@@ -204,7 +230,8 @@
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+         Xex = encode(ex, 1, 2, 3, 4); uex = [x[1] for x in ex]
+-        field_ex = [m.predict(Xex) for m in models[0]]
++        Xex_field = np.column_stack((Xex, cross_encode(ex, 1, 2, 3))).astype(np.int32, copy=False)
++        field_ex = [m.predict(Xex_field) for m in models[0]]
+         standard_ex = [m.predict(Xex) for m in models[1]]
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           rank_blend(uex, standard_ex, field_ex))

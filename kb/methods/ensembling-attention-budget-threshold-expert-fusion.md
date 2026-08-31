@@ -7,8 +7,8 @@ applies_when:
   - `time_ms`, `duration_ms`, and `tab` are available for every scored impression
   - a competitive base ranker lacks cumulative duration-weighted recent-exposure demand
   - train labels may fit a smoothed empirical expert while scored-split history remains label-free
-expected_delta: [0.0, 0.00013]
-expected_delta_basis: measured seed-mean gain +0.00013 on the ten-model heterogeneous rank blend; the effect was
+expected_delta: [0.0, 0.0001]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 1 measurement(s), so the promise is capped at the record; was: measured seed-mean gain +0.00013 on the ten-model heterogeneous rank blend; the effect was
   far below acceptance scale, so the promise is capped at the exact observed mean
 cost: 71 changed lines; measured runtime 215 s versus 179 s parent (~1.2x); numpy only
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, ensembling-seed-average, features-exposure-session]

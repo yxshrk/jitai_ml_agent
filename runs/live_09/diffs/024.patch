@@ -1,0 +1,152 @@
+--- node_014.py
++++ node_024.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user logistic BPR with one uniformly sampled negative per positive impression.
+ Ensemble Five field-aware and five standard members blended by tie-free within-user ranks.
++Expert  One independently stopped DCN-BPR lineage fused at ten percent normalized within-user rank.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -40,11 +41,16 @@
+     field = np.mean([normalized_ranks(users, x) for x in field_scores], axis=0)
+     return normalized_ranks(users, 0.6 * field + 0.4 * standard, field)
+ 
++def dcn_rank_blend(users, champion_scores, dcn_scores):
++    dcn = normalized_ranks(users, dcn_scores, champion_scores)
++    return normalized_ranks(users, 0.9 * champion_scores + 0.1 * dcn, champion_scores)
++
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False, dcn=False):
+         rng = np.random.default_rng(seed)
+         self.field_aware = field_aware
++        self.dcn = dcn
+         shape = (dim, len(FIELDS), k) if field_aware else (dim, k)
+         self.V = rng.normal(0, 0.01, shape).astype(np.float32)
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+@@ -52,6 +58,14 @@
+         self.lr, self.l2 = lr, l2
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        if dcn:
++            width = len(FIELDS) * k
++            self.C = rng.normal(0, 0.01, (width, width)).astype(np.float32)
++            self.cb = np.zeros(width, dtype=np.float32)
++            self.cv = rng.normal(0, 0.01, width).astype(np.float32)
++            self.mC = np.zeros_like(self.C); self.vC = np.zeros_like(self.C)
++            self.mcb = np.zeros_like(self.cb); self.vcb = np.zeros_like(self.cb)
++            self.mcv = np.zeros_like(self.cv); self.vcv = np.zeros_like(self.cv)
+         self.t = 0
+ 
+     def logits(self, X):
+@@ -64,7 +78,12 @@
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
++        score = self.b + self.W[X].sum(1) + inter
++        if self.dcn:
++            x0 = E.reshape(len(X), -1)
++            h = x0 @ self.C.T + self.cb
++            score = score + (x0 * h + x0) @ self.cv
++        return score, E, S
+ 
+     def step(self, Xp, Xn):
+         B = len(Xp)
+@@ -85,10 +104,28 @@
+         else:
+             np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+             np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
++        if self.dcn:
++            gC = np.zeros_like(self.C); gcb = np.zeros_like(self.cb); gcv = np.zeros_like(self.cv)
++            for X, grad, E in ((Xp, g, Ep), (Xn, -g, En)):
++                x0 = E.reshape(len(X), -1)
++                h = x0 @ self.C.T + self.cb
++                x1 = x0 * h + x0
++                gcv += x1.T @ grad
++                dx1 = grad[:, None] * self.cv
++                dh = dx1 * x0
++                gC += dh.T @ x0
++                gcb += dh.sum(0)
++                dx0 = dx1 * (h + 1) + dh @ self.C
++                np.add.at(gV, X, dx0.reshape(len(X), len(FIELDS), -1))
++            gC += 1e-4 * self.C; gcv += self.l2 * self.cv
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        params = [(self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)]
++        if self.dcn:
++            params += [(self.C, gC, self.mC, self.vC), (self.cb, gcb, self.mcb, self.vcb),
++                       (self.cv, gcv, self.mcv, self.vcv)]
++        for P, G, M, Vv in params:
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -181,21 +218,49 @@
+             models[branch].append(m); member_curves[branch].append(curve)
+             member_best_epochs[branch].append(best_epoch)
+ 
++    dcn_seed = a.seed + 10
++    dcn = FM(dim, k=a.k, lr=a.lr, seed=dcn_seed, dcn=True)
++    rng = np.random.default_rng(dcn_seed)
++    dcn_best, dcn_state, dcn_best_epoch, dcn_best_loss, dcn_best_pred, bad, dcn_curve = -1.0, None, 0, None, None, 0, []
++    for ep in range(1, epochs + 1):
++        neg_idx = neg_rows[pos_neg_start + (rng.random(len(pos_rows)) * pos_neg_count).astype(np.int64)]
++        idx = rng.permutation(len(pos_rows))
++        losses = [dcn.step(Xtr[pos_rows[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
++                  for i in range(0, len(idx), a.batch)]
++        sva_ep = dcn.predict(Xva); r = evaluate(uva, yva, sva_ep)
++        print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
++              f"primary {r['primary']:.4f}", flush=True)
++        if r['primary'] > dcn_best + 1e-5:
++            dcn_best, bad, dcn_best_epoch = r['primary'], 0, ep
++            dcn_best_loss, dcn_best_pred = float(np.mean(losses)), sva_ep
++            dcn_state = (dcn.V.copy(), dcn.W.copy(), np.float32(dcn.b),
++                         dcn.C.copy(), dcn.cb.copy(), dcn.cv.copy())
++        else:
++            bad += 1
++        dcn_curve.append((dcn_best_loss, dcn_best_pred))
++        if bad >= a.patience:
++            break
++    dcn.V, dcn.W, dcn.b, dcn.C, dcn.cb, dcn.cv = dcn_state
++    dcn.mV = dcn.vV = dcn.mW = dcn.vW = dcn.mC = dcn.vC = dcn.mcb = dcn.vcb = dcn.mcv = dcn.vcv = None
++
+     history = []
+-    history_epochs = max(max(x) for x in member_best_epochs)
++    history_epochs = max(max(max(x) for x in member_best_epochs), dcn_best_epoch)
+     for ep in range(1, history_epochs + 1):
+         field_states = [x[min(ep, len(x)) - 1] for x in member_curves[0]]
+         standard_states = [x[min(ep, len(x)) - 1] for x in member_curves[1]]
+-        sva_ep = rank_blend(uva, [x[1] for x in standard_states], [x[1] for x in field_states])
++        dcn_ep = dcn_curve[min(ep, len(dcn_curve)) - 1]
++        champion_ep = rank_blend(uva, [x[1] for x in standard_states], [x[1] for x in field_states])
++        sva_ep = dcn_rank_blend(uva, champion_ep, dcn_ep[1])
+         r = evaluate(uva, yva, sva_ep)
+-        history.append({'epoch': ep, 'train_loss': float(np.mean([x[0] for x in field_states + standard_states])),
++        history.append({'epoch': ep, 'train_loss': float(np.mean([x[0] for x in field_states + standard_states] + [dcn_ep[0]])),
+                         'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+ 
+     # ---- outputs ----
+     field_va = [m.predict(Xva) for m in models[0]]
+     standard_va = [m.predict(Xva) for m in models[1]]
+-    sva = rank_blend(uva, standard_va, field_va); r = evaluate(uva, yva, sva)
++    champion_va = rank_blend(uva, standard_va, field_va)
++    sva = dcn_rank_blend(uva, champion_va, dcn.predict(Xva)); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -206,8 +271,9 @@
+         Xex = encode(ex, 1, 2, 3, 4); uex = [x[1] for x in ex]
+         field_ex = [m.predict(Xex) for m in models[0]]
+         standard_ex = [m.predict(Xex) for m in models[1]]
++        champion_ex = rank_blend(uex, standard_ex, field_ex)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          rank_blend(uex, standard_ex, field_ex))
++                          dcn_rank_blend(uex, champion_ex, dcn.predict(Xex)))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

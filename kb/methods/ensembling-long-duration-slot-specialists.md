@@ -8,13 +8,13 @@ applies_when:
   - duration_ms is available at show time and the >180 s cohort has weak within-user ranking
   - enough same-user positive-negative training pairs exist with both durations above 180 s
 expected_delta: [0.0, 0.0003]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0003 over 1 measurement(s), so the promise is capped at the record; was: the exact three-specialist recipe measured fresh-seed mean Δ +0.00027 over a five-seed
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0003 over 2 measurement(s), so the promise is capped at the record; was: the exact three-specialist recipe measured fresh-seed mean Δ +0.00027 over a five-seed
   FM-BPR ensemble (seed-0 Δ +0.00042), but z = 0.60 and the gain was not accepted
 cost: ~68 changed lines; three additional BPR training phases; measured runtime 64 s versus 45 s (~1.4x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-fine-duration-and-tab-cross]
 conflicts_with: []
-status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)]
-evidence: [live_06:node_010]
+status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003); official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ -0.0010)]
+evidence: [live_06:node_010, live_09:node_020]
 ---
 ## Claim
 Train three BPR specialists only on same-user pairs whose positive and negative rows both exceed 180 seconds, then
@@ -42,5 +42,6 @@ all ordering among non-long rows remain unchanged.
 - The fixed 180-second threshold may not transfer under temporal cohort drift.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003)
+_Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0003); official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ -0.0010)
 - live_06:node_010 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6044, single-seed Δ +0.0004, seed-mean Δ +0.0003 (z 0.6) — rejected; 68 changed lines
+- live_09:node_020 on [official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend] (variant: causal-session long-duration branch): primary 0.6033, single-seed Δ -0.0010 — rejected; 15 changed lines

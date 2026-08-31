@@ -7,13 +7,13 @@ applies_when:
   - the champion's learning curve shows validation peaking early then falling while training loss keeps dropping (node_000: peak epoch 7 of 11)
   - most parameters are per-id embeddings (27 K users x 16 + 7.6 K videos x 16), the classic overfitting site
 expected_delta: [0.0, 0.0010]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 13 measurement(s), so the promise is capped at the record; was: overfitting is measured, so there is something to regularise, but the user x video memorisation
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 15 measurement(s), so the promise is capped at the record; was: overfitting is measured, so there is something to regularise, but the user x video memorisation
   is also where the signal lives — the sweet spot is narrow; expect small gains, confirm with seeds
 cost: ~15 lines (L2 sweep is a flag; field dropout ~10 lines); runtime 1x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, model-dcn-cross-head, training-schedule-lr-decay-early-stop, data-weighting-recency]
 conflicts_with: []
 status: proven — accepted on [official FM], [official FM + regularization-embedding-dropout-l2]
-evidence: [live_02:node_006, live_03:node_003, live_04:node_004, live_04:node_007, live_05:node_003, live_05:node_007, live_06:node_003, live_07:node_004, live_07:node_008, live_06:node_009, live_06:node_017, live_08:node_002, live_08:node_008, live_08:node_011]
+evidence: [live_02:node_006, live_03:node_003, live_04:node_004, live_04:node_007, live_05:node_003, live_05:node_007, live_06:node_003, live_07:node_004, live_07:node_008, live_06:node_009, live_06:node_017, live_08:node_002, live_08:node_008, live_08:node_011, live_09:node_002, live_09:node_006]
 ---
 ## Claim
 Stronger, better-targeted regularisation of the embeddings — L2 raised from 1e-6 toward 1e-5/1e-4, or dropout of
@@ -35,7 +35,7 @@ L2 applies the penalty only to ids present in the batch, scaled by their frequen
 - Dropout changes the effective learning rate; keep early stopping on primary.
 
 ## Measured
-_Verdict:_ ACCEPTED 5x (live_04:node_004 on [official FM] Δ +0.0009; live_05:node_003 on [official FM] Δ +0.0010; live_07:node_004 on [official FM] Δ +0.0010; live_08:node_002 on [official FM] Δ +0.0010; live_08:node_008 on [official FM + regularization-embedding-dropout-l2] Δ +0.0008); implementation failed in live_03:node_003
+_Verdict:_ ACCEPTED 6x (live_04:node_004 on [official FM] Δ +0.0009; live_05:node_003 on [official FM] Δ +0.0010; live_07:node_004 on [official FM] Δ +0.0010; live_08:node_002 on [official FM] Δ +0.0010; live_08:node_008 on [official FM + regularization-embedding-dropout-l2] Δ +0.0008; live_09:node_002 on [official FM] Δ +0.0010); implementation failed in live_03:node_003
 - live_02:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6036, single-seed Δ +0.0005, seed-mean Δ +0.0002 (t 1.15) — rejected; 4 changed lines
 - live_03:node_003 on [official FM]: FAILED at implement — no runnable script produced (recovery: None)
 - live_04:node_004 on [official FM]: primary 0.6025, single-seed Δ +0.0010, seed-mean Δ +0.0009 (t 2.86) — ACCEPTED; 2 changed lines
@@ -50,3 +50,5 @@ _Verdict:_ ACCEPTED 5x (live_04:node_004 on [official FM] Δ +0.0009; live_05:no
 - live_08:node_002 on [official FM]: primary 0.6025, single-seed Δ +0.0010, seed-mean Δ +0.0010 (z 3.28) — ACCEPTED; 2 changed lines
 - live_08:node_008 on [official FM + regularization-embedding-dropout-l2]: primary 0.6040, single-seed Δ +0.0010, seed-mean Δ +0.0008 (z 3.46) — ACCEPTED; 71 changed lines
 - live_08:node_011 on [official FM + ensembling-seed-average + ensembling-multiseed-heterogeneous-rank-blend]: primary 0.6043, single-seed Δ +0.0002, seed-mean Δ +0.0001 (z 0.5) — rejected; 2 changed lines
+- live_09:node_002 on [official FM]: primary 0.6025, single-seed Δ +0.0010, seed-mean Δ +0.0010 (z 3.28) — ACCEPTED; 2 changed lines
+- live_09:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0000, seed-mean Δ +0.0003 (z 1.16) — rejected; 2 changed lines

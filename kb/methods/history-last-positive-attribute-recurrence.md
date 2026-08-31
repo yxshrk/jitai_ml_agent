@@ -8,14 +8,14 @@ applies_when:
   - video tag, music_id, and video_type are legally available from the basic side table
   - candidate attributes vary within users and can therefore change their impression ordering
 expected_delta: [0.0, 0.0009]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0009 over 2 measurement(s), so the promise is capped at the record; was: on pointwise official FM, the exact four-field construction measured fresh-seed mean
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0009 over 3 measurement(s), so the promise is capped at the record; was: on pointwise official FM, the exact four-field construction measured fresh-seed mean
   Δ +0.0009 (seed-0 Δ +0.0005, z 3.12); do not attribute more than that confirmed gain
 cost: 86 changed lines; 34 s measured versus 15 s parent (~2.3x); numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session,
   model-dcn-cross-head]
 conflicts_with: [model-din-history-attention, history-ordered-user-tag-affinity]
 status: proven — accepted on [official FM]
-evidence: [live_07:node_001, live_07:node_023]
+evidence: [live_07:node_001, live_07:node_023, live_09:node_008, live_09:screen-g03]
 ---
 ## Claim
 Append categorical matches between the candidate and the user's latest strictly earlier positive video's first
@@ -45,6 +45,8 @@ when the exact author has never appeared in the user's history.
 - The confirmed gain belongs to pointwise official FM; changed-stack composition is not guaranteed.
 
 ## Measured
-_Verdict:_ ACCEPTED 1x (live_07:node_001 on [official FM] Δ +0.0009)
+_Verdict:_ ACCEPTED 1x (live_07:node_001 on [official FM] Δ +0.0009); screened 1x (live_09:screen-g03 DROPPED +0.0000)
 - live_07:node_001 on [official FM]: primary 0.6020, single-seed Δ +0.0005, seed-mean Δ +0.0009 (z 3.12) — ACCEPTED; 86 changed lines
 - live_07:node_023 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6039, single-seed Δ -0.0002 — rejected; 88 changed lines
+- live_09:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6036, single-seed Δ -0.0001 — rejected; 144 changed lines
+- live_09:screen-g03 on [official FM + loss-bpr-pairwise-within-user]: SCREENED DROPPED best_gain +0.0000 (latest_positive_music_match); stack -0.0004; has_latest_positive: varies 0.0, GAUC 0.5, additive +0.0000; latest_positive_gap_seconds: varies 0.783, GAUC 0.5158, additive -0.0000; latest_positive_tag_match: varies 0.345, GAUC 0.511, additive -0.0016; latest_positive_tag_known_pair: varies 0.038, GAUC 0.5, additive -0.0003; latest_positive_music_match: varies 0.005, GAUC 0.5004, additive +0.0000; latest_positive_music_known_pair: varies 0.0, GAUC 0.5, additive +0.0000; latest_positive_type_match: varies 0.044, GAUC 0.5015, additive -0.0000; latest_positive_type_known_pair: varies 0.0, GAUC 0.5, additive +0.0000

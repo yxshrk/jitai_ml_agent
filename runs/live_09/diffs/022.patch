@@ -1,0 +1,219 @@
+--- node_014.py
++++ node_022.py
+@@ -8,8 +8,10 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user logistic BPR with one uniformly sampled negative per positive impression.
+ Ensemble Five field-aware and five standard members blended by tie-free within-user ranks.
++Temporal Field-aware members add a tab-conditioned bias for bucketed candidate age since upload.
+ """
+ import argparse, csv, json, os, time
++import datetime
+ import numpy as np
+ from evaluate import evaluate   # official scorer (copied into the workspace by the harness)
+ 
+@@ -20,6 +22,23 @@
+     with open(path, newline='') as fh:
+         r = csv.reader(fh); head = next(r); idx = [head.index(c) for c in cols]
+         return [[rec[i] for i in idx] for rec in r]
++
++def day_number(value):
++    s = str(value).strip()
++    try:
++        n = int(float(s))
++        if 19000101 <= n <= 21001231:
++            return datetime.date(n // 10000, n // 100 % 100, n % 100).toordinal()
++        if n > 10_000_000_000:
++            n //= 1000
++        if n > 1_000_000_000:
++            return datetime.datetime.utcfromtimestamp(n).date().toordinal()
++    except (ValueError, OverflowError, OSError):
++        pass
++    try:
++        return datetime.date.fromisoformat(s[:10].replace('/', '-')).toordinal()
++    except ValueError:
++        return None
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+@@ -42,34 +61,41 @@
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with same-user BPR + Adam."""
+-    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False):
++    def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0, field_aware=False, temporal_dim=0):
+         rng = np.random.default_rng(seed)
+         self.field_aware = field_aware
++        self.temporal = field_aware and temporal_dim > 0
+         shape = (dim, len(FIELDS), k) if field_aware else (dim, k)
+         self.V = rng.normal(0, 0.01, shape).astype(np.float32)
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
++        if self.temporal:
++            self.age_bias = np.zeros(temporal_dim, dtype=np.float32)
++            self.mAge = np.zeros_like(self.age_bias); self.vAge = np.zeros_like(self.age_bias)
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def logits(self, X, age_ids=None):
+         if self.field_aware:
+             inter = np.zeros(len(X), dtype=np.float32)
+             for i in range(len(FIELDS)):
+                 for j in range(i + 1, len(FIELDS)):
+                     inter += (self.V[X[:, i], j] * self.V[X[:, j], i]).sum(1)
+-            return self.b + self.W[X].sum(1) + inter, None, None
++            score = self.b + self.W[X].sum(1) + inter
++            if self.temporal:
++                score += self.age_bias[age_ids]
++            return score, None, None
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+         inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+         return self.b + self.W[X].sum(1) + inter, E, S
+ 
+-    def step(self, Xp, Xn):
++    def step(self, Xp, Xn, Tp=None, Tn=None):
+         B = len(Xp)
+-        zp, Ep, Sp = self.logits(Xp)
+-        zn, En, Sn = self.logits(Xn)
++        zp, Ep, Sp = self.logits(Xp, Tp)
++        zn, En, Sn = self.logits(Xn, Tn)
+         d = zp - zn
+         g = (-sigmoid(-d) / B).astype(np.float32)                  # d(-log sigmoid(d))/d(d)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+@@ -86,16 +112,24 @@
+             np.add.at(gV, Xp, g[:, None, None] * (Sp[:, None, :] - Ep))
+             np.add.at(gV, Xn, -g[:, None, None] * (Sn[:, None, :] - En))
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        params = [(self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)]
++        if self.temporal:
++            gAge = np.zeros_like(self.age_bias)
++            np.add.at(gAge, Tp, g)
++            np.add.at(gAge, Tn, -g)
++            gAge += self.l2 * self.age_bias
++            params.append((self.age_bias, gAge, self.mAge, self.vAge))
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in params:
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+         return float(-np.mean(np.log(sigmoid(d) + 1e-9)))
+ 
+-    def predict(self, X, bs=200_000):
+-        return np.concatenate([self.logits(X[i:i + bs])[0] for i in range(0, len(X), bs)])
++    def predict(self, X, age_ids=None, bs=200_000):
++        return np.concatenate([self.logits(X[i:i + bs], None if age_ids is None else age_ids[i:i + bs])[0]
++                               for i in range(0, len(X), bs)])
+ 
+ def write_predictions(path, rows, scores):
+     with open(path, 'w', newline='') as fh:
+@@ -116,9 +150,22 @@
+     os.makedirs(a.out_dir, exist_ok=True); t0 = time.time()
+ 
+     # ---- load ----
+-    vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    videos = read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id', 'upload_dt'])
++    vid2author = {x[0]: x[1] for x in videos}
++    vid2upload = {x[0]: day_number(x[2]) for x in videos}
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'date'])
++    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'date'])
++
++    def age_logs(rows, vi, datei):
++        dates = {x[datei]: day_number(x[datei]) for x in rows}
++        out = np.full(len(rows), np.nan, dtype=np.float32)
++        for n, x in enumerate(rows):
++            shown, uploaded = dates[x[datei]], vid2upload.get(x[vi])
++            if shown is not None and uploaded is not None:
++                out[n] = np.log1p(max(shown - uploaded, 0))
++        return out
++    tr_age = age_logs(tr, 1, 5)
++    age_knots = np.quantile(tr_age[np.isfinite(tr_age)], np.linspace(0, 1, 8)[1:-1])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+@@ -139,6 +186,14 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    age_levels = len(age_knots) + 2
++    def temporal_ids(ages, X):
++        buckets = np.searchsorted(age_knots, ages, side='right')
++        buckets[~np.isfinite(ages)] = len(age_knots) + 1
++        return ((X[:, 3] - off[3]) * age_levels + buckets).astype(np.int32)
++    Ttr = temporal_ids(tr_age, Xtr)
++    Tva = temporal_ids(age_logs(va, 2, 6), Xva)
++    temporal_dim = dims[3] * age_levels
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     neg_rows = np.flatnonzero(ytr == 0)
+@@ -156,27 +211,33 @@
+     for branch, field_aware in enumerate((True, False)):
+         for member in range(5):
+             member_seed = a.seed + branch * 5 + member
+-            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, field_aware=field_aware)
++            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, field_aware=field_aware,
++                   temporal_dim=temporal_dim if field_aware else 0)
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_epoch, best_loss, best_pred, bad, curve = -1.0, None, 0, None, None, 0, []
+             for ep in range(1, epochs + 1):
+                 neg_idx = neg_rows[pos_neg_start + (rng.random(len(pos_rows)) * pos_neg_count).astype(np.int64)]
+                 idx = rng.permutation(len(pos_rows))
+-                losses = [m.step(Xtr[pos_rows[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]])
++                losses = [m.step(Xtr[pos_rows[idx[i:i + a.batch]]], Xtr[neg_idx[idx[i:i + a.batch]]],
++                                 Ttr[pos_rows[idx[i:i + a.batch]]], Ttr[neg_idx[idx[i:i + a.batch]]])
+                           for i in range(0, len(idx), a.batch)]
+-                sva_ep = m.predict(Xva); r = evaluate(uva, yva, sva_ep)
++                sva_ep = m.predict(Xva, Tva); r = evaluate(uva, yva, sva_ep)
+                 print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+                       f"primary {r['primary']:.4f}", flush=True)
+                 if r['primary'] > best + 1e-5:
+                     best, bad, best_epoch = r['primary'], 0, ep
+                     best_loss, best_pred = float(np.mean(losses)), sva_ep
+-                    best_state = (m.V.copy(), m.W.copy(), np.float32(m.b))
++                    best_state = (m.V.copy(), m.W.copy(), np.float32(m.b),
++                                  m.age_bias.copy() if m.temporal else None)
+                 else:
+                     bad += 1
+                 curve.append((best_loss, best_pred))
+                 if bad >= a.patience:
+                     break
+-            m.V, m.W, m.b = best_state
++            m.V, m.W, m.b, best_age = best_state
++            if m.temporal:
++                m.age_bias = best_age
++                m.mAge = m.vAge = None
+             m.mV = m.vV = m.mW = m.vW = None
+             models[branch].append(m); member_curves[branch].append(curve)
+             member_best_epochs[branch].append(best_epoch)
+@@ -193,8 +254,8 @@
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+ 
+     # ---- outputs ----
+-    field_va = [m.predict(Xva) for m in models[0]]
+-    standard_va = [m.predict(Xva) for m in models[1]]
++    field_va = [m.predict(Xva, Tva) for m in models[0]]
++    standard_va = [m.predict(Xva, Tva) for m in models[1]]
+     sva = rank_blend(uva, standard_va, field_va); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+@@ -202,10 +263,11 @@
+                    'best_epoch': int(history_epochs), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'date'])
+         Xex = encode(ex, 1, 2, 3, 4); uex = [x[1] for x in ex]
+-        field_ex = [m.predict(Xex) for m in models[0]]
+-        standard_ex = [m.predict(Xex) for m in models[1]]
++        Tex = temporal_ids(age_logs(ex, 2, 5), Xex)
++        field_ex = [m.predict(Xex, Tex) for m in models[0]]
++        standard_ex = [m.predict(Xex, Tex) for m in models[1]]
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           rank_blend(uex, standard_ex, field_ex))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")

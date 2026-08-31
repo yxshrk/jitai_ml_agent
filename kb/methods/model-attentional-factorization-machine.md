@@ -7,14 +7,14 @@ applies_when:
   - the current FM assigns every field-pair interaction the same fixed aggregation rule despite sharply different tab and duration effects (Facts §3–4)
   - global field-pair scalars failed, so useful weighting must depend on the particular row rather than only the field names
   - the champion has only five fields and therefore ten interaction vectors, keeping attention computation small on CPU
-expected_delta: [0.000, 0.0010]
-expected_delta_basis: row-conditioned interaction weighting is new, but field-aware and DCN results show that
+expected_delta: [0.0, 0.0001]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0001 over 2 measurement(s), so the promise is capped at the record; was: row-conditioned interaction weighting is new, but field-aware and DCN results show that
   extra interaction capacity is usually worth no more than about 0.0005 here
 cost: ~90 lines; ten attention entries per row; approximately 2x FM runtime and under 5 minutes for five members; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, features-exposure-session]
 conflicts_with: [model-field-weighted-fm-relation-scalars]
-status: untried
-evidence: []
+status: dead_under [official FM x1 (best Δ -0.0006); official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ +0.0001)]
+evidence: [live_09:node_005, live_09:node_023]
 ---
 ## Claim
 Replace the FM's equal sum of pairwise dot products with AFM attention over the ten element-wise field-interaction
@@ -41,5 +41,6 @@ and duration embeddings vary across a user's rows, the attention distribution al
 - Do not feed user-only side features into the attention block unless they interact with row-varying fields.
 
 ## Measured
-_Verdict:_ no measurement yet
-
+_Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM x1 (best Δ -0.0006); official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ +0.0001)
+- live_09:node_005 on [official FM]: primary 0.6009, single-seed Δ -0.0006 — rejected; 65 changed lines
+- live_09:node_023 on [official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend]: primary 0.6044, single-seed Δ +0.0001, seed-mean Δ +0.0001 (z 0.33) — rejected; 87 changed lines

@@ -7,13 +7,13 @@ applies_when:
   - the loss/feature levers have been tried first (organizers: capacity is not the bottleneck — k = 8/16/32 flat)
   - a head that adds explicit higher-order interactions on the same 5 x 16 embeddings can be back-propagated by hand (numpy only)
 expected_delta: [0.0, 0.0005]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 4 measurement(s), so the promise is capped at the record; was: organizers rank architecture after losses/features and measured embedding size flat; DCN-V2's
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 5 measurement(s), so the promise is capped at the record; was: organizers rank architecture after losses/features and measured embedding size flat; DCN-V2's
   gain in the literature comes from explicit bounded-degree crosses, which an FM lacks — modest here
 cost: ~120 lines (cross layer forward/backward, Adam for new matrices); runtime 2–3x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, aux-targets-is-click, regularization-embedding-dropout-l2]
 conflicts_with: []
 status: proven — accepted on [official FM + field-aware FM embeddings]
-evidence: [live_04:node_013, live_04:node_017, live_04:node_020, live_08:node_012]
+evidence: [live_04:node_013, live_04:node_017, live_04:node_020, live_08:node_012, live_09:node_024]
 ---
 ## Claim
 Concatenate the field embeddings (x0, 80-d), apply one DCN-V2 cross layer x1 = x0 * (W x0 + b) + x0, and score with
@@ -42,3 +42,4 @@ _Verdict:_ ACCEPTED 1x (live_04:node_017 on [official FM + field-aware FM embedd
 - live_04:node_017 on [official FM + field-aware FM embeddings]: primary 0.6032, single-seed Δ +0.0001, seed-mean Δ +0.0005 (t 2.63) — ACCEPTED; 62 changed lines
 - live_04:node_020 on [official FM + field-aware FM embeddings + heterogeneous-node-rank-average]: primary 0.6042, single-seed Δ -0.0003 — rejected; 52 changed lines
 - live_08:node_012 on [official FM + ensembling-seed-average + ensembling-multiseed-heterogeneous-rank-blend]: primary 0.6043, single-seed Δ +0.0002, seed-mean Δ +0.0004 (z 1.47) — rejected; 57 changed lines
+- live_09:node_024 on [official FM + loss-bpr-pairwise-within-user + ensembling-multiseed-heterogeneous-rank-blend]: primary 0.6043, single-seed Δ -0.0000 — rejected; 82 changed lines

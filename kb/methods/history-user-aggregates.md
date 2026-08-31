@@ -7,13 +7,13 @@ applies_when:
   - users have a train history to aggregate (facts §2: median 35 train rows, p10 = 6) — enough for rates, too few for attention models
   - the catalogue is closed (facts §1), so per-user rates by author / tab / duration bucket are well defined on train
 expected_delta: [0.0, 0.0010]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 6 measurement(s), so the promise is capped at the record; was: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0010 over 10 measurement(s), so the promise is capped at the record; was: organizers' lead #2 (history is entirely unused by the baseline); aggregates capture the
   first-order part of what DIN/SIM learn; histories are short, so cap expectations at 0.006
 cost: ~90 lines (time-ordered running counts on train; smoothed rates; bucketised fields); runtime ~1.5x; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-listwise-softmax-within-user, loss-lambdarank-pairs, features-duration-unknown-flag, data-weighting-recency, model-dcn-cross-head]
 conflicts_with: []
 status: proven — accepted on [official FM]
-evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004]
+evidence: [live_01:node_006, live_02:node_008, live_04:node_003, live_04:node_011, live_05:node_004, live_06:node_004, live_09:screen-g01, live_09:node_004, live_09:node_007, live_09:screen-g03, live_09:node_011, live_09:node_012]
 ---
 ## Claim
 Add per-user historical rates — the user's long_view rate for this author, this tab, this duration bucket, computed
@@ -39,10 +39,16 @@ action — in its simplest, leakage-safe form.
 - Using a row's own label in its rate is target leakage — the shift-by-one is mandatory (Critic checks this).
 
 ## Measured
-_Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010)
+_Verdict:_ ACCEPTED 1x (live_04:node_003 on [official FM] Δ +0.0010); screened 2x (live_09:screen-g01 kept +0.0008, live_09:screen-g03 kept +0.0004)
 - live_01:node_006 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6023, single-seed Δ -0.0014 — rejected; 792 changed lines
 - live_02:node_008 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6030, single-seed Δ -0.0001 — rejected; 70 changed lines
 - live_04:node_003 on [official FM]: primary 0.6021, single-seed Δ +0.0007, seed-mean Δ +0.0010 (t 4.83) — ACCEPTED; 128 changed lines
 - live_04:node_011 on [official FM + field-aware FM embeddings]: primary 0.6017, single-seed Δ -0.0014 — rejected; 69 changed lines
 - live_05:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0006 (z 1.89) — rejected; 87 changed lines
 - live_06:node_004 on [official FM]: primary 0.6019, single-seed Δ +0.0004, seed-mean Δ +0.0008 (z 1.85) — rejected; 75 changed lines
+- live_09:screen-g01 on [official FM]: SCREENED kept best_gain +0.0008 (stack); stack +0.0008; author_history_rate: varies 0.134, GAUC 0.5018, additive +0.0000; author_history_count: varies 0.136, GAUC 0.5044, additive -0.0004; tab_history_rate: varies 0.352, GAUC 0.554, additive -0.0000; tab_history_count: varies 0.387, GAUC 0.5303, additive +0.0001; duration_history_rate: varies 0.708, GAUC 0.5089, additive -0.0003; duration_history_count: varies 0.716, GAUC 0.5108, additive -0.0005
+- live_09:node_004 on [official FM]: primary 0.6022, single-seed Δ +0.0008, seed-mean Δ +0.0004 (z 1.38) — rejected; 108 changed lines
+- live_09:node_007 on [official FM]: primary 0.6027, single-seed Δ -0.0010 — rejected; 43 changed lines
+- live_09:screen-g03 on [official FM + loss-bpr-pairwise-within-user]: SCREENED kept best_gain +0.0004 (stack); stack +0.0004; author_rate: varies 0.136, GAUC 0.5018, additive -0.0001; author_support: varies 0.136, GAUC 0.5044, additive -0.0006; tab_rate: varies 0.39, GAUC 0.559, additive +0.0003; tab_support: varies 0.387, GAUC 0.5303, additive -0.0002; duration_rate: varies 0.732, GAUC 0.5099, additive +0.0001; duration_support: varies 0.722, GAUC 0.5064, additive +0.0003
+- live_09:node_011 on [official FM]: primary 0.6018, single-seed Δ -0.0019 — rejected; 7 changed lines
+- live_09:node_012 on [official FM + loss-bpr-pairwise-within-user]: primary 0.6037, single-seed Δ +0.0000, seed-mean Δ +0.0001 (z 0.23) — rejected; 9 changed lines

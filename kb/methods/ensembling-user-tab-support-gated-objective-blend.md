@@ -7,8 +7,8 @@ applies_when:
   - competitive pointwise and same-user BPR ensembles are both available
   - user-by-tab training histories vary in positive and negative class support
   - BPR may be unreliable for sparse or single-class user-tab histories
-expected_delta: [0.0, 0.0]
-expected_delta_basis: attribution-adjusted same-parent contrast: the complete gated node gained +0.00085 seed-mean,
+expected_delta: [0.0, 0.0008]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0008 over 1 measurement(s), so the promise is capped at the record; was: attribution-adjusted same-parent contrast: the complete gated node gained +0.00085 seed-mean,
   but an ungated five-seed BPR sibling gained +0.00115, so no positive gain can be assigned to the support gate itself
 cost: 85 changed lines; ten independently stopped FM phases; measured runtime 138 s; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, history-user-aggregates]

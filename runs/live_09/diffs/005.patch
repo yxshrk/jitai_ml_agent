@@ -1,0 +1,112 @@
+--- node_000.py
++++ node_005.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++        Row-conditioned attention replaces the equal sum over the ten field-pair interactions.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -23,34 +24,77 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
++    """score = b + sum_i w[x_i] + an attended sum of pair interactions, trained with logloss + Adam."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
+         self.lr, self.l2 = lr, l2
++        self.pi, self.pj = np.triu_indices(len(FIELDS), 1)
++        self.npairs = len(self.pi)
++        self.A = rng.normal(0, 0.01, (8, k)).astype(np.float32)
++        self.ab = np.zeros(8, dtype=np.float32)
++        self.q = np.zeros(8, dtype=np.float32)
++        self.p = np.ones(k, dtype=np.float32)
++        self.att_l2 = 1e-5
++        self.rng = rng
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mA = np.zeros_like(self.A); self.vA = np.zeros_like(self.A)
++        self.mab = np.zeros_like(self.ab); self.vab = np.zeros_like(self.ab)
++        self.mq = np.zeros_like(self.q); self.vq = np.zeros_like(self.q)
++        self.mp = np.zeros_like(self.p); self.vp = np.zeros_like(self.p)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def logits(self, X, training=False):
+         E = self.V[X]                                              # (B, F, k)
+-        S = E.sum(1)                                               # (B, k)
+-        inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
++        Q = E[:, self.pi] * E[:, self.pj]                          # (B, 10, k)
++        U = Q @ self.A.T + self.ab                                 # (B, 10, 8)
++        H = np.maximum(U, 0)
++        drop = None
++        if training:
++            drop = (self.rng.random(H.shape) >= 0.1).astype(np.float32) / 0.9
++            H *= drop
++        att = H @ self.q
++        att -= att.max(1, keepdims=True)
++        alpha = np.exp(att)
++        alpha /= alpha.sum(1, keepdims=True)
++        pooled = self.npairs * np.sum(alpha[:, :, None] * Q, axis=1)
++        inter = pooled @ self.p
++        return self.b + self.W[X].sum(1) + inter, E, (Q, U, H, alpha, pooled, drop)
+ 
+     def step(self, X, y):
+         B = len(y)
+-        z, E, S = self.logits(X)
++        z, E, cache = self.logits(X, training=True)
++        Q, U, H, alpha, pooled, drop = cache
+         g = ((sigmoid(z) - y) / B).astype(np.float32)              # d(logloss)/d(logit)
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         np.add.at(gW, X, g[:, None])
+-        np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
++        gpooled = g[:, None] * self.p
++        galpha = self.npairs * np.einsum('bk,bpk->bp', gpooled, Q)
++        gatt = alpha * (galpha - (alpha * galpha).sum(1, keepdims=True))
++        gp = pooled.T @ g
++        gq = np.einsum('bp,bph->h', gatt, H)
++        gH = gatt[:, :, None] * self.q
++        if drop is not None:
++            gH *= drop
++        gU = gH * (U > 0)
++        gA = np.einsum('bph,bpk->hk', gU, Q)
++        gab = gU.sum((0, 1))
++        gQ = self.npairs * alpha[:, :, None] * gpooled[:, None, :] + gU @ self.A
++        gE = np.zeros_like(E)
++        for r, (i, j) in enumerate(zip(self.pi, self.pj)):
++            gE[:, i] += gQ[:, r] * E[:, j]
++            gE[:, j] += gQ[:, r] * E[:, i]
++        np.add.at(gV, X, gE)
+         gV += self.l2 * self.V; gW += self.l2 * self.W
++        gA += self.att_l2 * self.A; gq += self.att_l2 * self.q; gp += self.att_l2 * self.p
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.A, gA, self.mA, self.vA), (self.ab, gab, self.mab, self.vab),
++                            (self.q, gq, self.mq, self.vq), (self.p, gp, self.mp, self.vp)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -116,12 +160,13 @@
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b),
++                                                     m.A.copy(), m.ab.copy(), m.q.copy(), m.p.copy())
+         else:
+             bad += 1
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++    m.V, m.W, m.b, m.A, m.ab, m.q, m.p = best_state
+ 
+     # ---- outputs ----
+     sva = m.predict(Xva); r = evaluate(uva, yva, sva)

@@ -1,0 +1,20 @@
+--- node_014.py
++++ node_018.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Loss    Same-user logistic BPR with one uniformly sampled negative per positive impression.
+ Ensemble Five field-aware and five standard members blended by tie-free within-user ranks.
++         Each branch uses member dimensions k=8, k=32, and three at the configured k (default 16).
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -156,7 +157,8 @@
+     for branch, field_aware in enumerate((True, False)):
+         for member in range(5):
+             member_seed = a.seed + branch * 5 + member
+-            m = FM(dim, k=a.k, lr=a.lr, seed=member_seed, field_aware=field_aware)
++            member_k = (8, 32, a.k, a.k, a.k)[member]
++            m = FM(dim, k=member_k, lr=a.lr, seed=member_seed, field_aware=field_aware)
+             rng = np.random.default_rng(member_seed)
+             best, best_state, best_epoch, best_loss, best_pred, bad, curve = -1.0, None, 0, None, None, 0, []
+             for ep in range(1, epochs + 1):

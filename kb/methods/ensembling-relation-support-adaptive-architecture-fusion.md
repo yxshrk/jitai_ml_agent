@@ -7,8 +7,8 @@ applies_when:
   - field-aware and standard FM branches are already combined by within-user rank fusion
   - train-only user-video and user-author exposure counts are available for every scored candidate
   - relation support varies enough that field-aware parameters may be less reliable on sparse relations
-expected_delta: [0.0, 0.0]
-expected_delta_basis: measured seed-flat on the heterogeneous multiseed stack (fresh-seed mean Δ -0.00001);
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: measured seed-flat on the heterogeneous multiseed stack (fresh-seed mean Δ -0.00001);
   the adaptive gate cannot claim the gain of the underlying fixed 0.6/0.4 blend
 cost: 33 changed lines beyond the heterogeneous blend; two train count tables; negligible inference overhead
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings,
