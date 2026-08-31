@@ -55,3 +55,5 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | menu_m3/m5 | coral | DIED (disk full) | - | - | coral disk refilled to 100%; coral retired as run host |
 | ruby_x1 | ruby | converged | 6 | 0.60443 | GENUINE composite adoption (+0.0026 one node); close attempted but node bug produced parent-identical predictions — no-op guard correctly rejected |
 | ruby_x2 | ruby | converged | 4 | 0.60401 | 3rd genuine composite adoption (0.60454, grey-confirm miss); close executed but weak |
+| ruby_y1 | ruby | converged | 3 | 0.60362 | phase guidance WORKED (opened with composite) but weak impl (+0.0018 sub-eps) -> fast convergence |
+| ruby_x3 | ruby | converged | 3 | 0.60425 | 4th genuine composite adoption; converged before close |
