@@ -131,8 +131,15 @@ top-level `code`. Member 1 (the anchor) MUST reference the champion node script
 via `script_source` exactly as given in ANCHOR SCRIPT below (the example path
 above is illustrative; use the real one); the anchor is the accepted champion
 reused verbatim, never rewritten, because a rewrite loses its measured quality.
-Every other member carries its own `code`, derived from that champion script by
-changing only what its family changes. Family ids are kebab-case
+For every OTHER member, PREFER `script_source` over fresh `code`: any node this
+run already trained (sibling scripts `nodes/NNN.py` beside the anchor path) is a
+finished, debugged artifact with a measured journal score — a rejected node
+within ~0.002 of the champion is an EXCELLENT member (rejection means "not
+better alone", which is irrelevant to a blend). Reuse those first; write fresh
+`code` (derived from the champion script, changing only what the family
+changes) ONLY for a mechanism family the run never built. Fresh members carry
+first-draft fidelity risk and consistently measure 0.001-0.004 below their
+family's potential. Family ids are kebab-case
 (`^[a-z][a-z0-9-]+$`), distinct, and seeds are distinct. Return the ordinary
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
