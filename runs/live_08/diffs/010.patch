@@ -1,0 +1,124 @@
+--- node_006.py
++++ node_010.py
+@@ -7,6 +7,7 @@
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Candidate trains five field-aware and five standard BPR members and blends their within-user ranks 0.6/0.4.
++Candidate adds a duration-weighted prior-session attention-budget rank expert at 10% weight.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -47,6 +48,57 @@
+     field = np.mean(np.stack([normalized_ranks(users, p) for p in field_predictions]), axis=0)
+     standard = np.mean(np.stack([normalized_ranks(users, p) for p in standard_predictions]), axis=0)
+     return normalized_ranks(users, 0.6 * field + 0.4 * standard, field)
++
++def expert_rank_blend(users, champion, expert):
++    champion_rank = normalized_ranks(users, champion)
++    return normalized_ranks(users, 0.9 * champion_rank + 0.1 * expert, champion_rank)
++
++def attention_keys(rows, ui, ti, di, xi):
++    users = np.asarray([x[ui] for x in rows])
++    times = np.asarray([int(float(x[xi])) for x in rows], dtype=np.int64)
++    demand = np.asarray([float(x[di]) for x in rows], dtype=np.float64)
++    demand[~np.isfinite(demand)] = 0.0
++    demand = np.minimum(np.maximum(demand, 0.0), 18000.0)
++    order = np.lexsort((np.arange(len(rows)), times, users))
++    sorted_users = users[order]
++    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1]
++    ends = np.r_[starts[1:], len(order)]
++    load = np.zeros(len(rows), dtype=np.float64)
++    for lo, hi in zip(starts, ends):
++        left, p, running = lo, lo, 0.0
++        while p < hi:
++            now = times[order[p]]
++            while left < p and times[order[left]] < now - 600_000:
++                running -= demand[order[left]]
++                left += 1
++            q = p + 1
++            while q < hi and times[order[q]] == now:
++                q += 1
++            load[order[p:q]] = running
++            running += demand[order[p:q]].sum()
++            p = q
++    threshold_bin = np.where(demand <= 0.0, 0, 1 + np.searchsorted([6000.0, 12000.0], demand))
++    load_bin = np.searchsorted([1.0, 18000.0, 54000.0, 180000.0], load)
++    return [(x[ti], int(threshold_bin[i]), int(load_bin[i])) for i, x in enumerate(rows)]
++
++def fit_attention_expert(keys, labels):
++    cells, baselines = {}, {}
++    global_rate = float(np.mean(labels))
++    for key, y in zip(keys, labels):
++        n, p = cells.get(key, (0, 0.0))
++        cells[key] = (n + 1, p + float(y))
++        base = key[:2]
++        n, p = baselines.get(base, (0, 0.0))
++        baselines[base] = (n + 1, p + float(y))
++    def score(score_keys):
++        out = np.empty(len(score_keys), dtype=np.float64)
++        for i, key in enumerate(score_keys):
++            bn, bp = baselines.get(key[:2], (0, 0.0))
++            prior = (bp + 20.0 * global_rate) / (bn + 20.0)
++            n, p = cells.get(key, (0, 0.0))
++            out[i] = (p + 50.0 * prior) / (n + 50.0)
++        return out
++    return score
+ 
+ class FM:
+     """Standard or field-aware FM trained with same-user BPR and Adam."""
+@@ -124,8 +176,8 @@
+ 
+     # ---- load ----
+     vid2author = dict(read_rows(f'{a.data_dir}/video_features_basic.csv', ['video_id', 'author_id']))
+-    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
+-    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view'])
++    tr = read_rows(f'{a.data_dir}/train.csv', ['user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
++    va = read_rows(f'{a.data_dir}/valid.csv', ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'long_view', 'time_ms'])
+ 
+     # ---- encode: 5 categorical fields -> contiguous ids; unseen values fall into a per-field UNK slot ----
+     edges = np.quantile(np.array([float(x[3]) for x in tr]), np.linspace(0, 1, 11)[1:-1])   # 10 duration buckets
+@@ -146,6 +198,8 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    expert_score = fit_attention_expert(attention_keys(tr, 0, 2, 3, 5), ytr)
++    expert_va = normalized_ranks(uva, expert_score(attention_keys(va, 1, 3, 4, 6)))
+     user_order = np.argsort(Xtr[:, 0], kind='stable')
+     starts = np.r_[0, np.flatnonzero(Xtr[user_order[1:], 0] != Xtr[user_order[:-1], 0]) + 1]
+     ends = np.r_[starts[1:], len(user_order)]
+@@ -196,6 +250,7 @@
+         pva = rank_blend(uva,
+                          [c[min(ep, len(c) - 1)] for c in member_curves[:5]],
+                          [c[min(ep, len(c) - 1)] for c in member_curves[5:]])
++        pva = expert_rank_blend(uva, pva, expert_va)
+         r = evaluate(uva, yva, pva)
+         losses = [h[min(ep, len(h) - 1)]['train_loss'] for h in member_histories]
+         history.append({'epoch': ep + 1, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+@@ -203,6 +258,7 @@
+ 
+     # ---- outputs ----
+     sva = rank_blend(uva, [m.predict(Xva) for m in models[:5]], [m.predict(Xva) for m in models[5:]])
++    sva = expert_rank_blend(uva, sva, expert_va)
+     r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+@@ -210,12 +266,15 @@
+                    'best_epoch': max(best_epochs), 'history': history,
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+-        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
++        ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms', 'time_ms'])
+         Xex = encode(ex, 1, 2, 3, 4)
++        uex = [x[1] for x in ex]
++        expert_ex = normalized_ranks(uex, expert_score(attention_keys(ex, 1, 3, 4, 5)))
++        champion_ex = rank_blend(uex,
++                                 [m.predict(Xex) for m in models[:5]],
++                                 [m.predict(Xex) for m in models[5:]])
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          rank_blend([x[1] for x in ex],
+-                                     [m.predict(Xex) for m in models[:5]],
+-                                     [m.predict(Xex) for m in models[5:]]))
++                          expert_rank_blend(uex, champion_ex, expert_ex))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

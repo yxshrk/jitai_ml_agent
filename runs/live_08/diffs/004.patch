@@ -1,0 +1,94 @@
+--- node_000.py
++++ node_004.py
+@@ -6,6 +6,7 @@
+ Model   Factorization Machine over 5 categorical fields (user_id, video_id, author_id, tab, dur_bucket),
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
++Head    A 16-unit ReLU NFM residual over the vector-valued FM bi-interaction pool.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -23,34 +24,60 @@
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
+ 
+ class FM:
+-    """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with logloss + Adam."""
++    """FM score plus a shallow NFM residual over the vector-valued pairwise interaction pool."""
+     def __init__(self, dim, k=16, lr=0.001, l2=1e-6, seed=0):
+         rng = np.random.default_rng(seed)
++        self.rng = rng
+         self.V = rng.normal(0, 0.01, (dim, k)).astype(np.float32)   # one k-vector per feature value
+         self.W = np.zeros(dim, dtype=np.float32)                     # one bias per feature value
+         self.b = np.float32(0.0)
++        self.A = rng.normal(0, 0.1, (k, 16)).astype(np.float32)
++        self.c = np.zeros(16, dtype=np.float32)
++        self.q = rng.normal(0, 0.001, 16).astype(np.float32)
+         self.lr, self.l2 = lr, l2
++        self.head_l2 = 1e-5
+         self.mV = np.zeros_like(self.V); self.vV = np.zeros_like(self.V)
+         self.mW = np.zeros_like(self.W); self.vW = np.zeros_like(self.W)
++        self.mA = np.zeros_like(self.A); self.vA = np.zeros_like(self.A)
++        self.mc = np.zeros_like(self.c); self.vc = np.zeros_like(self.c)
++        self.mq = np.zeros_like(self.q); self.vq = np.zeros_like(self.q)
+         self.t = 0
+ 
+-    def logits(self, X):
++    def logits(self, X, training=False):
+         E = self.V[X]                                              # (B, F, k)
+         S = E.sum(1)                                               # (B, k)
+-        inter = 0.5 * ((S ** 2).sum(1) - (E ** 2).sum((1, 2)))    # sum of all pairwise dot products
+-        return self.b + self.W[X].sum(1) + inter, E, S
++        p = 0.5 * (S ** 2 - (E ** 2).sum(1))                      # vector-valued pairwise interactions
++        inter = p.sum(1)                                           # sum of all pairwise dot products
++        hpre = p @ self.A + self.c
++        h = np.maximum(hpre, 0)
++        drop = None
++        if training:
++            drop = (self.rng.random(h.shape) >= 0.1).astype(np.float32) / 0.9
++            h = h * drop
++        return self.b + self.W[X].sum(1) + inter + h @ self.q, E, S, p, hpre, h, drop
+ 
+     def step(self, X, y):
+         B = len(y)
+-        z, E, S = self.logits(X)
++        z, E, S, p, hpre, h, drop = self.logits(X, training=True)
+         g = ((sigmoid(z) - y) / B).astype(np.float32)              # d(logloss)/d(logit)
++        active = (hpre > 0).astype(np.float32)
++        if drop is not None:
++            active *= drop
++        dhead = active * self.q[None, :]
++        dp = dhead @ self.A.T
+         gV = np.zeros_like(self.V); gW = np.zeros_like(self.W)
+         np.add.at(gW, X, g[:, None])
+-        np.add.at(gV, X, g[:, None, None] * (S[:, None, :] - E))
++        np.add.at(gV, X, g[:, None, None] * (1.0 + dp[:, None, :]) * (S[:, None, :] - E))
++        gh = g[:, None] * dhead
++        gA = p.T @ gh + self.head_l2 * self.A
++        gc = gh.sum(0)
++        gq = h.T @ g + self.head_l2 * self.q
+         gV += self.l2 * self.V; gW += self.l2 * self.W
+         self.t += 1
+         b1, b2, eps = 0.9, 0.999, 1e-8
+-        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW)):
++        for P, G, M, Vv in ((self.V, gV, self.mV, self.vV), (self.W, gW, self.mW, self.vW),
++                            (self.A, gA, self.mA, self.vA), (self.c, gc, self.mc, self.vc),
++                            (self.q, gq, self.mq, self.vq)):
+             M *= b1; M += (1 - b1) * G
+             Vv *= b2; Vv += (1 - b2) * (G * G)
+             P -= self.lr * (M / (1 - b1 ** self.t)) / (np.sqrt(Vv / (1 - b2 ** self.t)) + eps)
+@@ -116,12 +143,13 @@
+         print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+               f"primary {r['primary']:.4f}", flush=True)
+         if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
++            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b),
++                                                      m.A.copy(), m.c.copy(), m.q.copy())
+         else:
+             bad += 1
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++    m.V, m.W, m.b, m.A, m.c, m.q = best_state
+ 
+     # ---- outputs ----
+     sva = m.predict(Xva); r = evaluate(uva, yva, sva)

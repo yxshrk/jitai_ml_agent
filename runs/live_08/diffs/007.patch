@@ -1,0 +1,100 @@
+--- node_001.py
++++ node_007.py
+@@ -21,6 +21,26 @@
+ 
+ def sigmoid(x):
+     return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
++
++def normalized_ranks(users, scores, tiebreak=None):
++    users = np.asarray(users); scores = np.asarray(scores)
++    row = np.arange(len(scores))
++    if tiebreak is None:
++        order = np.lexsort((row, scores, users))
++    else:
++        order = np.lexsort((row, np.asarray(tiebreak), scores, users))
++    sorted_users = users[order]
++    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1]
++    sizes = np.diff(np.r_[starts, len(order)])
++    local = np.arange(len(order)) - np.repeat(starts, sizes)
++    ranks = np.empty(len(order), dtype=np.float64)
++    ranks[order] = local / np.repeat(np.maximum(sizes - 1, 1), sizes)
++    return ranks
++
++def rank_average(users, predictions):
++    raw = np.mean(np.stack(predictions), axis=0)
++    ranks = np.mean(np.stack([normalized_ranks(users, p) for p in predictions]), axis=0)
++    return normalized_ranks(users, ranks, raw)
+ 
+ class FM:
+     """score = b + sum_i w[x_i] + sum_{i<j} <V[x_i], V[x_j]>, trained with BPR + Adam."""
+@@ -114,28 +134,41 @@
+     print(f'loaded+encoded in {time.time() - t0:.0f}s: train {len(tr):,} valid {len(va):,} dim {dim:,}', flush=True)
+ 
+     # ---- train with early stopping on valid primary ----
+-    m = FM(dim, k=a.k, lr=a.lr, seed=a.seed); rng = np.random.default_rng(a.seed)
+-    best, best_state, bad, history = -1.0, None, 0, []
+-    for ep in range(1, epochs + 1):
+-        pos = pair_pos[rng.permutation(len(pair_pos))]
+-        pu = tr_user[pos]
+-        neg = neg_rows[neg_starts[pu] + rng.integers(0, neg_counts[pu])]
+-        losses = [m.step(Xtr[pos[i:i + a.batch]], Xtr[neg[i:i + a.batch]]) for i in range(0, len(pos), a.batch)]
+-        r = evaluate(uva, yva, m.predict(Xva))
+-        history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+-                        'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+-        print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
+-              f"primary {r['primary']:.4f}", flush=True)
+-        if r['primary'] > best + 1e-5:
+-            best, bad, best_state = r['primary'], 0, (m.V.copy(), m.W.copy(), np.float32(m.b))
+-        else:
+-            bad += 1
++    models, member_histories, member_curves, best_epochs = [], [], [], []
++    for member in range(5):
++        m = FM(dim, k=a.k, lr=a.lr, seed=a.seed + member); rng = np.random.default_rng(a.seed + member)
++        best, best_state, best_pred, best_epoch, bad, history, curve = -1.0, None, None, 0, 0, [], []
++        for ep in range(1, epochs + 1):
++            pos = pair_pos[rng.permutation(len(pair_pos))]
++            pu = tr_user[pos]
++            neg = neg_rows[neg_starts[pu] + rng.integers(0, neg_counts[pu])]
++            losses = [m.step(Xtr[pos[i:i + a.batch]], Xtr[neg[i:i + a.batch]]) for i in range(0, len(pos), a.batch)]
++            pva = m.predict(Xva); r = evaluate(uva, yva, pva)
++            history.append({'epoch': ep, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
++                            'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
++            print(f"epoch {ep:2d} | loss {np.mean(losses):.4f} | valid GAUC {r['GAUC']:.4f} nDCG@5 {r['nDCG@5']:.4f} "
++                  f"primary {r['primary']:.4f}", flush=True)
++            if r['primary'] > best + 1e-5:
++                best, bad, best_epoch = r['primary'], 0, ep
++                best_state, best_pred = (m.V.copy(), m.W.copy(), np.float32(m.b)), pva
++            else:
++                bad += 1
++            curve.append(best_pred)
+             if bad >= a.patience:
+                 break
+-    m.V, m.W, m.b = best_state
++        m.V, m.W, m.b = best_state
++        models.append(m); member_histories.append(history); member_curves.append(curve); best_epochs.append(best_epoch)
++
++    history = []
++    for ep in range(max(len(h) for h in member_histories)):
++        pva = rank_average(uva, [c[min(ep, len(c) - 1)] for c in member_curves])
++        r = evaluate(uva, yva, pva)
++        losses = [h[min(ep, len(h) - 1)]['train_loss'] for h in member_histories]
++        history.append({'epoch': ep + 1, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
++                        'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+ 
+     # ---- outputs ----
+-    sva = m.predict(Xva); r = evaluate(uva, yva, sva)
++    sva = rank_average(uva, [m.predict(Xva) for m in models]); r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+         json.dump({'gauc': r['GAUC'], 'ndcg5': r['nDCG@5'], 'primary': r['primary'],
+@@ -143,7 +176,9 @@
+                    'seed': a.seed, 'duration_s': time.time() - t0}, fh, indent=1)
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+-        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex, m.predict(encode(ex, 1, 2, 3, 4)))
++        Xex = encode(ex, 1, 2, 3, 4)
++        write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
++                          rank_average([x[1] for x in ex], [m.predict(Xex) for m in models]))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

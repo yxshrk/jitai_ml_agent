@@ -9,15 +9,15 @@ applies_when:
   - FM's scalar sum of pair interactions may discard which latent dimensions produced the interaction
   - DCN supplied only a small gain on a field-aware stack, while DIN and LightGBM failed and the cheaper
     bi-interaction nonlinear head has not been tested
-expected_delta: [0.000, 0.0008]
-expected_delta_basis: NFM adds row-dependent nonlinear interaction capacity with very few parameters, but this
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0004 over 1 measurement(s), so the promise is capped at the record; was: NFM adds row-dependent nonlinear interaction capacity with very few parameters, but this
   dataset repeatedly shows architecture gains no larger than acceptance scale
 cost: ~45 model-gradient lines; one 16-unit hidden layer; approximately 1.3x FM runtime; numpy only
 composes_with: [loss-bpr-pairwise-within-user, loss-warp-within-user-rank-weighting, ensembling-seed-average,
   features-exposure-session]
 conflicts_with: [model-attentional-factorization-machine, model-dcn-cross-head]
-status: untried
-evidence: []
+status: dead_under [official FM x1 (best Δ -0.0004)]
+evidence: [live_08:node_004]
 ---
 ## Claim
 Retain the FM score and add a shallow Neural Factorization Machine residual over its vector-valued bi-interaction
@@ -45,5 +45,5 @@ still cannot affect the ordering.
 - The head may improve calibration rather than order; BPR training is preferred so user-constant effects cancel.
 
 ## Measured
-_Verdict:_ no measurement yet
-
+_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM x1 (best Δ -0.0004)
+- live_08:node_004 on [official FM]: primary 0.6011, single-seed Δ -0.0004 — rejected; 46 changed lines

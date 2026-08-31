@@ -8,13 +8,13 @@ applies_when:
   - session features improve specific legal cohorts but are flat or harmful globally
   - duration_ms and tab are available at scoring time to define the fixed gate
 expected_delta: [0.0, 0.0005]
-expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 1 measurement(s), so the promise is capped at the record; was: the complete base/session two-branch gate measured fresh-seed mean Δ +0.00049 over the
+expected_delta_basis: measured (ADR-0018): best seed-mean gain +0.0005 over 2 measurement(s), so the promise is capped at the record; was: the complete base/session two-branch gate measured fresh-seed mean Δ +0.00049 over the
   five-seed BPR champion, but z=1.94; part of that movement may come from the session branch rather than fusion alone
 cost: 42 changed lines on the session parent; ten FM-BPR training phases; measured runtime 203 s; numpy only
 composes_with: [features-exposure-session, loss-bpr-pairwise-within-user, ensembling-seed-average]
 conflicts_with: [ensembling-top5-gated-hybrid-rank-fusion, ensembling-long-duration-slot-specialists]
-status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)]
-evidence: [live_07:node_019]
+status: dead_under [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005); official FM + ensembling-seed-average + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ -0.0000)]
+evidence: [live_07:node_019, live_08:node_015]
 ---
 ## Claim
 Train parallel five-seed base and session-feature BPR ensembles, then substitute the session ensemble's within-user
@@ -45,5 +45,6 @@ mismatch; a final rank transform restores a deterministic, tie-free ordering.
 - Do not carry valid exposure state into score-extra; rebuild each scored split independently from train state.
 
 ## Measured
-_Verdict:_ never accepted in 1 measurements on 1 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005)
+_Verdict:_ never accepted in 2 measurements on 2 stack(s); official FM + loss-bpr-pairwise-within-user + ensembling-seed-average x1 (best Δ +0.0005); official FM + ensembling-seed-average + ensembling-multiseed-heterogeneous-rank-blend x1 (best Δ -0.0000)
 - live_07:node_019 on [official FM + loss-bpr-pairwise-within-user + ensembling-seed-average]: primary 0.6046, single-seed Δ +0.0005, seed-mean Δ +0.0005 (z 1.94) — rejected; 42 changed lines
+- live_08:node_015 on [official FM + ensembling-seed-average + ensembling-multiseed-heterogeneous-rank-blend] (variant: short-threshold directional gating): primary 0.6041, single-seed Δ -0.0000 — rejected; 32 changed lines

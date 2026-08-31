@@ -1,0 +1,81 @@
+--- node_010.py
++++ node_015.py
+@@ -8,6 +8,7 @@
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Candidate trains five field-aware and five standard BPR members and blends their within-user ranks 0.6/0.4.
+ Candidate adds a duration-weighted prior-session attention-budget rank expert at 10% weight.
++Candidate gates the expert to below-user-median capped long-view thresholds.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -49,9 +50,28 @@
+     standard = np.mean(np.stack([normalized_ranks(users, p) for p in standard_predictions]), axis=0)
+     return normalized_ranks(users, 0.6 * field + 0.4 * standard, field)
+ 
+-def expert_rank_blend(users, champion, expert):
++def expert_rank_blend(users, champion, expert, gate):
+     champion_rank = normalized_ranks(users, champion)
+-    return normalized_ranks(users, 0.9 * champion_rank + 0.1 * expert, champion_rank)
++    expert = np.asarray(expert)
++    gate = np.asarray(gate, dtype=bool)
++    blended = champion_rank.copy()
++    blended[gate] = 0.9 * champion_rank[gate] + 0.1 * expert[gate]
++    return normalized_ranks(users, blended, champion_rank)
++
++def short_threshold_gate(users, durations):
++    users = np.asarray(users)
++    threshold = np.asarray([float(x) for x in durations], dtype=np.float64)
++    threshold[~np.isfinite(threshold)] = 0.0
++    threshold = np.minimum(np.maximum(threshold, 0.0), 18000.0)
++    order = np.argsort(users, kind='stable')
++    sorted_users = users[order]
++    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1]
++    ends = np.r_[starts[1:], len(order)]
++    gate = np.zeros(len(users), dtype=bool)
++    for lo, hi in zip(starts, ends):
++        idx = order[lo:hi]
++        gate[idx] = threshold[idx] < np.median(threshold[idx])
++    return gate
+ 
+ def attention_keys(rows, ui, ti, di, xi):
+     users = np.asarray([x[ui] for x in rows])
+@@ -200,6 +220,7 @@
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
+     expert_score = fit_attention_expert(attention_keys(tr, 0, 2, 3, 5), ytr)
+     expert_va = normalized_ranks(uva, expert_score(attention_keys(va, 1, 3, 4, 6)))
++    short_va = short_threshold_gate(uva, [x[4] for x in va])
+     user_order = np.argsort(Xtr[:, 0], kind='stable')
+     starts = np.r_[0, np.flatnonzero(Xtr[user_order[1:], 0] != Xtr[user_order[:-1], 0]) + 1]
+     ends = np.r_[starts[1:], len(user_order)]
+@@ -250,7 +271,7 @@
+         pva = rank_blend(uva,
+                          [c[min(ep, len(c) - 1)] for c in member_curves[:5]],
+                          [c[min(ep, len(c) - 1)] for c in member_curves[5:]])
+-        pva = expert_rank_blend(uva, pva, expert_va)
++        pva = expert_rank_blend(uva, pva, expert_va, short_va)
+         r = evaluate(uva, yva, pva)
+         losses = [h[min(ep, len(h) - 1)]['train_loss'] for h in member_histories]
+         history.append({'epoch': ep + 1, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+@@ -258,7 +279,7 @@
+ 
+     # ---- outputs ----
+     sva = rank_blend(uva, [m.predict(Xva) for m in models[:5]], [m.predict(Xva) for m in models[5:]])
+-    sva = expert_rank_blend(uva, sva, expert_va)
++    sva = expert_rank_blend(uva, sva, expert_va, short_va)
+     r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+@@ -270,11 +291,12 @@
+         Xex = encode(ex, 1, 2, 3, 4)
+         uex = [x[1] for x in ex]
+         expert_ex = normalized_ranks(uex, expert_score(attention_keys(ex, 1, 3, 4, 5)))
++        short_ex = short_threshold_gate(uex, [x[4] for x in ex])
+         champion_ex = rank_blend(uex,
+                                  [m.predict(Xex) for m in models[:5]],
+                                  [m.predict(Xex) for m in models[5:]])
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+-                          expert_rank_blend(uex, champion_ex, expert_ex))
++                          expert_rank_blend(uex, champion_ex, expert_ex, short_ex))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':

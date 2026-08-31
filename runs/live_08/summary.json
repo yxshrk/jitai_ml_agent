@@ -1,0 +1,435 @@
+{
+ "run_id": "live_08",
+ "stop_reason": "wall-clock 21600s",
+ "generations": 4,
+ "nodes": 16,
+ "champion": 6,
+ "champion_metrics": {
+  "gauc": 0.6708002088480625,
+  "ndcg5": 0.5374674075413834,
+  "primary": 0.604133808194723,
+  "ndcg5_disc": 0.7242561821141262,
+  "by_group": {
+   "dur18-60s": {
+    "rows": 33235,
+    "gauc": 0.6434,
+    "ndcg5": 0.46,
+    "primary": 0.5517
+   },
+   "dur60-180s": {
+    "rows": 46565,
+    "gauc": 0.6509,
+    "ndcg5": 0.488,
+    "primary": 0.5695
+   },
+   "dur<18s": {
+    "rows": 20101,
+    "gauc": 0.7033,
+    "ndcg5": 0.4055,
+    "primary": 0.5544
+   },
+   "dur=0": {
+    "rows": 2107,
+    "gauc": 0.5921,
+    "ndcg5": 0.0863,
+    "primary": 0.3392
+   },
+   "dur>180s": {
+    "rows": 22901,
+    "gauc": 0.6293,
+    "ndcg5": 0.3779,
+    "primary": 0.5036
+   },
+   "tab=0": {
+    "rows": 13726,
+    "gauc": 0.5676,
+    "ndcg5": 0.0633,
+    "primary": 0.3154
+   },
+   "tab=1": {
+    "rows": 92672,
+    "gauc": 0.6211,
+    "ndcg5": 0.5414,
+    "primary": 0.5813
+   },
+   "tab=2": {
+    "rows": 3834,
+    "gauc": 0.6435,
+    "ndcg5": 0.5148,
+    "primary": 0.5791
+   },
+   "tab=4": {
+    "rows": 7877,
+    "gauc": 0.5795,
+    "ndcg5": 0.5479,
+    "primary": 0.5637
+   },
+   "tab=6": {
+    "rows": 5170,
+    "gauc": 0.6459,
+    "ndcg5": 0.106,
+    "primary": 0.376
+   }
+  },
+  "by_pair": {
+   "same_tab": {
+    "share": 0.735,
+    "err": 0.38,
+    "contrib": 0.2793
+   },
+   "diff_tab": {
+    "share": 0.265,
+    "err": 0.188,
+    "contrib": 0.0499
+   },
+   "tab1_x_tab1": {
+    "share": 0.686,
+    "err": 0.379,
+    "contrib": 0.2601
+   },
+   "same_date": {
+    "share": 0.236,
+    "err": 0.335,
+    "contrib": 0.0792
+   },
+   "diff_date": {
+    "share": 0.764,
+    "err": 0.327,
+    "contrib": 0.25
+   },
+   "gap>1d": {
+    "share": 0.618,
+    "err": 0.326,
+    "contrib": 0.2018
+   },
+   "gap<10min": {
+    "share": 0.02,
+    "err": 0.34,
+    "contrib": 0.0068
+   },
+   "pos_shorter": {
+    "share": 0.513,
+    "err": 0.299,
+    "contrib": 0.1532
+   },
+   "pos_longer": {
+    "share": 0.485,
+    "err": 0.362,
+    "contrib": 0.1758
+   },
+   "total_err": 0.3292
+  }
+ },
+ "baseline_valid_primary": 0.6014687563529677,
+ "delta_vs_baseline_valid": 0.00267,
+ "top3_valid": [
+  {
+   "n": 12,
+   "primary": 0.6043100060222562
+  },
+  {
+   "n": 11,
+   "primary": 0.6042946856591713
+  },
+  {
+   "n": 10,
+   "primary": 0.6042785207152845
+  }
+ ],
+ "designated": 6,
+ "final_ranking": [
+  {
+   "n": 6,
+   "valid_primary": 0.604133808194723,
+   "fresh_seeds": [
+    0.6043982388227487,
+    0.6041081160515795,
+    0.6043710216628997
+   ],
+   "accepted": true,
+   "mean": 0.6042924588457427,
+   "std": 0.00016022450738714482,
+   "n_seeds": 3
+  },
+  {
+   "n": 7,
+   "valid_primary": 0.6037623529690725,
+   "fresh_seeds": [
+    0.6035022487083593,
+    0.6039991791668944,
+    0.6041407323251042
+   ],
+   "accepted": true,
+   "mean": 0.603880720066786,
+   "std": 0.0003353203707080456,
+   "n_seeds": 3
+  },
+  {
+   "n": 5,
+   "valid_primary": 0.6036025872235276,
+   "fresh_seeds": [
+    0.6037850265789089,
+    0.6032429221606551,
+    0.6036001948959435,
+    0.6037473923506763,
+    0.6035326876994711
+   ],
+   "accepted": true,
+   "mean": 0.6035816447371309,
+   "std": 0.00021581840092065174,
+   "n_seeds": 5
+  },
+  {
+   "n": 8,
+   "valid_primary": 0.6039525877444525,
+   "fresh_seeds": [
+    0.6036597883114984,
+    0.6033329940719132,
+    0.6035348619903409,
+    0.6036895414211436,
+    0.6034873877878435
+   ],
+   "accepted": true,
+   "mean": 0.6035409147165479,
+   "std": 0.0001434865768563354,
+   "n_seeds": 5
+  },
+  {
+   "n": 3,
+   "valid_primary": 0.6029172490595951,
+   "fresh_seeds": [
+    0.6029694019136509,
+    0.6024001158605996,
+    0.602831949124412
+   ],
+   "accepted": true,
+   "mean": 0.6027338222995542,
+   "std": 0.00029705775173724107,
+   "n_seeds": 3
+  },
+  {
+   "n": 1,
+   "valid_primary": 0.6030457178505284,
+   "fresh_seeds": [
+    0.6028506298315512,
+    0.602047857756379,
+    0.6025559918563459
+   ],
+   "accepted": true,
+   "mean": 0.6024848264814254,
+   "std": 0.0004060900566496989,
+   "n_seeds": 3
+  },
+  {
+   "n": 2,
+   "valid_primary": 0.6025029206269998,
+   "fresh_seeds": [
+    0.6028729444838677,
+    0.6017090117891591,
+    0.6020694898356386,
+    0.6027857969882158,
+    0.6026234157272281
+   ],
+   "accepted": true,
+   "mean": 0.6024121317648219,
+   "std": 0.0005020946538723934,
+   "n_seeds": 5
+  },
+  {
+   "n": 12,
+   "valid_primary": 0.6043100060222562,
+   "fresh_seeds": [
+    0.6046157958166243,
+    0.6044273740133262,
+    0.6048999492748063
+   ],
+   "accepted": false,
+   "mean": 0.6046477063682523,
+   "std": 0.00023789820705426255,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  },
+  {
+   "n": 10,
+   "valid_primary": 0.6042785207152845,
+   "fresh_seeds": [
+    0.6045178124394952,
+    0.6042453883304504,
+    0.6045052844844434
+   ],
+   "accepted": false,
+   "mean": 0.6044228284181297,
+   "std": 0.0001537952403397722,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  },
+  {
+   "n": 11,
+   "valid_primary": 0.6042946856591713,
+   "fresh_seeds": [
+    0.6044102022008228,
+    0.6044464948235186,
+    0.6043860673978856
+   ],
+   "accepted": false,
+   "mean": 0.604414254807409,
+   "std": 3.0416872904143558e-05,
+   "n_seeds": 3,
+   "excluded": "not accepted (strict designation: the run never submits a node it rejected)"
+  }
+ ],
+ "usage": {
+  "calls": 54,
+  "tokens_in": 2172098,
+  "tokens_out": 202532,
+  "cache_read": 1272707,
+  "cache_write": 0,
+  "cost_usd": 11.209268500000002
+ },
+ "wall_clock_s": 32213.1,
+ "champion_seed_mean": 0.60429,
+ "best_single_seed": 0.6043100060222562,
+ "convergence_rule": "ADR-0012 (revised): 3 generations without a seed-confirmed champion change",
+ "official_rule": {
+  "best_single_seed": 0.604133808194723,
+  "streak": 2,
+  "converged_at_generation": null,
+  "champion_at_stop": null
+ },
+ "official_rule_submission": {
+  "note": "the literal single-seed rule had not converged when the run ended",
+  "node": null
+ },
+ "convergence_switch": "confirmed",
+ "campaigns": true,
+ "families": {
+  "aux-targets": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "data-weighting": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "encoding": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "ensembling": {
+   "status": "closed",
+   "generations": [
+    2,
+    3,
+    4
+   ],
+   "nodes": [
+    6,
+    9,
+    13,
+    15
+   ],
+   "best_gain": 0.00156,
+   "flat_streak": 2,
+   "evidence": "closed at generation 4: 2 campaign generations without an accepted node (nodes [6, 9, 13, 15], best gain 0.00156)"
+  },
+  "features": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "history": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "ranking-loss": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "watch-time": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "model": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "sequential-model": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "regularization": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  },
+  "training-schedule": {
+   "status": "open",
+   "generations": [],
+   "nodes": [],
+   "best_gain": null,
+   "flat_streak": 0,
+   "evidence": ""
+  }
+ },
+ "designation_rule": "strict",
+ "designation_events": [
+  "designation (strict): node_012 leads on fresh-seed mean (0.60465) but was not accepted; excluded \u2014 accepted lineage only"
+ ],
+ "best_unaccepted": {
+  "n": 12,
+  "mean": 0.60465,
+  "valid_primary": 0.6043100060222562,
+  "n_seeds": 3
+ },
+ "tokens": {
+  "in_total": 2172098,
+  "in_cached": 1272707,
+  "in_uncached": 899391,
+  "out": 202532
+ },
+ "interventions": 0,
+ "k": 5,
+ "k_later": 3,
+ "eps": 0.002,
+ "n_converge": 3,
+ "iteration_unit": "node",
+ "iterations_used": 16
+}

@@ -1,0 +1,81 @@
+--- node_006.py
++++ node_014.py
+@@ -7,6 +7,7 @@
+         k=16, Adam lr=1e-3, batch 8192, <=40 epochs, early stopping (patience 4) on valid primary --
+         the same numbers as kuairand-starter-kit/baseline.py, so seed 0 reproduces valid primary 0.6015.
+ Candidate trains five field-aware and five standard BPR members and blends their within-user ranks 0.6/0.4.
++Candidate gates the field-aware blend weight using train-only user-video and user-author relation support.
+ """
+ import argparse, csv, json, os, time
+ import numpy as np
+@@ -43,10 +44,27 @@
+     ranks = np.mean(np.stack([normalized_ranks(users, p) for p in predictions]), axis=0)
+     return normalized_ranks(users, ranks, raw)
+ 
+-def rank_blend(users, field_predictions, standard_predictions):
++def rank_blend(users, field_predictions, standard_predictions, confidence):
+     field = np.mean(np.stack([normalized_ranks(users, p) for p in field_predictions]), axis=0)
+     standard = np.mean(np.stack([normalized_ranks(users, p) for p in standard_predictions]), axis=0)
+-    return normalized_ranks(users, 0.6 * field + 0.4 * standard, field)
++    field_weight = 0.5 + 0.2 * np.asarray(confidence)
++    return normalized_ranks(users, field_weight * field + (1.0 - field_weight) * standard, field)
++
++def relation_count_tables(X, dim):
++    user = X[:, 0].astype(np.int64)
++    return [np.unique(user * dim + X[:, col], return_counts=True) for col in (1, 2)]
++
++def relation_confidence(X, dim, tables):
++    user = X[:, 0].astype(np.int64)
++    support = []
++    for col, (keys, counts) in zip((1, 2), tables):
++        query = user * dim + X[:, col]
++        pos = np.searchsorted(keys, query)
++        clipped = np.minimum(pos, len(keys) - 1)
++        found = (pos < len(keys)) & (keys[clipped] == query)
++        support.append(np.where(found, counts[clipped], 0).astype(np.float64))
++    combined = support[0] + 0.5 * support[1]
++    return combined / (combined + 3.0)
+ 
+ class FM:
+     """Standard or field-aware FM trained with same-user BPR and Adam."""
+@@ -146,6 +164,8 @@
+         return X
+     Xtr = encode(tr, 0, 1, 2, 3); ytr = np.array([1.0 if x[4] != '0' else 0.0 for x in tr], dtype=np.float32)
+     Xva = encode(va, 1, 2, 3, 4); yva = [1 if x[5] != '0' else 0 for x in va]; uva = [x[1] for x in va]
++    support_tables = relation_count_tables(Xtr, dim)
++    confidence_va = relation_confidence(Xva, dim, support_tables)
+     user_order = np.argsort(Xtr[:, 0], kind='stable')
+     starts = np.r_[0, np.flatnonzero(Xtr[user_order[1:], 0] != Xtr[user_order[:-1], 0]) + 1]
+     ends = np.r_[starts[1:], len(user_order)]
+@@ -195,14 +215,15 @@
+     for ep in range(max(len(h) for h in member_histories)):
+         pva = rank_blend(uva,
+                          [c[min(ep, len(c) - 1)] for c in member_curves[:5]],
+-                         [c[min(ep, len(c) - 1)] for c in member_curves[5:]])
++                         [c[min(ep, len(c) - 1)] for c in member_curves[5:]],
++                         confidence_va)
+         r = evaluate(uva, yva, pva)
+         losses = [h[min(ep, len(h) - 1)]['train_loss'] for h in member_histories]
+         history.append({'epoch': ep + 1, 'train_loss': float(np.mean(losses)), 'val_gauc': r['GAUC'],
+                         'val_ndcg5': r['nDCG@5'], 'val_primary': r['primary']})
+ 
+     # ---- outputs ----
+-    sva = rank_blend(uva, [m.predict(Xva) for m in models[:5]], [m.predict(Xva) for m in models[5:]])
++    sva = rank_blend(uva, [m.predict(Xva) for m in models[:5]], [m.predict(Xva) for m in models[5:]], confidence_va)
+     r = evaluate(uva, yva, sva)
+     write_predictions(f'{a.out_dir}/predictions.csv', va, sva)
+     with open(f'{a.out_dir}/metrics.json', 'w') as fh:
+@@ -212,10 +233,12 @@
+     if a.score_extra:
+         ex = read_rows(a.score_extra, ['row_id', 'user_id', 'video_id', 'tab', 'duration_ms'])
+         Xex = encode(ex, 1, 2, 3, 4)
++        confidence_ex = relation_confidence(Xex, dim, support_tables)
+         write_predictions(f'{a.out_dir}/predictions_extra.csv', ex,
+                           rank_blend([x[1] for x in ex],
+                                      [m.predict(Xex) for m in models[:5]],
+-                                     [m.predict(Xex) for m in models[5:]]))
++                                     [m.predict(Xex) for m in models[5:]],
++                                     confidence_ex))
+     print(f"done: valid primary {r['primary']:.4f} in {time.time() - t0:.0f}s")
+ 
+ if __name__ == '__main__':
