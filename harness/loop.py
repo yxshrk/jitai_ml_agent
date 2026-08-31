@@ -719,6 +719,34 @@ class Loop:
             if result.ok:
                 node.metrics, node.primary = result.metrics, result.metrics["primary"]
                 accepted, note = self.acceptance(node, result.metrics)
+                if (not accepted and node.failure_stage == "noop_predictions"
+                        and node.fixer_eligible):
+                    # Degenerate ensemble collapsed to its parent (acceptance-time
+                    # detection, so the ok-path fixer never sees it). Give the fixer
+                    # one repair shot here, then re-run and re-judge once.
+                    try:
+                        original_code = node.code_path.read_text()
+                        fixed = self.brain.fix(
+                            original_code,
+                            "Ensemble output is byte-identical to the parent's "
+                            "predictions: members likely collapsed (shared seed, "
+                            "anchor duplication, or gating that removes all "
+                            "members). Ensure distinct member seeds and that the "
+                            "final aggregation actually combines all member score "
+                            "vectors.")
+                        if fixed != original_code and not self.check_code_leakage(fixed):
+                            node.code_path.write_text(fixed)
+                            retry, _ = self.run_experiment(node, self.config.timeout_s)
+                            if retry.ok:
+                                node.failure_stage = None
+                                result = retry
+                                node.metrics = retry.metrics
+                                node.primary = retry.metrics["primary"]
+                                accepted, note = self.acceptance(node, result.metrics)
+                    except BudgetExhausted:
+                        self.stop_reason = "budget_exhausted"
+                    except Exception as exc:
+                        print(f"[loop] noop fixer failed: {exc}", file=sys.stderr)
                 if accepted:
                     delta = node.primary - self.champion.primary
                     node.status = "accepted"
@@ -920,6 +948,34 @@ class Loop:
                 self.stagnation += 1
             else:
                 accepted, note = self.acceptance(node, result.metrics)
+                if (not accepted and node.failure_stage == "noop_predictions"
+                        and node.fixer_eligible):
+                    # Degenerate ensemble collapsed to its parent (acceptance-time
+                    # detection, so the ok-path fixer never sees it). Give the fixer
+                    # one repair shot here, then re-run and re-judge once.
+                    try:
+                        original_code = node.code_path.read_text()
+                        fixed = self.brain.fix(
+                            original_code,
+                            "Ensemble output is byte-identical to the parent's "
+                            "predictions: members likely collapsed (shared seed, "
+                            "anchor duplication, or gating that removes all "
+                            "members). Ensure distinct member seeds and that the "
+                            "final aggregation actually combines all member score "
+                            "vectors.")
+                        if fixed != original_code and not self.check_code_leakage(fixed):
+                            node.code_path.write_text(fixed)
+                            retry, _ = self.run_experiment(node, self.config.timeout_s)
+                            if retry.ok:
+                                node.failure_stage = None
+                                result = retry
+                                node.metrics = retry.metrics
+                                node.primary = retry.metrics["primary"]
+                                accepted, note = self.acceptance(node, result.metrics)
+                    except BudgetExhausted:
+                        self.stop_reason = "budget_exhausted"
+                    except Exception as exc:
+                        print(f"[loop] noop fixer failed: {exc}", file=sys.stderr)
                 if accepted:
                     delta = node.primary - self.champion.primary
                     node.status = "accepted"
