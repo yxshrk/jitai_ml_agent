@@ -1,0 +1,1 @@
+{"config": {"aux_weight": 0.03, "bce_mix": 0.45, "dropout": 0.24266170459526964, "gamma": 0.24, "half_life": 3.5, "history_dropout": 0.11170785865414644, "lr": 0.000665058151976585, "step_every": 1.5, "weight_decay": 8.7712937687952e-05}, "config_index": 0, "epochs": 2, "primary": 0.5985382361451881, "seconds": 67.316, "seed": 42, "stage": "coarse"}

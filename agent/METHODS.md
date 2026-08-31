@@ -375,7 +375,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - treats: overfit
 - citation: Wu et al., Stochastic Shared Embeddings, NeurIPS 2019; adaptive sparse-embedding regularization literature.
 - expected_gain / cost: consistent small gains over uniform reg in papers; unknown here / low-med.
-- status_pure: untried
+- status_pure: measured-flat (SIX attempts, all sub-eps: novel_r1 +0.0004, v2_r8 flat, ruby_y4 +0.0002 grey, v2_1k flat, menu_m3/m4 flat — the single most re-attempted flat card of the campaign; do not re-propose on Pure)
 - status_1k: untried
 
 ### group-hard-pair-bpr: User-grouped hard-pair mining for the BPR term
