@@ -1,0 +1,3 @@
+{"seed": 42, "val_primary": 0.6042608987222675, "model": "seq_deepfm_composite"}
+{"seed": 43, "val_primary": 0.604320578756728, "model": "seq_deepfm_composite"}
+{"seed": 44, "val_primary": 0.6032781803265246, "model": "seq_deepfm_composite"}

@@ -1,0 +1,3 @@
+{"seed": 42, "val_primary": 0.6041341801414648, "model": "seq_deepfm_gauge_fixed_bce"}
+{"seed": 43, "val_primary": 0.6038435120595839, "model": "seq_deepfm_gauge_fixed_bce"}
+{"seed": 44, "val_primary": 0.6037187896733642, "model": "seq_deepfm_gauge_fixed_bce"}

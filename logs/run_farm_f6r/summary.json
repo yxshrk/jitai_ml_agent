@@ -1,0 +1,183 @@
+{
+  "run_dir": "logs/run_farm_f6r",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "budget_exhausted",
+  "iterations": 5,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.6705965550721253,
+    "ndcg5": 0.5378746018683752,
+    "primary": 0.6042355784702502,
+    "member_primaries": [
+      0.6039933520926812,
+      0.6043339295531385,
+      0.6039117133581908
+    ],
+    "ensemble": {
+      "method": "mean_logit",
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    "history": [
+      {
+        "seed": 42,
+        "best_primary": 0.6039933520926812,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.560464,
+            "lr": 0.0007,
+            "val_gauc": 0.667529,
+            "val_primary": 0.601766
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.507024,
+            "lr": 0.0007,
+            "val_gauc": 0.670196,
+            "val_primary": 0.603993
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.500879,
+            "lr": 0.0007,
+            "val_gauc": 0.6694,
+            "val_primary": 0.603112
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.496845,
+            "lr": 0.000245,
+            "val_gauc": 0.66891,
+            "val_primary": 0.602761
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.487238,
+            "lr": 0.000245,
+            "val_gauc": 0.668997,
+            "val_primary": 0.602815
+          }
+        ]
+      },
+      {
+        "seed": 43,
+        "best_primary": 0.6043339295531385,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.556233,
+            "lr": 0.0007,
+            "val_gauc": 0.668081,
+            "val_primary": 0.602459
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.506877,
+            "lr": 0.0007,
+            "val_gauc": 0.669226,
+            "val_primary": 0.603196
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.500831,
+            "lr": 0.0007,
+            "val_gauc": 0.671047,
+            "val_primary": 0.604334
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.497215,
+            "lr": 0.000245,
+            "val_gauc": 0.66927,
+            "val_primary": 0.603067
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.488459,
+            "lr": 0.000245,
+            "val_gauc": 0.66979,
+            "val_primary": 0.603251
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.486066,
+            "lr": 0.000245,
+            "val_gauc": 0.667967,
+            "val_primary": 0.601933
+          }
+        ]
+      },
+      {
+        "seed": 44,
+        "best_primary": 0.6039117133581908,
+        "epochs": [
+          {
+            "epoch": 1,
+            "train_loss": 0.560656,
+            "lr": 0.0007,
+            "val_gauc": 0.665834,
+            "val_primary": 0.600984
+          },
+          {
+            "epoch": 2,
+            "train_loss": 0.507545,
+            "lr": 0.0007,
+            "val_gauc": 0.670065,
+            "val_primary": 0.603912
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.50096,
+            "lr": 0.0007,
+            "val_gauc": 0.66964,
+            "val_primary": 0.603339
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.496218,
+            "lr": 0.000245,
+            "val_gauc": 0.667674,
+            "val_primary": 0.601995
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.485337,
+            "lr": 0.000245,
+            "val_gauc": 0.666838,
+            "val_primary": 0.601287
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 35021,
+      "out": 3037,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 11264,
+      "out": 6992,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 550,
+      "out": 863,
+      "calls": 1
+    }
+  },
+  "tokens_total": 57727,
+  "wall_s": 535.6,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally\n\n- It tested large bundles rather than controlled changes. Node_002 simultaneously added sequence history, session context, watch-time auxiliary supervision, and a three-seed ensemble. The gain is real enough to accept, but the run learned almost nothing about which component caused it.\n- It repeatedly asserted \u201coverfitting\u201d from the same learning-curve pattern without testing simpler remedies first. Earlier stopping, stronger weight decay/dropout, reduced capacity, or checkpoint averaging would have been cheaper and more diagnostic than changing objectives or building a four-model ensemble.\n- Node_001 was another overloaded package: DCN, mixed BCE/BPR, dropout, AdamW, decay, and recency weighting. Its rejection cannot identify whether the architecture, pairwise loss, weighting, or optimization was harmful.\n- The policy chased very small predicted deltas near the noise floor. Node_003 targeted +0.0004 without establishing enough repeated-run variance to make that an efficient experiment.\n- Reporting is confusing: node_004 shows 0.6050, above the recorded best_primary of 0.604236, but was rejected. If rejection was based on significance, uncertainty, or a hidden acceptance score, the journal should report that explicitly, including seed-level results and confidence bounds.\n- The final budget was poorly protected. Node_005 failed without producing a metric, leaving no useful terminal experiment or fallback.\n- The proposals were too confident and overly specific about expected gains despite weak evidence. This encourages complicated \u201ckitchen sink\u201d experiments instead of information-efficient ablations.\n\nWhat I would change in the scaffold\n\n- Require one primary intervention per node, with optional tightly coupled implementation details. Compound proposals should include a planned ablation sequence.\n- Persist seed-level metrics, mean, standard deviation, acceptance threshold, and rejection reason. Raw best score and statistically accepted best score should be reported separately.\n- Add a cheap screening stage: one seed or reduced training for candidate components, followed by three-seed confirmation only for promising changes.\n- Make learning-curve claims operational. If overfitting is diagnosed, the next node should first test checkpoint selection or a single regularization adjustment.\n- Reserve part of the budget for replication and one safe final experiment; failed jobs should trigger a simpler fallback rather than consume the remaining branch.\n- Track architecture cost and inference complexity. Node_004\u2019s ensemble may have had a higher raw score but poor statistical or complexity-adjusted value; that tradeoff needs to be visible.\n- Replace point predictions such as \u201c+0.0016\u201d with a hypothesis, expected direction, and minimum worthwhile effect.\n\nWhat the next run should try first\n\nStart from node_002 and reproduce it across several fixed seeds, retaining per-epoch validation predictions. Confirm the 0.6042 gain and determine whether epoch 3 is consistently optimal.\n\nThen perform a minimal ablation of node_002, prioritizing the likely highest-value addition: causal author-history/session sequence features versus the FM baseline, while holding the loss, optimizer, auxiliary task, and ensembling fixed. Follow with separate tests for watch-time auxiliary supervision and seed ensembling. This will identify whether the gain comes from representation, auxiliary supervision, or variance reduction.\n\nIf the epoch-3 decline is reproducible, first try validation-selected early stopping or checkpoint averaging, not another objective rewrite. Only after that should the run revisit diversity ensembling: node_004\u2019s raw 0.6050 is promising, but it should be tested as incremental two-model blends with out-of-fold/per-user rank averaging and repeated seeds, rather than as a four-model package.",
+  "resumed_from": "/home/pallav/mle-agent/logs/run_farm_f6",
+  "resumed_at": 4,
+  "lineage": "resumed experiment; not a designation candidate",
+  "designation_eligible": false
+}
