@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mle-agent · presenter mode</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* presenter mode: full-screen scenes over the same design system.
+   Only layout is defined here; all component styling comes from styles.css. */
+body.present{overflow:hidden;height:100vh}
+/* scenes hide via visibility (not display) so SVG geometry is measurable at load */
+.scene{position:fixed;inset:0;display:flex;visibility:hidden;flex-direction:column;
+  align-items:center;justify-content:center;padding:56px 64px 88px;overflow:hidden}
+.scene.cur{visibility:visible}
+.scene .wrap{max-width:1380px;width:100%;padding:0}
+.scene section{padding:0;border-top:0}
+/* scene chrome */
+.pcap{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:9;
+  background:var(--surface);border:1px solid var(--line);border-radius:99px;
+  box-shadow:var(--shadow);padding:8px 20px;white-space:nowrap;color:var(--dim);
+  font-size:13px;letter-spacing:.04em}
+.pcap b{color:var(--ink);font-weight:600}
+.pnum{position:fixed;right:26px;bottom:22px;z-index:9;color:var(--dim);font-size:13px;
+  font-variant-numeric:tabular-nums;letter-spacing:.08em}
+/* scene 1: title card */
+#s-title{text-align:center}
+#s-title .kicker{font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--dim);font-weight:520;margin-bottom:26px}
+#s-title .team{font-family:'PP Mori',"Switzer",sans-serif;font-size:30px;font-weight:600;
+  margin-bottom:34px}
+#s-title h1{font-size:clamp(34px,4.1vw,72px);line-height:1.12;font-weight:600}
+#s-title .names{margin-top:38px;color:var(--dim);font-size:17px}
+/* scene 2: run chart */
+#s-run #herochart{display:block;width:100%;max-width:min(1240px,calc(66vh*(1120/480)));
+  aspect-ratio:1120/480;height:auto;margin:28px auto 0;background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+/* architecture scene: cap the tall diagram by viewport height */
+#s-arch #archdiagram{max-width:min(1160px,calc((100vh - 280px)*(1180/760)));margin:10px auto 0}
+/* headers inside scenes */
+.scene .eyebrow{margin-bottom:10px}
+.scene h2{font-size:clamp(24px,2.4vw,36px);font-weight:600;margin-bottom:14px}
+.scene .lede{color:var(--dim);max-width:88ch}
+/* scene 4: log replay, chart left + one entry right */
+#s-log .cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+  gap:48px;align-items:center;margin-top:26px}
+#s-log #chartpin{position:static}
+#s-log #bigchart{width:100%;height:auto;max-height:66vh;background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+#s-log .entries{display:block;padding:0}
+#s-log .entry{display:none;opacity:1;transform:none}
+#s-log .entry.pcur{display:block}
+#s-log .entry details{display:none} /* long journal dumps stay on the site page */
+/* scenes with tall content scroll inside the frame */
+.scenebody{width:100%;max-height:calc(100vh - 260px);overflow-y:auto}
+#s-receipts .note{max-width:none}
+/* scene 6: engineering cards are informational here, not links */
+.scene .engcard{cursor:default}
+.scene .engcard .more{display:none}
+/* overview (Esc) */
+#overview{position:fixed;inset:0;z-index:20;display:none;align-items:center;
+  justify-content:center;background:rgba(247,247,245,.96)}
+#overview.on{display:flex}
+#overview .grid{display:grid;grid-template-columns:repeat(4,220px);gap:16px}
+#overview button{font:14px "Switzer",sans-serif;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  box-shadow:var(--shadow);padding:16px 18px;color:var(--ink)}
+#overview button b{display:block;font-family:'PP Mori',"Switzer",sans-serif;
+  font-size:15px;font-weight:600;margin-bottom:6px}
+#overview button .n{color:var(--dim);font-size:12px;letter-spacing:.1em}
+#overview button:hover{border-color:var(--ink)}
+#overview button.cur{outline:2px solid var(--go)}
+@media (max-height:900px){
+  #s-log #bigchart{max-height:60vh}
+  .scene{padding:44px 56px 80px}
+}
+</style>
+</head>
+<body class="present">
+
+<!-- 1 · title -->
+<div class="scene" id="s-title" data-title="Title" data-cap="an autonomous ML research agent on KuaiRand-Pure">
+  <div class="kicker">TIKTOK TECHJAM 2026 · TRACK 2 · KUAIRAND-PURE</div>
+  <div class="team">jit.ai</div>
+  <h1>An agent taught itself to rank.<br>
+    <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.</h1>
+  <div class="names">Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</div>
+</div>
+
+<!-- 2 · the run chart -->
+<div class="scene" id="s-run" data-title="The run" data-cap="one run, six iterations: green accepted, red dead ends, no human said stop">
+  <div class="wrap">
+    <div class="eyebrow">the run · bigclock_07</div>
+    <h2>Every iteration, measured.</h2>
+    <svg id="herochart" viewBox="0 0 1120 480" aria-label="validation score per iteration"></svg>
+  </div>
+</div>
+
+<!-- 3 · the loop -->
+<div class="scene" id="s-loop" data-title="The loop" data-cap="no human picks the next move; a convergence rule, not a person, ends the run">
+  <div class="wrap">
+    <div class="eyebrow">the machine</div>
+    <h2>Diagnose, treat, retrain, measure. Repeat until the rule says stop.</h2>
+    <div class="stages" id="stages">
+      <div class="stage" data-s="0">
+        <div class="snum">01</div><h3>DIAGNOSE</h3>
+        <p>Looks at how the last model trained, epoch by epoch, and names what is
+        holding it back: overfitting, underfitting, a plateau, or plain seed noise.</p>
+      </div>
+      <div class="stage" data-s="1">
+        <div class="snum">02</div><h3>TREAT</h3>
+        <p>Selects a treatment from a library of 42 method cards: mechanism, measured
+        evidence on this dataset, and preconditions, drawn from ranking literature.</p>
+      </div>
+      <div class="stage" data-s="2">
+        <div class="snum">03</div><h3>RETRAIN</h3>
+        <p>The proposer LLM writes a complete training script against a frozen node
+        contract, smoke-tests it in 360 s, then trains on the fixed temporal split.</p>
+      </div>
+      <div class="stage" data-s="3">
+        <div class="snum">04</div><h3>MEASURE</h3>
+        <p>The official evaluator scores GAUC and nDCG@5 per user; primary = the mean.
+        A change is kept only if it clears a calibrated acceptance gate; the run ends
+        when three consecutive iterations fail to improve the best by ε = 0.002.</p>
+      </div>
+    </div>
+    <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations</span></div>
+  </div>
+</div>
+
+<!-- architecture -->
+<div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness disposes; the hidden test window has no path in">
+  <div class="wrap">
+    <div class="eyebrow">the system</div>
+    <h2>One loop, two halves.</h2>
+    <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture"></svg>
+  </div>
+</div>
+
+<!-- 4 · mission log replay -->
+<div class="scene" id="s-log" data-title="Log replay" data-cap="the journal, replayed one iteration at a time">
+  <div class="wrap">
+    <div class="eyebrow">the run · replayed from journal.jsonl</div>
+    <h2>Six iterations, replayed.</h2>
+    <div class="cols">
+      <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
+      <div class="entries" id="entries"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 · evidence -->
+<div class="scene" id="s-evidence" data-title="Evidence" data-cap="same videos, same data; the only difference is the treatments the agent chose">
+  <div class="wrap">
+    <div class="eyebrow">the evidence</div>
+    <h2>What the diagnosis looked like inside the model.</h2>
+    <p class="lede">The <span class="no">red line</span> is the rarest 10% of videos.
+    In the <b>baseline</b> their embeddings never stop growing: memorization. After
+    the <b>agent's treatments</b> they flatten out, and validation rises 0.6015 → 0.6044.</p>
+    <div id="evgrid"></div>
+  </div>
+</div>
+
+<!-- 6 · harness engineering -->
+<div class="scene" id="s-harness" data-title="Harness" data-cap="honesty is structural, not behavioral">
+  <div class="wrap">
+    <div class="eyebrow">the harness</div>
+    <h2>The agent is only half the system. The other half never trusts it.</h2>
+    <div class="scenebody">
+    <div class="enggrid">
+      <div class="engcard"><h3>Structural leakage guard</h3>
+        <p>The hidden test window is never mounted into the agent's workspace, and
+        generated code is screened before execution. Not touching the test set is a
+        property of the filesystem, not a promise in a prompt.</p></div>
+      <div class="engcard"><h3>Calibrated acceptance gate</h3>
+        <p>Baseline seed noise is measured first, so every gain is read in sigmas.
+        Borderline gains must repeat on a second seed (a z-test) before acceptance,
+        and a convergence rule ends the run, never a person.</p></div>
+      <div class="engcard"><h3>Method cards, not vibes</h3>
+        <p>The agent's knowledge is 42 cards: mechanism, preconditions, and measured
+        evidence per technique. A two-tier menu separates proven treatments from
+        ranked opportunities, and a strategy layer matches them to the run phase.</p></div>
+      <div class="engcard"><h3>Telemetry-gated diagnosis</h3>
+        <p>A diagnosis may only cite curves that were actually recorded. When we found
+        stale knowledge silently mis-steering selection, we rebuilt the channel and
+        disclosed the discarded runs rather than hiding them.</p></div>
+      <div class="engcard"><h3>Typed ensemble plans</h3>
+        <p>For the closing move, the agent emits a typed, schema-validated plan and a
+        deterministic assembler executes it: parallel family probes, exhaustive blend
+        enumeration, full-fidelity re-verification. No LLM in the measurement path.</p></div>
+      <div class="engcard"><h3>Decision benches</h3>
+        <p>Selector quality is tested like code: frozen run-state fixtures with known
+        right answers, replayed against the brain after every change. Bench fixes may
+        only be evidence corrections or general principles, never canned answers.</p></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 · method library -->
+<div class="scene" id="s-methods" data-title="Method cards" data-cap="live from agent/METHODS.md · one card was invented by a run itself">
+  <div class="wrap">
+    <div class="eyebrow">the knowledge</div>
+    <h2>42 method cards, cited and measured.</h2>
+    <div class="mtools"><input id="msearch" type="search" placeholder="filter 42 cards: bpr, dcn, recency, ensemble…" aria-label="filter method cards"></div>
+    <div class="scenebody"><div id="methodslib"></div></div>
+  </div>
+</div>
+
+<!-- design decisions -->
+<div class="scene" id="s-decisions" data-title="Design decisions" data-cap="each call had a cheaper alternative; each alternative lost for a measured reason">
+  <div class="wrap">
+    <div class="eyebrow">design decisions</div>
+    <h2>What we chose, and what it cost.</h2>
+    <div class="scenebody">
+    <div class="decisions">
+      <div class="decision"><h3>Designate only clean runs</h3>
+        <p>The submitted run starts from the published baseline with no seed scripts.</p>
+        <div class="versus"><s>seed the run with our best code</s> → <b>provenance over score</b></div></div>
+      <div class="decision"><h3>Method cards, not a mega-prompt</h3>
+        <p>42 versioned cards: citation, mechanism, preconditions, measured evidence.</p>
+        <div class="versus"><s>ever-growing prompt of tips</s> → <b>auditable, honest states</b></div></div>
+      <div class="decision"><h3>Medium reasoning effort</h3>
+        <p>High and extra-high were measured: proposals truncate or fail.</p>
+        <div class="versus"><s>max effort everywhere</s> → <b>measured reliability</b></div></div>
+      <div class="decision"><h3>Floor-v2 acceptance, in sigmas</h3>
+        <p>Noise calibrated first; borderline gains must repeat on a fresh seed (z-test).</p>
+        <div class="versus"><s>accept any positive delta</s> → <b>phantoms rejected</b></div></div>
+      <div class="decision"><h3>The agent plans, the harness executes</h3>
+        <p>Typed, schema-validated ensemble plans; a deterministic assembler runs them.</p>
+        <div class="versus"><s>LLM runs the measurement</s> → <b>no LLM in the measurement path</b></div></div>
+      <div class="decision"><h3>Failure is data</h3>
+        <p>One fixer repair attempt, then VOID, journaled. Iteration 04 is a VOID, on the chart.</p>
+        <div class="versus"><s>retry until green</s> → <b>every failure visible</b></div></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- measured findings -->
+<div class="scene" id="s-findings" data-title="The experiments" data-cap="every row is a ledger line, not an opinion">
+  <div class="wrap">
+    <div class="eyebrow">the experiments</div>
+    <h2>139 runs. These are the numbers that survived.</h2>
+    <div class="scenebody">
+    <div class="findings">
+      <div class="frow"><div class="fnum go">+0.0013 vs +0.0003</div>
+        <p><b>Cross-family blends beat same-family seed ensembles</b> by an order of magnitude. Strong package first, cross-family close: the endgame shape.</p></div>
+      <div class="frow"><div class="fnum">k = 3 … 12 flat</div>
+        <p><b>Blend member count does not matter on Pure</b>: 3 to 12 all land in 0.6048-0.6050, within noise.</p></div>
+      <div class="frow"><div class="fnum">k = 16</div>
+        <p><b>Embedding width is dataset-sized</b>: 16 optimal on Pure; peak near 48 on the 8x larger 1K.</p></div>
+      <div class="frow"><div class="fnum no">+0.0004, killed</div>
+        <p><b>ε = 0.002 silently kills honest small steps</b> from a strong base; hence a gate calibrated in sigmas.</p></div>
+      <div class="frow"><div class="fnum">0.6055 - 0.6060</div>
+        <p><b>The measured single-run ceiling</b> across the campaign's 139 runs. The designated run sits on it.</p></div>
+      <div class="frow"><div class="fnum go">0.60524</div>
+        <p><b>One mechanism was invented by a run itself</b>: temporal-pair-kernel, card written afterwards from the journal.</p></div>
+      <div class="frow"><div class="fnum">4/10 → 10/10</div>
+        <p><b>Judgment is tested like code</b>: the clean strategy bench, fixed by methodology alone.</p></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 · receipts -->
+<div class="scene" id="s-receipts" data-title="Receipts" data-cap="every number on this page has a run directory behind it">
+  <section id="receipts" class="wrap">
+    <div class="eyebrow">the receipts</div>
+    <h2>Everything above is measured, logged, and reproducible.</h2>
+    <div class="grid" id="rgrid"></div>
+    <p class="note">Scored artifact = best validation checkpoint at rule convergence, CPU only, no GPU.
+    Test labels are never read anywhere in the pipeline. Bonus: the same agent on
+    KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
+    journals, the method-card library, and 250+ measured experiment cells ship in the repo.<br>
+    team <b>jit.ai</b> · Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</p>
+  </section>
+</div>
+
+<div id="overview" role="dialog" aria-label="scene overview"><div class="grid"></div></div>
+
+<div class="pcap" id="pcap"></div>
+<div class="pnum" id="pnum"></div>
+
+<script src="rundata.js"></script>
+<script src="methods.js"></script>
+<script src="weights.js"></script>
+<script src="app.js"></script>
+<script src="present.js"></script>
+</body>
+</html>

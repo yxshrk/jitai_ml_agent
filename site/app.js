@@ -1,4 +1,4 @@
-/* Flight Recorder — mle-agent scrollytelling site.
+/* Flight Recorder: mle-agent scrollytelling site.
    2D mission-log replay of the designated run (rundata.js) plus the instrumented
    rare-video-memorization evidence charts (weights.js). No frameworks. */
 (function(){
@@ -9,9 +9,12 @@ const $=s=>document.querySelector(s);
 const esc=s=>{const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;};
 const nice=id=>String(id||'').replace(/-/g,' ');
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+/* presenter mode (present.html) reuses every renderer below; scroll-driven
+   wiring is skipped there and present.js drives the same machinery by key */
+const PRESENT=document.body.classList.contains('present');
 
 /* ---------- scroll progress + bar score --------------------------------- */
-addEventListener('scroll',()=>{
+if(!PRESENT)addEventListener('scroll',()=>{
   const h=document.documentElement;
   $('#prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
   const hint=document.querySelector('.scrollhint');
@@ -42,7 +45,11 @@ addEventListener('scroll',()=>{
   const acc=N.map((n,i)=>({n,i})).filter(o=>o.n.accepted&&o.n.primary!=null);
   const pts=acc.map(o=>xs(o.i)+','+ys(o.n.primary)).join(' ');
   h+='<polyline id="heroline" class="trace" points="'+pts+'"/>';
-  N.forEach((n,i)=>{if(n.primary==null)return;
+  N.forEach((n,i)=>{if(n.primary==null){
+      const x=xs(i),y=Hh-PB-7;
+      h+='<g stroke="'+css('--amber')+'" stroke-width="1.8" opacity=".85"><line x1="'+(x-6)+'" y1="'+(y-6)+'" x2="'+(x+6)+'" y2="'+(y+6)+'"/>'
+        +'<line x1="'+(x-6)+'" y1="'+(y+6)+'" x2="'+(x+6)+'" y2="'+(y-6)+'"/></g>';
+      return;}
     h+='<circle r="6" cx="'+xs(i)+'" cy="'+ys(n.primary)+'" fill="'
       +(n.accepted?css('--go'):css('--no'))+'" opacity="'+(n.accepted?1:.65)+'"/>';});
   h+='<text class="axistext" x="'+xs(acc[acc.length-1].i)+'" y="'
@@ -50,17 +57,23 @@ addEventListener('scroll',()=>{
   svg.innerHTML=h;
   // chart spans the full text-column width; aspect-ratio CSS sets its height
   const line=$('#heroline'), len=line.getTotalLength();
+  const play=()=>{
+    line.style.transition='none';line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
+    void line.getBoundingClientRect();
+    requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';
+      line.style.strokeWidth=3;line.style.strokeDashoffset=0;});
+  };
   line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
-  requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';line.style.strokeWidth=3;
-    line.style.strokeDashoffset=0;});
+  if(!PRESENT)play();
+  window.FR_heroPlay=play;
 })();
 
 /* ---------- loop: cycle the stage highlight ------------------------------ */
+const setStage=k=>document.querySelectorAll('.stage').forEach((c,i)=>c.classList.toggle('live',i===k));
 (function loop(){
-  const cards=document.querySelectorAll('.stage');if(!cards.length)return;
-  let t=0;cards[0].classList.add('live');
-  setInterval(()=>{cards[t].classList.remove('live');t=(t+1)%cards.length;
-    cards[t].classList.add('live');},2200);
+  const cards=document.querySelectorAll('.stage');if(!cards.length||PRESENT)return;
+  let t=0;setStage(0);
+  setInterval(()=>{t=(t+1)%cards.length;setStage(t);},2200);
 })();
 
 /* ---------- mission log --------------------------------------------------- */
@@ -89,6 +102,8 @@ const cy=v=>CH.H-CH.P-(Math.min(CH.S1,Math.max(CH.S0,v))-CH.S0)/(CH.S1-CH.S0)*(C
       h+='<g id="nd'+i+'" class="dead"><line x1="'+(cx(i)-6)+'" y1="'+(cy(CH.S0)+0)+'" x2="'
         +(cx(i)+6)+'" y2="'+(cy(CH.S0)-12)+'" /><line x1="'+(cx(i)+6)+'" y1="'+cy(CH.S0)
         +'" x2="'+(cx(i)-6)+'" y2="'+(cy(CH.S0)-12)+'"/></g>';
+      h+='<text id="ilbl'+i+'" class="axistext iterlbl" x="'+cx(i)+'" y="'+(CH.H-CH.P+20)+'" text-anchor="middle">'
+        +String(i).padStart(2,'0')+'</text>';
       return;
     }
     if(n.accepted)h+='<circle id="nd'+i+'" class="nodedot" r="7" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>';
@@ -133,7 +148,7 @@ function traceUpTo(k){ // reveal the accepted line through iteration k
 /* pin the chart so it locks vertically centered in the viewport, while its
    resting position stays snug under the section heading */
 (function pinCenter(){
-  const pin=document.getElementById('chartpin');if(!pin)return;
+  const pin=document.getElementById('chartpin');if(!pin||PRESENT)return;
   const set=()=>{
     const h=pin.getBoundingClientRect().height;
     pin.style.top=Math.max(64,Math.round((innerHeight-h)/2))+'px';
@@ -149,7 +164,7 @@ function headline(n,i){
   const m='tries <b>'+esc(nice(sel.chosen_method_id||'a new package'))+'</b>';
   return n.accepted
     ?m+' → <span class="go">'+n.primary.toFixed(4)+'</span>. Cleared the bar.'
-    :m+' → <span class="no">'+n.primary.toFixed(4)+'</span>. Below ε. Dead end.';
+    :m+' → <span class="no">'+n.primary.toFixed(4)+'</span>. Below the gate. Dead end.';
 }
 (function entries(){
   const box=$('#entries');
@@ -169,6 +184,10 @@ function headline(n,i){
       const q=(sel.diagnosis?('['+esc(sel.diagnosis)+'] '):'')+esc(why);
       h+='<div class="whylbl">why the agent chose this · from the journal</div>'
         +'<div class="quote"><span class="typed" data-full="'+q.replace(/"/g,'&quot;')+'"></span></div>';
+    }else if(i>0&&n.primary!=null&&n.summary){
+      // iterations without a selection record still journal their hypothesis
+      h+='<div class="whylbl">the hypothesis · from the journal</div>'
+        +'<div class="quote"><span class="typed" data-full="'+esc(n.summary).replace(/"/g,'&quot;')+'"></span></div>';
     }
     const rej=sel.rejected||[];
     if(sel.chosen_method_id||rej.length){
@@ -189,7 +208,7 @@ function headline(n,i){
   // final entry: convergence
   box.insertAdjacentHTML('beforeend','<div class="entry" data-i="conv">'
     +'<span class="stamp acc">CONVERGED</span><h3>STOP</h3>'
-    +'<div>Three consecutive iterations inside <b>ε = 0.002</b>, so the official rule fires. '
+    +'<div>Three consecutive iterations failed to improve the best by <b>ε = 0.002</b>, so the official convergence rule fires. '
     +'Final: <span class="go">'+BEST.toFixed(6)+'</span>, +'+(BEST-BASELINE).toFixed(4)
     +' over the baseline. No human said stop.</div></div>');
 })();
@@ -239,7 +258,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{
   }else return;
   repaint();
 }),{rootMargin:'0px 0px -28% 0px',threshold:[0.05,0.5]});
-document.querySelectorAll('.entry').forEach(el=>io.observe(el));
+if(!PRESENT)document.querySelectorAll('.entry').forEach(el=>io.observe(el));
 
 /* hover an entry: highlight its point on the chart */
 document.querySelectorAll('.entry').forEach(el=>{
@@ -251,14 +270,19 @@ document.querySelectorAll('.entry').forEach(el=>{
 
 /* ---------- receipts ------------------------------------------------------ */
 (function receipts(){
-  const wall=M.wall_s?Math.round(M.wall_s/60)+' min':'—';
+  const wall=M.wall_s?Math.round(M.wall_s/60)+' min':'n/a';
+  // per-metric finals come from the designated run's scored artifact
+  const fin=[...N].reverse().find(n=>n.selected_ensemble)?.selected_ensemble||{};
   const cells=[
     [BEST.toFixed(4),'final valid primary'],
-    ['+'+(BEST-BASELINE).toFixed(4),'gain vs published baseline'],
-    [String(M.iterations||6),'iterations to convergence'],
+    [fin.gauc?fin.gauc.toFixed(4):'n/a','final valid GAUC'],
+    [fin.ndcg5?fin.ndcg5.toFixed(4):'n/a','final valid nDCG@5'],
+    ['+'+(BEST-BASELINE).toFixed(4),'gain vs validation baseline (0.6016)'],
+    [String(M.iterations||6)+' of 50','iterations to convergence'],
     [wall,'agent wall-clock'],
-    [((M.tokens||0)/1000).toFixed(0)+'k','LLM tokens'],
-    ['0','manual interventions'],
+    [((M.tokens||0)/1000).toFixed(0)+'k','LLM tokens, in + out'],
+    [M.stop==='converged'?'ε rule':'cap','what ended the run'],
+    ['0','mid-run interventions'],
   ];
   $('#rgrid').innerHTML=cells.map(c=>'<div class="cell"><div class="v">'+c[0]
     +'</div><div class="k">'+c[1]+'</div></div>').join('');
@@ -268,7 +292,7 @@ document.querySelectorAll('.entry').forEach(el=>{
 /* ---------- method-card library ------------------------------------------ */
 (function methods(){
   const lib=document.getElementById('methodslib');if(!lib||!window.METHODS)return;
-  const cls=st=>/measured-win|external-win/.test(st)?'win':/dead|superseded/.test(st)?'dead':'try';
+  const cls=st=>/measured-win|external-win/.test(st)?'win':/dead|superseded/.test(st)?'mdead':'try';
   const short=st=>/measured-win|external-win/.test(st)?'measured win'
     :/measured-alive/.test(st)?'measured alive'
     :/measured-dead/.test(st)?'measured dead':/superseded/.test(st)?'superseded'
@@ -293,7 +317,7 @@ document.querySelectorAll('.entry').forEach(el=>{
 (function evidence(){
   const Wt=window.WEIGHTS;const grid=document.getElementById('evgrid');
   if(!grid)return;
-  if(!Wt){grid.innerHTML='<p class="lede">(instrumented data missing — run tools/instrument_weights.py)</p>';return;}
+  if(!Wt){grid.innerHTML='<p class="lede">(instrumented data missing: run tools/instrument_weights.py)</p>';return;}
   const panels=[['baseline','BASELINE','rare-video embeddings balloon'],
                 ['treated','AGENT-TREATED','rare-video embeddings stay bounded']];
   const PW=560,PH=300,P=40;
@@ -340,4 +364,70 @@ document.querySelectorAll('.entry').forEach(el=>{
   // charts render fully drawn; no entrance animation
 
 })();
+
+/* ---------- architecture diagram (shared: index + presenter) -------------- */
+(function arch(){
+  const svg=document.getElementById('archdiagram');if(!svg)return;
+  let h='';
+  const box=(x,y,w,hh,cls,title,sub)=>{
+    h+='<rect class="abox '+cls+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" rx="8"/>';
+    h+='<text class="at" x="'+(x+18)+'" y="'+(y+30)+'">'+title+'</text>';
+    (sub||[]).forEach((t,i)=>{h+='<text class="as" x="'+(x+18)+'" y="'+(y+52+i*18)+'">'+t+'</text>';});
+  };
+  // labels sit centered on their line, on a small chip so they stay readable
+  const arrow=(x1,y1,x2,y2,cls,lbl)=>{
+    h+='<line class="aflow '+(cls||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2
+      +'" marker-end="url(#ah'+(cls||'k')+')"/>';
+    if(lbl){
+      const lx=(x1+x2)/2, ly=(y1+y2)/2+4, w=lbl.length*7.4+22;
+      h+='<rect class="achip" x="'+(lx-w/2)+'" y="'+(ly-15)+'" width="'+w+'" height="22" rx="11"/>';
+      h+='<text class="albl '+(cls||'')+'" x="'+lx+'" y="'+ly+'" text-anchor="middle">'+lbl+'</text>';
+    }
+  };
+  h+='<defs>'+['k','go','no'].map(c=>'<marker id="ah'+c+'" viewBox="0 0 10 10" refX="9" refY="5" '
+    +'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
+    +'<path d="M0,0L10,5L0,10z" fill="'+(c==='go'?css('--go'):c==='no'?css('--no'):css('--ink'))+'"/></marker>').join('')+'</defs>';
+  // grid: four columns; harness row vertically centered between the other two
+  const X=[60,340,620,900],W=220,BH=100,Y1=96,Y2=366,Y3=636;
+  h+='<text class="alane" x="'+(X[3]+W)+'" y="60" text-anchor="end">AGENT · THE LLM PROPOSES</text>';
+  h+='<text class="alane" x="'+X[1]+'" y="'+(Y2-36)+'">HARNESS · DETERMINISTIC · NEVER TRUSTS THE AGENT</text>';
+  // entry point: the run starts by training the published baseline (iteration 0)
+  {const sx=X[0]+W/2, lbl='START · iteration 0: the published baseline, 3 seeds', w=lbl.length*7.4+22;
+   h+='<line class="aflow go" x1="'+sx+'" y1="30" x2="'+sx+'" y2="'+(Y1-2)+'" marker-end="url(#ahgo)"/>';
+   h+='<rect class="achip" x="'+(sx+10)+'" y="44" width="'+w+'" height="22" rx="11"/>';
+   h+='<text class="albl go" x="'+(sx+21)+'" y="59">'+lbl+'</text>';}
+  // top row: left to right
+  box(X[0],Y1,W,BH,'','JOURNAL',['the run\u2019s memory: every','hypothesis, score, failure']);
+  box(X[1],Y1,W,BH,'agent','DIAGNOSE',['reads the last training','curves, names the bottleneck']);
+  box(X[2],Y1,W,BH,'agent','TREAT',['picks a treatment from the','42-card method library']);
+  box(X[3],Y1,W,BH,'agent','WRITE SCRIPT',['full training script,','against a frozen contract']);
+  // harness row: right to left
+  box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access \u00b7 360 s dry run']);
+  box(X[2],Y2,W,BH,'','TRAIN',['fixed temporal split:','train + valid only']);
+  box(X[1],Y2,W,BH,'','EVALUATE',['official GAUC + nDCG@5','per user \u00b7 primary = mean']);
+  box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain clears calibrated noise']);
+  // parking band
+  box(X[0],Y3,W+60,90,'go','CONVERGENCE RULE',['3 quiet iterations end the','run \u00b7 no human says stop']);
+  box(X[3],Y3,W,90,'no','HIDDEN TEST WINDOW',['not mounted in the workspace:','structurally unreachable']);
+  // workspace boundary around train + screen
+  h+='<rect class="abound" x="'+(X[2]-20)+'" y="'+(Y2-22)+'" width="'+(X[3]+W-X[2]+40)+'" height="'+(BH+44)+'" rx="10"/>';
+  h+='<text class="as" x="'+(X[2]-6)+'" y="'+(Y2+BH+38)+'">agent workspace boundary</text>';
+  // loop arrows
+  const my1=Y1+BH/2,my2=Y2+BH/2;
+  arrow(X[0]+W,my1,X[1],my1,'','');
+  arrow(X[1]+W,my1,X[2],my1,'','');
+  arrow(X[2]+W,my1,X[3],my1,'','');
+  arrow(X[3]+W/2,Y1+BH,X[3]+W/2,Y2-22,'','hands the script off');
+  arrow(X[3],my2,X[2]+W,my2,'','');
+  arrow(X[2],my2,X[1]+W,my2,'','scores');
+  arrow(X[1],my2,X[0]+W,my2,'','\u0394');
+  arrow(X[0]+W/2,Y2,X[0]+W/2,Y1+BH,'go','accept / dead end, journaled');
+  arrow(X[0]+W/2,Y2+BH,X[0]+W/2,Y3,'go','');
+  arrow(X[3]+W/2,Y2+BH+22,X[3]+W/2,Y3,'no','no path exists');
+  svg.innerHTML=h;
+})();
+
+/* hooks for presenter mode: present.js drives the same replay machinery */
+window.FR={active,repaint,typeIn,setStage,iters:N.length,heroPlay:window.FR_heroPlay};
+delete window.FR_heroPlay;
 })();

@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jit.ai deck</title>
+<style>
+@font-face{font-family:'Switzer';src:url('fonts/Switzer-Variable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Switzer';src:url('fonts/Switzer-VariableItalic.woff2') format('woff2');font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:'PP Mori';src:url('fonts/PPMori-Regular.otf') format('opentype');font-weight:400;font-display:swap}
+@font-face{font-family:'PP Mori';src:url('fonts/PPMori-SemiBold.otf') format('opentype');font-weight:600;font-display:swap}
+:root{
+  --paper:#F7F7F5; --surface:#FFFFFF; --grid:#E6E6E1; --grid2:#EFEFEA;
+  --cgrid:#E3EAF2; --line:#DEDED8;
+  --ink:#1A1A18; --dim:#6B6B66; --faint:#C9C9C2;
+  --go:#0B8F5C; --no:#E5484D; --amber:#946A0C;
+  --shadow:0 1px 2px rgba(20,20,18,.04),0 8px 24px rgba(20,20,18,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--paper);
+  background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px,24px 24px,120px 120px,120px 120px;
+  font-family:'Switzer',system-ui,sans-serif;color:var(--ink);
+  font-feature-settings:'tnum';overflow:hidden;
+}
+.slide{display:none;position:absolute;inset:0;padding:64px 88px 84px}
+.slide.active{display:flex;flex-direction:column}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+h1{font-family:'PP Mori',sans-serif;font-weight:600;font-size:64px;line-height:1.06;letter-spacing:-.01em}
+h2{font-family:'PP Mori',sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-.01em;margin-bottom:28px}
+h3{font-family:'PP Mori',sans-serif;font-weight:600;font-size:18px;margin-bottom:8px}
+p,li{font-size:19px;line-height:1.5;color:var(--ink)}
+.sub{color:var(--dim)}
+.small{font-size:14px;color:var(--dim)}
+.go{color:var(--go)} .no{color:var(--no)} .amber{color:var(--amber)}
+.mono{font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:24px 28px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fill{flex:1;display:flex;flex-direction:column;justify-content:center}
+table{border-collapse:collapse;width:100%}
+th{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:500;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
+td{font-size:19px;padding:14px 16px;border-bottom:1px solid var(--grid2)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.big{font-family:'PP Mori',sans-serif;font-weight:600;font-size:44px;letter-spacing:-.01em}
+.stat .big{font-size:38px}
+.stat .lab{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+ul{list-style:none}
+li{padding:7px 0 7px 26px;position:relative}
+li::before{content:'';position:absolute;left:2px;top:17px;width:10px;height:2px;background:var(--faint)}
+li.win::before{background:var(--go)} li.dead::before{background:var(--no)}
+.footer{position:absolute;left:88px;right:88px;bottom:34px;display:flex;justify-content:space-between;font-size:13px;color:var(--dim)}
+.footer .n{font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:99px;padding:3px 12px;color:var(--dim);background:var(--surface)}
+.tag.go{color:var(--go);border-color:rgba(11,143,92,.35)}
+.tag.no{color:var(--no);border-color:rgba(229,72,77,.35)}
+.tag.amber{color:var(--amber);border-color:rgba(148,106,12,.35)}
+.arrowrow{display:flex;align-items:stretch;gap:0}
+.arrowrow .card{flex:1}
+.arrowrow .arr{display:flex;align-items:center;padding:0 10px;color:var(--faint);font-size:26px}
+code{font-family:ui-monospace,'SF Mono',monospace;font-size:.85em;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:1px 7px}
+.hr{height:1px;background:var(--line);margin:20px 0}
+</style>
+</head>
+<body>
+
+<!-- 1 · Title -->
+<section class="slide active">
+  <div class="fill">
+    <div class="kicker">TikTok TechJam 2026 · Track 2 · Autonomous ML Research Agent</div>
+    <h1>Autonomous ML research<br>you can audit.</h1>
+    <p class="sub" style="margin-top:26px;font-size:22px;max-width:820px">An agent that diagnoses a recommender, picks a cited method, edits the code, trains, judges the result against a noise floor, and stops itself. Every decision journaled.</p>
+    <div style="margin-top:44px;display:flex;gap:14px">
+      <span class="tag go">Pure 0.605575 · +0.0040 over baseline</span>
+      <span class="tag go">1K 0.66892 · triple-audited</span>
+      <span class="tag">0 mid-run interventions</span>
+    </div>
+  </div>
+  <div class="footer"><span>team jit.ai</span><span class="n"></span></div>
+</section>
+
+<!-- 2 · Task -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Rank each user's logged impressions by long_view</h2>
+  <div class="fill">
+  <div class="grid2">
+    <div class="card">
+      <h3>KuaiRand-Pure (required)</h3>
+      <ul>
+        <li>Train 1,141,112 / val 124,909 / hidden test 170,588 rows</li>
+        <li>Primary = mean(GAUC, nDCG@5), official evaluator</li>
+        <li>Baseline: FM, validation primary <span class="mono">0.6016</span></li>
+        <li>Convergence rule: &epsilon;=0.002 over 3 iterations, 50-iter / 6 h caps</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What is scored</h3>
+      <ul>
+        <li>Beat the baseline; one designated final submission</li>
+        <li class="win">Autonomy 20%: manual interventions counted from logs</li>
+        <li class="win">Feasibility 15%: LLM tokens + agent wall-clock, in tiers</li>
+        <li>Hard rules: no external data, hidden test never touched in development</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+  <div class="footer"><span>source: official problem statement + 28 Aug webinar</span><span class="n"></span></div>
+</section>
+
+<!-- 3 · Results -->
+<section class="slide">
+  <div class="kicker">Results</div>
+  <h2>Validation primary at official convergence</h2>
+  <div class="fill">
+  <div class="card" style="padding:8px 8px">
+  <table>
+    <tr><th>Benchmark</th><th class="num">Baseline</th><th class="num">Ours</th><th class="num">Delta</th><th>Artifact</th></tr>
+    <tr><td><strong>KuaiRand-Pure</strong> · required</td><td class="num">0.6016</td><td class="num"><strong class="go">0.605575</strong></td><td class="num go">+0.0040</td><td>run_bigclock_07 · 3-member rank ensemble, unseeded run</td></tr>
+    <tr><td><strong>KuaiRand-1K</strong> · bonus</td><td class="num">&mdash;</td><td class="num"><strong class="go">0.66892</strong></td><td class="num go">+0.048 vs tuned single</td><td>run_omega_1k · causal session features</td></tr>
+    <tr><td>KuaiRand-27K</td><td class="num">&mdash;</td><td class="num">0.67263</td><td class="num"><span class="tag amber">out-of-protocol demo</span></td><td>GPU scaling demo, not an agent run</td></tr>
+  </table>
+  </div>
+  <div class="grid4" style="margin-top:20px">
+    <div class="card stat"><div class="big">6</div><div class="lab">iterations (Pure)</div></div>
+    <div class="card stat"><div class="big">17 min</div><div class="lab">wall-clock, CPU only</div></div>
+    <div class="card stat"><div class="big">115,315</div><div class="lab">LLM tokens</div></div>
+    <div class="card stat"><div class="big go">0</div><div class="lab">mid-run interventions</div></div>
+  </div>
+  </div>
+  <div class="footer"><span>evidence/RESULTS_AND_RESOURCES.md · logs/run_bigclock_07 · logs/run_omega_1k</span><span class="n"></span></div>
+</section>
+
+<!-- 4 · Architecture -->
+<section class="slide">
+  <div class="kicker">Architecture</div>
+  <h2>One iteration = one auditable research decision</h2>
+  <div class="fill">
+  <div class="arrowrow">
+    <div class="card"><h3>Diagnose</h3><p class="sub" style="font-size:16px">Read the champion's learning curves and the run journal.</p></div>
+    <div class="arr">&rarr;</div>
+    <div class="card"><h3>Decide</h3><p class="sub" style="font-size:16px">Select one cited card from a 42-card method library; record a rejected alternative.</p></div>
+    <div class="arr">&rarr;</div>
+    <div class="card"><h3>Fan out</h3><p class="sub" style="font-size:16px">One node may run a full sweep: probes, halving, finals. Every probe logged.</p></div>
+    <div class="arr">&rarr;</div>
+    <div class="card"><h3>Judge</h3><p class="sub" style="font-size:16px">Sigma-gated accept/reject vs a seed-calibrated noise floor; official convergence stop.</p></div>
+  </div>
+  <div class="grid2" style="margin-top:20px">
+    <div class="card"><h3>Agent (LLM)</h3><p class="sub" style="font-size:16px"><code>gpt-5.6-sol</code> as selector / proposer / reflector, <code>gpt-5.4-mini</code> as fixer. Chooses the research move, writes whole-file changes, critiques itself.</p></div>
+    <div class="card"><h3>Harness (deterministic)</h3><p class="sub" style="font-size:16px">Owns seeding, timeouts, evaluation, acceptance, rollback, budgets, stopping. The agent never improvises the accounting.</p></div>
+  </div>
+  </div>
+  <div class="footer"><span>harness/ · agent/METHODS.md · CONTRACTS.md</span><span class="n"></span></div>
+</section>
+
+<!-- 5 · Design choices -->
+<section class="slide">
+  <div class="kicker">Design choices</div>
+  <h2>Why it is built this way</h2>
+  <div class="fill">
+  <div class="grid3">
+    <div class="card"><h3>Strict division of labor</h3><p class="sub" style="font-size:16px">Agent proposes; harness executes and scores. Interventions are machine-verifiable: every journal record carries an <code>intervention</code> boolean.</p></div>
+    <div class="card"><h3>Mechanical seeds</h3><p class="sub" style="font-size:16px">Seed 42 explores; wins confirm at 42/43/44. A win must clear the 0.002 epsilon floor; grey-zone gains need reseed repeatability at z &ge; 2.</p></div>
+    <div class="card"><h3>Structural leakage guards</h3><p class="sub" style="font-size:16px">Hidden test physically absent from the agent workspace; final models retrain on train only; predictors assert no label-like arrays.</p></div>
+    <div class="card"><h3>Cited knowledge, not vibes</h3><p class="sub" style="font-size:16px">42 method cards with measured annotations. Discoveries are distilled back in; later runs cite them as evidence.</p></div>
+    <div class="card"><h3>Typed endgame</h3><p class="sub" style="font-size:16px">The agent plans a cross-family ensemble close as data; the harness executes it: probes &rarr; blend map &rarr; full trains &rarr; re-verify.</p></div>
+    <div class="card"><h3>Negative results are first-class</h3><p class="sub" style="font-size:16px">Refuted directions stay on the ledger with their numbers, preventing repeated failures across runs.</p></div>
+  </div>
+  </div>
+  <div class="footer"><span>DEVPOST.md &sect; methodology · agent/METHODS.md</span><span class="n"></span></div>
+</section>
+
+<!-- 6 · The designated run -->
+<section class="slide">
+  <div class="kicker">The designated run · recorded replay</div>
+  <h2>run_bigclock_07: six decisions, no seed script</h2>
+  <div class="fill">
+  <ul style="max-width:1000px">
+    <li>Launched with no executable solution or checkpoint; reproduced the baseline at 0.601838 (published 0.6016)</li>
+    <li class="win">Ran its own two-stage hyperparameter search inside one node: dropout 0.18, weight decay 9e-5, LR &times;0.57 &mdash; non-obvious dials, later reproduced from scratch (0.60561)</li>
+    <li class="win">Designed its own ensemble: trained 7 seed members, validation-selected 3, per-user rank average &rarr; <strong class="go">0.605575</strong></li>
+    <li>Stopped itself under the official &epsilon;=0.002 / N=3 rule after 6 iterations</li>
+    <li>17.0 minutes, 115,315 tokens, CPU only, 0 mid-run interventions</li>
+  </ul>
+  </div>
+  <div class="footer"><span>logs/run_bigclock_07/journal.jsonl · replay on the flight-recorder site</span><span class="n"></span></div>
+</section>
+
+<!-- 7 · Judgment benches -->
+<section class="slide">
+  <div class="kicker">Reliability engineering</div>
+  <h2>We test the agent's judgment like code</h2>
+  <div class="fill">
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="no">The failure</span> &rarr; <span class="go">the fix</span></h3>
+      <ul style="font-size:16px">
+        <li class="dead">Live run farm_f1 made a measurably wrong endgame call: same-family close whose ceiling could not clear epsilon; converged early</li>
+        <li>Froze that exact decision state as a benchmark fixture</li>
+        <li>Root cause: stale convergence-pressure guidance</li>
+        <li class="win">Fixed with a general epsilon-arithmetic principle, not a scenario-specific answer &mdash; bench 3/3, corrected run relaunched</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Decision benches gate everything</h3>
+      <ul style="font-size:16px">
+        <li>Frozen decision states + expected judgments = a regression suite for reasoning</li>
+        <li class="win">Top model tier passes all six scenarios at low reasoning effort</li>
+        <li>Workhorse tier needs medium effort for the hardest scenario</li>
+        <li>No prompt or knowledge fix ships without a passing bench</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+  <div class="footer"><span>logs/run_farm_f1 · logs/bench_model_sweep.json</span><span class="n"></span></div>
+</section>
+
+<!-- 8 · Experiments: what survived -->
+<section class="slide">
+  <div class="kicker">Experiments · 139 completed disclosed runs, ~250 measured cells</div>
+  <h2>What survived the ledger</h2>
+  <div class="fill">
+  <div class="grid3">
+    <div class="card"><h3 class="go">DCN-lite</h3><p class="sub" style="font-size:16px">Compact cross network beat wider and deeper alternatives at this scale.</p></div>
+    <div class="card"><h3 class="go">7-day recency weighting</h3><p class="sub" style="font-size:16px">Modest temporal distribution-shift correction was the real signal.</p></div>
+    <div class="card"><h3 class="go">Strong regularization + fast LR decay</h3><p class="sub" style="font-size:16px">Joint dial package; confirmed L0 stack 0.604660 &plusmn; 0.000309.</p></div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <h3>Measured discoveries the agent made itself</h3>
+    <table>
+      <tr><th>Discovery</th><th class="num">Local gain</th><th>Note</th></tr>
+      <tr><td>Temporal pair-sampling kernel</td><td class="num go">+0.0014</td><td>untried speculative card; double its predicted gain</td></tr>
+      <tr><td>Context-stratified pairs</td><td class="num go">+0.0015</td><td>first win in run final_s4</td></tr>
+      <tr><td>Heterogeneous ensemble close</td><td class="num go">+0.0010</td><td>first measured win for the card (final_s2)</td></tr>
+      <tr><td>Causal session features on 1K</td><td class="num go">+0.019 / +0.022</td><td>two independent runs</td></tr>
+    </table>
+  </div>
+  </div>
+  <div class="footer"><span>logs/RUNS.md · zoo/EXPERIMENTS*.md</span><span class="n"></span></div>
+</section>
+
+<!-- 9 · Experiments: what died -->
+<section class="slide">
+  <div class="kicker">Experiments · negative results</div>
+  <h2>What the ledger refuted</h2>
+  <div class="fill">
+  <div class="grid2">
+    <div class="card">
+      <h3 class="no">Measured dead on Pure</h3>
+      <ul style="font-size:17px">
+        <li class="dead">Sequence modeling: affinity prerequisite 0.6035, DIN-lite correctly gated off</li>
+        <li class="dead">Watch-time objectives: ordinal 0.6033, censored auxiliary 0.6022 &mdash; below epsilon</li>
+        <li class="dead">Listwise losses, attention, extra crosses, hard-negative BPR, post-hoc run blending</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Less is more</h3>
+      <ul style="font-size:17px">
+        <li class="win">Official 5-field L0 model: 0.604335 at seed 42</li>
+        <li class="dead">Kitchen-sink L5: 0.601740 &mdash; more fields hurt</li>
+        <li>The plateau at 0.6045&ndash;0.6055 appears structural at this scale; capacity and identities mostly overfit</li>
+      </ul>
+    </div>
+  </div>
+  <p class="small" style="margin-top:18px">Scoped experimental findings at this dataset scale, not claims that a method family can never work.</p>
+  </div>
+  <div class="footer"><span>zoo/EXPERIMENTS*.md · DEVPOST.md &sect; results</span><span class="n"></span></div>
+</section>
+
+<!-- 10 · 1K breakthrough -->
+<section class="slide">
+  <div class="kicker">Bonus benchmark</div>
+  <h2>KuaiRand-1K: a discovery that had to survive an audit</h2>
+  <div class="fill">
+  <div class="grid2">
+    <div class="card">
+      <h3>The discovery</h3>
+      <ul style="font-size:17px">
+        <li>48-cell factorial run found a regime inversion vs Pure: pure logloss, no recency &rarr; 0.6524</li>
+        <li class="win">run_omega_1k then discovered causal session features (gap since last impression, session position, hour/weekday crosses): <strong class="go">+0.019 &rarr; 0.66892</strong></li>
+        <li>Second independent run reproduced the mechanism at +0.022</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The audit, before we believed it</h3>
+      <ul style="font-size:17px">
+        <li class="win">Independent tie-aware re-evaluation: exact match</li>
+        <li class="win">Fresh-seed replications: 0.674 / 0.677</li>
+        <li class="win">Within-hour row-shuffle invariance: 0.66517 held</li>
+        <li>Carded and measured on Pure by a later run: +0.0002 &mdash; an honest negative, as predicted</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+  <div class="footer"><span>logs/run_omega_1k · logs/run_1k_push · audit receipts in evidence/</span><span class="n"></span></div>
+</section>
+
+<!-- 11 · Autonomy & feasibility -->
+<section class="slide">
+  <div class="kicker">Autonomy 20% · Feasibility 15%</div>
+  <h2>The scored numbers</h2>
+  <div class="fill">
+  <div class="card" style="padding:8px 8px">
+  <table>
+    <tr><th></th><th class="num">Pure (bigclock_07)</th><th class="num">1K (omega_1k)</th></tr>
+    <tr><td>LLM tokens (in+out)</td><td class="num">115,315</td><td class="num">320,048</td></tr>
+    <tr><td>Agent wall-clock</td><td class="num">17.0 min</td><td class="num">344.8 min</td></tr>
+    <tr><td>Iterations used (of 50)</td><td class="num">6</td><td class="num">8</td></tr>
+    <tr><td>GPU-hours in run</td><td class="num">0 (CPU only)</td><td class="num">~5.7</td></tr>
+    <tr><td>Mid-run interventions</td><td class="num go">0</td><td class="num go">0</td></tr>
+  </table>
+  </div>
+  <p class="sub" style="margin-top:18px;font-size:17px">Full campaign voluntarily disclosed: 139 completed runs, ~9.9M tokens, ~140 run-hours. Runs tainted by mid-run knowledge edits were discarded and disclosed, not argued.</p>
+  </div>
+  <div class="footer"><span>evidence/RESULTS_AND_RESOURCES.md · logs/RUNS_INVENTORY.md</span><span class="n"></span></div>
+</section>
+
+<!-- 12 · Further improvements -->
+<section class="slide">
+  <div class="kicker">Further improvements</div>
+  <h2>What we would do next</h2>
+  <div class="fill">
+  <div class="grid2">
+    <div class="card"><h3>Better stopping science</h3><p class="sub" style="font-size:16px">The official rule ends runs while genuinely improving (real gains here are sub-epsilon). A principled sequential-testing stop rule would be better science.</p></div>
+    <div class="card"><h3>Scale the loop</h3><p class="sub" style="font-size:16px">Compliant 27K agent runs via subsampled calibration or bigger hardware; sigma recalibration per model family.</p></div>
+    <div class="card"><h3>Reliable ensemble close</h3><p class="sub" style="font-size:16px">Snapshot members and member-diversity design to make the close reliably positive; implemented, under-tested.</p></div>
+    <div class="card"><h3>Mixed-provider proposers</h3><p class="sub" style="font-size:16px">A second proposer found a novel working package (click-aux rider, 0.60477); a proposer ensemble is the obvious next step. Broaden search beyond greedy improve-best.</p></div>
+  </div>
+  </div>
+  <div class="footer"><span>README.md &sect; limitations</span><span class="n"></span></div>
+</section>
+
+<!-- 13 · Close -->
+<section class="slide">
+  <div class="fill">
+    <div class="kicker">Team jit.ai</div>
+    <h1>Inspect the journal.<br>Reproduce the artifact.</h1>
+    <p class="sub" style="margin-top:26px;font-size:20px;max-width:860px">Every number on these slides has a run directory or ledger line behind it. The journals, method cards, audits, and submission pipeline are all in the repo. Hidden test is the decisive judge, and we say so.</p>
+    <div style="margin-top:40px;display:flex;gap:14px">
+      <span class="tag">logs/RUNS.md</span><span class="tag">agent/METHODS.md</span><span class="tag">evidence/</span><span class="tag">flight-recorder site</span>
+    </div>
+  </div>
+  <div class="footer"><span>TikTok TechJam 2026 · Track 2</span><span class="n"></span></div>
+</section>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=Math.min(slides.length-1,Math.max(0,(parseInt(location.hash.slice(1),10)||1)-1));
+function show(n){
+  slides.forEach((s,k)=>s.classList.toggle('active',k===n));
+  i=n;location.hash=String(n+1);
+  document.querySelectorAll('.footer .n').forEach(e=>e.textContent=(n+1)+' / '+slides.length);
+}
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')show(Math.min(i+1,slides.length-1));
+  if(e.key==='ArrowLeft'||e.key==='PageUp')show(Math.max(i-1,0));
+  if(e.key==='Home')show(0);
+  if(e.key==='End')show(slides.length-1);
+});
+addEventListener('click',e=>{if(e.clientX>innerWidth*0.7)show(Math.min(i+1,slides.length-1));else if(e.clientX<innerWidth*0.3)show(Math.max(i-1,0))});
+addEventListener('hashchange',()=>{const n=(parseInt(location.hash.slice(1),10)||1)-1;if(n>=0&&n<slides.length&&n!==i)show(n)});
+show(i);
+</script>
+</body>
+</html>

@@ -3,266 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>mle-agent — flight recorder</title>
-<style>
-@font-face{font-family:'Switzer';src:url('fonts/Switzer-Variable.woff2') format('woff2');
-  font-weight:100 900;font-style:normal;font-display:swap}
-@font-face{font-family:'Switzer';src:url('fonts/Switzer-VariableItalic.woff2') format('woff2');
-  font-weight:100 900;font-style:italic;font-display:swap}
-@font-face{font-family:'PP Mori';src:url('fonts/PPMori-Regular.otf') format('opentype');
-  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'PP Mori';src:url('fonts/PPMori-SemiBold.otf') format('opentype');
-  font-weight:600;font-style:normal;font-display:swap}
-:root{
-  --paper:#F7F7F5; --surface:#FFFFFF; --grid:#E6E6E1; --grid2:#EFEFEA;
-  --cgrid:#E3EAF2;         /* chart-internal graph lines: cool blue tint */
-  --line:#DEDED8; --bg2:#FFFFFF;
-  --fg:#1A1A18; --ink:#1A1A18; --dim:#6B6B66; --faint:#C9C9C2;
-  --go:#0B8F5C; --no:#E5484D; --amber:#946A0C;
-  --shadow:0 1px 2px rgba(20,20,18,.04),0 8px 24px rgba(20,20,18,.05);
-}
-*{box-sizing:border-box;margin:0}
-html{scroll-padding-top:64px}
-body{
-  background:var(--paper);color:var(--ink);
-  background-image:
-    linear-gradient(var(--grid) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
-    linear-gradient(var(--grid2) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid2) 1px,transparent 1px);
-  background-size:96px 96px,96px 96px,24px 24px,24px 24px;
-  font:16px/1.6 "Switzer",system-ui,sans-serif;font-weight:430;
-  font-variant-numeric:tabular-nums;
-}
-.data,#bar,.eyebrow,.kicker,.entry h3,.entry .meas,.chip,.stamp,summary,.axistext,
-.entry .quote,#receipts .k,footer,.scrollhint{
-  font-family:"Switzer",system-ui,sans-serif;font-variant-numeric:tabular-nums}
-h1,h2,#receipts .v,.stage h3{font-family:'PP Mori',"Switzer",system-ui,sans-serif;letter-spacing:-0.015em}
-#bar .l{font-family:'PP Mori',"Switzer",system-ui,sans-serif}
-::selection{background:var(--ink);color:var(--paper)}
-a{color:var(--ink);text-underline-offset:3px}
-a:focus-visible,summary:focus-visible{outline:2px solid var(--go);outline-offset:2px}
-.wrap{max-width:1280px;margin:0 auto;padding:0 36px}
-.dim{color:var(--dim)}
-.go{color:var(--go)} .no{color:var(--no)} .amber{color:var(--amber)}
-
-/* status bar */
-#bar{position:fixed;top:0;left:0;right:0;z-index:10;background:rgba(247,247,245,.85);
-  border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
-#bar .wrap{display:flex;justify-content:space-between;align-items:center;height:48px}
-#bar .l{font-size:12.5px;letter-spacing:.12em;font-weight:560}
-#bar .r{font-size:12.5px}
-#bar .r b{color:var(--go);font-weight:620}
-#bar .r .team{color:var(--ink);font-family:'PP Mori',"Switzer",sans-serif;font-size:13px}
-@media (max-width:1000px){#bar .r .names{display:none}}
-#prog{position:fixed;top:48px;left:0;height:2px;background:var(--go);width:0;z-index:10}
-
-/* hero: exactly one viewport tall, nothing peeks from below */
-#hero{min-height:100vh;padding:0 0 64px;display:flex}
-#hero .wrap{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
-  text-align:center;width:100%;max-width:1380px;padding-top:clamp(80px,10vh,140px)}
-#hero .kicker{font-size:12.5px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;
-  font-weight:520;margin-bottom:20px}
-#hero h1{font-size:clamp(30px,3.9vw,60px);line-height:1.1;font-weight:600;max-width:none}
-#hero h1 .go{white-space:nowrap;font-weight:600}
-#hero .sub{margin:20px 0 clamp(24px,4vh,48px);max-width:none;color:var(--dim);font-size:17.5px;font-weight:440}
-#hero .cursor{display:inline-block;width:.42em;height:.68em;background:var(--go);
-  border-radius:1px;vertical-align:0;margin-left:.08em;animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-#hero .byline{margin:2px 0 22px;font-size:19px;color:var(--dim);letter-spacing:.01em}
-#hero .byline b{color:var(--ink);font-weight:600;font-size:23px;
-  font-family:'PP Mori',"Switzer",sans-serif;margin-right:2px}
-#herochart{display:block;width:100%;max-width:min(100%,calc(56vh*(1120/480)));
-  aspect-ratio:1120/480;height:auto;flex-shrink:0;
-  margin:0 auto;background:var(--surface);
-  border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
-/* flexible spacers: on tall windows a third of the leftover sits above the chart,
-   the rest below, so the chart stays anchored to the headline */
-#hero .flexgap{flex:1 1 0}
-#hero .wrap::after{content:"";flex:2 1 0}
-.scrollhint{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:9;
-  background:var(--surface);border:1px solid var(--line);border-radius:99px;
-  box-shadow:var(--shadow);padding:9px 22px;white-space:nowrap;
-  color:var(--ink);font-size:13px;font-weight:620;letter-spacing:.18em;
-  pointer-events:none;transition:opacity .4s;animation:bobc 2s ease-in-out infinite}
-@keyframes bobc{50%{transform:translateX(-50%) translateY(5px)}}
-.scrollhint.gone{opacity:0}
-
-/* generic section */
-section{padding:120px 0;border-top:1px solid var(--line)}
-.eyebrow{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
-  font-weight:540;margin-bottom:14px}
-.eyebrow::before{content:"";display:inline-block;width:8px;height:8px;background:var(--go);
-  border-radius:2px;margin-right:10px;vertical-align:-.5px}
-h2{font-size:clamp(23px,2.7vw,34px);font-weight:600;margin-bottom:16px;line-height:1.12}
-.lede{color:var(--dim);max-width:96ch;font-size:17.5px;line-height:1.65}
-
-/* the loop: four stage cards, cycling highlight, return rail */
-.stages{display:grid;grid-template-columns:repeat(4,1fr);gap:44px;margin-top:48px}
-.stage{position:relative;border:1px solid var(--line);background:var(--surface);
-  border-radius:10px;box-shadow:var(--shadow);padding:22px 22px 18px;
-  transition:border-color .4s,transform .4s,box-shadow .4s}
-.stage.live{border-color:var(--go);transform:translateY(-4px);
-  box-shadow:0 1px 2px rgba(20,20,18,.04),0 12px 28px rgba(11,143,92,.13)}
-.stage:not(:last-child)::after{content:"→";position:absolute;right:-33px;top:24px;
-  color:var(--faint);font-size:20px;transition:color .4s}
-.stage.live:not(:last-child)::after{color:var(--go)}
-.stage .snum{font-size:11.5px;letter-spacing:.16em;color:var(--dim);font-weight:560}
-.stage h3{font-size:14.5px;letter-spacing:.1em;font-weight:600;margin:4px 0 10px}
-.stage.live h3{color:var(--go)}
-.stage p{font-size:13.5px;color:var(--dim);line-height:1.55}
-.deep{margin:64px auto 0;display:grid;gap:34px;max-width:96ch}
-.dstep .dnum{font-size:12px;letter-spacing:.18em;color:var(--go);font-weight:620;
-  margin-bottom:8px;font-family:'PP Mori',"Switzer",sans-serif}
-.dstep p{color:var(--dim);font-size:16px;line-height:1.7}
-.loopback{margin-top:36px;border-top:1px dashed var(--faint);position:relative;
-  max-width:calc(100% - 8px)}
-.loopback::before{content:"◀";position:absolute;left:-2px;top:-9px;color:var(--dim);font-size:12px}
-.lbchip{position:relative;top:-11px;left:50%;transform:translateX(-50%);
-  display:inline-block;background:var(--paper);border:1px solid var(--line);
-  border-radius:99px;padding:2px 14px;font-size:11.5px;letter-spacing:.08em;color:var(--dim)}
-@media (max-width:1000px){.stages{grid-template-columns:1fr 1fr;gap:32px}
-  .stage:not(:last-child)::after{display:none}}
-@media (max-width:600px){.stages{grid-template-columns:1fr}}
-
-/* mission log: pinned chart + cards */
-#log .cols{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,1fr);gap:56px}
-#chartpin{position:sticky;top:64px;align-self:start;min-width:0;padding-top:8px}
-#chartpin svg{width:100%;height:auto;max-height:calc(100vh - 96px);
-  background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
-.axis{stroke:var(--cgrid)} .axistext{font:11.5px "Switzer",sans-serif;fill:var(--dim)}
-.baseline-l{stroke:var(--no);stroke-dasharray:5 4;opacity:.7}
-.trace{stroke:var(--go);stroke-width:3;fill:none;stroke-linecap:round;
-  transition:stroke-dashoffset 1.1s ease}
-.dead{fill:none;stroke:var(--no);stroke-width:1.6;opacity:0;transition:opacity .5s,transform .25s}
-.dead.onn{opacity:.9}
-.nodedot{fill:var(--go);opacity:0;transition:opacity .5s,transform .25s} .nodedot.onn{opacity:1}
-.nodedot,.dead{transform-box:fill-box;transform-origin:center}
-.nodedot.hl,.dead.hl{transform:scale(1.55)}
-.dead.hl{opacity:1}
-.curlbl{font-weight:640;fill:var(--ink)}
-.curpt{stroke:var(--ink);stroke-width:1.5;fill:none;opacity:0;transition:opacity .3s}
-.epsband{fill:var(--go);opacity:0;transition:opacity .8s} .epsband.onn{opacity:.08}
-.iterlbl{transition:fill .25s,font-weight .25s}
-.iterlbl.hl{fill:var(--ink);font-weight:640}
-
-.entries{display:flex;flex-direction:column;gap:22vh;padding:32vh 0 26vh}
-.entry{border:1px solid var(--line);background:var(--surface);padding:28px 30px;font-size:17px;
-  border-radius:10px;box-shadow:var(--shadow);cursor:default;
-  opacity:.3;transform:translateY(10px);transition:opacity .45s,transform .45s,border-color .25s}
-.entry.onn{opacity:1;transform:none}
-.entry:hover{border-color:var(--ink)}
-.entry .stamp{float:right;font-size:10.5px;letter-spacing:.13em;padding:3px 9px;
-  border:1px solid;border-radius:4px;font-weight:600}
-.stamp.acc{color:var(--go);border-color:var(--go);background:rgba(11,143,92,.06)}
-.stamp.rej{color:var(--no);border-color:var(--no);background:rgba(229,72,77,.06)}
-.stamp.void{color:var(--amber);border-color:var(--amber);background:rgba(148,106,12,.06)}
-.entry h3{font-size:12.5px;letter-spacing:.16em;color:var(--dim);margin-bottom:12px;font-weight:580}
-.whylbl{margin-top:14px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--go);font-weight:600}
-.entry .quote{border-left:2px solid var(--go);padding:9px 13px 9px 15px;margin:15px 0;
-  color:var(--ink);font-size:14.5px;background:var(--paper);border-radius:0 6px 6px 0}
-.entry .meas{margin-top:13px;font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.chip{border:1px solid var(--line);color:var(--dim);padding:2px 10px;font-size:11.5px;
-  background:var(--paper);border-radius:99px}
-.chip.pick{color:var(--go);border-color:var(--go)}
-.chip.pick::after{content:" ✓"}
-.chip.rej{color:var(--no);border-color:var(--no);text-decoration:line-through}
-details{margin-top:12px}
-summary{cursor:pointer;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
-details .full{margin-top:10px;color:var(--dim);white-space:pre-wrap;font-size:13.5px}
-
-/* evidence */
-#evgrid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px}
-@media (max-width:900px){#evgrid{grid-template-columns:1fr}}
-.evpanel{border:1px solid var(--line);background:var(--surface);padding:20px 20px 12px;
-  border-radius:10px;box-shadow:var(--shadow)}
-.evpanel .t{font-size:11.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--dim);margin-bottom:6px;font-weight:540}
-.evpanel .t b{color:var(--ink)}
-.evpanel svg{width:100%}
-.evline{fill:none;stroke-width:1.6;transition:stroke-dashoffset 1.6s ease}
-.evnote{font:560 13px "Switzer",sans-serif;fill:var(--no)}
-.evlbl{font:560 12.5px "Switzer",sans-serif}
-
-.enggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:42px}
-@media (max-width:1000px){.enggrid{grid-template-columns:1fr 1fr}}
-@media (max-width:640px){.enggrid{grid-template-columns:1fr}}
-.engcard{display:block;border:1px solid var(--line);background:var(--surface);border-radius:10px;
-  box-shadow:var(--shadow);padding:22px 24px;color:inherit;text-decoration:none;
-  transition:transform .25s,border-color .25s,box-shadow .25s}
-.engcard:hover{transform:translateY(-5px);border-color:var(--ink);
-  box-shadow:0 1px 2px rgba(20,20,18,.04),0 14px 30px rgba(20,20,18,.10)}
-.engcard .more{margin-top:10px;font-size:11.5px;letter-spacing:.14em;color:var(--go);
-  font-weight:620;text-transform:uppercase}
-.engcard h3{font-family:'PP Mori',"Switzer",sans-serif;font-size:15px;font-weight:600;
-  margin-bottom:8px}
-.engcard p{font-size:14px;color:var(--dim);line-height:1.6}
-
-/* harness deep dives */
-.dstat{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:38px;
-  box-shadow:var(--shadow)}
-.dstat>div{background:var(--surface);padding:18px 16px}
-.dstat b{display:block;font-size:26px;font-weight:600;font-family:'PP Mori',"Switzer",sans-serif}
-.dstat span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-@media (max-width:1000px){.dstat{grid-template-columns:repeat(3,1fr)}}
-.dsec{margin:72px auto 0;scroll-margin-top:72px;max-width:96ch}
-.dsec h3{font-family:'PP Mori',"Switzer",sans-serif;font-size:21px;font-weight:600;margin-bottom:12px}
-.dsec p{color:var(--dim);font-size:16px;line-height:1.7}
-.dsec code,.dsec i{color:var(--ink);font-style:normal}
-/* the card library table spans the full wrap; its prose stays at reading width */
-#deep-methods{max-width:none}
-#deep-methods p{max-width:96ch}
-.mtools{margin:22px 0 12px}
-#msearch{width:100%;max-width:420px;padding:9px 14px;border:1px solid var(--line);
-  border-radius:8px;background:var(--surface);font:14px "Switzer",sans-serif;color:var(--ink)}
-#msearch:focus{outline:2px solid var(--go);outline-offset:1px}
-#methodslib{border:1px solid var(--line);border-radius:10px;overflow:hidden;
-  box-shadow:var(--shadow);background:var(--surface)}
-.mrow{display:grid;grid-template-columns:clamp(220px,24vw,300px) 1fr 130px;gap:18px;padding:13px 18px;
-  border-top:1px solid var(--grid2);font-size:13.5px}
-.mrow:first-child{border-top:0}
-.mrow .mid{font-weight:600;color:var(--ink)}
-.mrow .mmech{color:var(--dim)}
-.mrow .mcite{color:var(--dim);font-size:12px;margin-top:3px}
-.mrow .mstat{text-align:right;font-size:12px}
-.mstat .win{color:var(--go);font-weight:620}.mstat .dead{color:var(--no)}.mstat .try{color:var(--amber)}
-@media (max-width:800px){.mrow{grid-template-columns:1fr;gap:6px}.mrow .mstat{text-align:left}}
-
-/* receipts */
-#receipts .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-  background:var(--line);border:1px solid var(--line);margin-top:42px;
-  border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
-#receipts .cell{background:var(--surface);padding:28px 24px}
-#receipts .v{font-size:30px;font-weight:600;color:var(--ink)}
-#receipts .cell:first-child .v{color:var(--go)}
-#receipts .k{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:8px}
-#receipts .note{margin-top:30px;color:var(--dim);max-width:78ch}
-footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px}
-
-@media (max-width:1000px){
-  #receipts .grid{grid-template-columns:1fr 1fr}
-  #log .cols{grid-template-columns:1fr}
-  #chartpin{position:static;height:auto}
-  .entries{gap:40px;padding:30px 0}
-  .entry{opacity:1;transform:none}
-}
-/* short screens (laptops): tighten the text stack so the chart keeps its share */
-@media (max-height:900px){
-  #hero .wrap{padding-top:76px}
-  #hero .kicker{margin-bottom:12px;font-size:11.5px}
-  #hero .byline{margin:0 0 14px;font-size:16px}
-  #hero .byline b{font-size:19px}
-  #hero h1{font-size:clamp(26px,min(4.2vw,6.2vh),50px)}
-  #hero .sub{margin-top:14px;font-size:15.5px}
-  .scrollhint{font-size:13px}
-}
-@media (prefers-reduced-motion: reduce){
-  .trace{transition:none}.scrollhint{animation:none}.cursor{animation:none}
-}
-</style>
+<title>mle-agent · flight recorder</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="bar"><div class="wrap">
@@ -286,8 +29,9 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   <h2>Diagnose, treat, retrain, measure. Repeat until the rule says stop.</h2>
   <p class="lede">No human picks the next move. The agent reads its own training
   curves, chooses a treatment from a library of cited method cards, edits the model
-  code, retrains, and keeps only what measures above an ε&nbsp;=&nbsp;0.002 bar.
-  A convergence rule, not a person, ends the run.</p>
+  code, retrains, and keeps a change only if it clears a calibrated acceptance
+  gate. The run ends when three consecutive iterations fail to improve the best
+  by ε&nbsp;=&nbsp;0.002. A convergence rule, not a person, ends the run.</p>
   <div class="stages" id="stages">
     <div class="stage" data-s="0">
       <div class="snum">01</div><h3>DIAGNOSE</h3>
@@ -360,12 +104,25 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
       moves on.</p></div>
     <div class="dstep"><div class="dnum">04 · MEASURE</div>
       <p>The official evaluator scores validation GAUC and nDCG@5 per user; the
-      primary metric is their mean. A change is kept only if its gain clears an
-      acceptance floor, and borderline gains must repeat on a second seed (a z-test
-      against the calibrated noise). Convergence is the competition rule: three
-      consecutive iterations within ε = 0.002 ends the run, hard cap 50. The run you just scrolled through ended exactly that way, with no human in the
+      primary metric is their mean. A change is kept only if it clears a calibrated
+      acceptance gate: grey zone floor 0.0005, and borderline gains must repeat on a
+      second seed and pass a z-test against the calibrated noise (the winning close
+      of bigclock_07 was accepted at +0.0013). Convergence is the official rule:
+      the run ends when three consecutive iterations fail to improve the best by
+      ε = 0.002, hard cap 50. The run you just scrolled through ended exactly that way, with no human in the
       decision.</p></div>
   </div>
+</div></section>
+
+<section id="architecture"><div class="wrap">
+  <div class="eyebrow">the system</div>
+  <h2>One loop, two halves: the agent proposes, the harness disposes.</h2>
+  <p class="lede">The LLM lives in the top lane: it reads recorded telemetry, picks a
+  cited method card, and writes a training script. Everything below the line is
+  deterministic harness: screening, smoke test, training on the fixed split, official
+  scoring, and a calibrated gate. The hidden test window has no path into the loop at
+  all.</p>
+  <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture: agent lane, harness lane, journal, hidden test excluded"></svg>
 </div></section>
 
 <section id="evidence"><div class="wrap">
@@ -527,11 +284,79 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 
 </div></section>
 
+<section id="decisions"><div class="wrap">
+  <div class="eyebrow">design decisions</div>
+  <h2>What we chose, and what it cost.</h2>
+  <p class="lede">Six calls that shaped the system. Each one had a cheaper
+  alternative; each alternative was rejected for a measured or structural reason.</p>
+  <div class="decisions">
+    <div class="decision"><h3>Designate only clean runs</h3>
+      <p>The submitted run starts from the published baseline with no seed scripts.
+      Seeded combinations exist in the ledger, but only as experiments.</p>
+      <div class="versus"><s>seed the run with our best code</s> → <b>provenance over score</b>: the exhibit must prove the agent, not us</div></div>
+    <div class="decision"><h3>Method cards, not a mega-prompt</h3>
+      <p>Knowledge is 42 versioned cards with citation, mechanism, preconditions, and
+      measured evidence, updated as runs conclude.</p>
+      <div class="versus"><s>ever-growing prompt of tips</s> → <b>auditable, correctable, honest states</b> (measured-dead cards cannot be re-picked)</div></div>
+    <div class="decision"><h3>Medium reasoning effort</h3>
+      <p>Proposer runs at medium effort only. High and extra-high were measured:
+      proposals truncate or fail (runs 16-22, 27, 28 in the ledger).</p>
+      <div class="versus"><s>max effort everywhere</s> → <b>measured reliability</b> beats theoretical depth</div></div>
+    <div class="decision"><h3>Floor-v2 acceptance, in sigmas</h3>
+      <p>Baseline noise is calibrated first (3 seeds, σ ≈ 0.0001). Gains are read in
+      sigmas; borderline gains must repeat on a fresh seed and pass a z-test.</p>
+      <div class="versus"><s>accept any positive delta</s> → <b>phantoms rejected</b>; eps-only alternative kills honest +0.0004 steps</div></div>
+    <div class="decision"><h3>The agent plans, the harness executes</h3>
+      <p>For ensemble closes the agent emits a typed, schema-validated plan; a
+      deterministic assembler runs probes, blends, and re-verification.</p>
+      <div class="versus"><s>let the LLM run the measurement</s> → <b>no LLM in the measurement path</b>, ever</div></div>
+    <div class="decision"><h3>Failure is data</h3>
+      <p>A crashing script gets exactly one fixer repair attempt; an unrecoverable
+      crash is logged VOID and the loop continues. Recovery events are journaled.</p>
+      <div class="versus"><s>retry until green</s> → <b>every failure visible</b>: iteration 04 of the designated run is a VOID, on the chart</div></div>
+  </div>
+</div></section>
+
+<section id="findings"><div class="wrap">
+  <div class="eyebrow">the experiments</div>
+  <h2>139 runs. These are the numbers that survived.</h2>
+  <p class="lede">Every row is a measured result from the campaign ledger
+  (<code>zoo/EXPERIMENTS*.md</code>, <code>logs/RUNS.md</code>), not an opinion.</p>
+  <div class="findings">
+    <div class="frow"><div class="fnum go">+0.0013 vs +0.0003</div>
+      <p><b>Cross-family blends beat same-family seed ensembles</b> by an order of
+      magnitude. This single finding shaped the endgame: strong package first, then a
+      cross-family ensemble close.</p></div>
+    <div class="frow"><div class="fnum">k = 3 … 12 flat</div>
+      <p><b>Blend member count does not matter on Pure</b>: every count from 3 to 12
+      lands in 0.6048-0.6050, within ±0.0003 noise. The predeclared 5-seed recipe
+      stayed.</p></div>
+    <div class="frow"><div class="fnum">k = 16</div>
+      <p><b>Embedding width is dataset-sized</b>: 16 is measured optimal on Pure,
+      while the capacity peak sits near 48 on the 8x larger KuaiRand-1K.</p></div>
+    <div class="frow"><div class="fnum no">+0.0004, killed</div>
+      <p><b>The official ε = 0.002 rule silently kills honest small steps</b> from a
+      strong base, so a run chasing every twinkle converges early on noise. This is
+      why the acceptance gate is calibrated in sigmas (floor-v2).</p></div>
+    <div class="frow"><div class="fnum">0.6055 - 0.6060</div>
+      <p><b>The measured single-run ceiling</b> across the campaign's 139 runs. The
+      designated run sits on it; nothing that beat it was clean.</p></div>
+    <div class="frow"><div class="fnum go">0.60524</div>
+      <p><b>One mechanism was invented by a run itself</b>: temporal-pair-kernel,
+      discovered by run novel_l1, its method card written afterwards from the
+      journal.</p></div>
+    <div class="frow"><div class="fnum">4/10 → 10/10</div>
+      <p><b>Judgment is tested like code</b>: the clean-mode strategy bench went from
+      4/10 to 10/10 through methodology fixes alone, under a constitution that bans
+      canned answers.</p></div>
+  </div>
+</div></section>
+
 <section id="receipts"><div class="wrap">
   <div class="eyebrow">the receipts</div>
   <h2>Everything above is measured, logged, and reproducible.</h2>
   <div class="grid" id="rgrid"></div>
-  <p class="note">Scored artifact = best validation checkpoint at rule convergence.
+  <p class="note">Scored artifact = best validation checkpoint at rule convergence, CPU only, no GPU.
   Test labels are never read anywhere in the pipeline; test features are read only by the final submission builders. Bonus: the same
   agent on KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
   journals, the method-card library, and 250+ measured experiment cells ship in the repo.</p>
