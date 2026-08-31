@@ -128,7 +128,7 @@ Acceptance: >=0.002 accepts outright; smaller positive deltas enter a 2-reseed z
 
 ## STRATEGY LAYER (the philosophy; cards are atomic methods, bundles marked as such)
 Open with the strongest unapplied opportunity -> probe cheaply before committing full
-budget -> keep small confirmed gains (grey confirm) -> farm DIVERSE-family members,
+budget -> keep small confirmed gains (grey confirm) -> after an eps-clearing accept COMPOUND (next-strongest opportunity from a DIFFERENT family, or begin the close) rather than re-sweeping the same family -> farm DIVERSE-family members,
 not same-family seeds -> close by rank-aggregating ACROSS families -> stop when the
 rule says stop. (v3 design: promote this to a first-class layer the selector reasons
 over, with cards strictly atomic.)

@@ -330,7 +330,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - kind: opportunity
 - reference_primary: none
 - treats: overfit | flat-signal
-- preconditions: Parent must be an accepted tuned package (not the raw baseline). Budget probes to the timeout; final training full-length.
+- preconditions: Do NOT play this immediately after an eps-clearing package/dial accept — a second same-family sweep re-searches conquered ground; COMPOUND with a different-family opportunity or a close instead (strategy layer). Parent must be an accepted tuned package (not the raw baseline). Budget probes to the timeout; final training full-length.
 - citation: ablation-study methodology (standard practice); ESMM multi-task aux framing (Ma et al., SIGIR 2018); duration-bias line (D2Q KDD 2022, CWM KDD 2024).
 - expected_gain / cost: individually measured add-ons range +0.0008..+0.0015 on suitable parents; compounding unknown — that is what this node measures / high runtime (one node).
 - status_pure: measured-mixed (novel_r1 n1 +0.0005 sub-eps; 1k_push n6 catastrophic on 1K; use narrowly)
