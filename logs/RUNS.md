@@ -46,3 +46,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | final_r6 | ruby | converged | 3 | 0.60258 | weak dial-sweep draw; gap-conditioned-recency +0.0003 sub-eps (first measurement) |
 | final_s5 | coral | converged | 4 | 0.60399 | selector took stage-matrix path, not context-pairs; its close (0.60449) rejected sub-eps. CAMPAIGN COMPLETE |
 | last_r7/last_1k/last_s6 | ruby/coral | KILLED early | - | - | discarded: library synced mid-run (intervention taint) + pre-floor-v2 harness; relaunched as v2_* |
+| v2_r8 | ruby | converged | 3 | 0.60244 | floor-v2 accepted +0.0006 foothold but 2 rejects converged it; lesson: sub-eps accepts still strike (official rule) |
