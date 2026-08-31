@@ -1,0 +1,29 @@
+{"config": {"dropout": 0.35454545454545455, "gamma": 0.45, "half_life": 3.5, "lr": 0.00055, "step_every": 1, "weight_decay": 0.001298628384324919}, "primary": 0.600402819451265, "probe": 1, "stage": "coarse"}
+{"config": {"dropout": 0.26363636363636367, "gamma": 0.65, "half_life": 14.0, "lr": 0.0013, "step_every": 1, "weight_decay": 0.00016010097693618943}, "primary": 0.6014276657478863, "probe": 2, "stage": "coarse"}
+{"config": {"dropout": 0.3090909090909091, "gamma": 0.4, "half_life": 7.0, "lr": 0.001, "step_every": 2, "weight_decay": 4.559733248858801e-05}, "primary": 0.6011789582414545, "probe": 3, "stage": "coarse"}
+{"config": {"dropout": 0.2409090909090909, "gamma": 0.6, "half_life": 3.5, "lr": 0.00075, "step_every": 2, "weight_decay": 6.930389100249476e-05}, "primary": 0.6007359535661735, "probe": 4, "stage": "coarse"}
+{"config": {"dropout": 0.21818181818181817, "gamma": 0.5, "half_life": 14.0, "lr": 0.00055, "step_every": 3, "weight_decay": 0.0003698540218326199}, "primary": 0.6014361402998321, "probe": 5, "stage": "coarse"}
+{"config": {"dropout": 0.17272727272727273, "gamma": 0.72, "half_life": 7.0, "lr": 0.0013, "step_every": 3, "weight_decay": 0.0005621452268581151}, "primary": 0.6028576146457616, "probe": 6, "stage": "coarse"}
+{"config": {"dropout": 0.3318181818181818, "gamma": 0.45, "half_life": 3.5, "lr": 0.001, "step_every": 1, "weight_decay": 0.003000000000000001}, "primary": 0.6014345766593208, "probe": 7, "stage": "coarse"}
+{"config": {"dropout": 0.15, "gamma": 0.65, "half_life": 14.0, "lr": 0.00075, "step_every": 1, "weight_decay": 0.0008544107605307409}, "primary": 0.6013228305742376, "probe": 8, "stage": "coarse"}
+{"config": {"dropout": 0.19545454545454544, "gamma": 0.4, "half_life": 7.0, "lr": 0.00055, "step_every": 2, "weight_decay": 3.000000000000001e-05}, "primary": 0.6015520006581726, "probe": 9, "stage": "coarse"}
+{"config": {"dropout": 0.3772727272727273, "gamma": 0.6, "half_life": 3.5, "lr": 0.0013, "step_every": 2, "weight_decay": 0.00024333924923690626}, "primary": 0.6019988447839422, "probe": 10, "stage": "coarse"}
+{"config": {"dropout": 0.4, "gamma": 0.5, "half_life": 14.0, "lr": 0.001, "step_every": 3, "weight_decay": 0.00010533575202645397}, "primary": 0.6021071815753558, "probe": 11, "stage": "coarse"}
+{"config": {"dropout": 0.2863636363636364, "gamma": 0.72, "half_life": 7.0, "lr": 0.00075, "step_every": 3, "weight_decay": 0.0019737996739727054}, "primary": 0.601450663272399, "probe": 12, "stage": "coarse"}
+{"config": {"dropout": 0.17272727272727273, "gamma": 0.72, "half_life": 7.0, "lr": 0.0013, "step_every": 3, "weight_decay": 0.0005621452268581151}, "primary": 0.6025623847902449, "probe": 1, "stage": "refine"}
+{"config": {"dropout": 0.21161616161616162, "gamma": 0.7066666666666667, "half_life": 5.0, "lr": 0.0010168888888888888, "step_every": 3, "weight_decay": 0.0004164474267257495}, "primary": 0.6014849375609601, "probe": 2, "stage": "refine"}
+{"config": {"dropout": 0.24272727272727274, "gamma": 0.6266666666666667, "half_life": 7.0, "lr": 0.0013404444444444445, "step_every": 3, "weight_decay": 0.00034095831530056055}, "primary": 0.6019051033888929, "probe": 3, "stage": "refine"}
+{"config": {"dropout": 0.14939393939393938, "gamma": 0.8133333333333332, "half_life": 10.0, "lr": 0.0009359999999999999, "step_every": 2, "weight_decay": 0.0007588166856112372}, "primary": 0.6025737560603432, "probe": 4, "stage": "refine"}
+{"config": {"dropout": 0.19606060606060605, "gamma": 0.6, "half_life": 14.0, "lr": 0.001502222222222222, "step_every": 3, "weight_decay": 0.0009268207927435235}, "primary": 0.602615462469139, "probe": 5, "stage": "refine"}
+{"config": {"dropout": 0.13383838383838384, "gamma": 0.76, "half_life": 3.5, "lr": 0.001583111111111111, "step_every": 3, "weight_decay": 0.0011320214725771345}, "primary": 0.6006739652850573, "probe": 6, "stage": "refine"}
+{"config": {"dropout": 0.11828282828282828, "gamma": 0.7866666666666666, "half_life": 5.0, "lr": 0.001664, "step_every": 2, "weight_decay": 0.00022855119360850576}, "primary": 0.602554967924946, "probe": 7, "stage": "refine"}
+{"config": {"dropout": 0.2271717171717172, "gamma": 0.6533333333333333, "half_life": 7.0, "lr": 0.0012595555555555554, "step_every": 3, "weight_decay": 0.0013826541489022493}, "primary": 0.6020278690818764, "probe": 8, "stage": "refine"}
+{"config": {"dropout": 0.16494949494949496, "gamma": 0.6799999999999999, "half_life": 10.0, "lr": 0.0011786666666666666, "step_every": 3, "weight_decay": 0.0005086500356315356}, "primary": 0.6015566930371926, "probe": 9, "stage": "refine"}
+{"config": {"dropout": 0.10272727272727272, "gamma": 0.82, "half_life": 14.0, "lr": 0.0010977777777777778, "step_every": 2, "weight_decay": 0.0002791530582542279}, "primary": 0.6015049897211546, "probe": 10, "stage": "refine"}
+{"primary": 0.5889470835183803, "seed": 42, "stage": "parent_reference"}
+{"member": 1, "primary": 0.6026811481261122, "seed": 42, "stage": "final_member"}
+{"member": 2, "primary": 0.6024526257691676, "seed": 43, "stage": "final_member"}
+{"member": 3, "primary": 0.6020319625237271, "seed": 44, "stage": "final_member"}
+{"member": 4, "primary": 0.6009547371401256, "seed": 45, "stage": "final_member"}
+{"member": 5, "primary": 0.6017783328272388, "seed": 46, "stage": "final_member"}
+{"members": 5, "primary": 0.6036972835630894, "stage": "ensemble"}

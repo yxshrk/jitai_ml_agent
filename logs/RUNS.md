@@ -67,3 +67,7 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | ruby_w1 | ruby | converged | 4 | 0.60412 | FIRST live farm-close execution: accepted, no collapse (contracts held); gain small (+0.0002) from weak member base |
 | pure_clean | cpupod | converged | 3 | 0.60284 | old-doctrine clean (literature-only knowledge): reg-package win node_001 (+0.0010, 4 coupled dials via probe sweep), then converged; self-critique flags early convergence + bundled-factor attribution — provenance-tier exhibit |
 | showcase | ruby | converged | 3 | 0.60426 | final full-stack showcase run: regularized package accepted then converged; 111.9k tokens, 109 min |
+| ruby_z1 | ruby | converged | 3 | 0.60356 | weak opener never recovered; converged low; 110.9k tokens, 183 min |
+| ruby_z2 | ruby | converged | 4 | 0.60514 | strong iter-1 package (0.60514) but the ensemble close never improved on it; 155.7k tokens, 202 min |
+| pure_clean2 | ruby | converged | 3 | 0.60415 | BEST clean run ever: literature-only + research doctrine; provenance tier now 0.6041; 53.9k tokens, 111 min |
+| cpu_c3 | cpupod | max_hours | 4 | 0.60437 | composite adopted early then wall-clock cap; pod cores made nodes expensive; 142.2k tokens, 361 min |

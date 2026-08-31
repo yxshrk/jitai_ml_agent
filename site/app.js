@@ -14,6 +14,8 @@ const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim
 addEventListener('scroll',()=>{
   const h=document.documentElement;
   $('#prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  const hint=document.querySelector('.scrollhint');
+  if(hint)hint.classList.toggle('gone',h.scrollTop>innerHeight*0.5);
 },{passive:true});
 
 /* ---------- hero chart: the whole run, self-drawing ---------------------- */
@@ -46,17 +48,7 @@ addEventListener('scroll',()=>{
   h+='<text class="axistext" x="'+xs(acc[acc.length-1].i)+'" y="'
     +(ys(BEST)-10)+'" text-anchor="end" fill="'+css('--go')+'">'+BEST.toFixed(4)+'</text>';
   svg.innerHTML=h;
-  // size the chart to exactly fill the viewport space left under the text,
-  // so nothing below the hero peeks and nothing gets clipped
-  const fitHero=()=>{
-    svg.style.maxWidth='';
-    const hint=document.querySelector('.scrollhint');
-    const avail=innerHeight-svg.getBoundingClientRect().top
-      -(hint?hint.getBoundingClientRect().height:60)-10;
-    const w=Math.min(svg.parentElement.clientWidth,avail*(W/Hh));
-    svg.style.maxWidth=Math.max(420,Math.floor(w))+'px';
-  };
-  fitHero();addEventListener('resize',fitHero);
+  // chart spans the full text-column width; aspect-ratio CSS sets its height
   const line=$('#heroline'), len=line.getTotalLength();
   line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
   requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';line.style.strokeWidth=3;
@@ -123,8 +115,14 @@ function initTrace(){
     if(j>0)acc+=Math.hypot(pts[j][0]-pts[j-1][0],pts[j][1]-pts[j-1][1]);
     traceLens[idxs[j]]=acc;
   }
+  // hide instantly (no transition) so the first reveal grows from node 0
+  // instead of visibly undrawing the full line
+  el.style.transition='none';
   el.style.strokeDasharray=traceTotal;el.style.strokeDashoffset=traceTotal;
+  void el.getBoundingClientRect();
+  el.style.transition='';
 }
+initTrace();
 function traceUpTo(k){ // reveal the accepted line through iteration k
   if(traceLens==null)initTrace();
   let len=0;
@@ -162,12 +160,19 @@ function headline(n,i){
     let h='<div class="entry" data-i="'+i+'">'+stamp+'<h3>ITER '+String(i).padStart(2,'0')+'</h3>'
       +'<div>'+headline(n,i)+'</div>';
     if(sel.diagnosis||sel.why){
-      const q=(sel.diagnosis?('['+esc(sel.diagnosis)+'] '):'')+esc((sel.why||'').slice(0,260))
-        +((sel.why||'').length>260?'…':'');
-      h+='<div class="quote"><span class="typed" data-full="'+q.replace(/"/g,'&quot;')+'"></span></div>';
+      // trim the journal excerpt at a sentence boundary, never mid-word
+      let why=sel.why||'';
+      if(why.length>420){
+        const cut=why.slice(0,420),stop=cut.lastIndexOf('. ');
+        why=(stop>200?cut.slice(0,stop+1):cut.slice(0,cut.lastIndexOf(' ')))+' …';
+      }
+      const q=(sel.diagnosis?('['+esc(sel.diagnosis)+'] '):'')+esc(why);
+      h+='<div class="whylbl">why the agent chose this · from the journal</div>'
+        +'<div class="quote"><span class="typed" data-full="'+q.replace(/"/g,'&quot;')+'"></span></div>';
     }
     const rej=sel.rejected||[];
     if(sel.chosen_method_id||rej.length){
+      h+='<div class="whylbl" style="margin-top:14px">treatments considered · <s>rejected</s> · chosen ✓</div>';
       h+='<div class="chips">';
       rej.forEach(r=>h+='<span class="chip rej">'+esc(nice(r.method_id||r))+'</span>');
       if(sel.chosen_method_id)h+='<span class="chip pick">'+esc(nice(sel.chosen_method_id))+'</span>';
@@ -175,7 +180,7 @@ function headline(n,i){
     }
     if(n.primary!=null)h+='<div class="meas dim">measured '+n.primary.toFixed(6)
       +(n.accepted&&i>0?' · Δ +'+(n.primary-BASELINE).toFixed(4)+' vs baseline':'')+'</div>';
-    if((sel.why||'').length>260||sel.citation)
+    if((sel.why||'').length>420||sel.citation)
       h+='<details><summary>full journal entry</summary><div class="full">'
         +esc(sel.why||n.summary||'')+(sel.citation?'\n\ncitations: '+esc(sel.citation):'')+'</div></details>';
     h+='</div>';
@@ -209,7 +214,7 @@ function repaint(){
   let best=BASELINE;
   N.forEach((n,k)=>{if((k<=maxI||conv)&&n.accepted&&n.primary!=null)best=Math.max(best,n.primary);});
   if(conv)best=BEST;
-  $('#barscore').textContent=best.toFixed(4);
+  const _bs=$('#barscore');if(_bs)_bs.textContent=best.toFixed(4);
   // label the iteration the reader is currently on
   const pt=$('#curpt'),lb=$('#curlbl');
   let cur=conv?-1:maxI;
@@ -233,7 +238,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{
     active.delete(i);el.classList.remove('onn');
   }else return;
   repaint();
-}),{rootMargin:'0px 0px -45% 0px',threshold:[0.05,0.5]});
+}),{rootMargin:'0px 0px -28% 0px',threshold:[0.05,0.5]});
 document.querySelectorAll('.entry').forEach(el=>io.observe(el));
 
 /* hover an entry: highlight its point on the chart */
@@ -259,6 +264,30 @@ document.querySelectorAll('.entry').forEach(el=>{
     +'</div><div class="k">'+c[1]+'</div></div>').join('');
 })();
 
+
+/* ---------- method-card library ------------------------------------------ */
+(function methods(){
+  const lib=document.getElementById('methodslib');if(!lib||!window.METHODS)return;
+  const cls=st=>/measured-win|external-win/.test(st)?'win':/dead|superseded/.test(st)?'dead':'try';
+  const short=st=>/measured-win|external-win/.test(st)?'measured win'
+    :/measured-alive/.test(st)?'measured alive'
+    :/measured-dead/.test(st)?'measured dead':/superseded/.test(st)?'superseded'
+    :/conditional/i.test(st)?'conditional':/untried/.test(st)?'untried':(st||'untried').split('(')[0].slice(0,24);
+  const esc2=t=>{const d=document.createElement('div');d.textContent=t;return d.innerHTML;};
+  function render(q){
+    q=(q||'').toLowerCase();
+    const rows=window.METHODS.filter(c=>!q||JSON.stringify(c).toLowerCase().includes(q));
+    lib.innerHTML=rows.map(c=>'<div class="mrow">'
+      +'<div><div class="mid">'+esc2(c.title||c.id)+'</div><div class="mcite">'+esc2((c.citation||'').replace(/`/g,''))+'</div></div>'
+      +'<div class="mmech">'+esc2((c.mechanism||'').slice(0,240))+((c.mechanism||'').length>240?'…':'')+'</div>'
+      +'<div class="mstat"><span class="'+cls(c.status)+'">'+esc2(short(c.status))+'</span>'
+      +(c.evidence&&c.evidence!=='none'?'<div class="mcite">'+esc2(c.evidence.split(' ')[0])+'</div>':'')+'</div>'
+      +'</div>').join('')||'<div class="mrow"><div class="mmech">no cards match</div></div>';
+  }
+  render('');
+  const inp=document.getElementById('msearch');
+  if(inp)inp.addEventListener('input',()=>render(inp.value));
+})();
 
 /* ---------- evidence: rare-video memorization, baseline vs treated -------- */
 (function evidence(){
@@ -308,15 +337,7 @@ document.querySelectorAll('.entry').forEach(el=>{
     h+='</svg></div>';
     return h;
   }).join('');
-  // draw-in on first view
-  const io2=new IntersectionObserver(es=>es.forEach(e=>{
-    if(!e.isIntersecting)return;io2.disconnect();
-    grid.querySelectorAll('.evline').forEach((ln,i)=>{
-      const len=ln.getTotalLength();
-      ln.style.strokeDasharray=len;ln.style.strokeDashoffset=len;
-      setTimeout(()=>{ln.style.strokeDashoffset=0;},60*(i%12));
-    });
-  }),{threshold:0.65});
-  io2.observe(grid);
+  // charts render fully drawn; no entrance animation
+
 })();
 })();

@@ -1,0 +1,75 @@
+{"config": {"dropout": 0.3090909090909091, "gamma": 0.45, "half_life": 3.5, "lr": 0.00055, "step_every": 1, "weight_decay": 3.000000000000001e-05}, "primary": 0.6024151092389403, "probe": 1, "stage": "coarse"}
+{"config": {"dropout": 0.17272727272727273, "gamma": 0.65, "half_life": 14.0, "lr": 0.0013, "step_every": 1, "weight_decay": 0.0019737996739727054}, "primary": 0.6020431691860151, "probe": 2, "stage": "coarse"}
+{"config": {"dropout": 0.3772727272727273, "gamma": 0.4, "half_life": 7.0, "lr": 0.001, "step_every": 2, "weight_decay": 0.0005621452268581151}, "primary": 0.6029654012848848, "probe": 3, "stage": "coarse"}
+{"config": {"dropout": 0.15, "gamma": 0.6, "half_life": 3.5, "lr": 0.00075, "step_every": 2, "weight_decay": 0.003000000000000001}, "primary": 0.6028085928982316, "probe": 4, "stage": "coarse"}
+{"config": {"dropout": 0.35454545454545455, "gamma": 0.5, "half_life": 14.0, "lr": 0.00055, "step_every": 3, "weight_decay": 0.00024333924923690626}, "primary": 0.6035151906863412, "probe": 5, "stage": "coarse"}
+{"config": {"dropout": 0.19545454545454544, "gamma": 0.72, "half_life": 7.0, "lr": 0.0013, "step_every": 3, "weight_decay": 0.0003698540218326199}, "primary": 0.6028294693250629, "probe": 6, "stage": "coarse"}
+{"config": {"dropout": 0.3318181818181818, "gamma": 0.45, "half_life": 3.5, "lr": 0.001, "step_every": 1, "weight_decay": 0.0008544107605307409}, "primary": 0.6022697570026825, "probe": 7, "stage": "coarse"}
+{"config": {"dropout": 0.4, "gamma": 0.65, "half_life": 14.0, "lr": 0.00075, "step_every": 1, "weight_decay": 0.00016010097693618943}, "primary": 0.6038180439540246, "probe": 8, "stage": "coarse"}
+{"config": {"dropout": 0.2863636363636364, "gamma": 0.4, "half_life": 7.0, "lr": 0.00055, "step_every": 2, "weight_decay": 6.930389100249476e-05}, "primary": 0.604137469499472, "probe": 9, "stage": "coarse"}
+{"config": {"dropout": 0.26363636363636367, "gamma": 0.6, "half_life": 3.5, "lr": 0.0013, "step_every": 2, "weight_decay": 0.00010533575202645397}, "primary": 0.60300798289461, "probe": 10, "stage": "coarse"}
+{"config": {"dropout": 0.21818181818181817, "gamma": 0.5, "half_life": 14.0, "lr": 0.001, "step_every": 3, "weight_decay": 0.001298628384324919}, "primary": 0.6019944281651843, "probe": 11, "stage": "coarse"}
+{"config": {"dropout": 0.2409090909090909, "gamma": 0.72, "half_life": 7.0, "lr": 0.00075, "step_every": 3, "weight_decay": 4.559733248858801e-05}, "primary": 0.603278118070937, "probe": 12, "stage": "coarse"}
+{"config": {"dropout": 0.2863636363636364, "gamma": 0.4, "half_life": 7.0, "lr": 0.00055, "step_every": 2, "weight_decay": 6.930389100249476e-05}, "primary": 0.6042558769312607, "probe": 1, "stage": "refine"}
+{"config": {"dropout": 0.29414141414141415, "gamma": 0.44, "half_life": 5.0, "lr": 0.00046444444444444446, "step_every": 2, "weight_decay": 3.44152937674006e-05}, "primary": 0.6038585312555873, "probe": 2, "stage": "refine"}
+{"config": {"dropout": 0.2785858585858586, "gamma": 0.3066666666666667, "half_life": 7.0, "lr": 0.0007040000000000001, "step_every": 3, "weight_decay": 9.355046766900489e-05}, "primary": 0.6030956431756349, "probe": 3, "stage": "refine"}
+{"config": {"dropout": 0.32525252525252524, "gamma": 0.49333333333333335, "half_life": 10.0, "lr": 0.0006013333333333334, "step_every": 1, "weight_decay": 6.270875379454294e-05}, "primary": 0.6041188889401573, "probe": 4, "stage": "refine"}
+{"config": {"dropout": 0.2319191919191919, "gamma": 0.36, "half_life": 14.0, "lr": 0.000532888888888889, "step_every": 2, "weight_decay": 7.659264484544175e-05}, "primary": 0.6044052439448793, "probe": 5, "stage": "refine"}
+{"config": {"dropout": 0.26303030303030306, "gamma": 0.3866666666666667, "half_life": 3.5, "lr": 0.0004302222222222222, "step_every": 3, "weight_decay": 0.00013956089814451265}, "primary": 0.6040110405792638, "probe": 6, "stage": "refine"}
+{"config": {"dropout": 0.3563636363636364, "gamma": 0.4666666666666667, "half_life": 5.0, "lr": 0.0005671111111111111, "step_every": 1, "weight_decay": 5.134158521878789e-05}, "primary": 0.6034527126323994, "probe": 7, "stage": "refine"}
+{"config": {"dropout": 0.3096969696969697, "gamma": 0.41333333333333333, "half_life": 7.0, "lr": 0.0006355555555555555, "step_every": 2, "weight_decay": 0.00017046006592501826}, "primary": 0.6037357565013408, "probe": 8, "stage": "refine"}
+{"config": {"dropout": 0.21636363636363637, "gamma": 0.33333333333333337, "half_life": 10.0, "lr": 0.0006697777777777778, "step_every": 3, "weight_decay": 4.203493473039559e-05}, "primary": 0.6035722429412658, "probe": 9, "stage": "refine"}
+{"config": {"dropout": 0.2474747474747475, "gamma": 0.52, "half_life": 14.0, "lr": 0.00039600000000000003, "step_every": 1, "weight_decay": 0.00011426279923809636}, "primary": 0.6031998585095015, "probe": 10, "stage": "refine"}
+{"context_fraction": 0.0, "primary": 0.6040880367941595, "repeat": 1, "seed": 2043, "stage": "context_dial"}
+{"context_fraction": 0.0, "primary": 0.6048751052136438, "repeat": 2, "seed": 2044, "stage": "context_dial"}
+{"context_fraction": 0.0, "primary": 0.6044034605114911, "repeat": 3, "seed": 2045, "stage": "context_dial"}
+{"context_fraction": 0.0, "primary": 0.6044521515007457, "repeat": 4, "seed": 2046, "stage": "context_dial"}
+{"context_fraction": 0.0, "primary": 0.6047870008700819, "repeat": 5, "seed": 2047, "stage": "context_dial"}
+{"context_fraction": 0.1, "primary": 0.6040288681402901, "repeat": 1, "seed": 2074, "stage": "context_dial"}
+{"context_fraction": 0.1, "primary": 0.6046663464336821, "repeat": 2, "seed": 2075, "stage": "context_dial"}
+{"context_fraction": 0.1, "primary": 0.6039535318372506, "repeat": 3, "seed": 2076, "stage": "context_dial"}
+{"context_fraction": 0.1, "primary": 0.6046482789925753, "repeat": 4, "seed": 2077, "stage": "context_dial"}
+{"context_fraction": 0.1, "primary": 0.6046457077737923, "repeat": 5, "seed": 2078, "stage": "context_dial"}
+{"context_fraction": 0.2, "primary": 0.6042438384579587, "repeat": 1, "seed": 2105, "stage": "context_dial"}
+{"context_fraction": 0.2, "primary": 0.6048015054556678, "repeat": 2, "seed": 2106, "stage": "context_dial"}
+{"context_fraction": 0.2, "primary": 0.6044852365247653, "repeat": 3, "seed": 2107, "stage": "context_dial"}
+{"context_fraction": 0.2, "primary": 0.6043215234948223, "repeat": 4, "seed": 2108, "stage": "context_dial"}
+{"context_fraction": 0.2, "primary": 0.6042775028236551, "repeat": 5, "seed": 2109, "stage": "context_dial"}
+{"context_fraction": 0.3, "primary": 0.6042091672165616, "repeat": 1, "seed": 2136, "stage": "context_dial"}
+{"context_fraction": 0.3, "primary": 0.604703172104091, "repeat": 2, "seed": 2137, "stage": "context_dial"}
+{"context_fraction": 0.3, "primary": 0.6050463847219818, "repeat": 3, "seed": 2138, "stage": "context_dial"}
+{"context_fraction": 0.3, "primary": 0.6039542533424611, "repeat": 4, "seed": 2139, "stage": "context_dial"}
+{"context_fraction": 0.3, "primary": 0.6048562523242925, "repeat": 5, "seed": 2140, "stage": "context_dial"}
+{"context_fraction": 0.4, "primary": 0.6045833446715876, "repeat": 1, "seed": 2167, "stage": "context_dial"}
+{"context_fraction": 0.4, "primary": 0.6040798747243907, "repeat": 2, "seed": 2168, "stage": "context_dial"}
+{"context_fraction": 0.4, "primary": 0.6045053408930984, "repeat": 3, "seed": 2169, "stage": "context_dial"}
+{"context_fraction": 0.4, "primary": 0.6046261236378678, "repeat": 4, "seed": 2170, "stage": "context_dial"}
+{"context_fraction": 0.4, "primary": 0.6048384219865058, "repeat": 5, "seed": 2171, "stage": "context_dial"}
+{"context_fraction": 0.5, "primary": 0.6045397903426508, "repeat": 1, "seed": 2198, "stage": "context_dial"}
+{"context_fraction": 0.5, "primary": 0.6044088175679623, "repeat": 2, "seed": 2199, "stage": "context_dial"}
+{"context_fraction": 0.5, "primary": 0.60502285002094, "repeat": 3, "seed": 2200, "stage": "context_dial"}
+{"context_fraction": 0.5, "primary": 0.6049226637256948, "repeat": 4, "seed": 2201, "stage": "context_dial"}
+{"context_fraction": 0.5, "primary": 0.6049486870585759, "repeat": 5, "seed": 2202, "stage": "context_dial"}
+{"context_fraction": 0.65, "primary": 0.6045300721398781, "repeat": 1, "seed": 2229, "stage": "context_dial"}
+{"context_fraction": 0.65, "primary": 0.6043797228172182, "repeat": 2, "seed": 2230, "stage": "context_dial"}
+{"context_fraction": 0.65, "primary": 0.6047018950667495, "repeat": 3, "seed": 2231, "stage": "context_dial"}
+{"context_fraction": 0.65, "primary": 0.6044810307524293, "repeat": 4, "seed": 2232, "stage": "context_dial"}
+{"context_fraction": 0.65, "primary": 0.6046335786559638, "repeat": 5, "seed": 2233, "stage": "context_dial"}
+{"context_fraction": 0.8, "primary": 0.6046023034404056, "repeat": 1, "seed": 2260, "stage": "context_dial"}
+{"context_fraction": 0.8, "primary": 0.6045996837175405, "repeat": 2, "seed": 2261, "stage": "context_dial"}
+{"context_fraction": 0.8, "primary": 0.6049956050755194, "repeat": 3, "seed": 2262, "stage": "context_dial"}
+{"context_fraction": 0.8, "primary": 0.6040658468601536, "repeat": 4, "seed": 2263, "stage": "context_dial"}
+{"context_fraction": 0.8, "primary": 0.6045120736243701, "repeat": 5, "seed": 2264, "stage": "context_dial"}
+{"context_fraction": 1.0, "primary": 0.6041196353157152, "repeat": 1, "seed": 2291, "stage": "context_dial"}
+{"context_fraction": 1.0, "primary": 0.6036260837339307, "repeat": 2, "seed": 2292, "stage": "context_dial"}
+{"context_fraction": 1.0, "primary": 0.6040793290502664, "repeat": 3, "seed": 2293, "stage": "context_dial"}
+{"context_fraction": 1.0, "primary": 0.6040596275362864, "repeat": 4, "seed": 2294, "stage": "context_dial"}
+{"context_fraction": 1.0, "primary": 0.6041172643732495, "repeat": 5, "seed": 2295, "stage": "context_dial"}
+{"mean_primary": 0.6047685617431646, "selected_context_fraction": 0.5, "stage": "context_selection"}
+{"primary": 0.6012404545096989, "seed": 1042, "stage": "parent_reference"}
+{"member": 1, "primary": 0.6045036798886638, "seed": 1042, "stage": "final_member"}
+{"member": 2, "primary": 0.6048927397572257, "seed": 1043, "stage": "final_member"}
+{"member": 3, "primary": 0.6046616681193606, "seed": 1044, "stage": "final_member"}
+{"member": 4, "primary": 0.6053456319939231, "seed": 1045, "stage": "final_member"}
+{"member": 5, "primary": 0.6043812838672211, "seed": 1046, "stage": "final_member"}
+{"members": 5, "primary": 0.6055355557524926, "stage": "ensemble"}

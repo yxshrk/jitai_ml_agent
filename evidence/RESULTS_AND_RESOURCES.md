@@ -9,33 +9,35 @@
 | Benchmark | Official baseline (valid) | Ours (valid) | Absolute delta |
 |---|---|---|---|
 | KuaiRand-Pure (required) | GAUC 0.6674 / nDCG@5 0.5357 / primary 0.6016 | GAUC 0.6728 / nDCG@5 0.5383 / **primary 0.605575** | **+0.00398** primary (+0.0054 GAUC, +0.0026 nDCG@5) |
-| KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.6524** (designated) — {{TBD: 0.66892 re-designation pending audit}} | +0.032 vs single-model start ({{TBD: +0.048 pending}}) |
+| KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.66892** (designated, triple-audited) | +0.048 vs single-model start |
 | KuaiRand-27K (bonus, out-of-protocol scaling demo) | n/a | primary 0.67263 | — (GPU demo, not an agent run) |
 
 Designated runs: Pure = `logs/run_bigclock_07` (no executable seed; stopped under the ε=0.002/N=3 rule);
-1K = `logs/run_desig_1k_01`. Submission CSVs: `evidence/test_submission_pure.csv`
-(170,588 rows) and `evidence/test_submission_1k.csv` (4,132,081 rows), both built by
+1K = `logs/run_omega_1k` (causal session features; faithful A-form artifact). Submission CSVs:
+`evidence/test_submission_pure.csv` (170,588 rows) and `evidence/test_submission_1k_faithful.csv`
+(4,132,081 rows), both built by
 training on the train split only and validated with the official checker; test labels
 are never read anywhere in the pipeline (see tools/predict_test*.py guards).
 
 ## Resource usage — designated runs (what the rules ask to be reported)
 
-| | Pure (run_bigclock_07) | 1K (run_desig_1k_01) |
+| | Pure (run_bigclock_07) | 1K (run_omega_1k) |
 |---|---|---|
-| LLM tokens (in+out) | 115,315 | 101,549 |
-| Agent wall-clock | 17.0 min (1,019 s) | 62.7 min (3,763 s) |
-| Iterations used (of 50) | 6 | 7 |
-| GPU-hours in the run | 0 (CPU only) | 0 (CPU only) |
+| LLM tokens (in+out) | 115,315 | 320,048 |
+| Agent wall-clock | 17.0 min (1,019 s) | 344.8 min (20,690 s) |
+| Iterations used (of 50) | 6 | 8 |
+| GPU-hours in the run | 0 (CPU only) | ~5.7 (RTX 4090; wall-clock is the scored measure) |
 | Mid-run human actions | 0 (team attestation + no intervention events journaled) | 0 |
 
 ## Full development disclosure (voluntary)
 
-The complete campaign comprises 113 runs including incomplete/aborted ones
+The complete campaign comprises 139 completed runs plus incomplete/aborted ones
 (machine-generated inventory: logs/RUNS_INVENTORY.md, evidence/run_inventory.csv):
-aggregate ≥4.8M LLM tokens and ≈30 run-hours wall-clock, ≈US$95-120 LLM spend
-(per-machine ledgers). The designated runs' own usage is the scored figure; the
+aggregate ≈9.9M LLM tokens and ≈140 run-hours wall-clock across all completed runs,
+≈US$61 real LLM spend (per-machine ledgers double-count shared work; the console
+totals are the authority) plus ≈US$5 of rented CPU-pod time. The designated runs' own usage is the scored figure; the
 campaign totals are disclosed because cross-run knowledge from the campaign
-informed the designated runs' method cards. GPU usage occurred only in development and bonus work (RTX 4090:
-hyperparameter farms, 27K scaling demo, some development runs) — estimated ~12
-GPU-hours total, none in the designated runs. Wall-clock is the scored measure per
+informed the designated runs' method cards. GPU usage (RTX 4090): the designated 1K run (~5.7 GPU-hours) plus development and
+bonus work (hyperparameter farms, 27K scaling demo, some development runs) —
+estimated ~18 GPU-hours total; the designated Pure run used none. Wall-clock is the scored measure per
 the brief; GPU-hours are reported for completeness.

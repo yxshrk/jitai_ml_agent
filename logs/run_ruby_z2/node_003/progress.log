@@ -1,0 +1,9 @@
+{"alpha": 0.05, "gauc": 0.6605240955279562, "ndcg5": 0.4938512321816002, "primary": 0.5771876638547782, "stage": "rolling_alpha_probe"}
+{"alpha": 0.1, "gauc": 0.6604753965244987, "ndcg5": 0.49381305730784275, "primary": 0.5771442269161707, "stage": "rolling_alpha_probe"}
+{"alpha": 0.2, "gauc": 0.6596816796112883, "ndcg5": 0.49339222860937026, "primary": 0.5765369541103293, "stage": "rolling_alpha_probe"}
+{"member": 1, "primary": 0.6037453913620527, "seed": 42, "stage": "final_member"}
+{"member": 2, "primary": 0.6036914966615737, "seed": 43, "stage": "final_member"}
+{"member": 3, "primary": 0.6038741678220024, "seed": 44, "stage": "final_member"}
+{"member": 4, "primary": 0.6041350185122447, "seed": 45, "stage": "final_member"}
+{"member": 5, "primary": 0.6032265852153922, "seed": 46, "stage": "final_member"}
+{"alpha": 0.05, "champion_primary": 0.6046619409634901, "primary": 0.6044954813986647, "stage": "signed_sketch_blend"}

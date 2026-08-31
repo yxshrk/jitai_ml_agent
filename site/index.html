@@ -53,26 +53,40 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--go);outline-offset
 #bar .l{font-size:12.5px;letter-spacing:.12em;font-weight:560}
 #bar .r{font-size:12.5px}
 #bar .r b{color:var(--go);font-weight:620}
+#bar .r .team{color:var(--ink);font-family:'PP Mori',"Switzer",sans-serif;font-size:13px}
+@media (max-width:1000px){#bar .r .names{display:none}}
 #prog{position:fixed;top:48px;left:0;height:2px;background:var(--go);width:0;z-index:10}
 
 /* hero: exactly one viewport tall, nothing peeks from below */
-#hero{height:100vh;min-height:640px;padding:110px 0 0;display:flex}
-#hero .wrap{display:flex;flex-direction:column;height:100%;width:100%}
+#hero{min-height:100vh;padding:0 0 64px;display:flex}
+#hero .wrap{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
+  text-align:center;width:100%;max-width:1380px;padding-top:clamp(80px,10vh,140px)}
 #hero .kicker{font-size:12.5px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;
   font-weight:520;margin-bottom:20px}
-#hero h1{font-size:clamp(30px,4.6vw,58px);line-height:1.08;font-weight:600;max-width:26ch}
+#hero h1{font-size:clamp(30px,3.9vw,60px);line-height:1.1;font-weight:600;max-width:none}
 #hero h1 .go{white-space:nowrap;font-weight:600}
-#hero .sub{margin-top:20px;max-width:80ch;color:var(--dim);font-size:17.5px;font-weight:440}
+#hero .sub{margin:20px 0 clamp(24px,4vh,48px);max-width:none;color:var(--dim);font-size:17.5px;font-weight:440}
 #hero .cursor{display:inline-block;width:.42em;height:.68em;background:var(--go);
   border-radius:1px;vertical-align:0;margin-left:.08em;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-#herochart{display:block;width:100%;aspect-ratio:1120/480;height:auto;flex-shrink:0;
-  margin:40px auto 0;background:var(--surface);
+#hero .byline{margin:2px 0 22px;font-size:19px;color:var(--dim);letter-spacing:.01em}
+#hero .byline b{color:var(--ink);font-weight:600;font-size:23px;
+  font-family:'PP Mori',"Switzer",sans-serif;margin-right:2px}
+#herochart{display:block;width:100%;max-width:min(100%,calc(56vh*(1120/480)));
+  aspect-ratio:1120/480;height:auto;flex-shrink:0;
+  margin:0 auto;background:var(--surface);
   border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
-.scrollhint{text-align:center;margin-top:auto;padding:26px 0 30px;color:var(--ink);
-  font-size:14.5px;font-weight:620;letter-spacing:.2em;
-  animation:bob 2s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(6px)}}
+/* flexible spacers: on tall windows a third of the leftover sits above the chart,
+   the rest below, so the chart stays anchored to the headline */
+#hero .flexgap{flex:1 1 0}
+#hero .wrap::after{content:"";flex:2 1 0}
+.scrollhint{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:9;
+  background:var(--surface);border:1px solid var(--line);border-radius:99px;
+  box-shadow:var(--shadow);padding:9px 22px;white-space:nowrap;
+  color:var(--ink);font-size:13px;font-weight:620;letter-spacing:.18em;
+  pointer-events:none;transition:opacity .4s;animation:bobc 2s ease-in-out infinite}
+@keyframes bobc{50%{transform:translateX(-50%) translateY(5px)}}
+.scrollhint.gone{opacity:0}
 
 /* generic section */
 section{padding:120px 0;border-top:1px solid var(--line)}
@@ -97,7 +111,7 @@ h2{font-size:clamp(23px,2.7vw,34px);font-weight:600;margin-bottom:16px;line-heig
 .stage h3{font-size:14.5px;letter-spacing:.1em;font-weight:600;margin:4px 0 10px}
 .stage.live h3{color:var(--go)}
 .stage p{font-size:13.5px;color:var(--dim);line-height:1.55}
-.deep{margin-top:64px;display:grid;gap:34px;max-width:96ch}
+.deep{margin:64px auto 0;display:grid;gap:34px;max-width:96ch}
 .dstep .dnum{font-size:12px;letter-spacing:.18em;color:var(--go);font-weight:620;
   margin-bottom:8px;font-family:'PP Mori',"Switzer",sans-serif}
 .dstep p{color:var(--dim);font-size:16px;line-height:1.7}
@@ -144,6 +158,8 @@ h2{font-size:clamp(23px,2.7vw,34px);font-weight:600;margin-bottom:16px;line-heig
 .stamp.rej{color:var(--no);border-color:var(--no);background:rgba(229,72,77,.06)}
 .stamp.void{color:var(--amber);border-color:var(--amber);background:rgba(148,106,12,.06)}
 .entry h3{font-size:12.5px;letter-spacing:.16em;color:var(--dim);margin-bottom:12px;font-weight:580}
+.whylbl{margin-top:14px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--go);font-weight:600}
 .entry .quote{border-left:2px solid var(--go);padding:9px 13px 9px 15px;margin:15px 0;
   color:var(--ink);font-size:14.5px;background:var(--paper);border-radius:0 6px 6px 0}
 .entry .meas{margin-top:13px;font-size:14px}
@@ -170,6 +186,51 @@ details .full{margin-top:10px;color:var(--dim);white-space:pre-wrap;font-size:13
 .evnote{font:560 13px "Switzer",sans-serif;fill:var(--no)}
 .evlbl{font:560 12.5px "Switzer",sans-serif}
 
+.enggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:42px}
+@media (max-width:1000px){.enggrid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.enggrid{grid-template-columns:1fr}}
+.engcard{display:block;border:1px solid var(--line);background:var(--surface);border-radius:10px;
+  box-shadow:var(--shadow);padding:22px 24px;color:inherit;text-decoration:none;
+  transition:transform .25s,border-color .25s,box-shadow .25s}
+.engcard:hover{transform:translateY(-5px);border-color:var(--ink);
+  box-shadow:0 1px 2px rgba(20,20,18,.04),0 14px 30px rgba(20,20,18,.10)}
+.engcard .more{margin-top:10px;font-size:11.5px;letter-spacing:.14em;color:var(--go);
+  font-weight:620;text-transform:uppercase}
+.engcard h3{font-family:'PP Mori',"Switzer",sans-serif;font-size:15px;font-weight:600;
+  margin-bottom:8px}
+.engcard p{font-size:14px;color:var(--dim);line-height:1.6}
+
+/* harness deep dives */
+.dstat{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:38px;
+  box-shadow:var(--shadow)}
+.dstat>div{background:var(--surface);padding:18px 16px}
+.dstat b{display:block;font-size:26px;font-weight:600;font-family:'PP Mori',"Switzer",sans-serif}
+.dstat span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+@media (max-width:1000px){.dstat{grid-template-columns:repeat(3,1fr)}}
+.dsec{margin:72px auto 0;scroll-margin-top:72px;max-width:96ch}
+.dsec h3{font-family:'PP Mori',"Switzer",sans-serif;font-size:21px;font-weight:600;margin-bottom:12px}
+.dsec p{color:var(--dim);font-size:16px;line-height:1.7}
+.dsec code,.dsec i{color:var(--ink);font-style:normal}
+/* the card library table spans the full wrap; its prose stays at reading width */
+#deep-methods{max-width:none}
+#deep-methods p{max-width:96ch}
+.mtools{margin:22px 0 12px}
+#msearch{width:100%;max-width:420px;padding:9px 14px;border:1px solid var(--line);
+  border-radius:8px;background:var(--surface);font:14px "Switzer",sans-serif;color:var(--ink)}
+#msearch:focus{outline:2px solid var(--go);outline-offset:1px}
+#methodslib{border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  box-shadow:var(--shadow);background:var(--surface)}
+.mrow{display:grid;grid-template-columns:clamp(220px,24vw,300px) 1fr 130px;gap:18px;padding:13px 18px;
+  border-top:1px solid var(--grid2);font-size:13.5px}
+.mrow:first-child{border-top:0}
+.mrow .mid{font-weight:600;color:var(--ink)}
+.mrow .mmech{color:var(--dim)}
+.mrow .mcite{color:var(--dim);font-size:12px;margin-top:3px}
+.mrow .mstat{text-align:right;font-size:12px}
+.mstat .win{color:var(--go);font-weight:620}.mstat .dead{color:var(--no)}.mstat .try{color:var(--amber)}
+@media (max-width:800px){.mrow{grid-template-columns:1fr;gap:6px}.mrow .mstat{text-align:left}}
+
 /* receipts */
 #receipts .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--line);border:1px solid var(--line);margin-top:42px;
@@ -188,6 +249,16 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   .entries{gap:40px;padding:30px 0}
   .entry{opacity:1;transform:none}
 }
+/* short screens (laptops): tighten the text stack so the chart keeps its share */
+@media (max-height:900px){
+  #hero .wrap{padding-top:76px}
+  #hero .kicker{margin-bottom:12px;font-size:11.5px}
+  #hero .byline{margin:0 0 14px;font-size:16px}
+  #hero .byline b{font-size:19px}
+  #hero h1{font-size:clamp(26px,min(4.2vw,6.2vh),50px)}
+  #hero .sub{margin-top:14px;font-size:15.5px}
+  .scrollhint{font-size:13px}
+}
 @media (prefers-reduced-motion: reduce){
   .trace{transition:none}.scrollhint{animation:none}.cursor{animation:none}
 }
@@ -195,18 +266,17 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 </head>
 <body>
 <div id="bar"><div class="wrap">
-  <div class="l">MLE-AGENT · FLIGHT RECORDER</div>
-  <div class="r dim">valid primary <b id="barscore">0.6016</b></div>
+  <div class="l">TIKTOK TECHJAM 2026 · TRACK 2 · KUAIRAND-PURE</div>
+  <div class="r"><b class="team">jit.ai</b><span class="dim names"> · Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</span></div>
 </div></div>
 <div id="prog"></div>
 
 <header id="hero"><div class="wrap">
-  <div class="kicker">TikTok TechJam 2026 · Track 2 · KuaiRand-Pure</div>
-  <h1>An agent taught itself to rank.
-    <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>,
-    zero humans in the loop.<span class="cursor"></span></h1>
+  <h1>An agent taught itself to rank.<br>
+    <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero humans in the loop.<span class="cursor"></span></h1>
   <p class="sub">This page is its flight recorder: every hypothesis, every dead end,
   every accepted fix, replayed from the run journal of one autonomous research loop.</p>
+  <div class="flexgap"></div>
   <svg id="herochart" viewBox="0 0 1120 480" aria-label="validation score per iteration"></svg>
   <div class="scrollhint">▼ SCROLL TO REPLAY THE RUN</div>
 </div></header>
@@ -242,6 +312,22 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   </div>
   <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations</span></div>
 
+</div></section>
+
+<section id="log"><div class="wrap">
+  <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
+  <h2>Six iterations, replayed.</h2>
+  <div class="cols">
+    <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
+    <div class="entries" id="entries"></div>
+  </div>
+</div></section>
+
+<section id="anatomy"><div class="wrap">
+  <div class="eyebrow">how it worked</div>
+  <h2>The four stages, in depth.</h2>
+  <p class="lede">You just watched six iterations. Here is exactly what happened
+  inside each stage of every one of them.</p>
   <div class="deep">
     <div class="dstep"><div class="dnum">01 · DIAGNOSE</div>
       <p>Every trained node logs a learning curve: training loss and validation score
@@ -253,7 +339,7 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
       a real effect from a lucky seed by reading the gap in sigmas. A telemetry gate
       keeps it honest: a diagnosis may only cite a curve that was actually recorded,
       and every diagnosis is written verbatim into the journal, so wrong calls stay
-      visible. The one you see replayed below, "validation peaks at epoch 8", is what
+      visible. The one you just saw replayed, "validation peaks at epoch 8", is what
       steered the whole run.</p></div>
     <div class="dstep"><div class="dnum">02 · TREAT</div>
       <p>The diagnosis selects from a library of 42 method cards, each a real
@@ -277,18 +363,8 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
       primary metric is their mean. A change is kept only if its gain clears an
       acceptance floor, and borderline gains must repeat on a second seed (a z-test
       against the calibrated noise). Convergence is the competition rule: three
-      consecutive iterations within ε = 0.002 ends the run, hard cap 50. The run
-      you are about to scroll through ended exactly that way, with no human in the
+      consecutive iterations within ε = 0.002 ends the run, hard cap 50. The run you just scrolled through ended exactly that way, with no human in the
       decision.</p></div>
-  </div>
-</div></section>
-
-<section id="log"><div class="wrap">
-  <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
-  <h2>Six iterations, replayed.</h2>
-  <div class="cols">
-    <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
-    <div class="entries" id="entries"></div>
   </div>
 </div></section>
 
@@ -306,6 +382,151 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   difference between the two charts is the treatments the agent chose.</p>
 </div></section>
 
+<section id="engineering"><div class="wrap">
+  <div class="eyebrow">the harness</div>
+  <h2>The agent is only half the system. The other half never trusts it.</h2>
+  <p class="lede">Everything the LLM does runs inside a harness engineered so that
+  honesty is structural, not behavioral. These are the pieces we built.</p>
+  <div class="enggrid">
+    <a class="engcard" href="#deep-leakage"><h3>Structural leakage guard</h3>
+      <p>The hidden test window is never mounted into the agent's workspace, and
+      generated code is screened before execution. Not touching the test set is a
+      property of the filesystem, not a promise in a prompt.</p>
+      <div class="more">read the full story ↓</div></a>
+    <a class="engcard" href="#deep-gate"><h3>Calibrated acceptance gate</h3>
+      <p>Baseline seed noise is measured first, so every gain is read in sigmas.
+      Borderline gains must repeat on a second seed (a z-test) before acceptance,
+      and a convergence rule ends the run, never a person.</p>
+      <div class="more">read the full story ↓</div></a>
+    <a class="engcard" href="#deep-methods"><h3>Method cards, not vibes</h3>
+      <p>The agent's knowledge is 42 cards: mechanism, preconditions, and measured
+      evidence per technique. A two-tier menu separates proven treatments from
+      ranked opportunities, and a strategy layer matches them to the run phase.</p>
+      <div class="more">read the full story ↓</div></a>
+    <a class="engcard" href="#deep-telemetry"><h3>Telemetry-gated diagnosis</h3>
+      <p>A diagnosis may only cite curves that were actually recorded. When we found
+      stale knowledge silently mis-steering selection, we rebuilt the channel and
+      disclosed the discarded runs rather than hiding them.</p>
+      <div class="more">read the full story ↓</div></a>
+    <a class="engcard" href="#deep-plans"><h3>Typed ensemble plans</h3>
+      <p>For the closing move, the agent emits a typed, schema-validated plan and a
+      deterministic assembler executes it: parallel family probes, exhaustive blend
+      enumeration, full-fidelity re-verification. No LLM in the measurement path.</p>
+      <div class="more">read the full story ↓</div></a>
+    <a class="engcard" href="#deep-benches"><h3>Decision benches</h3>
+      <p>Selector quality is tested like code: frozen run-state fixtures with known
+      right answers, replayed against the brain after every change. Bench fixes may
+      only be evidence corrections or general principles, never canned answers.</p>
+      <div class="more">read the full story ↓</div></a>
+  </div>
+</div></section>
+
+<section id="harness-deep"><div class="wrap">
+  <div class="eyebrow">the harness, in depth</div>
+  <h2>Everything below is in the repo. This is the tour.</h2>
+
+  <div class="dstat">
+    <div><b>139</b><span>completed agent runs</span></div>
+    <div><b>250+</b><span>measured experiment cells</span></div>
+    <div><b>42</b><span>method cards in the library</span></div>
+    <div><b>9.9M</b><span>LLM tokens across the campaign</span></div>
+    <div><b>~140h</b><span>aggregate run wall-clock</span></div>
+    <div><b>0</b><span>interventions in designated runs</span></div>
+  </div>
+
+  <div class="dsec" id="deep-leakage">
+    <h3>Structural leakage guard</h3>
+    <p>The rule "never touch the hidden test set" is enforced by architecture, not
+    by prompt. A data exporter builds the agent's workspace containing only the
+    train and validation windows; the test file simply does not exist in any path
+    the agent's scripts can read. On top of that, every generated script is screened
+    before execution for test-window access patterns, and the two test-prediction
+    tools (<code>tools/predict_test*.py</code>) carry explicit guards and are never
+    callable by the agent. The hidden test set was scored exactly once, at final
+    submission. When organizers acknowledged the test set ships with the data and
+    asked teams not to use it, this structural guard became a differentiator: our
+    compliance is checkable from the code, not attested.</p>
+  </div>
+
+  <div class="dsec" id="deep-gate">
+    <h3>Calibrated acceptance gate</h3>
+    <p>Iteration zero trains the official baseline on three seeds and measures the
+    noise floor: σ ≈ 0.0001 on validation primary. Every later delta is read in
+    those units. A candidate is accepted outright only above a floor; borderline
+    gains (the grey zone, floor 0.0005) must repeat on a fresh seed and pass a
+    z-test against the calibrated noise before they count. We measured why this
+    matters: the official ε = 0.002 convergence rule silently kills honest +0.0004
+    steps from a strong base, so a run that chases every twinkle converges early on
+    noise, and a run with no floor accepts phantoms. The gate is versioned
+    (floor-v2) and its history is in the repo, including the runs the earlier
+    version handled worse.</p>
+  </div>
+
+  <div class="dsec" id="deep-methods">
+    <h3>The method-card library: 42 techniques, cited and measured</h3>
+    <p>The agent's knowledge is not a prompt, it is a curated library compiled from
+    the ranking literature (<code>research/</code> surveys) and this campaign's own
+    ledger. Each card names the mechanism, when it applies, its citation, and what
+    it has measured on this exact dataset, updated as runs conclude. Cards move
+    through honest states: <i>measured-win</i>, <i>measured-dead</i> (may not be
+    re-selected in the same form), <i>untried</i>, <i>parent-conditional</i>. Two
+    tiers separate proven treatments from evidence-ranked opportunities, and a
+    strategy layer matches cards to the run phase. One card,
+    <i>temporal-pair-kernel</i>, was invented by a run itself, its card written
+    from the journal afterwards. The full library, live from
+    <code>agent/METHODS.md</code>:</p>
+    <div class="mtools"><input id="msearch" type="search" placeholder="filter 42 cards: bpr, dcn, recency, ensemble…" aria-label="filter method cards"></div>
+    <div id="methodslib"></div>
+  </div>
+
+  <div class="dsec" id="deep-telemetry">
+    <h3>Telemetry-gated diagnosis, and the bug that taught us why</h3>
+    <p>Every node script must emit its per-epoch history: train loss, validation
+    GAUC, nDCG@5, learning rate. The diagnosis stage may only assert curve shapes
+    that exist in that record; a proposal reasoning from an unrecorded curve is
+    rejected as insufficient telemetry, and the run says so in its journal. We
+    learned this the expensive way: mid-campaign we found two stale knowledge
+    channels (an outdated directive and 17 stale card statuses) had been silently
+    mis-steering selection for a day of runs. We purged them, rebuilt the channel
+    so knowledge is loaded once at launch, and disclosed the two runs the earlier
+    wrong doctrine had discarded rather than deleting them. Accurate memory turned
+    out to be as important to autonomous research as model quality.</p>
+  </div>
+
+  <div class="dsec" id="deep-plans">
+    <h3>Typed ensemble plans: the agent plans, the harness executes</h3>
+    <p>The campaign's strongest measured finding: cross-family blends beat
+    same-family seed ensembles by an order of magnitude (+0.0013 vs +0.0003, with
+    team evidence probes reaching 0.6058-0.6065). The farm-close capability turns
+    that into a first-class move. The agent emits a typed, schema-validated JSON
+    plan: which model families, which configs and seeds, which blend rule. A
+    deterministic assembler then runs the three phases: parallel probe-fidelity
+    fits of every family, exhaustive enumeration of every declared blend over the
+    probe score vectors (cheap: rank averages of saved arrays), full training of
+    only the complementary families, and a full-fidelity re-verification of the
+    winning combination before anything is emitted. There is no LLM call inside the
+    measurement path, an anchor rule guarantees a strong singleton fallback, and a
+    legitimate "the incumbent won" is recorded as such rather than punished as a
+    degenerate ensemble.</p>
+  </div>
+
+  <div class="dsec" id="deep-benches">
+    <h3>Decision benches: testing judgment like code</h3>
+    <p>How do you regression-test an agent's judgment? We froze real run states
+    (curves, menu, history) whose right next move we knew from measurement, and
+    replay the brain against them after every harness change.
+    The full-knowledge selector bench runs 8/8; the clean-mode strategy bench went
+    4/10 to 10/10 through methodology fixes alone, under a standing constitution:
+    a bench fix may only be an evidence correction or a general principle, never a
+    canned answer to a specific state. A third tool replays historical decision
+    points over cached artifacts; it scores 0.60599, which we report as an
+    optimistic cached-artifact counterfactual, not a result, a distinction an
+    external review pushed us to sharpen and that we adopted across every claim on
+    this page.</p>
+  </div>
+
+</div></section>
+
 <section id="receipts"><div class="wrap">
   <div class="eyebrow">the receipts</div>
   <h2>Everything above is measured, logged, and reproducible.</h2>
@@ -317,11 +538,13 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 </div></section>
 
 <footer><div class="wrap">
-  mle-agent · TikTok TechJam 2026 Track 2 · built by team jitai ·
+  mle-agent · TikTok TechJam 2026 Track 2 · team <b>jit.ai</b>: Aditya Ghosh,
+  Rohan Kulshrestha, Yash Raj Khandelwal, Avinash Parthiban Elangovan ·
   every number on this page has a run directory behind it
 </div></footer>
 
 <script src="rundata.js"></script>
+<script src="methods.js"></script>
 <script src="weights.js"></script>
 <script src="app.js"></script>
 </body>
