@@ -1115,6 +1115,12 @@ def run_plan(
         ):
             raise ValueError("full predictions do not align with the validation split")
     full, full_dropped = _drop_duplicate_members(raw_full)
+    # Admission floor (card precondition): members below plan["admission_primary"]
+    # stay eligible as singletons/fallbacks but never enter a blend.
+    admitted_positions = {
+        position for position, member in enumerate(full)
+        if float(member.metrics.get("primary", 0.0)) >= float(plan["admission_primary"])
+    }
     full_candidates = _candidate_results(
         full,
         users,
@@ -1126,6 +1132,12 @@ def run_plan(
         len(full), aggregation_count
     ):
         raise AssertionError("full enumeration was not completed")
+    # enumeration is complete; now apply the admission policy to blends
+    full_candidates = [
+        candidate for candidate in full_candidates
+        if candidate.kind != "blend"
+        or all(position in admitted_positions for position in candidate.member_positions)
+    ]
     if parent is not None:
         full_candidates.append(Candidate(
             kind="incumbent",
