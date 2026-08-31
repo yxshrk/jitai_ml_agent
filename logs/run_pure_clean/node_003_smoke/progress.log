@@ -1,0 +1,3 @@
+{"config": {"bpr_weight": 0.04, "dropout": 0.1, "lr_gamma": 0.97, "pair_cap": 24, "row_l2": 1e-05, "weight_decay": 1e-05}, "epochs": 1, "gauc": 0.658268, "ndcg5": 0.531845, "pairwise_loss": 0.620927, "phase": "probe", "pointwise_loss": 0.602209, "primary": 0.595056, "probe": 1, "seed": 42, "total_loss": 0.627047}
+{"config": {"bpr_weight": 0.1, "dropout": 0.1, "lr_gamma": 0.97, "pair_cap": 24, "row_l2": 1e-05, "weight_decay": 1e-05}, "epochs": 1, "gauc": 0.659318, "ndcg5": 0.531973, "pairwise_loss": 0.618693, "phase": "probe", "pointwise_loss": 0.601701, "primary": 0.595646, "probe": 2, "seed": 42, "total_loss": 0.663571}
+{"phase": "final", "primary": 0.595646, "run": 1, "seed": 42}

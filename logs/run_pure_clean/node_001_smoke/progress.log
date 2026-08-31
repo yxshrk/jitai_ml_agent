@@ -1,0 +1,3 @@
+{"config": {"dropout": 0.1, "lr_gamma": 0.97, "row_l2": 1e-05, "weight_decay": 1e-05}, "epochs": 1, "gauc": 0.660603, "ndcg5": 0.532333, "phase": "probe", "primary": 0.596468, "probe": 1, "seed": 42, "train_loss": 0.585941}
+{"config": {"dropout": 0.15, "lr_gamma": 0.96, "row_l2": 3e-05, "weight_decay": 3e-05}, "epochs": 1, "gauc": 0.660654, "ndcg5": 0.532467, "phase": "probe", "primary": 0.596561, "probe": 2, "seed": 42, "train_loss": 0.58614}
+{"phase": "final", "primary": 0.596561, "run": 1, "seed": 42}

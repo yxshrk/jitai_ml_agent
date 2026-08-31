@@ -1,0 +1,946 @@
+{
+  "run_dir": "logs/run_pure_clean",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6694805483055893,
+    "ndcg5": 0.536202438208338,
+    "primary": 0.6028414932569637,
+    "winning_config": {
+      "dropout": 0.345791812271743,
+      "row_l2": 0.00015205456838990385,
+      "weight_decay": 8.511085664954651e-05,
+      "lr_gamma": 0.8792818771381474
+    },
+    "winning_probe_primary": 0.6013075679186539,
+    "history": {
+      "probes": [
+        {
+          "phase": "probe",
+          "probe": 1,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1,
+            "row_l2": 1e-05,
+            "weight_decay": 1e-05,
+            "lr_gamma": 0.97
+          },
+          "gauc": 0.657251,
+          "ndcg5": 0.530387,
+          "primary": 0.593819,
+          "train_loss": 0.47703
+        },
+        {
+          "phase": "probe",
+          "probe": 2,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.15,
+            "row_l2": 3e-05,
+            "weight_decay": 3e-05,
+            "lr_gamma": 0.96
+          },
+          "gauc": 0.660003,
+          "ndcg5": 0.531762,
+          "primary": 0.595882,
+          "train_loss": 0.478521
+        },
+        {
+          "phase": "probe",
+          "probe": 3,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2,
+            "row_l2": 0.0001,
+            "weight_decay": 0.0001,
+            "lr_gamma": 0.95
+          },
+          "gauc": 0.662175,
+          "ndcg5": 0.533122,
+          "primary": 0.597648,
+          "train_loss": 0.480173
+        },
+        {
+          "phase": "probe",
+          "probe": 4,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.25,
+            "row_l2": 0.0003,
+            "weight_decay": 0.0001,
+            "lr_gamma": 0.94
+          },
+          "gauc": 0.66401,
+          "ndcg5": 0.533772,
+          "primary": 0.598891,
+          "train_loss": 0.482841
+        },
+        {
+          "phase": "probe",
+          "probe": 5,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3,
+            "row_l2": 0.0001,
+            "weight_decay": 0.0003,
+            "lr_gamma": 0.92
+          },
+          "gauc": 0.665735,
+          "ndcg5": 0.534792,
+          "primary": 0.600263,
+          "train_loss": 0.485983
+        },
+        {
+          "phase": "probe",
+          "probe": 6,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.35,
+            "row_l2": 0.0003,
+            "weight_decay": 0.0003,
+            "lr_gamma": 0.9
+          },
+          "gauc": 0.665194,
+          "ndcg5": 0.535066,
+          "primary": 0.60013,
+          "train_loss": 0.486182
+        },
+        {
+          "phase": "probe",
+          "probe": 7,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2,
+            "row_l2": 3e-05,
+            "weight_decay": 0.001,
+            "lr_gamma": 0.96
+          },
+          "gauc": 0.661506,
+          "ndcg5": 0.532622,
+          "primary": 0.597064,
+          "train_loss": 0.479978
+        },
+        {
+          "phase": "probe",
+          "probe": 8,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3,
+            "row_l2": 1e-05,
+            "weight_decay": 0.0001,
+            "lr_gamma": 0.97
+          },
+          "gauc": 0.66327,
+          "ndcg5": 0.533694,
+          "primary": 0.598482,
+          "train_loss": 0.483898
+        },
+        {
+          "phase": "probe",
+          "probe": 9,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4,
+            "row_l2": 0.0001,
+            "weight_decay": 0.0001,
+            "lr_gamma": 0.95
+          },
+          "gauc": 0.663918,
+          "ndcg5": 0.533767,
+          "primary": 0.598842,
+          "train_loss": 0.486015
+        },
+        {
+          "phase": "probe",
+          "probe": 10,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.15,
+            "row_l2": 0.001,
+            "weight_decay": 3e-05,
+            "lr_gamma": 0.93
+          },
+          "gauc": 0.661786,
+          "ndcg5": 0.532686,
+          "primary": 0.597236,
+          "train_loss": 0.480124
+        },
+        {
+          "phase": "probe",
+          "probe": 11,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.25,
+            "row_l2": 0.0003,
+            "weight_decay": 0.001,
+            "lr_gamma": 0.97
+          },
+          "gauc": 0.662535,
+          "ndcg5": 0.533078,
+          "primary": 0.597807,
+          "train_loss": 0.481838
+        },
+        {
+          "phase": "probe",
+          "probe": 12,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.35,
+            "row_l2": 1e-05,
+            "weight_decay": 0.0003,
+            "lr_gamma": 0.95
+          },
+          "gauc": 0.663162,
+          "ndcg5": 0.533445,
+          "primary": 0.598304,
+          "train_loss": 0.48485
+        },
+        {
+          "phase": "probe",
+          "probe": 13,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1952670532,
+            "row_l2": 0.0016901705,
+            "weight_decay": 7.029e-06,
+            "lr_gamma": 0.9358629644
+          },
+          "gauc": 0.66198,
+          "ndcg5": 0.532798,
+          "primary": 0.597389,
+          "train_loss": 0.481339
+        },
+        {
+          "phase": "probe",
+          "probe": 14,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4427739768,
+            "row_l2": 0.0008386616,
+            "weight_decay": 0.0021536841,
+            "lr_gamma": 0.919010082
+          },
+          "gauc": 0.665239,
+          "ndcg5": 0.534925,
+          "primary": 0.600082,
+          "train_loss": 0.488727
+        },
+        {
+          "phase": "probe",
+          "probe": 15,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1420324329,
+            "row_l2": 4.7494e-06,
+            "weight_decay": 4.21965e-05,
+            "lr_gamma": 0.8999769193
+          },
+          "gauc": 0.664293,
+          "ndcg5": 0.534065,
+          "primary": 0.599179,
+          "train_loss": 0.481119
+        },
+        {
+          "phase": "probe",
+          "probe": 16,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2714948098,
+            "row_l2": 5.27224e-05,
+            "weight_decay": 0.0001353777,
+            "lr_gamma": 0.8781183552
+          },
+          "gauc": 0.666824,
+          "ndcg5": 0.535459,
+          "primary": 0.601142,
+          "train_loss": 0.487651
+        },
+        {
+          "phase": "probe",
+          "probe": 17,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1965180039,
+            "row_l2": 0.0001031241,
+            "weight_decay": 1.0393e-05,
+            "lr_gamma": 0.9265448705
+          },
+          "gauc": 0.663066,
+          "ndcg5": 0.533303,
+          "primary": 0.598185,
+          "train_loss": 0.480924
+        },
+        {
+          "phase": "probe",
+          "probe": 18,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4047339046,
+            "row_l2": 9.95066e-05,
+            "weight_decay": 9.8387e-06,
+            "lr_gamma": 0.8731758433
+          },
+          "gauc": 0.666722,
+          "ndcg5": 0.535633,
+          "primary": 0.601177,
+          "train_loss": 0.488455
+        },
+        {
+          "phase": "probe",
+          "probe": 19,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3737890613,
+            "row_l2": 0.0002362034,
+            "weight_decay": 1.9246e-06,
+            "lr_gamma": 0.9697515037
+          },
+          "gauc": 0.663662,
+          "ndcg5": 0.533952,
+          "primary": 0.598807,
+          "train_loss": 0.485413
+        },
+        {
+          "phase": "probe",
+          "probe": 20,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.430815295,
+            "row_l2": 1.17769e-05,
+            "weight_decay": 0.0005659712,
+            "lr_gamma": 0.9815118997
+          },
+          "gauc": 0.664327,
+          "ndcg5": 0.534005,
+          "primary": 0.599166,
+          "train_loss": 0.486304
+        },
+        {
+          "phase": "probe",
+          "probe": 21,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1689168158,
+            "row_l2": 4.19649e-05,
+            "weight_decay": 0.0001995141,
+            "lr_gamma": 0.8802626824
+          },
+          "gauc": 0.665556,
+          "ndcg5": 0.534402,
+          "primary": 0.599979,
+          "train_loss": 0.482053
+        },
+        {
+          "phase": "probe",
+          "probe": 22,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2852789395,
+            "row_l2": 1.4416e-06,
+            "weight_decay": 4.5643e-05,
+            "lr_gamma": 0.9183384429
+          },
+          "gauc": 0.666273,
+          "ndcg5": 0.535252,
+          "primary": 0.600762,
+          "train_loss": 0.485721
+        },
+        {
+          "phase": "probe",
+          "probe": 23,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2075697272,
+            "row_l2": 0.0015864896,
+            "weight_decay": 0.0003106032,
+            "lr_gamma": 0.9887237434
+          },
+          "gauc": 0.659801,
+          "ndcg5": 0.531244,
+          "primary": 0.595523,
+          "train_loss": 0.480084
+        },
+        {
+          "phase": "probe",
+          "probe": 24,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4440811986,
+            "row_l2": 1.5096e-06,
+            "weight_decay": 0.0015759772,
+            "lr_gamma": 0.9319463186
+          },
+          "gauc": 0.665768,
+          "ndcg5": 0.534477,
+          "primary": 0.600122,
+          "train_loss": 0.488747
+        },
+        {
+          "phase": "probe",
+          "probe": 25,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4337470219,
+            "row_l2": 1.47889e-05,
+            "weight_decay": 0.0018684232,
+            "lr_gamma": 0.9640201811
+          },
+          "gauc": 0.664981,
+          "ndcg5": 0.534095,
+          "primary": 0.599538,
+          "train_loss": 0.486663
+        },
+        {
+          "phase": "probe",
+          "probe": 26,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.2200464879,
+            "row_l2": 4.46183e-05,
+            "weight_decay": 5.1119e-06,
+            "lr_gamma": 0.9077060859
+          },
+          "gauc": 0.664093,
+          "ndcg5": 0.533832,
+          "primary": 0.598963,
+          "train_loss": 0.482467
+        },
+        {
+          "phase": "probe",
+          "probe": 27,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1940393948,
+            "row_l2": 7.2752e-06,
+            "weight_decay": 0.0003234358,
+            "lr_gamma": 0.8717959597
+          },
+          "gauc": 0.664978,
+          "ndcg5": 0.534439,
+          "primary": 0.599708,
+          "train_loss": 0.483229
+        },
+        {
+          "phase": "probe",
+          "probe": 28,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3526677186,
+            "row_l2": 2.6861e-06,
+            "weight_decay": 0.001029393,
+            "lr_gamma": 0.9429326138
+          },
+          "gauc": 0.664162,
+          "ndcg5": 0.53416,
+          "primary": 0.599161,
+          "train_loss": 0.485016
+        },
+        {
+          "phase": "probe",
+          "probe": 29,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.300772794,
+            "row_l2": 1.5274e-06,
+            "weight_decay": 0.0048455421,
+            "lr_gamma": 0.9006504922
+          },
+          "gauc": 0.666556,
+          "ndcg5": 0.535047,
+          "primary": 0.600802,
+          "train_loss": 0.486978
+        },
+        {
+          "phase": "probe",
+          "probe": 30,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3457918123,
+            "row_l2": 0.0001520546,
+            "weight_decay": 8.51109e-05,
+            "lr_gamma": 0.8792818771
+          },
+          "gauc": 0.667086,
+          "ndcg5": 0.535529,
+          "primary": 0.601308,
+          "train_loss": 0.488182
+        },
+        {
+          "phase": "probe",
+          "probe": 31,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3956830377,
+            "row_l2": 4.99356e-05,
+            "weight_decay": 0.0010664427,
+            "lr_gamma": 0.9208001443
+          },
+          "gauc": 0.66392,
+          "ndcg5": 0.53423,
+          "primary": 0.599075,
+          "train_loss": 0.486617
+        },
+        {
+          "phase": "probe",
+          "probe": 32,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.0946906612,
+            "row_l2": 0.0013093898,
+            "weight_decay": 0.003268224,
+            "lr_gamma": 0.8723455452
+          },
+          "gauc": 0.663851,
+          "ndcg5": 0.534516,
+          "primary": 0.599183,
+          "train_loss": 0.482414
+        },
+        {
+          "phase": "probe",
+          "probe": 33,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3725664302,
+            "row_l2": 6.9675e-06,
+            "weight_decay": 2.85854e-05,
+            "lr_gamma": 0.8768080234
+          },
+          "gauc": 0.666853,
+          "ndcg5": 0.535492,
+          "primary": 0.601173,
+          "train_loss": 0.487982
+        },
+        {
+          "phase": "probe",
+          "probe": 34,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.066403119,
+            "row_l2": 0.0008738206,
+            "weight_decay": 0.001965489,
+            "lr_gamma": 0.902551483
+          },
+          "gauc": 0.665069,
+          "ndcg5": 0.535025,
+          "primary": 0.600047,
+          "train_loss": 0.481663
+        },
+        {
+          "phase": "probe",
+          "probe": 35,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1037890129,
+            "row_l2": 0.0011205166,
+            "weight_decay": 4.9673e-06,
+            "lr_gamma": 0.8747977174
+          },
+          "gauc": 0.662996,
+          "ndcg5": 0.533876,
+          "primary": 0.598436,
+          "train_loss": 0.482332
+        },
+        {
+          "phase": "probe",
+          "probe": 36,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1297240777,
+            "row_l2": 0.0003958874,
+            "weight_decay": 0.0001484543,
+            "lr_gamma": 0.9487608779
+          },
+          "gauc": 0.660016,
+          "ndcg5": 0.532226,
+          "primary": 0.596121,
+          "train_loss": 0.478341
+        },
+        {
+          "phase": "probe",
+          "probe": 37,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.4453956436,
+            "row_l2": 0.0002032767,
+            "weight_decay": 3.19829e-05,
+            "lr_gamma": 0.9304177977
+          },
+          "gauc": 0.665595,
+          "ndcg5": 0.534585,
+          "primary": 0.60009,
+          "train_loss": 0.488808
+        },
+        {
+          "phase": "probe",
+          "probe": 38,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.1057397292,
+            "row_l2": 0.0002346102,
+            "weight_decay": 4.65272e-05,
+            "lr_gamma": 0.861514964
+          },
+          "gauc": 0.664185,
+          "ndcg5": 0.534726,
+          "primary": 0.599456,
+          "train_loss": 0.482545
+        },
+        {
+          "phase": "probe",
+          "probe": 39,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3407077971,
+            "row_l2": 0.0015587615,
+            "weight_decay": 3.3952e-06,
+            "lr_gamma": 0.8760580742
+          },
+          "gauc": 0.666956,
+          "ndcg5": 0.535527,
+          "primary": 0.601241,
+          "train_loss": 0.489399
+        },
+        {
+          "phase": "probe",
+          "probe": 40,
+          "seed": 42,
+          "epochs": 8,
+          "config": {
+            "dropout": 0.3253608452,
+            "row_l2": 0.0024387774,
+            "weight_decay": 8.49116e-05,
+            "lr_gamma": 0.8914953881
+          },
+          "gauc": 0.665524,
+          "ndcg5": 0.534666,
+          "primary": 0.600095,
+          "train_loss": 0.487299
+        }
+      ],
+      "final_runs": [
+        {
+          "phase": "final",
+          "run": 1,
+          "seed": 42,
+          "epochs_ran": 9,
+          "config": {
+            "dropout": 0.3457918123,
+            "row_l2": 0.0001520546,
+            "weight_decay": 8.51109e-05,
+            "lr_gamma": 0.8792818771
+          },
+          "gauc": 0.668647,
+          "ndcg5": 0.536361,
+          "primary": 0.602504,
+          "epochs": [
+            {
+              "epoch": 1,
+              "train_loss": 0.587425,
+              "lr": 0.000879282,
+              "val_gauc": 0.660125,
+              "val_ndcg5": 0.532312,
+              "val_primary": 0.596218
+            },
+            {
+              "epoch": 2,
+              "train_loss": 0.514905,
+              "lr": 0.000773137,
+              "val_gauc": 0.666018,
+              "val_ndcg5": 0.535365,
+              "val_primary": 0.600692
+            },
+            {
+              "epoch": 3,
+              "train_loss": 0.505448,
+              "lr": 0.000679805,
+              "val_gauc": 0.668017,
+              "val_ndcg5": 0.535919,
+              "val_primary": 0.601968
+            },
+            {
+              "epoch": 4,
+              "train_loss": 0.500937,
+              "lr": 0.00059774,
+              "val_gauc": 0.668153,
+              "val_ndcg5": 0.536324,
+              "val_primary": 0.602238
+            },
+            {
+              "epoch": 5,
+              "train_loss": 0.497655,
+              "lr": 0.000525582,
+              "val_gauc": 0.668314,
+              "val_ndcg5": 0.536347,
+              "val_primary": 0.60233
+            },
+            {
+              "epoch": 6,
+              "train_loss": 0.494429,
+              "lr": 0.000462135,
+              "val_gauc": 0.668647,
+              "val_ndcg5": 0.536361,
+              "val_primary": 0.602504
+            },
+            {
+              "epoch": 7,
+              "train_loss": 0.491379,
+              "lr": 0.000406347,
+              "val_gauc": 0.667374,
+              "val_ndcg5": 0.535919,
+              "val_primary": 0.601647
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.488182,
+              "lr": 0.000357293,
+              "val_gauc": 0.667086,
+              "val_ndcg5": 0.535529,
+              "val_primary": 0.601308
+            },
+            {
+              "epoch": 9,
+              "train_loss": 0.485274,
+              "lr": 0.000314162,
+              "val_gauc": 0.664884,
+              "val_ndcg5": 0.534459,
+              "val_primary": 0.599672
+            }
+          ]
+        },
+        {
+          "phase": "final",
+          "run": 2,
+          "seed": 1051,
+          "epochs_ran": 8,
+          "config": {
+            "dropout": 0.3457918123,
+            "row_l2": 0.0001520546,
+            "weight_decay": 8.51109e-05,
+            "lr_gamma": 0.8792818771
+          },
+          "gauc": 0.669481,
+          "ndcg5": 0.536202,
+          "primary": 0.602841,
+          "epochs": [
+            {
+              "epoch": 1,
+              "train_loss": 0.58631,
+              "lr": 0.000879282,
+              "val_gauc": 0.661672,
+              "val_ndcg5": 0.532989,
+              "val_primary": 0.59733
+            },
+            {
+              "epoch": 2,
+              "train_loss": 0.515976,
+              "lr": 0.000773137,
+              "val_gauc": 0.667737,
+              "val_ndcg5": 0.535816,
+              "val_primary": 0.601777
+            },
+            {
+              "epoch": 3,
+              "train_loss": 0.506399,
+              "lr": 0.000679805,
+              "val_gauc": 0.669176,
+              "val_ndcg5": 0.535981,
+              "val_primary": 0.602578
+            },
+            {
+              "epoch": 4,
+              "train_loss": 0.502376,
+              "lr": 0.00059774,
+              "val_gauc": 0.669217,
+              "val_ndcg5": 0.536005,
+              "val_primary": 0.602611
+            },
+            {
+              "epoch": 5,
+              "train_loss": 0.499501,
+              "lr": 0.000525582,
+              "val_gauc": 0.669481,
+              "val_ndcg5": 0.536202,
+              "val_primary": 0.602841
+            },
+            {
+              "epoch": 6,
+              "train_loss": 0.497287,
+              "lr": 0.000462135,
+              "val_gauc": 0.669007,
+              "val_ndcg5": 0.536154,
+              "val_primary": 0.60258
+            },
+            {
+              "epoch": 7,
+              "train_loss": 0.49536,
+              "lr": 0.000406347,
+              "val_gauc": 0.668793,
+              "val_ndcg5": 0.535447,
+              "val_primary": 0.60212
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.493665,
+              "lr": 0.000357293,
+              "val_gauc": 0.668399,
+              "val_ndcg5": 0.535793,
+              "val_primary": 0.602096
+            }
+          ]
+        },
+        {
+          "phase": "final",
+          "run": 3,
+          "seed": 2060,
+          "epochs_ran": 9,
+          "config": {
+            "dropout": 0.3457918123,
+            "row_l2": 0.0001520546,
+            "weight_decay": 8.51109e-05,
+            "lr_gamma": 0.8792818771
+          },
+          "gauc": 0.668564,
+          "ndcg5": 0.536299,
+          "primary": 0.602432,
+          "epochs": [
+            {
+              "epoch": 1,
+              "train_loss": 0.585622,
+              "lr": 0.000879282,
+              "val_gauc": 0.662164,
+              "val_ndcg5": 0.533139,
+              "val_primary": 0.597652
+            },
+            {
+              "epoch": 2,
+              "train_loss": 0.515869,
+              "lr": 0.000773137,
+              "val_gauc": 0.6659,
+              "val_ndcg5": 0.535224,
+              "val_primary": 0.600562
+            },
+            {
+              "epoch": 3,
+              "train_loss": 0.506291,
+              "lr": 0.000679805,
+              "val_gauc": 0.668176,
+              "val_ndcg5": 0.536076,
+              "val_primary": 0.602126
+            },
+            {
+              "epoch": 4,
+              "train_loss": 0.502157,
+              "lr": 0.00059774,
+              "val_gauc": 0.668105,
+              "val_ndcg5": 0.536348,
+              "val_primary": 0.602226
+            },
+            {
+              "epoch": 5,
+              "train_loss": 0.499378,
+              "lr": 0.000525582,
+              "val_gauc": 0.66802,
+              "val_ndcg5": 0.535904,
+              "val_primary": 0.601962
+            },
+            {
+              "epoch": 6,
+              "train_loss": 0.496851,
+              "lr": 0.000462135,
+              "val_gauc": 0.668564,
+              "val_ndcg5": 0.536299,
+              "val_primary": 0.602432
+            },
+            {
+              "epoch": 7,
+              "train_loss": 0.494474,
+              "lr": 0.000406347,
+              "val_gauc": 0.668424,
+              "val_ndcg5": 0.53634,
+              "val_primary": 0.602382
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.492113,
+              "lr": 0.000357293,
+              "val_gauc": 0.667606,
+              "val_ndcg5": 0.535632,
+              "val_primary": 0.601619
+            },
+            {
+              "epoch": 9,
+              "train_loss": 0.489712,
+              "lr": 0.000314162,
+              "val_gauc": 0.666677,
+              "val_ndcg5": 0.535449,
+              "val_primary": 0.601063
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 12993,
+      "out": 1461,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15715,
+      "out": 21770,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 393,
+      "out": 781,
+      "calls": 1
+    }
+  },
+  "tokens_total": 53113,
+  "wall_s": 5703.6,
+  "self_critique": "Run critique\n\nWhat was suboptimal\n\n- The run converged too early after only three proposals beyond baseline. One positive result followed by two failures is not enough evidence that the local region was exhausted.\n- node_001 changed four coupled factors at once: dropout, embedding L2, dense weight decay, and LR decay. The gain is real-looking (+0.0010, roughly 10 baseline sigmas), but the run learned nothing about which component caused it or whether interactions were necessary.\n- The rationale is internally inconsistent. node_001 claims validation peaked at epoch 8, while node_002 and node_003 state that epoch-level validation telemetry was missing. The policy should not generate curve-based diagnoses without recorded telemetry.\n- Acceptance relied on a baseline sigma only. There is no candidate variance, paired-seed comparison, or confidence interval. A small improvement could reflect seed effects or validation noise despite the reported baseline sigma.\n- The two follow-ups were relatively high-risk objective/data-distribution changes rather than systematic exploitation of the successful regularization package.\n- Recency weighting and BCE+BPR each introduce meaningful tuning surfaces. Testing one selected configuration does not strongly reject either idea, especially without detailed telemetry.\n- Repeated validation-guided choices risk overfitting the fixed split. The harness did not report a holdout confirmation or account for adaptive search.\n\nScaffold changes\n\n- Make epoch-level train loss, validation primary, auxiliary metrics, LR, and early-stop epoch mandatory. Block hypotheses whose evidence depends on missing telemetry.\n- Require one-factor-at-a-time ablations after a bundled proposal wins, followed by interaction tests only when justified.\n- Evaluate promising candidates with multiple paired seeds and accept based on the distribution of paired deltas, not a single score.\n- Distinguish exploratory validation from final confirmation; preserve an untouched holdout or periodically rotate folds.\n- Avoid declaring convergence until the winning neighborhood has been ablated and at least a minimum search budget has been used.\n- Record full hyperparameters and resource costs so gains can be attributed and reproduced.\n- Calibrate hypothesis language: state uncertainty and avoid precise expected gains unsupported by prior experiments.\n\nWhat the next run should try first\n\nFirst, reproduce node_001 across several paired seeds. If the gain holds, ablate its components individually against node_000:\n\n1. LR decay only, with early stopping.\n2. Dropout only.\n3. Embedding L2 only.\n4. Dense-only weight decay only.\n\nThen test the best individual component plus the next-best component to identify useful interactions. LR scheduling/early stopping is the highest-priority first ablation because the original rationale centered on a purported epoch-8 peak, but that telemetry must be collected and verified. Only after establishing a stable regularization baseline should the run revisit recency weighting or pairwise objectives with a small, explicit tuning sweep."
+}
