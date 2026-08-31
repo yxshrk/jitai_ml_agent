@@ -1,0 +1,66 @@
+{
+  "run_dir": "logs/run_clean_c2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6692772392364607,
+    "ndcg5": 0.5374157846702191,
+    "primary": 0.6033465119533399,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.66292,
+        "val_gauc": 0.666843,
+        "val_primary": 0.601127
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.6273,
+        "val_gauc": 0.668729,
+        "val_primary": 0.60273
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.6125,
+        "val_gauc": 0.669277,
+        "val_primary": 0.603347
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.60213,
+        "val_gauc": 0.669226,
+        "val_primary": 0.603254
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.59444,
+        "val_gauc": 0.668881,
+        "val_primary": 0.602918
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 41282,
+      "out": 3083,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 19592,
+      "out": 19227,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 420,
+      "out": 821,
+      "calls": 1
+    }
+  },
+  "tokens_total": 84425,
+  "wall_s": 2730.6,
+  "self_critique": "Overall assessment\n\nThe run found a modest improvement: node_003 raised primary from 0.6018 to 0.603347, about +0.00155 absolute. That is useful, but \u201cconverged\u201d is premature given only three challengers and no replication or follow-up around the winning change.\n\nWhat the harness/policy did suboptimally\n\n- Exploration was too narrow. Every proposal reused the same \u201cpeaks at epoch 8, then overfits\u201d diagnosis rather than testing competing explanations.\n- Node_001 bundled architecture, BPR, dropout, AdamW, LR decay, and recency weighting. Its rejection provides almost no actionable attribution.\n- Node_002 introduced temporally local negative sampling without evidence that temporal locality matters, especially questionable on a dataset labeled \u201cpure.\u201d\n- The policy stopped immediately after node_003 succeeded. A successful new objective should have triggered local exploitation: replications, ablations, and hyperparameter sweeps.\n- Statistical handling is unclear. The winning margin is small, while only the baseline reports sigma=0.0001. Without multi-seed uncertainty for node_003, the gain may not be robust.\n- Acceptance/rejection appears insufficiently informative: node_001 exceeded the displayed baseline numerically but was rejected. The journal should record the exact threshold, uncertainty, and comparison test.\n- The recurring epoch-8 claim risks becoming boilerplate. The harness should quantify the train/validation divergence and test simpler early stopping or regularization controls before inventing specialized objectives.\n\nWhat I would change in the scaffold\n\n- Enforce one principal intervention per trial; use factorial or staged experiments for packages.\n- Require each hypothesis to state the diagnostic evidence, mechanism, minimal intervention, and falsifying outcome.\n- Add a \u201creplicate then exploit\u201d rule after any accepted improvement.\n- Evaluate promising candidates over multiple seeds and report mean, standard deviation, and paired deltas.\n- Include mandatory simple controls: earlier stopping, weight decay, dropout, and objective-only changes.\n- Record full-precision scores and explicit acceptance logic.\n- Diversify proposal families rather than generating several variants of the same overfitting narrative.\n\nWhat the next run should try first\n\nFirst, replicate node_003 across several matched seeds against node_000. If the gain survives, ablate its components:\n\n1. User-centered BCE only.\n2. Global bias only.\n3. User-centered BCE plus global bias.\n4. Centering strength or partial-centering variants.\n\nThen tune early stopping and regularization around the winning objective. Only after establishing that centering is the causal improvement should the run test closely related metric-aligned objectives, such as within-user pairwise or listwise losses. Avoid another large DCN/BPR/recency package until individual components have demonstrated value."
+}

@@ -1,0 +1,2 @@
+{"alpha": 0.5, "epochs_run": 1, "gauc": 0.6493482705365278, "ndcg5": 0.5283339931896124, "primary": 0.5888411318630701, "reg_lambda": 0.003, "seed": 42, "type": "probe"}
+{"alpha": 0.5, "epochs_run": 1, "gauc": 0.6493482705365278, "ndcg5": 0.5283339931896124, "primary": 0.5888411318630701, "reg_lambda": 0.003, "seed": 42, "type": "final"}

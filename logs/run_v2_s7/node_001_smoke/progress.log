@@ -1,0 +1,4 @@
+{"stage": "coarse", "probe": 1, "config": {"dropout": 0.15, "weight_decay": 3e-05, "lr": 0.0004, "gamma": 0.48, "step_every": 1, "half_life": 3.5}, "best_step": 1.0, "gauc": 0.6639368010524489, "ndcg5": 0.5330627840666246, "primary": 0.5984997925595368}
+{"stage": "coarse", "probe": 2, "config": {"dropout": 0.22, "weight_decay": 0.0001, "lr": 0.0007, "gamma": 0.62, "step_every": 1, "half_life": 7.0}, "best_step": 1.0, "gauc": 0.6647731173334953, "ndcg5": 0.533410209674726, "primary": 0.5990916635041106}
+{"stage": "refine", "probe": 1, "config": {"dropout": 0.22, "weight_decay": 0.0001, "lr": 0.0007, "gamma": 0.62, "step_every": 1, "half_life": 7.0}, "best_step": 1.0, "gauc": 0.6647731173334953, "ndcg5": 0.533410209674726, "primary": 0.5990916635041106}
+{"seed": 42, "best_step": 1.0, "gauc": 0.6647731173334953, "ndcg5": 0.533410209674726, "primary": 0.5990916635041106}

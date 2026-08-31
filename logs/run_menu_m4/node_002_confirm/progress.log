@@ -1,0 +1,55 @@
+{"seed": 1042, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6034453702983058}
+{"seed": 1042, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6034514909383317, "paired_delta": 6.120640025919499e-06}
+{"seed": 1042, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.603428115478362, "paired_delta": -1.7254819943857136e-05}
+{"seed": 1042, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6033115492161372, "paired_delta": -0.0001338210821686392}
+{"seed": 1042, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.603403864213764, "paired_delta": -4.150608454178695e-05}
+{"seed": 1042, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6026266299670691, "paired_delta": -0.0008187403312367447}
+{"seed": 1042, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6034279701425962, "paired_delta": -1.740015570961262e-05}
+{"seed": 1042, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6034515706796224, "paired_delta": 6.200381316601167e-06}
+{"seed": 1042, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6033594087628861, "paired_delta": -8.596153541973184e-05}
+{"seed": 1042, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6033573197304019, "paired_delta": -8.805056790395227e-05}
+{"seed": 1042, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6028214848802708, "paired_delta": -0.0006238854180350417}
+{"seed": 1043, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6037616771366456}
+{"seed": 1043, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6037398865930274, "paired_delta": -2.179054361828303e-05}
+{"seed": 1043, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6036867438167549, "paired_delta": -7.493331989072427e-05}
+{"seed": 1043, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6036623217511288, "paired_delta": -9.935538551686385e-05}
+{"seed": 1043, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6036438480858151, "paired_delta": -0.00011782905083057571}
+{"seed": 1043, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6029783852599637, "paired_delta": -0.000783291876681913}
+{"seed": 1043, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6037754371163969, "paired_delta": 1.3759979751282181e-05}
+{"seed": 1043, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.603649768248923, "paired_delta": -0.00011190888772261154}
+{"seed": 1043, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6035647727069853, "paired_delta": -0.0001969044296603606}
+{"seed": 1043, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6037329347621445, "paired_delta": -2.8742374501122825e-05}
+{"seed": 1043, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6027254685794766, "paired_delta": -0.001036208557169016}
+{"seed": 1044, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6037793065060778}
+{"seed": 1044, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6037005828168889, "paired_delta": -7.872368918893091e-05}
+{"seed": 1044, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6035885103185687, "paired_delta": -0.00019079618750905691}
+{"seed": 1044, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6035035870328451, "paired_delta": -0.00027571947323268287}
+{"seed": 1044, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6034673166368874, "paired_delta": -0.00031198986919045435}
+{"seed": 1044, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6027559375150365, "paired_delta": -0.0010233689910412735}
+{"seed": 1044, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.603771262269814, "paired_delta": -8.044236263771154e-06}
+{"seed": 1044, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6036904525511406, "paired_delta": -8.885395493718473e-05}
+{"seed": 1044, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6037506109545834, "paired_delta": -2.8695551494428706e-05}
+{"seed": 1044, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6033886196231495, "paired_delta": -0.000390686882928315}
+{"seed": 1044, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6022213614458378, "paired_delta": -0.0015579450602399847}
+{"seed": 1045, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6033385137502288}
+{"seed": 1045, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6033484092273487, "paired_delta": 9.895477119825635e-06}
+{"seed": 1045, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6033349386245728, "paired_delta": -3.5751256560745404e-06}
+{"seed": 1045, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6033326768722004, "paired_delta": -5.836878028464554e-06}
+{"seed": 1045, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6033132212892813, "paired_delta": -2.5292460947512474e-05}
+{"seed": 1045, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6028355794091524, "paired_delta": -0.0005029343410763998}
+{"seed": 1045, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6033403366281563, "paired_delta": 1.8228779274931384e-06}
+{"seed": 1045, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6032354362925006, "paired_delta": -0.00010307745772819565}
+{"seed": 1045, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6032996965842692, "paired_delta": -3.881716595965923e-05}
+{"seed": 1045, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6030846683981119, "paired_delta": -0.0002538453521169215}
+{"seed": 1045, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6028140696773306, "paired_delta": -0.0005244440728982003}
+{"seed": 1046, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6035180190872267}
+{"seed": 1046, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6035999271217007, "paired_delta": 8.190803447405415e-05}
+{"seed": 1046, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6034185401126595, "paired_delta": -9.94789745671909e-05}
+{"seed": 1046, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6035827557671865, "paired_delta": 6.473667995976484e-05}
+{"seed": 1046, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6037051907072821, "paired_delta": 0.00018717162005543742}
+{"seed": 1046, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6021559032488659, "paired_delta": -0.0013621158383607668}
+{"seed": 1046, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6035250831985535, "paired_delta": 7.0641113267821964e-06}
+{"seed": 1046, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.603460349059881, "paired_delta": -5.767002734569093e-05}
+{"seed": 1046, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6036415604773744, "paired_delta": 0.00012354139014769672}
+{"seed": 1046, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6034853373647415, "paired_delta": -3.268172248516166e-05}
+{"seed": 1046, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6022437242505625, "paired_delta": -0.0012742948366641915}

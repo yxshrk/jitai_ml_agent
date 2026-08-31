@@ -1,0 +1,2156 @@
+{
+  "run_dir": "logs/run_1k_push",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 7,
+  "best_node": "node_004",
+  "best_metrics": {
+    "gauc": 0.6800130009651184,
+    "history": [
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6765304207801819,
+          "ndcg5": 0.6465522050857544,
+          "primary": 0.6615413427352905
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6765304207801819,
+            "ndcg5": 0.6465522050857544,
+            "primary": 0.6615413427352905
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6769048571586609,
+          "ndcg5": 0.6439105868339539,
+          "primary": 0.6604077219963074
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6769048571586609,
+            "ndcg5": 0.6439105868339539,
+            "primary": 0.6604077219963074
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6766276359558105,
+          "ndcg5": 0.6437438726425171,
+          "primary": 0.6601857542991638
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6766276359558105,
+            "ndcg5": 0.6437438726425171,
+            "primary": 0.6601857542991638
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6767257452011108,
+          "ndcg5": 0.6383004784584045,
+          "primary": 0.6575131416320801
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6767257452011108,
+            "ndcg5": 0.6383004784584045,
+            "primary": 0.6575131416320801
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6770166754722595,
+          "ndcg5": 0.6394289135932922,
+          "primary": 0.6582227945327759
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6770166754722595,
+            "ndcg5": 0.6394289135932922,
+            "primary": 0.6582227945327759
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6768907308578491,
+          "ndcg5": 0.6364033222198486,
+          "primary": 0.6566470265388489
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6768907308578491,
+            "ndcg5": 0.6364033222198486,
+            "primary": 0.6566470265388489
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6761621832847595,
+          "ndcg5": 0.6432092785835266,
+          "primary": 0.6596857309341431
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6761621832847595,
+            "ndcg5": 0.6432092785835266,
+            "primary": 0.6596857309341431
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6772574782371521,
+          "ndcg5": 0.6472442150115967,
+          "primary": 0.6622508764266968
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6772574782371521,
+            "ndcg5": 0.6472442150115967,
+            "primary": 0.6622508764266968
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6761245131492615,
+          "ndcg5": 0.6519250869750977,
+          "primary": 0.664024829864502
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6761245131492615,
+            "ndcg5": 0.6519250869750977,
+            "primary": 0.664024829864502
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6763264536857605,
+          "ndcg5": 0.6417886018753052,
+          "primary": 0.6590574979782104
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6763264536857605,
+            "ndcg5": 0.6417886018753052,
+            "primary": 0.6590574979782104
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.676100492477417,
+          "ndcg5": 0.6405571699142456,
+          "primary": 0.6583288311958313
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.676100492477417,
+            "ndcg5": 0.6405571699142456,
+            "primary": 0.6583288311958313
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.676555871963501,
+          "ndcg5": 0.6353879570960999,
+          "primary": 0.655971884727478
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.676555871963501,
+            "ndcg5": 0.6353879570960999,
+            "primary": 0.655971884727478
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6767312288284302,
+          "ndcg5": 0.6435084342956543,
+          "primary": 0.6601198315620422
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6767312288284302,
+            "ndcg5": 0.6435084342956543,
+            "primary": 0.6601198315620422
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6763456463813782,
+          "ndcg5": 0.6337770819664001,
+          "primary": 0.6550613641738892
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6763456463813782,
+            "ndcg5": 0.6337770819664001,
+            "primary": 0.6550613641738892
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6759660840034485,
+          "ndcg5": 0.6357113122940063,
+          "primary": 0.6558387279510498
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6759660840034485,
+            "ndcg5": 0.6357113122940063,
+            "primary": 0.6558387279510498
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6768112778663635,
+          "ndcg5": 0.6442516446113586,
+          "primary": 0.6605314612388611
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6768112778663635,
+            "ndcg5": 0.6442516446113586,
+            "primary": 0.6605314612388611
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6720840334892273,
+          "ndcg5": 0.5823219418525696,
+          "primary": 0.6272029876708984
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6720840334892273,
+            "ndcg5": 0.5823219418525696,
+            "primary": 0.6272029876708984
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.670733630657196,
+          "ndcg5": 0.5797901749610901,
+          "primary": 0.6252619028091431
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.670733630657196,
+            "ndcg5": 0.5797901749610901,
+            "primary": 0.6252619028091431
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6711345911026001,
+          "ndcg5": 0.582397997379303,
+          "primary": 0.6267663240432739
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6711345911026001,
+            "ndcg5": 0.582397997379303,
+            "primary": 0.6267663240432739
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6717348098754883,
+          "ndcg5": 0.5775911211967468,
+          "primary": 0.6246629953384399
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6717348098754883,
+            "ndcg5": 0.5775911211967468,
+            "primary": 0.6246629953384399
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6716356873512268,
+          "ndcg5": 0.5844311714172363,
+          "primary": 0.6280333995819092
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6716356873512268,
+            "ndcg5": 0.5844311714172363,
+            "primary": 0.6280333995819092
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.670778751373291,
+          "ndcg5": 0.5860366821289062,
+          "primary": 0.6284077167510986
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.670778751373291,
+            "ndcg5": 0.5860366821289062,
+            "primary": 0.6284077167510986
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6726592779159546,
+          "ndcg5": 0.5911150574684143,
+          "primary": 0.6318871974945068
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6726592779159546,
+            "ndcg5": 0.5911150574684143,
+            "primary": 0.6318871974945068
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6722225546836853,
+          "ndcg5": 0.5901909470558167,
+          "primary": 0.631206750869751
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6722225546836853,
+            "ndcg5": 0.5901909470558167,
+            "primary": 0.631206750869751
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6711828708648682,
+          "ndcg5": 0.5871396660804749,
+          "primary": 0.6291612386703491
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6711828708648682,
+            "ndcg5": 0.5871396660804749,
+            "primary": 0.6291612386703491
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6703425049781799,
+          "ndcg5": 0.582010805606842,
+          "primary": 0.626176655292511
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6703425049781799,
+            "ndcg5": 0.582010805606842,
+            "primary": 0.626176655292511
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6707096695899963,
+          "ndcg5": 0.5809339880943298,
+          "primary": 0.6258218288421631
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6707096695899963,
+            "ndcg5": 0.5809339880943298,
+            "primary": 0.6258218288421631
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6713623404502869,
+          "ndcg5": 0.5755738615989685,
+          "primary": 0.6234681010246277
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6713623404502869,
+            "ndcg5": 0.5755738615989685,
+            "primary": 0.6234681010246277
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.671063244342804,
+          "ndcg5": 0.5858669877052307,
+          "primary": 0.6284651160240173
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.671063244342804,
+            "ndcg5": 0.5858669877052307,
+            "primary": 0.6284651160240173
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6703347563743591,
+          "ndcg5": 0.5872118473052979,
+          "primary": 0.6287733316421509
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6703347563743591,
+            "ndcg5": 0.5872118473052979,
+            "primary": 0.6287733316421509
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6720009446144104,
+          "ndcg5": 0.588469386100769,
+          "primary": 0.6302351951599121
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6720009446144104,
+            "ndcg5": 0.588469386100769,
+            "primary": 0.6302351951599121
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6715649962425232,
+          "ndcg5": 0.5934123992919922,
+          "primary": 0.6324887275695801
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6715649962425232,
+            "ndcg5": 0.5934123992919922,
+            "primary": 0.6324887275695801
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6800130009651184,
+          "ndcg5": 0.6395261883735657,
+          "primary": 0.659769594669342
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6800130009651184,
+            "ndcg5": 0.6395261883735657,
+            "primary": 0.659769594669342
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.678575336933136,
+          "ndcg5": 0.6446182727813721,
+          "primary": 0.6615967750549316
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.678575336933136,
+            "ndcg5": 0.6446182727813721,
+            "primary": 0.6615967750549316
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6803014278411865,
+          "ndcg5": 0.648206889629364,
+          "primary": 0.6642541885375977
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6803014278411865,
+            "ndcg5": 0.648206889629364,
+            "primary": 0.6642541885375977
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6789835095405579,
+          "ndcg5": 0.6361197829246521,
+          "primary": 0.657551646232605
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6789835095405579,
+            "ndcg5": 0.6361197829246521,
+            "primary": 0.657551646232605
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6799600720405579,
+          "ndcg5": 0.6472670435905457,
+          "primary": 0.6636135578155518
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6799600720405579,
+            "ndcg5": 0.6472670435905457,
+            "primary": 0.6636135578155518
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6794041395187378,
+          "ndcg5": 0.6390458345413208,
+          "primary": 0.6592249870300293
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6794041395187378,
+            "ndcg5": 0.6390458345413208,
+            "primary": 0.6592249870300293
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6792166233062744,
+          "ndcg5": 0.6415398120880127,
+          "primary": 0.6603782176971436
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6792166233062744,
+            "ndcg5": 0.6415398120880127,
+            "primary": 0.6603782176971436
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6794845461845398,
+          "ndcg5": 0.6552886366844177,
+          "primary": 0.6673865914344788
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6794845461845398,
+            "ndcg5": 0.6552886366844177,
+            "primary": 0.6673865914344788
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6794402599334717,
+          "ndcg5": 0.6392161846160889,
+          "primary": 0.6593282222747803
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6794402599334717,
+            "ndcg5": 0.6392161846160889,
+            "primary": 0.6593282222747803
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6784486174583435,
+          "ndcg5": 0.6401561498641968,
+          "primary": 0.6593023538589478
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6784486174583435,
+            "ndcg5": 0.6401561498641968,
+            "primary": 0.6593023538589478
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6794021725654602,
+          "ndcg5": 0.6445436477661133,
+          "primary": 0.6619728803634644
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6794021725654602,
+            "ndcg5": 0.6445436477661133,
+            "primary": 0.6619728803634644
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6787573099136353,
+          "ndcg5": 0.6389099955558777,
+          "primary": 0.6588336229324341
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6787573099136353,
+            "ndcg5": 0.6389099955558777,
+            "primary": 0.6588336229324341
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6795132160186768,
+          "ndcg5": 0.643409788608551,
+          "primary": 0.6614614725112915
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6795132160186768,
+            "ndcg5": 0.643409788608551,
+            "primary": 0.6614614725112915
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.678851306438446,
+          "ndcg5": 0.6384661197662354,
+          "primary": 0.6586587429046631
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.678851306438446,
+            "ndcg5": 0.6384661197662354,
+            "primary": 0.6586587429046631
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6785241365432739,
+          "ndcg5": 0.6352708339691162,
+          "primary": 0.6568974852561951
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6785241365432739,
+            "ndcg5": 0.6352708339691162,
+            "primary": 0.6568974852561951
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6789595484733582,
+          "ndcg5": 0.6463816165924072,
+          "primary": 0.6626706123352051
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6789595484733582,
+            "ndcg5": 0.6463816165924072,
+            "primary": 0.6626706123352051
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.654906690120697,
+          "ndcg5": 0.5309498906135559,
+          "primary": 0.5929282903671265
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.654906690120697,
+            "ndcg5": 0.5309498906135559,
+            "primary": 0.5929282903671265
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6535584330558777,
+          "ndcg5": 0.5397718548774719,
+          "primary": 0.5966651439666748
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6535584330558777,
+            "ndcg5": 0.5397718548774719,
+            "primary": 0.5966651439666748
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6549274921417236,
+          "ndcg5": 0.5226441621780396,
+          "primary": 0.5887858271598816
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6549274921417236,
+            "ndcg5": 0.5226441621780396,
+            "primary": 0.5887858271598816
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6552826762199402,
+          "ndcg5": 0.5388204455375671,
+          "primary": 0.5970515608787537
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6552826762199402,
+            "ndcg5": 0.5388204455375671,
+            "primary": 0.5970515608787537
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6551874876022339,
+          "ndcg5": 0.529073178768158,
+          "primary": 0.5921303033828735
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6551874876022339,
+            "ndcg5": 0.529073178768158,
+            "primary": 0.5921303033828735
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6557424068450928,
+          "ndcg5": 0.5361200571060181,
+          "primary": 0.5959312319755554
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6557424068450928,
+            "ndcg5": 0.5361200571060181,
+            "primary": 0.5959312319755554
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6548451781272888,
+          "ndcg5": 0.5347940325737,
+          "primary": 0.5948196053504944
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6548451781272888,
+            "ndcg5": 0.5347940325737,
+            "primary": 0.5948196053504944
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6557006239891052,
+          "ndcg5": 0.5323771238327026,
+          "primary": 0.5940388441085815
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6557006239891052,
+            "ndcg5": 0.5323771238327026,
+            "primary": 0.5940388441085815
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6553494930267334,
+          "ndcg5": 0.5336024165153503,
+          "primary": 0.5944759845733643
+        },
+        "phase": "matrix",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6553494930267334,
+            "ndcg5": 0.5336024165153503,
+            "primary": 0.5944759845733643
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6529070734977722,
+          "ndcg5": 0.5384226441383362,
+          "primary": 0.5956648588180542
+        },
+        "phase": "matrix",
+        "seed": 43,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6529070734977722,
+            "ndcg5": 0.5384226441383362,
+            "primary": 0.5956648588180542
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6549370288848877,
+          "ndcg5": 0.5250141620635986,
+          "primary": 0.5899755954742432
+        },
+        "phase": "matrix",
+        "seed": 44,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6549370288848877,
+            "ndcg5": 0.5250141620635986,
+            "primary": 0.5899755954742432
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6552409529685974,
+          "ndcg5": 0.5390012860298157,
+          "primary": 0.5971211194992065
+        },
+        "phase": "matrix",
+        "seed": 45,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6552409529685974,
+            "ndcg5": 0.5390012860298157,
+            "primary": 0.5971211194992065
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.655004620552063,
+          "ndcg5": 0.5341150164604187,
+          "primary": 0.5945597887039185
+        },
+        "phase": "matrix",
+        "seed": 46,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.655004620552063,
+            "ndcg5": 0.5341150164604187,
+            "primary": 0.5945597887039185
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6555636525154114,
+          "ndcg5": 0.542651891708374,
+          "primary": 0.5991077423095703
+        },
+        "phase": "matrix",
+        "seed": 47,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6555636525154114,
+            "ndcg5": 0.542651891708374,
+            "primary": 0.5991077423095703
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6545678973197937,
+          "ndcg5": 0.5318933725357056,
+          "primary": 0.5932306051254272
+        },
+        "phase": "matrix",
+        "seed": 48,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6545678973197937,
+            "ndcg5": 0.5318933725357056,
+            "primary": 0.5932306051254272
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "metrics": {
+          "gauc": 0.6552817225456238,
+          "ndcg5": 0.5333740711212158,
+          "primary": 0.5943279266357422
+        },
+        "phase": "matrix",
+        "seed": 49,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6552817225456238,
+            "ndcg5": 0.5333740711212158,
+            "primary": 0.5943279266357422
+          }
+        ]
+      },
+      {
+        "best_checkpoint": 1.0,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "metrics": {
+          "gauc": 0.6800130009651184,
+          "ndcg5": 0.6395261883735657,
+          "primary": 0.659769594669342
+        },
+        "phase": "final",
+        "seed": 42,
+        "trajectory": [
+          {
+            "checkpoint": 1.0,
+            "gauc": 0.6800130009651184,
+            "ndcg5": 0.6395261883735657,
+            "primary": 0.659769594669342
+          }
+        ]
+      }
+    ],
+    "matrix_summary": [
+      {
+        "cell": 4,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.66172194480896,
+        "std_primary": 0.0029861724856340877
+      },
+      {
+        "cell": 5,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.6598906740546227,
+        "std_primary": 0.0018298808370144283
+      },
+      {
+        "cell": 0,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.6595567986369133,
+        "std_primary": 0.0018287845795654334
+      },
+      {
+        "cell": 1,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "logloss",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.658616803586483,
+        "std_primary": 0.0028018597465138714
+      },
+      {
+        "cell": 3,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.6280737742781639,
+        "std_primary": 0.0026427070703177414
+      },
+      {
+        "cell": 2,
+        "config": {
+          "architecture": "fm",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.6279286593198776,
+        "std_primary": 0.002405986008864674
+      },
+      {
+        "cell": 7,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "recency-7d"
+        },
+        "mean_primary": 0.5948079526424408,
+        "std_primary": 0.002520295974172326
+      },
+      {
+        "cell": 6,
+        "config": {
+          "architecture": "dcn-lite",
+          "dropout": 0.21,
+          "loss": "bpr-hybrid",
+          "lr": 0.00168,
+          "lr_decay": 0.72,
+          "regularization": "mild",
+          "session_time_features": true,
+          "weight_decay": 3.7e-05,
+          "weighting": "uniform"
+        },
+        "mean_primary": 0.5940438508987427,
+        "std_primary": 0.0025650164978010706
+      }
+    ],
+    "ndcg5": 0.6395261883735657,
+    "primary": 0.659769594669342,
+    "selected_config": {
+      "architecture": "dcn-lite",
+      "dropout": 0.21,
+      "loss": "logloss",
+      "lr": 0.00168,
+      "lr_decay": 0.72,
+      "regularization": "mild",
+      "session_time_features": true,
+      "weight_decay": 3.7e-05,
+      "weighting": "uniform"
+    },
+    "session_recipe": {
+      "causal": true,
+      "crosses": [
+        "hour_x_tab",
+        "weekday_x_tab"
+      ],
+      "gap_edges_minutes": [
+        1,
+        5,
+        15,
+        30,
+        60,
+        180,
+        720
+      ],
+      "position_edges": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        16
+      ],
+      "session_cut_minutes": 30
+    }
+  },
+  "sigma": 0.0018114564145739877,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 98248,
+      "out": 6645,
+      "calls": 7
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 70833,
+      "out": 56347,
+      "calls": 7
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 4925,
+      "out": 6844,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 7454,
+      "out": 1697,
+      "calls": 3
+    }
+  },
+  "tokens_total": 252993,
+  "wall_s": 8714.8,
+  "self_critique": "Run assessment\n\nThe run found one strong improvement: node_004 raised primary from 0.6374 to 0.6598 by adding causal session/context features. Everything after that failed, often badly. Convergence was therefore reasonable, but the search was inefficient and did not establish why node_004 worked.\n\nWhat the harness/policy did suboptimally\n\n- It repeatedly reported an \u201cunusable learning curve\u201d without fixing the instrumentation. That blocked basic overfit/underfit diagnosis for nearly the entire run.\n- Node_001 used a factorial bundle of capacity, objective, recency, regularization, and checkpoint changes. Its +0.0163 gain is heavily confounded, so the run learned little about which change mattered.\n- Node_004 also bundled session gap, session position, hour\u00d7tab, and weekday\u00d7tab. The +0.0224 gain is compelling, but no ablations or seed replications were run to identify the responsible fields or verify robustness.\n- After node_004, the policy moved too quickly to speculative, high-complexity mechanisms. Nodes 006\u2013007 combined multiple targets/objectives or ensembles and collapsed by roughly 0.06, suggesting implementation/configuration incompatibility or severe objective mismatch rather than a useful local search.\n- Node_005 was effectively tied with the champion at displayed precision. The harness should have reported exact deltas, uncertainty, and whether the rejection was due to a significance threshold, tie-break, or hidden precision.\n- Hypotheses used unjustified numerical gain forecasts (\u201cat least 0.0025,\u201d \u201capproximately 0.0018\u201d). These added false precision without evidence.\n- Repeated adaptation to one validation split, especially through broad sweeps and validation-controlled gates, increased validation-overfitting risk. No final untouched holdout or multi-seed confirmation is shown.\n- \u201cFlat-signal regime\u201d was inferred too readily from one tied rider. That is not enough evidence for a general diagnosis.\n\nScaffold changes\n\n- Make valid per-epoch train/validation metrics, checkpoint identities, and loss components mandatory; fail fast if learning curves are missing.\n- Default to one controlled change per node. Allow bundles only for initial screening, followed immediately by ablations.\n- Record full-precision scores, seed variance, runtime, parameter count, selected checkpoint, and acceptance rule.\n- Replicate any large gain across at least 2\u20133 seeds before branching from it.\n- Reserve an untouched confirmation split or limit validation queries to reduce adaptive overfitting.\n- Add sanity checks when a child drops sharply: verify feature availability, leakage boundaries, objective scaling, checkpoint loading, and that the parent configuration is reproduced exactly.\n- Prefer local exploitation around a strong champion over broad objective rewrites unless diagnostics motivate them.\n\nWhat the next run should try first\n\nFirst, reproduce node_004 across multiple seeds and ablate its four feature groups individually and cumulatively:\n\n1. session gap;\n2. session position;\n3. hour\u00d7tab;\n4. weekday\u00d7tab.\n\nKeep the node_004 training stack, sampling, objective, and checkpoint policy fixed. This will determine whether the gain comes from session structure, temporal context, one dominant interaction, or accidental variance. Then refine only the winning group\u2014for example, bounded/log-binned session gaps, capped position bins, and carefully regularized embeddings. Do not begin with another objective ensemble or target-side sweep."
+}

@@ -1,0 +1,4 @@
+{"best_epoch": 1, "config": "anchor_centered_bce", "primary": 0.6006783348820219, "seed": 42}
+{"best_epoch": 1, "config": "gated_session_centered_bce", "primary": 0.6017785813770424, "seed": 42}
+{"best_epoch": 1, "config": "gated_session_routed_hybrid", "primary": 0.5972308186396393, "seed": 42}
+{"best_epoch": 1, "config": "gated_session_centered_bce", "phase": "selected_final_fit", "primary": 0.6017785813770424, "seed": 42}

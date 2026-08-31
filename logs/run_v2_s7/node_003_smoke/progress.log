@@ -1,0 +1,5 @@
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.600346965049917, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.5981619349795467, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6009493602527936, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6012148951673539, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "final", "primary": 0.6012148951673539}

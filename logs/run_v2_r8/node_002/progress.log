@@ -1,0 +1,232 @@
+{"config": "none_0", "seed": 42, "primary": 0.6005558929609567}
+{"config": "none_0", "seed": 1051, "primary": 0.600894401810695}
+{"config": "none_0", "seed": 2060, "primary": 0.6001396104689062}
+{"config": "none_0", "seed": 3069, "primary": 0.5999145375397934}
+{"config": "none_0", "seed": 4078, "primary": 0.6009801840825932}
+{"config": "none_0", "seed": 5087, "primary": 0.6010788412266461}
+{"config": "none_0", "seed": 6096, "primary": 0.6016881507316263}
+{"config": "none_0", "seed": 7105, "primary": 0.5996883421691452}
+{"config": "none_0", "seed": 8114, "primary": 0.6003055924046011}
+{"config": "none_0", "seed": 9123, "primary": 0.6008499497455975}
+{"config": "none_0", "seed": 10132, "primary": 0.6003821584263096}
+{"config": "none_0", "seed": 11141, "primary": 0.6004187956394114}
+{"config": "none_0", "seed": 12150, "primary": 0.6015724029107299}
+{"config": "none_0", "seed": 13159, "primary": 0.6017094010662503}
+{"config": "none_0", "seed": 14168, "primary": 0.6009464771071411}
+{"config": "none_0", "seed": 15177, "primary": 0.6009027763714945}
+{"config": "uniform_1e-05", "seed": 42, "primary": 0.600781697704618}
+{"config": "uniform_1e-05", "seed": 1051, "primary": 0.600928375817505}
+{"config": "uniform_1e-05", "seed": 2060, "primary": 0.6002615622308661}
+{"config": "uniform_1e-05", "seed": 3069, "primary": 0.5998793896959331}
+{"config": "uniform_1e-05", "seed": 4078, "primary": 0.6010643270972507}
+{"config": "uniform_1e-05", "seed": 5087, "primary": 0.6009506127021218}
+{"config": "uniform_1e-05", "seed": 6096, "primary": 0.6019964853696542}
+{"config": "uniform_1e-05", "seed": 7105, "primary": 0.5999070816670142}
+{"config": "uniform_1e-05", "seed": 8114, "primary": 0.6004757588604601}
+{"config": "uniform_1e-05", "seed": 9123, "primary": 0.6008234411532034}
+{"config": "uniform_1e-05", "seed": 10132, "primary": 0.60053585111179}
+{"config": "uniform_1e-05", "seed": 11141, "primary": 0.6004521967845955}
+{"config": "uniform_1e-05", "seed": 12150, "primary": 0.6016935381445168}
+{"config": "uniform_1e-05", "seed": 13159, "primary": 0.601989019339738}
+{"config": "uniform_1e-05", "seed": 14168, "primary": 0.6008708964241147}
+{"config": "uniform_1e-05", "seed": 15177, "primary": 0.6009833810150369}
+{"config": "uniform_3e-05", "seed": 42, "primary": 0.6008535701924296}
+{"config": "uniform_3e-05", "seed": 1051, "primary": 0.601253023938577}
+{"config": "uniform_3e-05", "seed": 2060, "primary": 0.6003760032408466}
+{"config": "uniform_3e-05", "seed": 3069, "primary": 0.5999990512061169}
+{"config": "uniform_3e-05", "seed": 4078, "primary": 0.6011066569243227}
+{"config": "uniform_3e-05", "seed": 5087, "primary": 0.6007766162361465}
+{"config": "uniform_3e-05", "seed": 6096, "primary": 0.6016325731036295}
+{"config": "uniform_3e-05", "seed": 7105, "primary": 0.5996837154088388}
+{"config": "uniform_3e-05", "seed": 8114, "primary": 0.6005033662862325}
+{"config": "uniform_3e-05", "seed": 9123, "primary": 0.6007599326494781}
+{"config": "uniform_3e-05", "seed": 10132, "primary": 0.6008532363791973}
+{"config": "uniform_3e-05", "seed": 11141, "primary": 0.6003310963302817}
+{"config": "uniform_3e-05", "seed": 12150, "primary": 0.6020349930709303}
+{"config": "uniform_3e-05", "seed": 13159, "primary": 0.6019510576502507}
+{"config": "uniform_3e-05", "seed": 14168, "primary": 0.6010016121253443}
+{"config": "uniform_3e-05", "seed": 15177, "primary": 0.601077786287905}
+{"config": "uniform_1e-04", "seed": 42, "primary": 0.6010832369731947}
+{"config": "uniform_1e-04", "seed": 1051, "primary": 0.6017996994117365}
+{"config": "uniform_1e-04", "seed": 2060, "primary": 0.6000721807290081}
+{"config": "uniform_1e-04", "seed": 3069, "primary": 0.5999737276583548}
+{"config": "uniform_1e-04", "seed": 4078, "primary": 0.6013025725601466}
+{"config": "uniform_1e-04", "seed": 5087, "primary": 0.6009579871187345}
+{"config": "uniform_1e-04", "seed": 6096, "primary": 0.6012388836247933}
+{"config": "uniform_1e-04", "seed": 7105, "primary": 0.6004456733583625}
+{"config": "uniform_1e-04", "seed": 8114, "primary": 0.6004724337386593}
+{"config": "uniform_1e-04", "seed": 9123, "primary": 0.6008687331395108}
+{"config": "uniform_1e-04", "seed": 10132, "primary": 0.6007116004134117}
+{"config": "uniform_1e-04", "seed": 11141, "primary": 0.6006460796713834}
+{"config": "uniform_1e-04", "seed": 12150, "primary": 0.6014988274535107}
+{"config": "uniform_1e-04", "seed": 13159, "primary": 0.6015960484785796}
+{"config": "uniform_1e-04", "seed": 14168, "primary": 0.6006806571925332}
+{"config": "uniform_1e-04", "seed": 15177, "primary": 0.6006190942764829}
+{"config": "uniform_3e-04", "seed": 42, "primary": 0.601163077850752}
+{"config": "uniform_3e-04", "seed": 1051, "primary": 0.6013358022861603}
+{"config": "uniform_3e-04", "seed": 2060, "primary": 0.6005580069548134}
+{"config": "uniform_3e-04", "seed": 3069, "primary": 0.600167853681228}
+{"config": "uniform_3e-04", "seed": 4078, "primary": 0.6010525630362948}
+{"config": "uniform_3e-04", "seed": 5087, "primary": 0.6003474358118044}
+{"config": "uniform_3e-04", "seed": 6096, "primary": 0.6007265417311834}
+{"config": "uniform_3e-04", "seed": 7105, "primary": 0.6010411467367125}
+{"config": "uniform_3e-04", "seed": 8114, "primary": 0.600559989220136}
+{"config": "uniform_3e-04", "seed": 9123, "primary": 0.6010984835000822}
+{"config": "uniform_3e-04", "seed": 10132, "primary": 0.6006605034203107}
+{"config": "uniform_3e-04", "seed": 11141, "primary": 0.6005325068903307}
+{"config": "uniform_3e-04", "seed": 12150, "primary": 0.601253203732601}
+{"config": "uniform_3e-04", "seed": 13159, "primary": 0.6011209801991101}
+{"config": "uniform_3e-04", "seed": 14168, "primary": 0.6003887005745159}
+{"config": "uniform_3e-04", "seed": 15177, "primary": 0.6004982087278143}
+{"config": "uniform_1e-03", "seed": 42, "primary": 0.6012022263442369}
+{"config": "uniform_1e-03", "seed": 1051, "primary": 0.6012935426272253}
+{"config": "uniform_1e-03", "seed": 2060, "primary": 0.600365765920841}
+{"config": "uniform_1e-03", "seed": 3069, "primary": 0.5999949370620377}
+{"config": "uniform_1e-03", "seed": 4078, "primary": 0.6010816992117172}
+{"config": "uniform_1e-03", "seed": 5087, "primary": 0.5998980705823851}
+{"config": "uniform_1e-03", "seed": 6096, "primary": 0.6010293263451127}
+{"config": "uniform_1e-03", "seed": 7105, "primary": 0.6010403573644878}
+{"config": "uniform_1e-03", "seed": 8114, "primary": 0.6002493978934925}
+{"config": "uniform_1e-03", "seed": 9123, "primary": 0.6009379941853751}
+{"config": "uniform_1e-03", "seed": 10132, "primary": 0.6008857667600526}
+{"config": "uniform_1e-03", "seed": 11141, "primary": 0.6010327458688504}
+{"config": "uniform_1e-03", "seed": 12150, "primary": 0.6011307086029972}
+{"config": "uniform_1e-03", "seed": 13159, "primary": 0.6012390804937715}
+{"config": "uniform_1e-03", "seed": 14168, "primary": 0.6001042375458456}
+{"config": "uniform_1e-03", "seed": 15177, "primary": 0.600725004332697}
+{"config": "uniform_3e-03", "seed": 42, "primary": 0.6010979918975987}
+{"config": "uniform_3e-03", "seed": 1051, "primary": 0.6010966575252897}
+{"config": "uniform_3e-03", "seed": 2060, "primary": 0.6003289214910064}
+{"config": "uniform_3e-03", "seed": 3069, "primary": 0.6003460862288499}
+{"config": "uniform_3e-03", "seed": 4078, "primary": 0.6012936094435126}
+{"config": "uniform_3e-03", "seed": 5087, "primary": 0.5999252188966651}
+{"config": "uniform_3e-03", "seed": 6096, "primary": 0.6009264696699741}
+{"config": "uniform_3e-03", "seed": 7105, "primary": 0.6009791377851961}
+{"config": "uniform_3e-03", "seed": 8114, "primary": 0.6002811356113713}
+{"config": "uniform_3e-03", "seed": 9123, "primary": 0.6012998693548521}
+{"config": "uniform_3e-03", "seed": 10132, "primary": 0.6010228462499534}
+{"config": "uniform_3e-03", "seed": 11141, "primary": 0.6010438439435931}
+{"config": "uniform_3e-03", "seed": 12150, "primary": 0.6010429701234878}
+{"config": "uniform_3e-03", "seed": 13159, "primary": 0.6009508025608075}
+{"config": "uniform_3e-03", "seed": 14168, "primary": 0.5999780366137266}
+{"config": "uniform_3e-03", "seed": 15177, "primary": 0.600626002742137}
+{"config": "adaptive_1e-05", "seed": 42, "primary": 0.6009608334862389}
+{"config": "adaptive_1e-05", "seed": 1051, "primary": 0.6009640721467441}
+{"config": "adaptive_1e-05", "seed": 2060, "primary": 0.6001658853413705}
+{"config": "adaptive_1e-05", "seed": 3069, "primary": 0.5999196242406704}
+{"config": "adaptive_1e-05", "seed": 4078, "primary": 0.600951589873653}
+{"config": "adaptive_1e-05", "seed": 5087, "primary": 0.6010033757103084}
+{"config": "adaptive_1e-05", "seed": 6096, "primary": 0.6019576131725071}
+{"config": "adaptive_1e-05", "seed": 7105, "primary": 0.5998394023648087}
+{"config": "adaptive_1e-05", "seed": 8114, "primary": 0.6003747815537466}
+{"config": "adaptive_1e-05", "seed": 9123, "primary": 0.6008472818408126}
+{"config": "adaptive_1e-05", "seed": 10132, "primary": 0.600507675420644}
+{"config": "adaptive_1e-05", "seed": 11141, "primary": 0.6005508619737807}
+{"config": "adaptive_1e-05", "seed": 12150, "primary": 0.6017051385297457}
+{"config": "adaptive_1e-05", "seed": 13159, "primary": 0.6019421864379575}
+{"config": "adaptive_1e-05", "seed": 14168, "primary": 0.6009528471186955}
+{"config": "adaptive_1e-05", "seed": 15177, "primary": 0.6011626403663342}
+{"config": "adaptive_3e-05", "seed": 42, "primary": 0.6011660191316082}
+{"config": "adaptive_3e-05", "seed": 1051, "primary": 0.6013099234546264}
+{"config": "adaptive_3e-05", "seed": 2060, "primary": 0.6003644657622229}
+{"config": "adaptive_3e-05", "seed": 3069, "primary": 0.5999465923578902}
+{"config": "adaptive_3e-05", "seed": 4078, "primary": 0.6011639196462667}
+{"config": "adaptive_3e-05", "seed": 5087, "primary": 0.6008628878974454}
+{"config": "adaptive_3e-05", "seed": 6096, "primary": 0.6017600051544665}
+{"config": "adaptive_3e-05", "seed": 7105, "primary": 0.5997610060386025}
+{"config": "adaptive_3e-05", "seed": 8114, "primary": 0.6004995109835851}
+{"config": "adaptive_3e-05", "seed": 9123, "primary": 0.6006569942627957}
+{"config": "adaptive_3e-05", "seed": 10132, "primary": 0.600729613268242}
+{"config": "adaptive_3e-05", "seed": 11141, "primary": 0.6005836586261439}
+{"config": "adaptive_3e-05", "seed": 12150, "primary": 0.6016579453950572}
+{"config": "adaptive_3e-05", "seed": 13159, "primary": 0.6019254770988722}
+{"config": "adaptive_3e-05", "seed": 14168, "primary": 0.6009344709430002}
+{"config": "adaptive_3e-05", "seed": 15177, "primary": 0.6011658502162531}
+{"config": "adaptive_1e-04", "seed": 42, "primary": 0.6012182239283733}
+{"config": "adaptive_1e-04", "seed": 1051, "primary": 0.6015886133326507}
+{"config": "adaptive_1e-04", "seed": 2060, "primary": 0.6001999062495001}
+{"config": "adaptive_1e-04", "seed": 3069, "primary": 0.5999328169128523}
+{"config": "adaptive_1e-04", "seed": 4078, "primary": 0.6012467329021276}
+{"config": "adaptive_1e-04", "seed": 5087, "primary": 0.60071681268785}
+{"config": "adaptive_1e-04", "seed": 6096, "primary": 0.6015522773309483}
+{"config": "adaptive_1e-04", "seed": 7105, "primary": 0.6004308156245655}
+{"config": "adaptive_1e-04", "seed": 8114, "primary": 0.6003747482607782}
+{"config": "adaptive_1e-04", "seed": 9123, "primary": 0.600887003176104}
+{"config": "adaptive_1e-04", "seed": 10132, "primary": 0.6007814351962528}
+{"config": "adaptive_1e-04", "seed": 11141, "primary": 0.6002288573318302}
+{"config": "adaptive_1e-04", "seed": 12150, "primary": 0.6016258921728015}
+{"config": "adaptive_1e-04", "seed": 13159, "primary": 0.6016733171341391}
+{"config": "adaptive_1e-04", "seed": 14168, "primary": 0.6006204777289514}
+{"config": "adaptive_1e-04", "seed": 15177, "primary": 0.6011550562811612}
+{"config": "adaptive_3e-04", "seed": 42, "primary": 0.6011636222851449}
+{"config": "adaptive_3e-04", "seed": 1051, "primary": 0.6013601247899238}
+{"config": "adaptive_3e-04", "seed": 2060, "primary": 0.6006255328304084}
+{"config": "adaptive_3e-04", "seed": 3069, "primary": 0.600304487680974}
+{"config": "adaptive_3e-04", "seed": 4078, "primary": 0.6012803899698582}
+{"config": "adaptive_3e-04", "seed": 5087, "primary": 0.6006241465048978}
+{"config": "adaptive_3e-04", "seed": 6096, "primary": 0.6006971201290946}
+{"config": "adaptive_3e-04", "seed": 7105, "primary": 0.600927897001228}
+{"config": "adaptive_3e-04", "seed": 8114, "primary": 0.6005002424372354}
+{"config": "adaptive_3e-04", "seed": 9123, "primary": 0.6009206362437829}
+{"config": "adaptive_3e-04", "seed": 10132, "primary": 0.6006017379613855}
+{"config": "adaptive_3e-04", "seed": 11141, "primary": 0.6010043580453397}
+{"config": "adaptive_3e-04", "seed": 12150, "primary": 0.6012804560588976}
+{"config": "adaptive_3e-04", "seed": 13159, "primary": 0.6015450355417504}
+{"config": "adaptive_3e-04", "seed": 14168, "primary": 0.6005676480768309}
+{"config": "adaptive_3e-04", "seed": 15177, "primary": 0.600573207531021}
+{"config": "adaptive_1e-03", "seed": 42, "primary": 0.6009351619385044}
+{"config": "adaptive_1e-03", "seed": 1051, "primary": 0.6011456383378267}
+{"config": "adaptive_1e-03", "seed": 2060, "primary": 0.6003520040810015}
+{"config": "adaptive_1e-03", "seed": 3069, "primary": 0.5999206366514465}
+{"config": "adaptive_1e-03", "seed": 4078, "primary": 0.6010996141168077}
+{"config": "adaptive_1e-03", "seed": 5087, "primary": 0.5998127510523932}
+{"config": "adaptive_1e-03", "seed": 6096, "primary": 0.6008093619964271}
+{"config": "adaptive_1e-03", "seed": 7105, "primary": 0.6013192437937174}
+{"config": "adaptive_1e-03", "seed": 8114, "primary": 0.6000503999698359}
+{"config": "adaptive_1e-03", "seed": 9123, "primary": 0.6008359721942624}
+{"config": "adaptive_1e-03", "seed": 10132, "primary": 0.6009957056290336}
+{"config": "adaptive_1e-03", "seed": 11141, "primary": 0.6009076459311649}
+{"config": "adaptive_1e-03", "seed": 12150, "primary": 0.6009000814784997}
+{"config": "adaptive_1e-03", "seed": 13159, "primary": 0.6009180865057017}
+{"config": "adaptive_1e-03", "seed": 14168, "primary": 0.6001996029513432}
+{"config": "adaptive_1e-03", "seed": 15177, "primary": 0.6007952631314477}
+{"config": "adaptive_3e-03", "seed": 42, "primary": 0.6013894641293525}
+{"config": "adaptive_3e-03", "seed": 1051, "primary": 0.6010921196102645}
+{"config": "adaptive_3e-03", "seed": 2060, "primary": 0.6004952383815275}
+{"config": "adaptive_3e-03", "seed": 3069, "primary": 0.5998265897983304}
+{"config": "adaptive_3e-03", "seed": 4078, "primary": 0.6013706072173839}
+{"config": "adaptive_3e-03", "seed": 5087, "primary": 0.5995869659006685}
+{"config": "adaptive_3e-03", "seed": 6096, "primary": 0.6010935495747369}
+{"config": "adaptive_3e-03", "seed": 7105, "primary": 0.6012174283019585}
+{"config": "adaptive_3e-03", "seed": 8114, "primary": 0.6001029805945803}
+{"config": "adaptive_3e-03", "seed": 9123, "primary": 0.6011442042666637}
+{"config": "adaptive_3e-03", "seed": 10132, "primary": 0.6007604782160247}
+{"config": "adaptive_3e-03", "seed": 11141, "primary": 0.600700510965513}
+{"config": "adaptive_3e-03", "seed": 12150, "primary": 0.6010460687676653}
+{"config": "adaptive_3e-03", "seed": 13159, "primary": 0.601035102892889}
+{"config": "adaptive_3e-03", "seed": 14168, "primary": 0.6000636926854608}
+{"config": "adaptive_3e-03", "seed": 15177, "primary": 0.6006371741493173}
+{"config": "none_0", "seed": 50063, "phase": "final", "primary": 0.599721554598467}
+{"config": "none_0", "seed": 51072, "phase": "final", "primary": 0.6001854526073429}
+{"config": "none_0", "seed": 52081, "phase": "final", "primary": 0.6008419183657192}
+{"config": "none_0", "seed": 53090, "phase": "final", "primary": 0.600309539248598}
+{"config": "none_0", "seed": 54099, "phase": "final", "primary": 0.5997631795994025}
+{"config": "none_0", "seed": 55108, "phase": "final", "primary": 0.6008175596817622}
+{"config": "none_0", "seed": 56117, "phase": "final", "primary": 0.6009049080164652}
+{"config": "none_0", "seed": 57126, "phase": "final", "primary": 0.60083666209932}
+{"config": "none_0", "seed": 58135, "phase": "final", "primary": 0.5997069116042815}
+{"config": "none_0", "seed": 59144, "phase": "final", "primary": 0.6003850666152291}
+{"config": "none_0", "seed": 60153, "phase": "final", "primary": 0.5998214255050275}
+{"config": "none_0", "seed": 61162, "phase": "final", "primary": 0.6004012068683194}
+{"config": "none_0", "seed": 62171, "phase": "final", "primary": 0.6006660912240346}
+{"config": "none_0", "seed": 63180, "phase": "final", "primary": 0.6000794597658632}
+{"config": "none_0", "seed": 64189, "phase": "final", "primary": 0.5993649859167212}
+{"config": "none_0", "seed": 65198, "phase": "final", "primary": 0.6005014038769398}
+{"config": "none_0", "seed": 66207, "phase": "final", "primary": 0.6002322375284841}
+{"config": "none_0", "seed": 67216, "phase": "final", "primary": 0.6004734398901165}
+{"config": "none_0", "seed": 68225, "phase": "final", "primary": 0.6004809033006537}
+{"config": "none_0", "seed": 69234, "phase": "final", "primary": 0.5995369643468864}
+{"config": "none_0", "seed": 70243, "phase": "final", "primary": 0.6003727955455869}
+{"config": "none_0", "seed": 71252, "phase": "final", "primary": 0.5993533070147854}
+{"config": "none_0", "seed": 72261, "phase": "final", "primary": 0.6007384653784936}
+{"config": "none_0", "seed": 73270, "phase": "final", "primary": 0.5992552987424855}

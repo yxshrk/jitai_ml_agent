@@ -1,0 +1,1 @@
+{"gauc": 0.6668413849467402, "ndcg5": 0.5354093021973858, "primary": 0.6011253435720629, "history": [{"epoch": 1, "train_loss": 0.66292, "val_gauc": 0.666841, "val_primary": 0.601125, "config": "complete-user-slate gauge-fixed BCE"}]}

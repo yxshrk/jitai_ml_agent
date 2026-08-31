@@ -1,0 +1,102 @@
+{
+  "run_dir": "logs/run_v2_1k",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "best_epoch": 0.5,
+    "config": {
+      "batch_size": 8192,
+      "bpr_weight": 0.5,
+      "decay_every": 1.0,
+      "decay_start_epoch": 0.0,
+      "dropout": 0.21,
+      "embedding_dropout": 0.1,
+      "epochs": 6,
+      "k": 24,
+      "lr": 0.00168,
+      "max_runtime": 350,
+      "patience_halves": 6,
+      "recency_half_life": 7.0,
+      "seed": 42,
+      "step_decay_factor": 0.5,
+      "subsample": null,
+      "weight_decay": 3.7e-05
+    },
+    "delta_vs_frozen_baseline": 0.01640415248215077,
+    "field_names": [
+      "user",
+      "video",
+      "author",
+      "tab",
+      "dur_bucket10"
+    ],
+    "gauc": 0.6590922671403613,
+    "history": [
+      {
+        "epoch": 0.5,
+        "lr": 0.00168,
+        "train_loss": 0.5025359415313573,
+        "val_gauc": 0.6590922671403613,
+        "val_ndcg5": 0.5831160378239403,
+        "val_primary": 0.6211041524821508
+      },
+      {
+        "epoch": 1.0,
+        "lr": 0.00168,
+        "train_loss": 0.4071463607854442,
+        "val_gauc": 0.652677052420651,
+        "val_ndcg5": 0.554281003528842,
+        "val_primary": 0.6034790279747465
+      },
+      {
+        "epoch": 1.5,
+        "lr": 0.00084,
+        "train_loss": 0.28751947472782197,
+        "val_gauc": 0.6477020247304638,
+        "val_ndcg5": 0.5253456281357745,
+        "val_primary": 0.5865238264331192
+      },
+      {
+        "epoch": 2.0,
+        "lr": 0.00084,
+        "train_loss": 0.2720506496992698,
+        "val_gauc": 0.6457641286207764,
+        "val_ndcg5": 0.5074593729088149,
+        "val_primary": 0.5766117507647956
+      }
+    ],
+    "ndcg5": 0.5831160378239403,
+    "primary": 0.6211041524821508,
+    "runtime_s": 354.3,
+    "timed_out": true
+  },
+  "sigma": 0.0018114564145739877,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 45487,
+      "out": 3319,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 16841,
+      "out": 18688,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 998,
+      "out": 1672,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3492,
+      "out": 1290,
+      "calls": 2
+    }
+  },
+  "tokens_total": 91787,
+  "wall_s": 8955.3,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally\n\n- It converged after only three challengers, one of which failed without a metric. That is too little evidence to conclude the search space was exhausted.\n- The reported baseline uncertainty (sigma=0.0018) is much larger than node_001\u2019s apparent gain (~0.0003). Rejecting it was statistically reasonable, but evaluating such small expected improvements without paired multi-seed runs was inefficient.\n- The hypotheses were overconfident about the diagnosis. \u201cValidation peaks at 0.5 epoch, therefore sparse-ID memorization\u201d is plausible, not established. No ID-frequency slices, train/validation gap by feature group, or ID-ablation results were reported.\n- Node_002 combined several changes\u2014session context, gated residual, BPR handling, and a multi-seed rank ensemble. This made attribution impossible and increased implementation risk. Its large regression suggests either a bad premise or an integration/training failure that should have triggered decomposition.\n- Node_003 was the most directly relevant regularization experiment, but it failed before producing a metric. The run stopped without repairing or replacing it, leaving the central hypothesis untested.\n- There is a scaffold inconsistency: node_000 is described as \u201cbaseline FM,\u201d while later proposals refer to an \u201cotherwise fixed regularized DCN-lite stack.\u201d Architecture and inherited configuration should be unambiguous.\n- The policy favored elaborate literature-inspired modifications before testing simpler controls such as stronger embedding decay, ID dropout, frequency thresholds, hashing, or earlier checkpoint selection.\n- No learning-curve or checkpoint sweep was treated as an experiment, despite the stated observation that the optimum occurs around 0.5 epoch. Training procedure may be the highest-leverage variable.\n\nWhat I would change about the scaffold\n\n- Require every proposal to modify one mechanism at a time unless prior ablations justify a compound change.\n- Add a feasibility gate and smoke test before full training: shape checks, finite gradients, short-run metric sanity, and confirmation that the new path receives gradients.\n- Separate diagnosis from intervention. First run feature-group ablations and frequency-bucket evaluations; then choose regularization based on the result.\n- Use paired seeds and identical data order/checkpoints for deltas smaller than baseline sigma. Report mean delta, uncertainty, and per-seed wins rather than a single rounded score.\n- Allocate explicit recovery budget for failed nodes. A no-metric failure should not count as evidence against the hypothesis or immediately contribute to convergence.\n- Standardize lineage metadata: exact inherited model, changed parameters, parameter count, checkpoint policy, and evaluation protocol.\n- Include a simple-control ladder before architectural work: checkpoint/early stopping, L2, embedding dropout, rare-ID dropout, vocabulary cutoff/hash buckets, then contextual features.\n- Set convergence based on completed informative trials and uncertainty, not merely several rejected/failed branches.\n\nWhat the next run should try first\n\nFirst, re-establish the baseline with 3\u20135 paired seeds and evaluate dense checkpoints around the observed peak (for example 0.25, 0.5, 0.75, and 1.0 epoch). This will determine whether 0.6211 is stable and whether checkpoint selection alone captures the available gain.\n\nThen run one minimal sparse-ID regularization ablation: frequency-aware ID/embedding dropout or replacement with an unknown token, with a small probability sweep. Keep the FM architecture, optimizer, loss, and all non-ID features fixed. Before full training, verify replacement rates by frequency bucket and complete a smoke test.\n\nIf that does not help, test simple vocabulary cutoff/hash bucketing and stronger embedding-only L2. Session features should come later, one feature family at a time. Do not retry the compound node_002 design until a standalone session-context feature demonstrates value."
+}

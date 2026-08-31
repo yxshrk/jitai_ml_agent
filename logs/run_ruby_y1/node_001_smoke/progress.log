@@ -1,0 +1,6 @@
+{"config": "matched_fm_parent", "seed": 42, "primary": 0.5889470835183803}
+{"config": "seq_deepfm_composite_full", "seed": 42, "primary": 0.5984117185355744, "matched_delta": 0.009464635017194079}
+{"config": "matched_fm_parent", "seed": 43, "primary": 0.5873021420359198}
+{"config": "seq_deepfm_composite_full", "seed": 43, "primary": 0.5971476507763258, "matched_delta": 0.009845508740406017}
+{"config": "matched_fm_parent", "seed": 44, "primary": 0.5889581944804043}
+{"config": "seq_deepfm_composite_full", "seed": 44, "primary": 0.5985114907346278, "matched_delta": 0.00955329625422352}

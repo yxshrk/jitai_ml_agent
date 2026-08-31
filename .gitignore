@@ -30,3 +30,6 @@ evidence/test_submission_1k.csv
 MACHINES.local.md
 evidence/test_submission_1k_faithful.csv
 evidence/test_submission_1k_omega.csv
+.claude/
+data/test_features_1k/test_hourmin.npz
+logs/run_*/workspace/

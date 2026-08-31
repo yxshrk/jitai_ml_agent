@@ -1,0 +1,3 @@
+{"config": {"aux_weight": 0.1499715, "bpr_mix": 0.5, "dropout": 0.1905223, "lr": 0.0005582299628958285, "step_gamma": 0.6160584, "weight_decay": 0.00026166857362662743}, "epochs": 1, "gauc": 0.6502896787970271, "ndcg5": 0.5287983819125619, "primary": 0.5895440303547945, "probe": 0, "stage": "coarse"}
+{"config": {"aux_weight": 0.1499715, "bpr_mix": 0.5, "dropout": 0.1905223, "lr": 0.0005582299628958285, "step_gamma": 0.6160584, "weight_decay": 0.00026166857362662743}, "epochs": 1, "gauc": 0.6500812457131206, "ndcg5": 0.5287060233441185, "primary": 0.5893936345286196, "seed": 42, "stage": "final_member"}
+{"gauc": 0.6500812457131206, "kind": "mean_logit", "members": 1, "ndcg5": 0.5287060233441185, "primary": 0.5893936345286196, "seeds": [42], "stage": "ensemble"}

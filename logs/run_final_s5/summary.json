@@ -1,0 +1,1821 @@
+{
+  "run_dir": "logs/run_final_s5",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6708917580205065,
+    "ndcg5": 0.5370874471285925,
+    "primary": 0.6039896025745495,
+    "chosen_config": {
+      "architecture": "dcn-lite",
+      "loss": "logloss",
+      "weighting": "uniform",
+      "regularization": "strong"
+    },
+    "matrix": [
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.604362,
+        "matrix_std": 0.000185,
+        "matrix_scores": [
+          0.604057,
+          0.60455,
+          0.604386,
+          0.604456
+        ],
+        "refine_mean": 0.604181,
+        "refine_std": 6.8e-05,
+        "refine_scores": [
+          0.604191,
+          0.604093,
+          0.604258
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.604128,
+        "matrix_std": 0.000168,
+        "matrix_scores": [
+          0.60423,
+          0.604226,
+          0.60422,
+          0.603838
+        ],
+        "refine_mean": 0.604388,
+        "refine_std": 0.000211,
+        "refine_scores": [
+          0.604618,
+          0.604436,
+          0.604108
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.603968,
+        "matrix_std": 0.000342,
+        "matrix_scores": [
+          0.604,
+          0.604162,
+          0.603406,
+          0.604305
+        ],
+        "refine_mean": 0.603686,
+        "refine_std": 8e-05,
+        "refine_scores": [
+          0.603679,
+          0.603591,
+          0.603788
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.603833,
+        "matrix_std": 0.000318,
+        "matrix_scores": [
+          0.604149,
+          0.603811,
+          0.604048,
+          0.603325
+        ],
+        "refine_mean": 0.603405,
+        "refine_std": 0.000204,
+        "refine_scores": [
+          0.603692,
+          0.603238,
+          0.603285
+        ]
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.603791,
+        "matrix_std": 0.000333,
+        "matrix_scores": [
+          0.603459,
+          0.604214,
+          0.603472,
+          0.604018
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.603751,
+        "matrix_std": 0.000379,
+        "matrix_scores": [
+          0.603685,
+          0.604189,
+          0.603173,
+          0.603958
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.603388,
+        "matrix_std": 0.000341,
+        "matrix_scores": [
+          0.603591,
+          0.602804,
+          0.603655,
+          0.603502
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.603162,
+        "matrix_std": 0.000194,
+        "matrix_scores": [
+          0.603416,
+          0.603021,
+          0.602932,
+          0.60328
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.602454,
+        "matrix_std": 0.000478,
+        "matrix_scores": [
+          0.602335,
+          0.601735,
+          0.602996,
+          0.602751
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.601846,
+        "matrix_std": 0.000329,
+        "matrix_scores": [
+          0.601424,
+          0.601642,
+          0.602066,
+          0.602251
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.601823,
+        "matrix_std": 0.000103,
+        "matrix_scores": [
+          0.601881,
+          0.601963,
+          0.601715,
+          0.601734
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.601745,
+        "matrix_std": 0.000241,
+        "matrix_scores": [
+          0.602036,
+          0.601785,
+          0.601366,
+          0.601793
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.601144,
+        "matrix_std": 0.000293,
+        "matrix_scores": [
+          0.600884,
+          0.601562,
+          0.601276,
+          0.600853
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "matrix_mean": 0.600992,
+        "matrix_std": 0.000549,
+        "matrix_scores": [
+          0.601741,
+          0.600228,
+          0.601175,
+          0.600826
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.599713,
+        "matrix_std": 0.000168,
+        "matrix_scores": [
+          0.599554,
+          0.599809,
+          0.599548,
+          0.599939
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      },
+      {
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "matrix_mean": 0.599654,
+        "matrix_std": 0.000388,
+        "matrix_scores": [
+          0.600241,
+          0.599229,
+          0.599751,
+          0.599396
+        ],
+        "refine_mean": null,
+        "refine_std": null,
+        "refine_scores": []
+      }
+    ],
+    "history": [
+      {
+        "phase": "matrix",
+        "probe": 0,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 42,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.668427,
+        "ndcg5": 0.536242,
+        "primary": 0.602335
+      },
+      {
+        "phase": "matrix",
+        "probe": 1,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 79,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.667709,
+        "ndcg5": 0.535761,
+        "primary": 0.601735
+      },
+      {
+        "phase": "matrix",
+        "probe": 2,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 116,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.66947,
+        "ndcg5": 0.536522,
+        "primary": 0.602996
+      },
+      {
+        "phase": "matrix",
+        "probe": 3,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 153,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.668919,
+        "ndcg5": 0.536584,
+        "primary": 0.602751
+      },
+      {
+        "phase": "matrix",
+        "probe": 4,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1051,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.664215,
+        "ndcg5": 0.534893,
+        "primary": 0.599554
+      },
+      {
+        "phase": "matrix",
+        "probe": 5,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1088,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.664749,
+        "ndcg5": 0.534869,
+        "primary": 0.599809
+      },
+      {
+        "phase": "matrix",
+        "probe": 6,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1125,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.664351,
+        "ndcg5": 0.534744,
+        "primary": 0.599548
+      },
+      {
+        "phase": "matrix",
+        "probe": 7,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 1162,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.664575,
+        "ndcg5": 0.535303,
+        "primary": 0.599939
+      },
+      {
+        "phase": "matrix",
+        "probe": 8,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 2060,
+        "epochs": 8,
+        "best_epoch": 6.0,
+        "gauc": 0.667671,
+        "ndcg5": 0.536091,
+        "primary": 0.601881
+      },
+      {
+        "phase": "matrix",
+        "probe": 9,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 2097,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.667914,
+        "ndcg5": 0.536012,
+        "primary": 0.601963
+      },
+      {
+        "phase": "matrix",
+        "probe": 10,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 2134,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.667563,
+        "ndcg5": 0.535867,
+        "primary": 0.601715
+      },
+      {
+        "phase": "matrix",
+        "probe": 11,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 2171,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.667482,
+        "ndcg5": 0.535986,
+        "primary": 0.601734
+      },
+      {
+        "phase": "matrix",
+        "probe": 12,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 3069,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.66528,
+        "ndcg5": 0.535202,
+        "primary": 0.600241
+      },
+      {
+        "phase": "matrix",
+        "probe": 13,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 3106,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.663736,
+        "ndcg5": 0.534723,
+        "primary": 0.599229
+      },
+      {
+        "phase": "matrix",
+        "probe": 14,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 3143,
+        "epochs": 8,
+        "best_epoch": 6.0,
+        "gauc": 0.664498,
+        "ndcg5": 0.535005,
+        "primary": 0.599751
+      },
+      {
+        "phase": "matrix",
+        "probe": 15,
+        "config": {
+          "architecture": "fm",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 3180,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.664275,
+        "ndcg5": 0.534516,
+        "primary": 0.599396
+      },
+      {
+        "phase": "matrix",
+        "probe": 16,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4078,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.667886,
+        "ndcg5": 0.535595,
+        "primary": 0.601741
+      },
+      {
+        "phase": "matrix",
+        "probe": 17,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4115,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.665652,
+        "ndcg5": 0.534803,
+        "primary": 0.600228
+      },
+      {
+        "phase": "matrix",
+        "probe": 18,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4152,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.666884,
+        "ndcg5": 0.535466,
+        "primary": 0.601175
+      },
+      {
+        "phase": "matrix",
+        "probe": 19,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 4189,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.666788,
+        "ndcg5": 0.534863,
+        "primary": 0.600826
+      },
+      {
+        "phase": "matrix",
+        "probe": 20,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 5087,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.668089,
+        "ndcg5": 0.535982,
+        "primary": 0.602036
+      },
+      {
+        "phase": "matrix",
+        "probe": 21,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 5124,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.667478,
+        "ndcg5": 0.536092,
+        "primary": 0.601785
+      },
+      {
+        "phase": "matrix",
+        "probe": 22,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 5161,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.667357,
+        "ndcg5": 0.535376,
+        "primary": 0.601366
+      },
+      {
+        "phase": "matrix",
+        "probe": 23,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 5198,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.668121,
+        "ndcg5": 0.535465,
+        "primary": 0.601793
+      },
+      {
+        "phase": "matrix",
+        "probe": 24,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 6096,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.66632,
+        "ndcg5": 0.535447,
+        "primary": 0.600884
+      },
+      {
+        "phase": "matrix",
+        "probe": 25,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 6133,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.667497,
+        "ndcg5": 0.535627,
+        "primary": 0.601562
+      },
+      {
+        "phase": "matrix",
+        "probe": 26,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 6170,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.666934,
+        "ndcg5": 0.535618,
+        "primary": 0.601276
+      },
+      {
+        "phase": "matrix",
+        "probe": 27,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 6207,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.666393,
+        "ndcg5": 0.535313,
+        "primary": 0.600853
+      },
+      {
+        "phase": "matrix",
+        "probe": 28,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 7105,
+        "epochs": 8,
+        "best_epoch": 4.0,
+        "gauc": 0.667344,
+        "ndcg5": 0.535505,
+        "primary": 0.601424
+      },
+      {
+        "phase": "matrix",
+        "probe": 29,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 7142,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.667777,
+        "ndcg5": 0.535507,
+        "primary": 0.601642
+      },
+      {
+        "phase": "matrix",
+        "probe": 30,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 7179,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.66823,
+        "ndcg5": 0.535902,
+        "primary": 0.602066
+      },
+      {
+        "phase": "matrix",
+        "probe": 31,
+        "config": {
+          "architecture": "fm",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 7216,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.668566,
+        "ndcg5": 0.535937,
+        "primary": 0.602251
+      },
+      {
+        "phase": "matrix",
+        "probe": 32,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 8114,
+        "epochs": 8,
+        "best_epoch": 4.0,
+        "gauc": 0.669737,
+        "ndcg5": 0.537181,
+        "primary": 0.603459
+      },
+      {
+        "phase": "matrix",
+        "probe": 33,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 8151,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.670971,
+        "ndcg5": 0.537458,
+        "primary": 0.604214
+      },
+      {
+        "phase": "matrix",
+        "probe": 34,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 8188,
+        "epochs": 8,
+        "best_epoch": 5.0,
+        "gauc": 0.670146,
+        "ndcg5": 0.536798,
+        "primary": 0.603472
+      },
+      {
+        "phase": "matrix",
+        "probe": 35,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 8225,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.670589,
+        "ndcg5": 0.537447,
+        "primary": 0.604018
+      },
+      {
+        "phase": "matrix",
+        "probe": 36,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 9123,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.671381,
+        "ndcg5": 0.53708,
+        "primary": 0.60423
+      },
+      {
+        "phase": "matrix",
+        "probe": 37,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 9160,
+        "epochs": 8,
+        "best_epoch": 5.0,
+        "gauc": 0.671106,
+        "ndcg5": 0.537345,
+        "primary": 0.604226
+      },
+      {
+        "phase": "matrix",
+        "probe": 38,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 9197,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.671096,
+        "ndcg5": 0.537343,
+        "primary": 0.60422
+      },
+      {
+        "phase": "matrix",
+        "probe": 39,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 9234,
+        "epochs": 8,
+        "best_epoch": 8.0,
+        "gauc": 0.670511,
+        "ndcg5": 0.537165,
+        "primary": 0.603838
+      },
+      {
+        "phase": "matrix",
+        "probe": 40,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 10132,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.670516,
+        "ndcg5": 0.537483,
+        "primary": 0.604
+      },
+      {
+        "phase": "matrix",
+        "probe": 41,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 10169,
+        "epochs": 8,
+        "best_epoch": 4.0,
+        "gauc": 0.670834,
+        "ndcg5": 0.537491,
+        "primary": 0.604162
+      },
+      {
+        "phase": "matrix",
+        "probe": 42,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 10206,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.669913,
+        "ndcg5": 0.536898,
+        "primary": 0.603406
+      },
+      {
+        "phase": "matrix",
+        "probe": 43,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 10243,
+        "epochs": 8,
+        "best_epoch": 4.0,
+        "gauc": 0.6711,
+        "ndcg5": 0.537509,
+        "primary": 0.604305
+      },
+      {
+        "phase": "matrix",
+        "probe": 44,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 11141,
+        "epochs": 8,
+        "best_epoch": 7.0,
+        "gauc": 0.670651,
+        "ndcg5": 0.537464,
+        "primary": 0.604057
+      },
+      {
+        "phase": "matrix",
+        "probe": 45,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 11178,
+        "epochs": 8,
+        "best_epoch": 6.0,
+        "gauc": 0.671528,
+        "ndcg5": 0.537572,
+        "primary": 0.60455
+      },
+      {
+        "phase": "matrix",
+        "probe": 46,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 11215,
+        "epochs": 8,
+        "best_epoch": 4.0,
+        "gauc": 0.67085,
+        "ndcg5": 0.537921,
+        "primary": 0.604386
+      },
+      {
+        "phase": "matrix",
+        "probe": 47,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 11252,
+        "epochs": 8,
+        "best_epoch": 5.0,
+        "gauc": 0.671232,
+        "ndcg5": 0.537679,
+        "primary": 0.604456
+      },
+      {
+        "phase": "matrix",
+        "probe": 48,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 12150,
+        "epochs": 8,
+        "best_epoch": 1.0,
+        "gauc": 0.670339,
+        "ndcg5": 0.536494,
+        "primary": 0.603416
+      },
+      {
+        "phase": "matrix",
+        "probe": 49,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 12187,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.669262,
+        "ndcg5": 0.53678,
+        "primary": 0.603021
+      },
+      {
+        "phase": "matrix",
+        "probe": 50,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 12224,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.669219,
+        "ndcg5": 0.536646,
+        "primary": 0.602932
+      },
+      {
+        "phase": "matrix",
+        "probe": 51,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "mild"
+        },
+        "seed": 12261,
+        "epochs": 8,
+        "best_epoch": 1.0,
+        "gauc": 0.669557,
+        "ndcg5": 0.537003,
+        "primary": 0.60328
+      },
+      {
+        "phase": "matrix",
+        "probe": 52,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 13159,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.670157,
+        "ndcg5": 0.537214,
+        "primary": 0.603685
+      },
+      {
+        "phase": "matrix",
+        "probe": 53,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 13196,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.670755,
+        "ndcg5": 0.537623,
+        "primary": 0.604189
+      },
+      {
+        "phase": "matrix",
+        "probe": 54,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 13233,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.669565,
+        "ndcg5": 0.53678,
+        "primary": 0.603173
+      },
+      {
+        "phase": "matrix",
+        "probe": 55,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 13270,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.670482,
+        "ndcg5": 0.537434,
+        "primary": 0.603958
+      },
+      {
+        "phase": "matrix",
+        "probe": 56,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 14168,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.6701,
+        "ndcg5": 0.537083,
+        "primary": 0.603591
+      },
+      {
+        "phase": "matrix",
+        "probe": 57,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 14205,
+        "epochs": 8,
+        "best_epoch": 1.0,
+        "gauc": 0.669039,
+        "ndcg5": 0.536569,
+        "primary": 0.602804
+      },
+      {
+        "phase": "matrix",
+        "probe": 58,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 14242,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.670407,
+        "ndcg5": 0.536902,
+        "primary": 0.603655
+      },
+      {
+        "phase": "matrix",
+        "probe": 59,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 14279,
+        "epochs": 8,
+        "best_epoch": 1.0,
+        "gauc": 0.670399,
+        "ndcg5": 0.536605,
+        "primary": 0.603502
+      },
+      {
+        "phase": "matrix",
+        "probe": 60,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 15177,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.670958,
+        "ndcg5": 0.537339,
+        "primary": 0.604149
+      },
+      {
+        "phase": "matrix",
+        "probe": 61,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 15214,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.670451,
+        "ndcg5": 0.537171,
+        "primary": 0.603811
+      },
+      {
+        "phase": "matrix",
+        "probe": 62,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 15251,
+        "epochs": 8,
+        "best_epoch": 2.0,
+        "gauc": 0.670665,
+        "ndcg5": 0.537431,
+        "primary": 0.604048
+      },
+      {
+        "phase": "matrix",
+        "probe": 63,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 15288,
+        "epochs": 8,
+        "best_epoch": 3.0,
+        "gauc": 0.669649,
+        "ndcg5": 0.537002,
+        "primary": 0.603325
+      },
+      {
+        "phase": "refinement",
+        "probe": 64,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 50063,
+        "epochs": 12,
+        "best_epoch": 10.0,
+        "gauc": 0.670978,
+        "ndcg5": 0.537405,
+        "primary": 0.604191
+      },
+      {
+        "phase": "refinement",
+        "probe": 65,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 50116,
+        "epochs": 12,
+        "best_epoch": 8.0,
+        "gauc": 0.670865,
+        "ndcg5": 0.537322,
+        "primary": 0.604093
+      },
+      {
+        "phase": "refinement",
+        "probe": 66,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 50169,
+        "epochs": 12,
+        "best_epoch": 5.0,
+        "gauc": 0.671097,
+        "ndcg5": 0.53742,
+        "primary": 0.604258
+      },
+      {
+        "phase": "refinement",
+        "probe": 67,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 51354,
+        "epochs": 12,
+        "best_epoch": 8.0,
+        "gauc": 0.671557,
+        "ndcg5": 0.53768,
+        "primary": 0.604618
+      },
+      {
+        "phase": "refinement",
+        "probe": 68,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 51407,
+        "epochs": 12,
+        "best_epoch": 8.0,
+        "gauc": 0.671219,
+        "ndcg5": 0.537654,
+        "primary": 0.604436
+      },
+      {
+        "phase": "refinement",
+        "probe": 69,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 51460,
+        "epochs": 12,
+        "best_epoch": 10.0,
+        "gauc": 0.671149,
+        "ndcg5": 0.537067,
+        "primary": 0.604108
+      },
+      {
+        "phase": "refinement",
+        "probe": 70,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 52645,
+        "epochs": 12,
+        "best_epoch": 3.0,
+        "gauc": 0.670035,
+        "ndcg5": 0.537323,
+        "primary": 0.603679
+      },
+      {
+        "phase": "refinement",
+        "probe": 71,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 52698,
+        "epochs": 12,
+        "best_epoch": 3.0,
+        "gauc": 0.670144,
+        "ndcg5": 0.537039,
+        "primary": 0.603591
+      },
+      {
+        "phase": "refinement",
+        "probe": 72,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "recency-7d",
+          "regularization": "mild"
+        },
+        "seed": 52751,
+        "epochs": 12,
+        "best_epoch": 3.0,
+        "gauc": 0.670404,
+        "ndcg5": 0.537172,
+        "primary": 0.603788
+      },
+      {
+        "phase": "refinement",
+        "probe": 73,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 53936,
+        "epochs": 12,
+        "best_epoch": 2.0,
+        "gauc": 0.670395,
+        "ndcg5": 0.536989,
+        "primary": 0.603692
+      },
+      {
+        "phase": "refinement",
+        "probe": 74,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 53989,
+        "epochs": 12,
+        "best_epoch": 2.0,
+        "gauc": 0.669875,
+        "ndcg5": 0.536602,
+        "primary": 0.603238
+      },
+      {
+        "phase": "refinement",
+        "probe": 75,
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "bpr-hybrid",
+          "weighting": "recency-7d",
+          "regularization": "strong"
+        },
+        "seed": 54042,
+        "epochs": 12,
+        "best_epoch": 1.0,
+        "gauc": 0.669588,
+        "ndcg5": 0.536982,
+        "primary": 0.603285
+      },
+      {
+        "phase": "final",
+        "config": {
+          "architecture": "dcn-lite",
+          "loss": "logloss",
+          "weighting": "uniform",
+          "regularization": "strong"
+        },
+        "seed": 900043,
+        "epochs": 16,
+        "best_epoch": 5.5,
+        "gauc": 0.670892,
+        "ndcg5": 0.537087,
+        "primary": 0.60399,
+        "curve": [
+          {
+            "epoch": 0.5,
+            "train_loss": 0.606983,
+            "gauc": 0.654983,
+            "ndcg5": 0.530184,
+            "primary": 0.592583
+          },
+          {
+            "epoch": 1.0,
+            "train_loss": 0.568459,
+            "gauc": 0.664196,
+            "ndcg5": 0.534467,
+            "primary": 0.599332
+          },
+          {
+            "epoch": 1.5,
+            "train_loss": 0.510348,
+            "gauc": 0.667323,
+            "ndcg5": 0.535821,
+            "primary": 0.601572
+          },
+          {
+            "epoch": 2.0,
+            "train_loss": 0.511171,
+            "gauc": 0.668886,
+            "ndcg5": 0.536683,
+            "primary": 0.602785
+          },
+          {
+            "epoch": 2.5,
+            "train_loss": 0.500052,
+            "gauc": 0.66938,
+            "ndcg5": 0.536373,
+            "primary": 0.602877
+          },
+          {
+            "epoch": 3.0,
+            "train_loss": 0.502232,
+            "gauc": 0.669361,
+            "ndcg5": 0.536669,
+            "primary": 0.603015
+          },
+          {
+            "epoch": 3.5,
+            "train_loss": 0.49761,
+            "gauc": 0.669734,
+            "ndcg5": 0.536973,
+            "primary": 0.603353
+          },
+          {
+            "epoch": 4.0,
+            "train_loss": 0.500272,
+            "gauc": 0.670318,
+            "ndcg5": 0.536991,
+            "primary": 0.603654
+          },
+          {
+            "epoch": 4.5,
+            "train_loss": 0.497018,
+            "gauc": 0.669886,
+            "ndcg5": 0.536777,
+            "primary": 0.603331
+          },
+          {
+            "epoch": 5.0,
+            "train_loss": 0.497336,
+            "gauc": 0.670173,
+            "ndcg5": 0.536927,
+            "primary": 0.60355
+          },
+          {
+            "epoch": 5.5,
+            "train_loss": 0.496246,
+            "gauc": 0.670892,
+            "ndcg5": 0.537087,
+            "primary": 0.60399
+          },
+          {
+            "epoch": 6.0,
+            "train_loss": 0.49663,
+            "gauc": 0.670545,
+            "ndcg5": 0.536717,
+            "primary": 0.603631
+          },
+          {
+            "epoch": 6.5,
+            "train_loss": 0.494141,
+            "gauc": 0.670572,
+            "ndcg5": 0.536782,
+            "primary": 0.603677
+          },
+          {
+            "epoch": 7.0,
+            "train_loss": 0.495159,
+            "gauc": 0.67034,
+            "ndcg5": 0.536685,
+            "primary": 0.603513
+          },
+          {
+            "epoch": 7.5,
+            "train_loss": 0.494571,
+            "gauc": 0.670247,
+            "ndcg5": 0.536506,
+            "primary": 0.603377
+          },
+          {
+            "epoch": 8.0,
+            "train_loss": 0.494776,
+            "gauc": 0.670405,
+            "ndcg5": 0.536616,
+            "primary": 0.603511
+          },
+          {
+            "epoch": 8.5,
+            "train_loss": 0.493541,
+            "gauc": 0.670352,
+            "ndcg5": 0.536679,
+            "primary": 0.603515
+          },
+          {
+            "epoch": 9.0,
+            "train_loss": 0.494036,
+            "gauc": 0.67042,
+            "ndcg5": 0.536728,
+            "primary": 0.603574
+          },
+          {
+            "epoch": 9.5,
+            "train_loss": 0.493507,
+            "gauc": 0.670268,
+            "ndcg5": 0.53677,
+            "primary": 0.603519
+          },
+          {
+            "epoch": 10.0,
+            "train_loss": 0.494008,
+            "gauc": 0.670535,
+            "ndcg5": 0.536738,
+            "primary": 0.603636
+          },
+          {
+            "epoch": 10.5,
+            "train_loss": 0.494042,
+            "gauc": 0.670193,
+            "ndcg5": 0.536546,
+            "primary": 0.603369
+          },
+          {
+            "epoch": 11.0,
+            "train_loss": 0.4934,
+            "gauc": 0.670213,
+            "ndcg5": 0.53659,
+            "primary": 0.603402
+          },
+          {
+            "epoch": 11.5,
+            "train_loss": 0.49289,
+            "gauc": 0.670164,
+            "ndcg5": 0.536572,
+            "primary": 0.603368
+          },
+          {
+            "epoch": 12.0,
+            "train_loss": 0.493345,
+            "gauc": 0.670165,
+            "ndcg5": 0.53657,
+            "primary": 0.603368
+          },
+          {
+            "epoch": 12.5,
+            "train_loss": 0.493372,
+            "gauc": 0.670149,
+            "ndcg5": 0.536621,
+            "primary": 0.603385
+          },
+          {
+            "epoch": 13.0,
+            "train_loss": 0.493437,
+            "gauc": 0.670225,
+            "ndcg5": 0.536657,
+            "primary": 0.603441
+          },
+          {
+            "epoch": 13.5,
+            "train_loss": 0.494269,
+            "gauc": 0.670261,
+            "ndcg5": 0.536645,
+            "primary": 0.603453
+          },
+          {
+            "epoch": 14.0,
+            "train_loss": 0.493283,
+            "gauc": 0.670264,
+            "ndcg5": 0.536691,
+            "primary": 0.603478
+          },
+          {
+            "epoch": 14.5,
+            "train_loss": 0.493718,
+            "gauc": 0.670298,
+            "ndcg5": 0.536662,
+            "primary": 0.60348
+          },
+          {
+            "epoch": 15.0,
+            "train_loss": 0.493361,
+            "gauc": 0.670329,
+            "ndcg5": 0.536726,
+            "primary": 0.603527
+          },
+          {
+            "epoch": 15.5,
+            "train_loss": 0.493585,
+            "gauc": 0.670355,
+            "ndcg5": 0.536765,
+            "primary": 0.60356
+          },
+          {
+            "epoch": 16.0,
+            "train_loss": 0.493086,
+            "gauc": 0.670216,
+            "ndcg5": 0.536699,
+            "primary": 0.603458
+          }
+        ]
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 60779,
+      "out": 4881,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 37725,
+      "out": 34599,
+      "calls": 4
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3622,
+      "out": 1241,
+      "calls": 2
+    }
+  },
+  "tokens_total": 142847,
+  "wall_s": 11716.4,
+  "self_critique": "Overall assessment\n\nThe run found a small gain over baseline (0.6018 \u2192 0.6040), but did not convert that gain into a clear scientific conclusion. It converged after only three follow-ups, all based on weakly supported objective or ensemble changes rather than isolating what made node_001 successful.\n\nWhat the harness/policy did suboptimally\n\n- Node_001 changed too many dimensions simultaneously: architecture, BPR formulation, recency weighting, and scheduled regularization. Calling this a \u201cmatched full-factorial search\u201d is not enough unless all cells and their scores are retained. The accepted result cannot be attributed to any component or interaction.\n- Subsequent proposals did not exploit the most valuable next step: ablation of node_001. Instead, they introduced LambdaLoss, asymmetric temporal pairs, and an ensemble, adding more uncertainty.\n- The journal repeatedly says the parent learning curve was unavailable. Missing train/validation curves prevented diagnosis of underfitting, overfitting, training instability, or premature stopping. The policy should treat these artifacts as mandatory.\n- Node_002\u2019s premise cites \u201ccontext-stratified BPR reached 0.605212,\u201d which is inconsistent with the reported accepted primary of 0.603990/0.6040. Internal-selection metrics, fold metrics, and final primary appear to have been conflated.\n- The score reporting is confusing: node_004 is shown as 0.6045 but rejected against a 0.6040 parent, while best_primary remains 0.603990. If rejection was due to uncertainty, paired significance, or unrounded scores, the journal should state that explicitly.\n- The ensemble proposal was poorly timed. Ensembling can raise the metric, but it does not explain the node_001 gain and may compound validation-selection overfit.\n- Stopping as \u201cconverged\u201d after three rejected, structurally different ideas was too aggressive. This demonstrates failure of those ideas, not exhaustion of the local neighborhood.\n- Baseline sigma=0.0001 looks unusually precise. Seed count, paired evaluation procedure, and uncertainty for every candidate should have been recorded consistently.\n\nWhat I would change in the scaffold\n\n- Require every trial to preserve learning curves, best epoch, train loss, validation metric, seed, and exact configuration.\n- Separate search score, validation primary, and final acceptance score with unambiguous names.\n- After a multi-factor winner, automatically schedule one-factor dropouts and additions before permitting new objectives.\n- Use paired multi-seed comparisons and report mean delta, standard error, and acceptance threshold. Log why a numerically higher score was rejected.\n- Require hypotheses to identify one controlled intervention and a falsifiable mechanism. Avoid unsupported point forecasts such as \u201c+0.0015.\u201d\n- Add a minimum local-search budget around an accepted node; do not declare convergence merely after several unrelated failures.\n- Prefer cheap diagnostic experiments before ensembles or complex ranking-loss modifications.\n\nWhat the next run should try first\n\nReproduce node_001 across several fixed seeds, then run exact ablations against the same baseline:\n\n1. Baseline FM with only the architecture change.\n2. Baseline plus only hybrid BPR.\n3. Baseline plus only recency weighting.\n4. Baseline plus only scheduled regularization.\n5. The full node_001 configuration.\n6. Drop-one-component variants of the full configuration.\n\nUse identical data splits, negative sampling, training budget, and early-stopping rules. Record paired deltas and curves. If budget permits only one experiment initially, test the full node_001 configuration versus the baseline across multiple shared seeds. The immediate priority is determining whether the 0.0022 gain is reproducible and which component causes it\u2014not introducing another ranking objective."
+}

@@ -1,0 +1,4 @@
+{"best_epoch": 1, "epochs": 1, "forward_multiplier": 1.0, "gauc": 0.668938, "ndcg5": 0.535974, "phase": "paired_probe", "primary": 0.602456, "probe": 0, "seed": 42, "temporal_radius_days": 7}
+{"best_epoch": 1, "epochs": 1, "forward_multiplier": 1.5, "gauc": 0.668059, "ndcg5": 0.535812, "phase": "paired_probe", "primary": 0.601936, "probe": 1, "seed": 42, "temporal_radius_days": 7}
+{"best_epoch": 1, "epochs": 1, "forward_multiplier": 1.0, "gauc": 0.669136, "ndcg5": 0.536982, "phase": "paired_refinement", "primary": 0.603059, "probe": 2, "seed": 50063, "temporal_radius_days": 7}
+{"best_epoch": 1, "curve": [{"epoch": 1, "gauc": 0.668345, "ndcg5": 0.535834, "primary": 0.602089, "train_loss": 0.582719}], "epochs": 1, "forward_multiplier": 1.0, "gauc": 0.668345, "ndcg5": 0.535834, "phase": "final", "primary": 0.602089, "seed": 900043, "temporal_radius_days": 7}

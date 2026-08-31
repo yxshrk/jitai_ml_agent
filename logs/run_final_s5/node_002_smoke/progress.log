@@ -1,0 +1,8 @@
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.66935, "lambda_alpha": 0.0, "ndcg5": 0.536291, "phase": "paired_probe", "primary": 0.60282, "probe": 0, "seed": 42}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.669381, "lambda_alpha": 0.25, "ndcg5": 0.536144, "phase": "paired_probe", "primary": 0.602763, "probe": 1, "seed": 42}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.669182, "lambda_alpha": 0.5, "ndcg5": 0.536342, "phase": "paired_probe", "primary": 0.602762, "probe": 2, "seed": 42}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.66762, "lambda_alpha": 0.75, "ndcg5": 0.536036, "phase": "paired_probe", "primary": 0.601828, "probe": 3, "seed": 42}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.659641, "lambda_alpha": 1.0, "ndcg5": 0.532434, "phase": "paired_probe", "primary": 0.596038, "probe": 4, "seed": 42}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.668443, "lambda_alpha": 0.0, "ndcg5": 0.536349, "phase": "paired_refinement", "primary": 0.602396, "probe": 5, "seed": 50063}
+{"best_epoch": 1.0, "epochs": 1, "gauc": 0.668121, "lambda_alpha": 0.25, "ndcg5": 0.536186, "phase": "paired_refinement", "primary": 0.602154, "probe": 6, "seed": 50063}
+{"best_epoch": 1.0, "curve": [{"epoch": 1, "gauc": 0.668153, "ndcg5": 0.535945, "primary": 0.602049, "train_loss": 0.581218}], "epochs": 1, "gauc": 0.668153, "lambda_alpha": 0.0, "ndcg5": 0.535945, "phase": "final", "primary": 0.602049, "seed": 900043}

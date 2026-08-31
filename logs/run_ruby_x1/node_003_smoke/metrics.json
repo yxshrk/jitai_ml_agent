@@ -1,0 +1,1 @@
+{"gauc": 0.6663676419048293, "ndcg5": 0.5355081388932172, "primary": 0.6009378903990232, "history": [{"seed": 42, "epoch": 1, "train_loss": 0.591671, "lr": 0.0008, "val_gauc": 0.665515, "val_primary": 0.600332}, {"seed": 43, "epoch": 1, "train_loss": 0.58705, "lr": 0.0008, "val_gauc": 0.666098, "val_primary": 0.600836}], "ensemble": {"method": "mean_logit", "seeds": [42, 43]}}

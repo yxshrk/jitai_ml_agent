@@ -11,6 +11,7 @@ test scores, validates the ensemble on validation BEFORE the single test write.
 Usage (on ruby): python tools/predict_test_1k_omega.py
 """
 import csv
+import os
 import importlib.util
 import json
 import subprocess
@@ -26,9 +27,9 @@ WORKSPACE = ROOT / "logs/run_omega_1k/workspace"
 METRICS = ROOT / "logs/run_omega_1k/node_005/metrics.json"
 TEST_PATH = ROOT / "data/test_features_1k/test.npz"
 TEST_HOURMIN = ROOT / "data/test_features_1k/test_hourmin.npz"
-OUTPUT_PATH = ROOT / "evidence/test_submission_1k.csv"
+OUTPUT_PATH = ROOT / os.environ.get("JITAI_1K_OUT","evidence/test_submission_1k.csv")
 CHECKER = ROOT / "evidence/submission.py"
-SEEDS = (42, 43, 44)
+SEEDS = tuple(int(x) for x in os.environ.get("JITAI_1K_SEEDS","42,43,44").split(","))
 FINAL_EPOCHS = 8
 
 

@@ -1,0 +1,4 @@
+{"member": 0, "objective": "bpr-hybrid", "phase": "objective-member", "primary": 0.5944759845733643}
+{"member": 1, "objective": "gauge-hybrid", "phase": "objective-member", "primary": 0.5951923131942749}
+{"member": 2, "objective": "lambda-hybrid", "phase": "objective-member", "primary": 0.5946869850158691}
+{"accepted": true, "candidate_metrics": {"gauc": 0.6571464538574219, "ndcg5": 0.5379030704498291, "primary": 0.5975247621536255}, "champion_metrics": {"gauc": 0.6553494930267334, "ndcg5": 0.5336024165153503, "primary": 0.5944759845733643}, "competent_members": [0, 1, 2], "max_component_harm": 0.001, "phase": "ensemble-gate", "required_primary_gain": 0.002, "selected": "objective-diverse-rank-ensemble"}

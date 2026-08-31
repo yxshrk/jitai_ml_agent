@@ -1,0 +1,1 @@
+{"config": {"dropout": 0.141569, "half_life": 10.0, "lr": 0.0016, "step_gamma": 0.407737, "step_interval": 3, "weight_decay": 0.0005699812858371095}, "primary": 0.58935989, "probe": 0, "stage": "train"}

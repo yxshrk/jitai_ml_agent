@@ -1,0 +1,71 @@
+{
+  "run_dir": "logs/run_menu_m4",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_001",
+  "best_metrics": {
+    "gauc": 0.6692772392364607,
+    "ndcg5": 0.5374157846702191,
+    "primary": 0.6033465119533399,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.66292,
+        "val_gauc": 0.666841,
+        "val_primary": 0.601125,
+        "config": "complete-user-slate gauge-fixed BCE"
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.6273,
+        "val_gauc": 0.668729,
+        "val_primary": 0.60273,
+        "config": "complete-user-slate gauge-fixed BCE"
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.6125,
+        "val_gauc": 0.669277,
+        "val_primary": 0.603347,
+        "config": "complete-user-slate gauge-fixed BCE"
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.60213,
+        "val_gauc": 0.669226,
+        "val_primary": 0.603254,
+        "config": "complete-user-slate gauge-fixed BCE"
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.59444,
+        "val_gauc": 0.668881,
+        "val_primary": 0.602918,
+        "config": "complete-user-slate gauge-fixed BCE"
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 47034,
+      "out": 2352,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 21827,
+      "out": 18563,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 404,
+      "out": 704,
+      "calls": 1
+    }
+  },
+  "tokens_total": 90884,
+  "wall_s": 1364.8,
+  "self_critique": "Run critique\n\nWhat the harness/policy did suboptimally\n\n- It converged too early after only three descendants and explored just two directions from the accepted parent. That is insufficient evidence that 0.603347 is near a local optimum.\n- Node_002 achieved the highest reported point estimate (0.6036) but was rejected. If rejection was due to paired-seed uncertainty, the proper response was to gather more seeds or test nearby regularization strengths\u2014not abandon the direction.\n- Node_003 bundled too many changes: DeepFM, author-history features, context fields, dropout, and weight decay. A flat result is uninterpretable because beneficial and harmful components may have canceled.\n- The hypotheses were overly specific about expected gains without enough supporting diagnostics. \u201cSparse-ID overfitting\u201d was inferred mainly from an early validation peak; training curves, frequency-stratified performance, embedding norms, and per-user loss behavior were not reported.\n- The search remained narrowly architecture/loss-focused. It did not test basic high-value controls such as regularization sweeps, embedding dimension, optimizer schedule, negative/slate weighting, or ensembling checkpoints/seeds.\n- Reporting only rounded node scores obscures acceptance decisions. The journal should preserve per-seed paired deltas, confidence intervals, stopping epochs, and runtime. The baseline sigma of 0.0001 also deserves verification because it is unusually small relative to the observed gains.\n\nWhat I would change in the scaffold\n\n- Require each proposal to be atomic unless it is explicitly a staged package. Test DeepFM, history aggregation, context fields, dropout, and weight decay separately before combining them.\n- Add an \u201cuncertain but promising\u201d branch state. A candidate with the best point estimate but insufficient significance should trigger replication rather than rejection.\n- Use shared seeds and report paired deltas with confidence intervals. Allocate extra seeds adaptively when a result is close to the acceptance boundary.\n- Log diagnostic artifacts: train/validation curves, best epochs, score by ID frequency bucket, embedding norms, calibration, and per-user logit means.\n- Separate hypothesis generation from gain prediction; avoid unsupported numerical promises.\n- Enforce broader exploration before convergence, for example several independent atomic branches plus at least one local hyperparameter sweep around the best accepted method.\n\nWhat the next run should try first\n\nRevisit node_002 first. Run a small sweep over frequency-adaptive regularization strength and functional form on top of node_001, using more paired seeds. Include ordinary uniform weight decay as a control and report results by user/item frequency bucket. The 0.6036 point estimate makes this the strongest unresolved lead.\n\nIf that does not replicate, test the node_003 components atomically, beginning with dropout/weight decay and then the causal history feature. DeepFM should come later because it adds complexity without evidence that the interaction order is currently limiting performance."
+}

@@ -1,0 +1,160 @@
+{
+  "run_dir": "logs/run_ruby_x1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 6,
+  "best_node": "node_003",
+  "best_metrics": {
+    "gauc": 0.6709498612927077,
+    "ndcg5": 0.5379105204179898,
+    "primary": 0.6044301908553488,
+    "history": [
+      {
+        "seed": 42,
+        "epoch": 1,
+        "train_loss": 0.591671,
+        "lr": 0.0008,
+        "val_gauc": 0.665515,
+        "val_primary": 0.600332
+      },
+      {
+        "seed": 42,
+        "epoch": 2,
+        "train_loss": 0.518757,
+        "lr": 0.00044,
+        "val_gauc": 0.670591,
+        "val_primary": 0.604228
+      },
+      {
+        "seed": 42,
+        "epoch": 3,
+        "train_loss": 0.507414,
+        "lr": 0.00044,
+        "val_gauc": 0.670438,
+        "val_primary": 0.6041
+      },
+      {
+        "seed": 42,
+        "epoch": 4,
+        "train_loss": 0.505066,
+        "lr": 0.000242,
+        "val_gauc": 0.670277,
+        "val_primary": 0.603844
+      },
+      {
+        "seed": 42,
+        "epoch": 5,
+        "train_loss": 0.501342,
+        "lr": 0.000242,
+        "val_gauc": 0.670832,
+        "val_primary": 0.604257
+      },
+      {
+        "seed": 42,
+        "epoch": 6,
+        "train_loss": 0.500256,
+        "lr": 0.0001331,
+        "val_gauc": 0.670067,
+        "val_primary": 0.603687
+      },
+      {
+        "seed": 42,
+        "epoch": 7,
+        "train_loss": 0.498101,
+        "lr": 0.0001331,
+        "val_gauc": 0.670414,
+        "val_primary": 0.603885
+      },
+      {
+        "seed": 42,
+        "epoch": 8,
+        "train_loss": 0.497343,
+        "lr": 7.321e-05,
+        "val_gauc": 0.670081,
+        "val_primary": 0.60365
+      },
+      {
+        "seed": 43,
+        "epoch": 1,
+        "train_loss": 0.58705,
+        "lr": 0.0008,
+        "val_gauc": 0.666098,
+        "val_primary": 0.600836
+      },
+      {
+        "seed": 43,
+        "epoch": 2,
+        "train_loss": 0.519012,
+        "lr": 0.00044,
+        "val_gauc": 0.66947,
+        "val_primary": 0.603201
+      },
+      {
+        "seed": 43,
+        "epoch": 3,
+        "train_loss": 0.507646,
+        "lr": 0.00044,
+        "val_gauc": 0.670709,
+        "val_primary": 0.604337
+      },
+      {
+        "seed": 43,
+        "epoch": 4,
+        "train_loss": 0.505266,
+        "lr": 0.000242,
+        "val_gauc": 0.670617,
+        "val_primary": 0.604202
+      },
+      {
+        "seed": 43,
+        "epoch": 5,
+        "train_loss": 0.501425,
+        "lr": 0.000242,
+        "val_gauc": 0.669923,
+        "val_primary": 0.603582
+      },
+      {
+        "seed": 43,
+        "epoch": 6,
+        "train_loss": 0.500375,
+        "lr": 0.0001331,
+        "val_gauc": 0.670858,
+        "val_primary": 0.604119
+      }
+    ],
+    "ensemble": {
+      "method": "mean_logit",
+      "seeds": [
+        42,
+        43
+      ]
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 83186,
+      "out": 5581,
+      "calls": 5
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 54332,
+      "out": 49355,
+      "calls": 6
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 10888,
+      "out": 14301,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 7287,
+      "out": 2079,
+      "calls": 3
+    }
+  },
+  "tokens_total": 227009,
+  "wall_s": 3758.9,
+  "self_critique": "Overall assessment\n\nThe run found a real-looking improvement: node_003 reached 0.604430, about +0.0026 over the 0.6018 FM baseline. However, node_003 was a large composite, so the run did not determine which change produced the gain or whether it is robust across seeds. The subsequent search stayed too close to that parent and mostly added complexity without improving it.\n\nWhat the harness/policy did suboptimally\n\n- It changed too many factors at once. Node_003 combined sequence history, temporal/session features, an auxiliary task, DeepFM regularization, and a two-seed ensemble. This prevents attribution and makes later optimization poorly grounded.\n- It repeatedly diagnosed \u201coverfitting\u201d from the same train/validation-curve pattern, then proposed unrelated remedies: centered BCE, auxiliary heads, and ensembling. A declining validation curve supports early stopping, but does not specifically establish nuisance user offsets or shared-representation overfitting.\n- It optimized on the validation set too adaptively. Multiple architecture, loss, checkpoint, seed, and blend choices were selected from the same validation signal. The reported best score is therefore likely optimistic.\n- Uncertainty was handled inconsistently. Only the baseline reports sigma, while node_003 includes a two-seed close and later candidates use seed/checkpoint sweeps. Improvements or regressions around 0.0001\u20130.0004 cannot be interpreted without matched seed variance and prediction-level significance.\n- Node_001 failed without a metric, yet node_002 continued from its unvalidated package. The recovery should have reduced to a minimal executable test rather than attempting a \u201cdial search\u201d over the same large bundle.\n- The policy made unsupported numerical forecasts such as \u201c+0.0029\u201d and \u201c+0.0015.\u201d These estimates did not guide useful decisions and gave false precision.\n- Search converged prematurely. After finding node_003, only three closely related anti-overfitting ideas were tested. There was no component ablation, no simpler sequence model, and no matched-compute comparison.\n- Node_006\u2019s ensemble-selection rule was especially elaborate relative to the available evidence. It increased validation-selection degrees of freedom and delivered no gain.\n\nWhat I would change in the scaffold\n\n- Require each normal experiment to alter one major factor. Bundles should be reserved for a final composition stage.\n- Separate phases explicitly:\n  1. establish replicated baselines,\n  2. screen single changes,\n  3. confirm promising changes with matched seeds,\n  4. compose only independently useful components,\n  5. evaluate once on a held-out final split.\n- Require matched-seed mean, standard deviation, and per-seed deltas for acceptance. A candidate should not be accepted solely on one favorable seed or rounded score.\n- Log train/validation curves, selected checkpoint, component configuration, compute budget, and prediction correlation with the parent.\n- Treat ensembling and checkpoint selection as part of the search budget, not as free improvements.\n- On execution failure, retry the smallest viable version or return to the last measured parent; do not build a hyperparameter search on an unmeasured node.\n- Replace speculative gain forecasts with a falsifiable rationale and a predeclared acceptance threshold.\n- Add a diversity mechanism so that convergence requires both local exploitation and at least one orthogonal branch.\n\nWhat the next run should try first\n\nFirst, reproduce node_003 and the FM baseline over at least 3\u20135 matched seeds under identical checkpointing and compute. This establishes whether the +0.0026 gain is stable.\n\nThen ablate node_003 rather than adding another regularizer:\n\n- FM/DeepFM backbone only\n- + causal 12-author history\n- + temporal/session fields\n- + watch-time auxiliary loss\n- full composite\n- single model versus the two-seed mean-logit ensemble\n\nThe highest-priority test is the causal history feature alone on a controlled DeepFM backbone, because it is the most plausible source of genuinely new signal. If that survives replication, tune history length and aggregation modestly. If the gain comes mainly from temporal/session fields, simplify around those. Defer centered losses, auxiliary-head bundles, and sophisticated ensembles until the source of node_003\u2019s improvement is known."
+}

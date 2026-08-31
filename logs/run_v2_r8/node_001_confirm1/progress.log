@@ -1,0 +1,50 @@
+{"config": "anchor", "seed": 1043, "primary": 0.598914955251573}
+{"config": "anchor", "seed": 2052, "primary": 0.6004117032162639}
+{"config": "anchor", "seed": 3061, "primary": 0.5989675898664817}
+{"config": "anchor", "seed": 4070, "primary": 0.5990838395975451}
+{"config": "anchor", "seed": 5079, "primary": 0.598878014399528}
+{"config": "anchor", "seed": 6088, "primary": 0.599075191714036}
+{"config": "anchor", "seed": 7097, "primary": 0.6002757171224028}
+{"config": "anchor", "seed": 8106, "primary": 0.6003149508029071}
+{"config": "anchor", "seed": 9115, "primary": 0.5990903157577327}
+{"config": "anchor", "seed": 10124, "primary": 0.600116858525374}
+{"config": "anchor", "seed": 11133, "primary": 0.5997295980076842}
+{"config": "anchor", "seed": 12142, "primary": 0.5995559342490532}
+{"config": "anchor", "seed": 13151, "primary": 0.5990339394265755}
+{"config": "anchor", "seed": 14160, "primary": 0.5999797133854023}
+{"config": "anchor", "seed": 15169, "primary": 0.6007270620516025}
+{"config": "session", "seed": 1043, "primary": 0.598836436360449}
+{"config": "session", "seed": 2052, "primary": 0.6004487093080175}
+{"config": "session", "seed": 3061, "primary": 0.5985116187379982}
+{"config": "session", "seed": 4070, "primary": 0.5994702019950264}
+{"config": "session", "seed": 5079, "primary": 0.5990685867516734}
+{"config": "session", "seed": 6088, "primary": 0.5986322092497252}
+{"config": "session", "seed": 7097, "primary": 0.6000001610413961}
+{"config": "session", "seed": 8106, "primary": 0.6002308345267409}
+{"config": "session", "seed": 9115, "primary": 0.5994034013428307}
+{"config": "session", "seed": 10124, "primary": 0.5994025959621043}
+{"config": "session", "seed": 11133, "primary": 0.5999193570343591}
+{"config": "session", "seed": 12142, "primary": 0.5991694010336719}
+{"config": "session", "seed": 13151, "primary": 0.5992796036983734}
+{"config": "session", "seed": 14160, "primary": 0.6000530835957711}
+{"config": "session", "seed": 15169, "primary": 0.6000425383807142}
+{"config": "session_pair", "seed": 1043, "primary": 0.5998999246090161}
+{"config": "session_pair", "seed": 2052, "primary": 0.6018287446937676}
+{"config": "session_pair", "seed": 3061, "primary": 0.5996156885796217}
+{"config": "session_pair", "seed": 4070, "primary": 0.6006191457345886}
+{"config": "session_pair", "seed": 5079, "primary": 0.6000830073351072}
+{"config": "session_pair", "seed": 6088, "primary": 0.599526522243666}
+{"config": "session_pair", "seed": 7097, "primary": 0.6008069429708625}
+{"config": "session_pair", "seed": 8106, "primary": 0.6015809718915971}
+{"config": "session_pair", "seed": 9115, "primary": 0.6001638624747682}
+{"config": "session_pair", "seed": 10124, "primary": 0.6003372995872779}
+{"config": "session_pair", "seed": 11133, "primary": 0.6004287819952547}
+{"config": "session_pair", "seed": 12142, "primary": 0.5995399057209236}
+{"config": "session_pair", "seed": 13151, "primary": 0.600337058125505}
+{"config": "session_pair", "seed": 14160, "primary": 0.6005683757923879}
+{"config": "session_pair", "seed": 15169, "primary": 0.6012642020029593}
+{"config": "session_pair", "seed": 51064, "phase": "final", "primary": 0.6016245795637711}
+{"config": "session_pair", "seed": 52073, "phase": "final", "primary": 0.6004823748099493}
+{"config": "session_pair", "seed": 53082, "phase": "final", "primary": 0.6016335159103217}
+{"config": "session_pair", "seed": 54091, "phase": "final", "primary": 0.5992410779482309}
+{"config": "session_pair", "seed": 55100, "phase": "final", "primary": 0.6004091425223561}

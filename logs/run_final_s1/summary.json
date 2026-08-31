@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_final_s1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 42951,
+      "out": 2016,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 18993,
+      "out": 17200,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 3423,
+      "out": 985,
+      "calls": 2
+    }
+  },
+  "tokens_total": 85568,
+  "wall_s": 1339.3,
+  "self_critique": "The run converged prematurely. It explored only three relatively large, theory-driven changes from the baseline, then stopped despite two candidates scoring slightly higher numerically (0.6020 vs. 0.6018). If rejection was due to significance thresholds, the harness should have resampled promising near-ties rather than discarding them outright.\n\nSuboptimal policy choices:\n- It inferred \u201cID memorization\u201d almost entirely from an epoch-8 validation peak. That pattern supports generic overfitting, but does not specifically identify rare-ID embeddings as the cause.\n- It skipped cheap controls: best-checkpoint early stopping, epoch-count tuning, global embedding L2, dropout, learning-rate decay, and embedding-dimension sweeps.\n- Node 002 bundled several features\u2014gap, position, hour-by-tab, and weekday-by-tab\u2014so its near-tie is not diagnostically useful.\n- Node 003 jumped to a complex ranking objective without first checking whether the training batches contain enough within-user candidate structure or whether objective mismatch is actually limiting performance.\n- The search was too shallow and insufficiently exploitative. Near-neutral children should have triggered narrower ablations or repeat evaluations.\n- Reporting lacks seed count, uncertainty per candidate, exact unrounded scores, best epoch, and secondary metrics. The baseline sigma of 0.0001 is not enough to judge whether the acceptance rule was well calibrated.\n\nI would change the scaffold to:\n- Require each hypothesis to cite a discriminating diagnostic, not just a plausible narrative.\n- Separate feature additions into one-factor ablations.\n- Use a staged policy: cheap training/checkpoint tuning first, then regularization, then features, then objective changes.\n- Re-run candidates within a small margin of the incumbent using multiple seeds or folds and compare paired deltas.\n- Preserve exact scores and expose acceptance thresholds explicitly.\n- Allow follow-up children from rejected near-ties rather than branching only from the accepted incumbent.\n\nThe next run should first tune early stopping/checkpoint selection and basic regularization around the baseline FM. Evaluate epochs near the observed peak, learning rate, embedding dimension, and global/frequency-bucketed embedding L2 with paired multi-seed runs. If frequency-adaptive L2 remains promising, ablate it by frequency bucket and inspect validation performance for rare versus frequent IDs. Only after that should temporal/session features be added one at a time, starting with causal session gap or position rather than the full Node 002 bundle."
+}

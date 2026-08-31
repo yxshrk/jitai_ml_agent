@@ -1,0 +1,55 @@
+{"seed": 42, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6033465119533399}
+{"seed": 42, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6033487308688856, "paired_delta": 2.218915545748601e-06}
+{"seed": 42, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6033957592617509, "paired_delta": 4.924730841104896e-05}
+{"seed": 42, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6034024555254552, "paired_delta": 5.594357211535783e-05}
+{"seed": 42, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6035391330795394, "paired_delta": 0.00019262112619955474}
+{"seed": 42, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6027501335643225, "paired_delta": -0.0005963783890173824}
+{"seed": 42, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6033335402343808, "paired_delta": -1.297171895908722e-05}
+{"seed": 42, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6033700184106869, "paired_delta": 2.3506457347055587e-05}
+{"seed": 42, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6036434223634808, "paired_delta": 0.0002969104101409048}
+{"seed": 42, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6033184401005255, "paired_delta": -2.807185281439306e-05}
+{"seed": 42, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6026675509439702, "paired_delta": -0.0006789610093697052}
+{"seed": 43, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6035367128360062}
+{"seed": 43, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.603518750495583, "paired_delta": -1.796234042317213e-05}
+{"seed": 43, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6037351981400798, "paired_delta": 0.00019848530407362563}
+{"seed": 43, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6038196209719916, "paired_delta": 0.00028290813598541575}
+{"seed": 43, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6036800303068381, "paired_delta": 0.00014331747083196067}
+{"seed": 43, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6028672095098799, "paired_delta": -0.0006695033261262529}
+{"seed": 43, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.603610259990313, "paired_delta": 7.354715430685221e-05}
+{"seed": 43, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6037861076790979, "paired_delta": 0.00024939484309172144}
+{"seed": 43, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6039777866321868, "paired_delta": 0.00044107379618063547}
+{"seed": 43, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6041052269305758, "paired_delta": 0.0005685140945695943}
+{"seed": 43, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6029773633075611, "paired_delta": -0.0005593495284450523}
+{"seed": 44, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6034971579427886}
+{"seed": 44, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6035268554973059, "paired_delta": 2.969755451731615e-05}
+{"seed": 44, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6035190967875079, "paired_delta": 2.193884471934915e-05}
+{"seed": 44, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6035025468498147, "paired_delta": 5.388907026171452e-06}
+{"seed": 44, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6038032578355459, "paired_delta": 0.00030609989275731664}
+{"seed": 44, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.603053662914998, "paired_delta": -0.0004434950277906191}
+{"seed": 44, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6035101526012621, "paired_delta": 1.2994658473486354e-05}
+{"seed": 44, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6034837222469557, "paired_delta": -1.3435695832897387e-05}
+{"seed": 44, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6034779740835341, "paired_delta": -1.9183859254479074e-05}
+{"seed": 44, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6035277467726535, "paired_delta": 3.0588829864952594e-05}
+{"seed": 44, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6032531050058008, "paired_delta": -0.00024405293698781527}
+{"seed": 45, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6037675125176767}
+{"seed": 45, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6037545551503669, "paired_delta": -1.2957367309773815e-05}
+{"seed": 45, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6036649910507945, "paired_delta": -0.00010252146688216612}
+{"seed": 45, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.6037017866563356, "paired_delta": -6.572586134112601e-05}
+{"seed": 45, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6035418105902102, "paired_delta": -0.00022570192746651507}
+{"seed": 45, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6024056963077555, "paired_delta": -0.0013618162099211517}
+{"seed": 45, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6037102130765151, "paired_delta": -5.729944116161789e-05}
+{"seed": 45, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6037216833026009, "paired_delta": -4.5829215075787744e-05}
+{"seed": 45, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6036284595644978, "paired_delta": -0.00013905295317884203}
+{"seed": 45, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.603418900585514, "paired_delta": -0.00034861193216273456}
+{"seed": 45, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6028226674049821, "paired_delta": -0.0009448451126945479}
+{"seed": 46, "reg_lambda": 0.0, "alpha": 0.0, "primary": 0.6034364388113862}
+{"seed": 46, "reg_lambda": 0.01, "alpha": 0.5, "primary": 0.6033427501017946, "paired_delta": -9.368870959158837e-05}
+{"seed": 46, "reg_lambda": 0.03, "alpha": 0.5, "primary": 0.6034496086641192, "paired_delta": 1.3169852733030396e-05}
+{"seed": 46, "reg_lambda": 0.1, "alpha": 0.5, "primary": 0.603373403584534, "paired_delta": -6.303522685224827e-05}
+{"seed": 46, "reg_lambda": 0.3, "alpha": 0.5, "primary": 0.6030070931712632, "paired_delta": -0.00042934564012298004}
+{"seed": 46, "reg_lambda": 1.0, "alpha": 0.5, "primary": 0.6025903440507814, "paired_delta": -0.0008460947606048208}
+{"seed": 46, "reg_lambda": 0.01, "alpha": 1.0, "primary": 0.6033578565286417, "paired_delta": -7.85822827444882e-05}
+{"seed": 46, "reg_lambda": 0.03, "alpha": 1.0, "primary": 0.6033848449509135, "paired_delta": -5.159386047270953e-05}
+{"seed": 46, "reg_lambda": 0.1, "alpha": 1.0, "primary": 0.6034923296029229, "paired_delta": 5.5890791536672424e-05}
+{"seed": 46, "reg_lambda": 0.3, "alpha": 1.0, "primary": 0.6033764201461471, "paired_delta": -6.001866523908106e-05}
+{"seed": 46, "reg_lambda": 1.0, "alpha": 1.0, "primary": 0.6029664966787677, "paired_delta": -0.00046994213261852824}

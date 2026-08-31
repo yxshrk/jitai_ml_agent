@@ -1,0 +1,4 @@
+{"config": {"dropout": 0.16, "half_life": 3.5, "schedule": "step1_055", "weight_decay": 4e-05}, "epochs": 1, "primary": 0.5991553439378238, "probe": 0, "row_fraction": 0.6799998597858931, "stage": "coarse"}
+{"config": {"dropout": 0.39, "half_life": 14.0, "schedule": "step3_022", "weight_decay": 0.0025}, "epochs": 1, "primary": 0.5994618770863405, "probe": 1, "row_fraction": 0.6799998597858931, "stage": "coarse"}
+{"config": {"dropout": 0.39, "half_life": 14.0, "schedule": "step3_022", "weight_decay": 0.0025}, "epochs": 1, "primary": 0.5997740006507299, "probe": 0, "row_fraction": 1.0, "stage": "refine"}
+{"config": {"dropout": 0.39, "half_life": 14.0, "schedule": "step3_022", "weight_decay": 0.0025}, "primary": 0.5998621434248337, "seed": 42, "stage": "final"}

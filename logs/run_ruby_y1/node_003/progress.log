@@ -1,0 +1,6 @@
+{"config": "seq_deepfm_composite_uniform_regularization_parent", "seed": 42, "primary": 0.6036874899619211}
+{"config": "seq_deepfm_frequency_adaptive_sse", "seed": 42, "primary": 0.6037754709232583, "matched_delta": 8.798096133721955e-05}
+{"config": "seq_deepfm_composite_uniform_regularization_parent", "seed": 43, "primary": 0.6036542117417139}
+{"config": "seq_deepfm_frequency_adaptive_sse", "seed": 43, "primary": 0.6033811586993134, "matched_delta": -0.0002730530424004396}
+{"config": "seq_deepfm_composite_uniform_regularization_parent", "seed": 44, "primary": 0.6037503135911937}
+{"config": "seq_deepfm_frequency_adaptive_sse", "seed": 44, "primary": 0.6031672618216507, "matched_delta": -0.000583051769542986}

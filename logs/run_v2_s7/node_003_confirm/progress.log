@@ -1,0 +1,53 @@
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6031319388640515, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.60156667302081, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6023798088008532, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6004651392370497, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6017617678350511, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6005874736771546, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.602146838970339, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6003513976810156, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6029939136241651, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6025943978054694, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.601924905905819, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6020793253787136, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6026296389803766, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6021502982109412, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.602935992532273, "repetition": 0}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.602488157766781, "repetition": 0}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6031800938136609, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6010105312401925, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6022574464091999, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.5998368567601556, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6025734135997193, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6004678426656498, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6027704634617946, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6006049066484495, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6033004493349097, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6030887803145122, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6018631786429599, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6015322074864993, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.60297476659056, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.602730598209871, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6031005130576763, "repetition": 1}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6027364955527961, "repetition": 1}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6030410931297985, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6016965946935968, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.602424513109455, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6001718308319524, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.602955642649415, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6014346823065888, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6027613316215833, "repetition": 2}
+{"config": {"architecture": "fm", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6010860663155122, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6038148545954038, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6036289286139387, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6022852415216233, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6026518700265233, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6027812584628073, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "uniform"}, "phase": "matrix_probe", "primary": 0.6028358233901895, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6025558887822189, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "strong", "weighting": "recency-7d"}, "phase": "matrix_probe", "primary": 0.6025376307285549, "repetition": 2}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "refinement", "primary": 0.6038651023215305}
+{"config": {"architecture": "fm", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "refinement", "primary": 0.6034649785922512}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "strong", "weighting": "uniform"}, "phase": "refinement", "primary": 0.6034155590005034}
+{"config": {"architecture": "dcn-lite", "loss": "bpr-hybrid", "regularization": "mild", "weighting": "recency-7d"}, "phase": "refinement", "primary": 0.603151613406544}
+{"config": {"architecture": "dcn-lite", "loss": "logloss", "regularization": "mild", "weighting": "uniform"}, "phase": "final", "primary": 0.6035814082964078}

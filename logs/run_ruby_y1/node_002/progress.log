@@ -1,0 +1,6 @@
+{"config": "matched_parent_fm", "seed": 42, "primary": 0.6021274865362647}
+{"config": "listwise_regime", "seed": 42, "primary": 0.6002508666899091, "matched_delta": -0.001876619846355565}
+{"config": "matched_parent_fm", "seed": 43, "primary": 0.6016669803378667}
+{"config": "listwise_regime", "seed": 43, "primary": 0.5996574034082496, "matched_delta": -0.0020095769296171184}
+{"config": "matched_parent_fm", "seed": 44, "primary": 0.6011608956865633}
+{"config": "listwise_regime", "seed": 44, "primary": 0.5994598840075065, "matched_delta": -0.0017010116790567853}

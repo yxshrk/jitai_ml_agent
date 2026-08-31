@@ -1,0 +1,74 @@
+{"best_epoch": 5, "id": "m000", "primary": 0.60425703, "schedule": "step", "seed": 42, "type": "member"}
+{"best_epoch": 3, "id": "m001", "primary": 0.60433681, "schedule": "step", "seed": 43, "type": "member"}
+{"best_epoch": 3, "id": "m002", "primary": 0.6045227, "schedule": "step", "seed": 44, "type": "member"}
+{"best_epoch": 4, "id": "m003", "primary": 0.60440752, "schedule": "step", "seed": 45, "type": "member"}
+{"best_epoch": 8, "id": "m004", "primary": 0.60439327, "schedule": "step", "seed": 46, "type": "member"}
+{"best_epoch": 3, "id": "m005", "primary": 0.60448549, "schedule": "step", "seed": 47, "type": "member"}
+{"best_epoch": 3, "id": "m006", "primary": 0.6049319, "schedule": "step", "seed": 48, "type": "member"}
+{"best_epoch": 3, "id": "m007", "primary": 0.60425616, "schedule": "step", "seed": 49, "type": "member"}
+{"best_epoch": 6, "id": "m008", "primary": 0.60428386, "schedule": "step", "seed": 50, "type": "member"}
+{"best_epoch": 5, "id": "m009", "primary": 0.60460287, "schedule": "step", "seed": 51, "type": "member"}
+{"best_epoch": 5, "id": "m010", "primary": 0.60469572, "schedule": "step", "seed": 52, "type": "member"}
+{"best_epoch": 4, "id": "m011", "primary": 0.60435931, "schedule": "step", "seed": 53, "type": "member"}
+{"best_epoch": 4, "id": "m012", "primary": 0.60438436, "schedule": "step", "seed": 54, "type": "member"}
+{"best_epoch": 5, "id": "m013", "primary": 0.60405684, "schedule": "step", "seed": 55, "type": "member"}
+{"best_epoch": 4, "id": "m014", "primary": 0.6041202, "schedule": "step", "seed": 56, "type": "member"}
+{"best_epoch": 4, "id": "m015", "primary": 0.6050054, "schedule": "step", "seed": 57, "type": "member"}
+{"best_epoch": 3, "id": "m016", "primary": 0.60432725, "schedule": "step", "seed": 58, "type": "member"}
+{"best_epoch": 4, "id": "m017", "primary": 0.6043419, "schedule": "step", "seed": 59, "type": "member"}
+{"best_epoch": 3, "id": "m018", "primary": 0.60419049, "schedule": "step", "seed": 60, "type": "member"}
+{"best_epoch": 7, "id": "m019", "primary": 0.60391988, "schedule": "step", "seed": 61, "type": "member"}
+{"best_epoch": 3, "id": "m020", "primary": 0.60366669, "schedule": "step", "seed": 62, "type": "member"}
+{"best_epoch": 4, "id": "m021", "primary": 0.60425104, "schedule": "step", "seed": 63, "type": "member"}
+{"best_epoch": 3, "id": "m022", "primary": 0.60487401, "schedule": "step", "seed": 64, "type": "member"}
+{"best_epoch": 5, "id": "m023", "primary": 0.60420316, "schedule": "step", "seed": 65, "type": "member"}
+{"best_epoch": 5, "id": "m024", "primary": 0.60443927, "schedule": "step", "seed": 66, "type": "member"}
+{"best_epoch": 3, "id": "m025", "primary": 0.60467685, "schedule": "step", "seed": 67, "type": "member"}
+{"best_epoch": 3, "id": "m026", "primary": 0.60417409, "schedule": "step", "seed": 68, "type": "member"}
+{"best_epoch": 2, "id": "m027", "primary": 0.60452816, "schedule": "step", "seed": 69, "type": "member"}
+{"best_epoch": 4, "id": "m028", "primary": 0.60467829, "schedule": "cyclic", "seed": 1042, "type": "member"}
+{"best_epoch": 4, "id": "m029", "primary": 0.60435535, "schedule": "cyclic", "seed": 1043, "type": "member"}
+{"best_epoch": 3, "id": "m030", "primary": 0.60421448, "schedule": "cyclic", "seed": 1044, "type": "member"}
+{"best_epoch": 4, "id": "m031", "primary": 0.6050273, "schedule": "cyclic", "seed": 1045, "type": "member"}
+{"best_epoch": 6, "id": "m032", "primary": 0.60416535, "schedule": "cyclic", "seed": 1046, "type": "member"}
+{"best_epoch": 3, "id": "m033", "primary": 0.60418882, "schedule": "cyclic", "seed": 1047, "type": "member"}
+{"best_epoch": 6, "id": "m034", "primary": 0.60420118, "schedule": "cyclic", "seed": 1048, "type": "member"}
+{"best_epoch": 4, "id": "m035", "primary": 0.60446053, "schedule": "cyclic", "seed": 1049, "type": "member"}
+{"best_epoch": 4, "id": "m036", "primary": 0.60397667, "schedule": "cyclic", "seed": 1050, "type": "member"}
+{"best_epoch": 6, "id": "m037", "primary": 0.60429167, "schedule": "cyclic", "seed": 1051, "type": "member"}
+{"best_epoch": 5, "id": "m038", "primary": 0.6044194, "schedule": "cyclic", "seed": 1052, "type": "member"}
+{"best_epoch": 4, "id": "m039", "primary": 0.60465768, "schedule": "cyclic", "seed": 1053, "type": "member"}
+{"best_epoch": 4, "id": "m040", "primary": 0.60423554, "schedule": "cyclic", "seed": 1054, "type": "member"}
+{"best_epoch": 4, "id": "m041", "primary": 0.60409437, "schedule": "cyclic", "seed": 1055, "type": "member"}
+{"best_epoch": 4, "id": "m042", "primary": 0.60427218, "schedule": "cyclic", "seed": 1056, "type": "member"}
+{"best_epoch": 4, "id": "m043", "primary": 0.60397881, "schedule": "cyclic", "seed": 1057, "type": "member"}
+{"best_epoch": 4, "id": "m044", "primary": 0.60452538, "schedule": "cyclic", "seed": 1058, "type": "member"}
+{"best_epoch": 4, "id": "m045", "primary": 0.60438684, "schedule": "cyclic", "seed": 1059, "type": "member"}
+{"best_epoch": 6, "id": "m046", "primary": 0.60339471, "schedule": "cyclic", "seed": 1060, "type": "member"}
+{"best_epoch": 4, "id": "m047", "primary": 0.6047301, "schedule": "cyclic", "seed": 1061, "type": "member"}
+{"best_epoch": 4, "id": "m048", "primary": 0.60434849, "schedule": "cyclic", "seed": 1062, "type": "member"}
+{"best_epoch": 4, "id": "m049", "primary": 0.60452906, "schedule": "cyclic", "seed": 1063, "type": "member"}
+{"best_epoch": 5, "id": "m050", "primary": 0.60476455, "schedule": "cyclic", "seed": 1064, "type": "member"}
+{"best_epoch": 4, "id": "m051", "primary": 0.60413574, "schedule": "cyclic", "seed": 1065, "type": "member"}
+{"best_epoch": 3, "id": "m052", "primary": 0.60451853, "schedule": "cyclic", "seed": 1066, "type": "member"}
+{"best_epoch": 6, "id": "m053", "primary": 0.60414895, "schedule": "cyclic", "seed": 1067, "type": "member"}
+{"best_epoch": 7, "id": "m054", "primary": 0.60449474, "schedule": "cyclic", "seed": 1068, "type": "member"}
+{"best_epoch": 4, "id": "m055", "primary": 0.60426825, "schedule": "cyclic", "seed": 1069, "type": "member"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67117048, "harm": 1431.734104, "member_ids": ["m000", "m001", "m002"], "ndcg5": 0.53827721, "pool": "consecutive", "primary": 0.60472384, "rescue": 1419.85377, "rescue_harm_ratio": 0.991702, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67091988, "harm": 1396.859556, "member_ids": ["m000", "m001", "m002"], "ndcg5": 0.53808974, "pool": "consecutive", "primary": 0.60450481, "rescue": 1366.104068, "rescue_harm_ratio": 0.977982, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67110643, "harm": 569.585154, "member_ids": ["m000", "m001", "m002"], "ndcg5": 0.53813022, "pool": "consecutive", "primary": 0.60461832, "rescue": 537.352493, "rescue_harm_ratio": 0.94341, "rule": "anchored_soft_vote", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67143212, "harm": 1551.327753, "member_ids": ["m000", "m001", "m002", "m003", "m004"], "ndcg5": 0.53852345, "pool": "consecutive", "primary": 0.60497778, "rescue": 1551.218727, "rescue_harm_ratio": 0.99993, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67132239, "harm": 1507.04454, "member_ids": ["m000", "m001", "m002", "m003", "m004"], "ndcg5": 0.53831637, "pool": "consecutive", "primary": 0.60481938, "rescue": 1506.945273, "rescue_harm_ratio": 0.999934, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67124663, "harm": 597.196231, "member_ids": ["m000", "m001", "m002", "m003", "m004"], "ndcg5": 0.53838995, "pool": "consecutive", "primary": 0.60481829, "rescue": 584.922097, "rescue_harm_ratio": 0.979447, "rule": "anchored_soft_vote", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67124614, "harm": 1381.706902, "member_ids": ["m000", "m001", "m002", "m003", "m004", "m005", "m006"], "ndcg5": 0.53832966, "pool": "consecutive", "primary": 0.6047879, "rescue": 1377.579724, "rescue_harm_ratio": 0.997013, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67113935, "harm": 1371.311516, "member_ids": ["m000", "m001", "m002", "m003", "m004", "m005", "m006"], "ndcg5": 0.53832752, "pool": "consecutive", "primary": 0.60473343, "rescue": 1368.499766, "rescue_harm_ratio": 0.99795, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67105571, "harm": 545.189642, "member_ids": ["m000", "m001", "m002", "m003", "m004", "m005", "m006"], "ndcg5": 0.53820205, "pool": "consecutive", "primary": 0.60462888, "rescue": 523.082092, "rescue_harm_ratio": 0.95945, "rule": "anchored_soft_vote", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67067571, "harm": 1420.335862, "member_ids": ["m000", "m028", "m001"], "ndcg5": 0.53787071, "pool": "diverse", "primary": 0.60427321, "rescue": 1365.21078, "rescue_harm_ratio": 0.961189, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67137655, "harm": 1339.144688, "member_ids": ["m000", "m028", "m001"], "ndcg5": 0.53822194, "pool": "diverse", "primary": 0.60479925, "rescue": 1340.989143, "rescue_harm_ratio": 1.001377, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 3, "gate_passed": false, "gauc": 0.67109471, "harm": 550.817289, "member_ids": ["m000", "m028", "m001"], "ndcg5": 0.5382696, "pool": "diverse", "primary": 0.60468215, "rescue": 528.12207, "rescue_harm_ratio": 0.958797, "rule": "anchored_soft_vote", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67130427, "harm": 1238.040961, "member_ids": ["m000", "m028", "m001", "m029", "m002"], "ndcg5": 0.53830195, "pool": "diverse", "primary": 0.60480311, "rescue": 1250.099381, "rescue_harm_ratio": 1.00974, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67082189, "harm": 1233.479937, "member_ids": ["m000", "m028", "m001", "m029", "m002"], "ndcg5": 0.53823657, "pool": "diverse", "primary": 0.60452923, "rescue": 1208.186339, "rescue_harm_ratio": 0.979494, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 5, "gate_passed": false, "gauc": 0.67119546, "harm": 509.39821, "member_ids": ["m000", "m028", "m001", "m029", "m002"], "ndcg5": 0.53816345, "pool": "diverse", "primary": 0.60467946, "rescue": 486.356306, "rescue_harm_ratio": 0.954766, "rule": "anchored_soft_vote", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67145901, "harm": 1235.529959, "member_ids": ["m000", "m028", "m001", "m029", "m002", "m030", "m003"], "ndcg5": 0.53811907, "pool": "diverse", "primary": 0.60478904, "rescue": 1236.126409, "rescue_harm_ratio": 1.000483, "rule": "rank_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67116497, "harm": 1221.128621, "member_ids": ["m000", "m028", "m001", "m029", "m002", "m030", "m003"], "ndcg5": 0.53813678, "pool": "diverse", "primary": 0.60465087, "rescue": 1213.970589, "rescue_harm_ratio": 0.994138, "rule": "probability_average", "type": "ensemble_probe"}
+{"anchor_id": "m031", "count": 7, "gate_passed": false, "gauc": 0.67105858, "harm": 505.94138, "member_ids": ["m000", "m028", "m001", "m029", "m002", "m030", "m003"], "ndcg5": 0.53807324, "pool": "diverse", "primary": 0.60456591, "rescue": 469.889296, "rescue_harm_ratio": 0.928743, "rule": "anchored_soft_vote", "type": "ensemble_probe"}

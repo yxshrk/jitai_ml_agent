@@ -1,0 +1,9 @@
+{"embedding_reg_lambda": 0.03, "frequency_alpha": 1.0, "member": "parent", "primary": 0.5890530265804275}
+{"member": "rolling_parent", "primary": 0.5613656018922301, "seed": 43}
+{"member": "rolling_graph", "primary": 0.47734085316933306, "seed": 1051}
+{"alpha": 0.05, "member": "rolling_blend", "primary": 0.5613567470822746}
+{"alpha": 0.1, "member": "rolling_blend", "primary": 0.5613194024159065}
+{"alpha": 0.2, "member": "rolling_blend", "primary": 0.5607701667748581}
+{"member": "validation_parent", "primary": 0.5890530265804275, "seed": 42}
+{"member": "validation_graph", "primary": 0.49140433596726574, "seed": 1051}
+{"alpha": 0.05, "member": "validation_blend", "primary": 0.5890726584844985}

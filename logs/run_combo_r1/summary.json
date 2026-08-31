@@ -1,0 +1,142 @@
+{
+  "run_dir": "logs/run_combo_r1",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 4,
+  "best_node": "node_001",
+  "best_metrics": {
+    "best_epoch": 3.5,
+    "delta_vs_baseline": 0.003355730323640116,
+    "field_level": 0,
+    "field_names": [
+      "user",
+      "video",
+      "author",
+      "tab",
+      "dur_bucket10"
+    ],
+    "gauc": 0.6717758055026842,
+    "history": [
+      {
+        "epoch": 0.5,
+        "train_loss": 0.6400611221790313,
+        "val_gauc": 0.6621802649518754,
+        "val_ndcg5": 0.5326010673703505,
+        "val_primary": 0.597390666161113
+      },
+      {
+        "epoch": 1.0,
+        "train_loss": 0.5477861259664808,
+        "val_gauc": 0.668041787359961,
+        "val_ndcg5": 0.5358067427586471,
+        "val_primary": 0.6019242650593041
+      },
+      {
+        "epoch": 1.5,
+        "train_loss": 0.5315521844795772,
+        "val_gauc": 0.6687994333291924,
+        "val_ndcg5": 0.5360629190066633,
+        "val_primary": 0.6024311761679279
+      },
+      {
+        "epoch": 2.0,
+        "train_loss": 0.5323409932000297,
+        "val_gauc": 0.6712198834866432,
+        "val_ndcg5": 0.5369755408917544,
+        "val_primary": 0.6040977121891988
+      },
+      {
+        "epoch": 2.5,
+        "train_loss": 0.527278700045177,
+        "val_gauc": 0.6714067186871777,
+        "val_ndcg5": 0.5375451395567521,
+        "val_primary": 0.6044759291219649
+      },
+      {
+        "epoch": 3.0,
+        "train_loss": 0.5265286496707371,
+        "val_gauc": 0.6713383689720305,
+        "val_ndcg5": 0.5378156041704689,
+        "val_primary": 0.6045769865712497
+      },
+      {
+        "epoch": 3.5,
+        "train_loss": 0.5248684414795467,
+        "val_gauc": 0.6717758055026842,
+        "val_ndcg5": 0.5381356551445959,
+        "val_primary": 0.6049557303236401
+      },
+      {
+        "epoch": 4.0,
+        "train_loss": 0.5252328455448151,
+        "val_gauc": 0.6719119126055718,
+        "val_ndcg5": 0.5379774376307259,
+        "val_primary": 0.6049446751181489
+      },
+      {
+        "epoch": 4.5,
+        "train_loss": 0.5241197884082794,
+        "val_gauc": 0.6717891840264316,
+        "val_ndcg5": 0.5379018431036571,
+        "val_primary": 0.6048455135650443
+      },
+      {
+        "epoch": 5.0,
+        "train_loss": 0.5248931186539786,
+        "val_gauc": 0.671682223235352,
+        "val_ndcg5": 0.5377794047675428,
+        "val_primary": 0.6047308140014473
+      },
+      {
+        "epoch": 5.5,
+        "train_loss": 0.5244312303406852,
+        "val_gauc": 0.671445062410449,
+        "val_ndcg5": 0.5377823331251467,
+        "val_primary": 0.6046136977677978
+      },
+      {
+        "epoch": 6.0,
+        "train_loss": 0.5238620732511793,
+        "val_gauc": 0.6714279782009683,
+        "val_ndcg5": 0.5377703017079035,
+        "val_primary": 0.6045991399544359
+      },
+      {
+        "epoch": 6.5,
+        "train_loss": 0.523440225635256,
+        "val_gauc": 0.6715206367824196,
+        "val_ndcg5": 0.5378435728552855,
+        "val_primary": 0.6046821048188525
+      }
+    ],
+    "n_fields": 5,
+    "ndcg5": 0.5381356551445959,
+    "primary": 0.6049557303236401,
+    "regularized": true,
+    "runtime_s": 25.4,
+    "seed": 42,
+    "timed_out": false
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 27346,
+      "out": 2030,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 12275,
+      "out": 15130,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 431,
+      "out": 942,
+      "calls": 1
+    }
+  },
+  "tokens_total": 58154,
+  "wall_s": 2196.2,
+  "self_critique": "Run assessment\n\nThe run found a modest gain from the disclosed frozen_stack seed: 0.604956 versus the 0.6018 FM baseline (+0.0032). However, it produced no successful improvement beyond that seed, so the main result is seed selection rather than autonomous model discovery.\n\nWhat the harness/policy did suboptimally\n\n- It converged far too early. Only two substantive proposals were evaluated after selecting frozen_stack, and both were relatively complex regularization ideas. That is insufficient evidence that the local design space was exhausted.\n- It under-exploited the winning branch. Once frozen_stack won, the policy should have prioritized low-risk ablations and hyperparameter tuning around it rather than jumping directly to adaptive row-wise L2 and a bundle of auxiliary heads.\n- The auxiliary-head proposal changed several things simultaneously: click, social outcomes, watch-ratio thresholds, and loss weights. Its failure is therefore not diagnostic.\n- The inverse-frequency L2 experiment also appears insufficiently calibrated. A drop from 0.6050 to 0.6012 suggests an overly strong penalty, an incorrect frequency transform, or regularization of important frequent IDs\u2014not merely rejection of the underlying hypothesis.\n- The pair-kernel seed was rejected after a relatively small deficit (0.6039 versus 0.6050). No attempt was made to combine its useful interactions with the frozen stack or tune its capacity.\n- Uncertainty handling is incomplete. The journal reports sigma only for the baseline, while decisions hinge on differences around 0.001. Candidate variance across seeds or folds should be measured before declaring rejection or convergence.\n- Duplicate seed entries add bookkeeping noise without representing independent experiments.\n- The hypotheses made precise improvement claims (\u201cabout 0.0012,\u201d \u201cat least 0.002\u201d) without evidence from intermediate diagnostics or ablations.\n\nWhat I would change in the scaffold\n\n- Require two-stage evaluation: cheap screening followed by repeated-seed confirmation for candidates within roughly 0.0015\u20130.002 of the incumbent.\n- Reserve most of the budget for exploiting the best branch: learning rate, weight decay, embedding dimensions, dropout, stack depth, cross width, and early-stopping epoch.\n- Enforce one-factor-at-a-time experiments before bundled changes.\n- Log train/validation trajectories, per-task losses, gradient magnitudes, parameter counts, ID-frequency slices, and prediction calibration. \u201cOverfitting\u201d should be tied to these diagnostics rather than inferred only from a peak epoch.\n- For regularization proposals, automatically sweep strength over at least an order of magnitude and include a zero-strength control.\n- For auxiliary tasks, add heads individually, normalize losses by scale/prevalence, and sweep small weights.\n- Use a convergence rule based on exhausted predefined experiment families and statistical confidence, not two failed children.\n- Deduplicate seed records and clearly distinguish imported seeds, tuned variants, and genuinely generated proposals.\n\nWhat the next run should try first\n\nStart with a disciplined local sweep around frozen_stack. The first experiment should tune early stopping/checkpoint averaging and global regularization, since the journal already indicates a validation peak near epoch 3.5. Evaluate checkpoints around epochs 2.5\u20134.5, optionally average the best adjacent checkpoints, and sweep modest dropout or global weight decay. This is lower risk and more interpretable than frequency-adaptive penalties.\n\nNext, test a minimal frozen_stack + pair-kernel hybrid with a gated or low-weight residual pair-interaction term. The pair-kernel seed is already competitive, so combining complementary interactions is more promising than discarding it.\n\nOnly then revisit:\n1. frequency-aware L2 with much weaker strengths and capped frequency scaling;\n2. one auxiliary head at a time, beginning with the target most correlated with the primary metric;\n3. repeated-seed confirmation of any gain above approximately 0.001.\n\nThe key policy change is to exploit and characterize the 0.6050 model before proposing additional architectural bundles."
+}

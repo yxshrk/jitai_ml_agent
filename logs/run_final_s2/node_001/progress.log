@@ -1,0 +1,20 @@
+{"objective": "ordinary_bce_control", "primary": 0.5992467840203698, "seed": 42}
+{"objective": "user_centered_bce", "paired_delta": 0.004778127852671288, "primary": 0.6040249118730411, "seed": 42}
+{"objective": "ordinary_bce_control", "primary": 0.5987506200728594, "seed": 1051}
+{"objective": "user_centered_bce", "paired_delta": 0.005294049823667546, "primary": 0.6040446698965269, "seed": 1051}
+{"objective": "ordinary_bce_control", "primary": 0.6000421867541037, "seed": 2060}
+{"objective": "user_centered_bce", "paired_delta": 0.003335362322805624, "primary": 0.6033775490769093, "seed": 2060}
+{"objective": "ordinary_bce_control", "primary": 0.5979509919603792, "seed": 3069}
+{"objective": "user_centered_bce", "paired_delta": 0.006003471586541798, "primary": 0.603954463546921, "seed": 3069}
+{"objective": "ordinary_bce_control", "primary": 0.5989220923069069, "seed": 4078}
+{"objective": "user_centered_bce", "paired_delta": 0.005082102594264337, "primary": 0.6040041949011712, "seed": 4078}
+{"objective": "ordinary_bce_control", "primary": 0.6002214401329793, "seed": 5087}
+{"objective": "user_centered_bce", "paired_delta": 0.00386149846727335, "primary": 0.6040829386002526, "seed": 5087}
+{"objective": "ordinary_bce_control", "primary": 0.6004758251884863, "seed": 6096}
+{"objective": "user_centered_bce", "paired_delta": 0.0026712047124688443, "primary": 0.6031470299009551, "seed": 6096}
+{"objective": "ordinary_bce_control", "primary": 0.598913170872457, "seed": 7105}
+{"objective": "user_centered_bce", "paired_delta": 0.004741784016701334, "primary": 0.6036549548891583, "seed": 7105}
+{"objective": "ordinary_bce_control", "primary": 0.5995643151113881, "seed": 8114}
+{"objective": "user_centered_bce", "paired_delta": 0.004153129044740744, "primary": 0.6037174441561288, "seed": 8114}
+{"objective": "ordinary_bce_control", "primary": 0.5992533057343579, "seed": 9123}
+{"objective": "user_centered_bce", "paired_delta": 0.00421340973526374, "primary": 0.6034667154696216, "seed": 9123}

@@ -1589,3 +1589,55 @@ Start from node_002 and run a small, replicated one-factor study of the centerin
 4. Report both primary and logloss to determine whether the gain is genuine ranking alignment or merely validation selection noise.
 
 If node_002 replicates, the next highest-value experiment is a centered BCE
+
+## Run logs/run_novel_l1
+dataset: pure
+stop_reason: max_hours
+best_primary: 0.605239
+- node_001 | method: package-dial-sweep | hypothesis: Because the baseline validation curve peaks around epochs | primary: n/a | verdict: failed
+- node_002 | method: package-dial-sweep | hypothesis: A two-stage successive-halving dial sweep of the DCN-lite, | primary: 0.603867 | verdict: accepted
+- node_003 | method: group-hard-pair-bpr | hypothesis: Diagnosis: the parent’s early validation peak followed by | primary: 0.594699 | verdict: rejected
+- node_004 | method: temporal-pair-kernel | hypothesis: Diagnosis: the parent learning curve contains no usable | primary: 0.605239 | verdict: accepted
+- node_005 | method: ensemble-design-sweep | hypothesis: Diagnosis: the unusable parent curve plus earlier epoch-6–8 | primary: 0.605496 | verdict: rejected
+self_critique:
+Overall assessment
+
+The run found one credible direction: epoch-wise BPR negative resampling with temporal locality. Node_004 reached the accepted best of 0.605239, about +0.0034 over baseline and +0.0013 over node_002. Hard max-violation mining was clearly harmful. The evidence for further ensemble gains was insufficient.
+
+What the harness/policy did suboptimally
+
+- It tested overly bundled interventions. Node_002 combined architecture, loss mixing, regularization, optimization, recency weighting, checkpoint selection, and ensembling. Its gain cannot be attributed to any component.
+- Lineage and chronology were not clean. Node_002 descended from a no-metric failure and claimed improvement over node_003 before node_003 existed. This makes the journal difficult to audit and suggests hypothesis/template leakage.
+- A failed node remained a usable parent. Node_001 produced no metric, yet exploration continued through it instead of reverting to the last valid node and diagnosing the failure.
+- Curve-based diagnoses were made despite missing or unusable epoch metrics. Several proposals asserted overfitting without reliable supporting telemetry.
+- The policy spent substantial budget on ensembles before establishing seed-level robustness of the underlying model. Node_005’s displayed 0.6055 exceeded node_004’s rounded score but was rejected, implying the apparent gain was below the acceptance/significance threshold.
+- Uncertainty handling is unclear. The baseline sigma of 0.0001 may describe deterministic evaluation noise rather than training-seed variance. If so, it is too optimistic for deciding whether ~0.001 changes are real.
+- Only six nodes were completed before max-hours, indicating poor experiment granularity or excessive per-node cost. Successive halving and artifact reuse did not produce enough breadth.
+- Node_003’s complete-user max-violation mining caused a large regression, from 0.6039 to 0.5947. That direction should have been terminated immediately rather than treated as a nearby tuning opportunity.
+
+What I would change in the scaffold
+
+- Enforce valid-parent lineage: no child may inherit from a no-metric or corrupted run.
+- Require structured per-epoch train/validation metrics and checkpoint metadata before permitting curve-based diagnoses.
+- Favor atomic experiments: one architecture, sampling, loss, optimizer, or weighting change at a time.
+- Separate screening from confirmation:
+  1. Cheap single-seed screen.
+  2. Paired multi-seed confirmation against the same parent.
+  3. Only then tune or ensemble.
+- Report exact score, paired delta, seed mean/std, and acceptance threshold. Explicitly explain cases like node_005 where a higher displayed score is rejected.
+- Cache datasets, negatives, checkpoints, and baseline predictions so ablations do not repeatedly pay full training cost.
+- Prevent hypotheses from referencing future or unrelated nodes.
+- Require an ablation plan for package proposals; otherwise reject them as too confounded.
+- Reserve ensembles for the end and compare their incremental benefit against their inference and tuning cost.
+
+What the next run should try first
+
+First, confirm node_004 with paired seeds against node_002. Keep every other setting fixed and decompose the sampling change into:
+
+1. Redraw one negative per positive each epoch, without temporal locality.
+2. Temporal-local negative sampling with fixed negatives.
+3. Redrawing plus temporal locality, reproducing node_004.
+
+If the locality component survives across seeds, run a small focused sweep over local-sampling probability, such as 0.5, 0.7, and 0.9, and at most two temporal-window definitions. Use the same seeds and paired comparisons.
+
+Do not begin with another ensemble or hard-negative miner. The former was not significant, and the latter produced a decisive regression.

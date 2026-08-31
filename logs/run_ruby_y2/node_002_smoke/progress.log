@@ -1,0 +1,6 @@
+{"best_checkpoint": 1.0, "mode": "baseline_bce", "primary": 0.5887239927116235, "seed": 42, "updates": 140}
+{"best_checkpoint": 1.0, "mode": "gauge_fixed_bce", "primary": 0.6010593886575157, "seed": 42, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "baseline_bce", "primary": 0.5887693802051279, "seed": 43, "updates": 140}
+{"best_checkpoint": 1.0, "mode": "gauge_fixed_bce", "primary": 0.600753201667763, "seed": 43, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "baseline_bce", "primary": 0.5884384807182919, "seed": 44, "updates": 140}
+{"best_checkpoint": 1.0, "mode": "gauge_fixed_bce", "primary": 0.6011818297655764, "seed": 44, "updates": 140}

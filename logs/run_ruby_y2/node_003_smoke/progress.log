@@ -1,0 +1,7 @@
+{"effective_sample_fraction": 0.994434578522142, "epochs": 1, "probe": "adversarial_classifier", "weight_summary": {"max": 1.2798686497215708, "mean": 1.0, "min": 0.7674970492449044, "std": 0.07481021816393317}}
+{"best_checkpoint": 1.0, "mode": "uniform_gauge_fixed", "primary": 0.6013158149571605, "seed": 42, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "adversarial_recency", "primary": 0.6012597075305999, "seed": 42, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "uniform_gauge_fixed", "primary": 0.6005866369927981, "seed": 43, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "adversarial_recency", "primary": 0.5995169384157104, "seed": 43, "updates": 141}
+{"best_checkpoint": 1.0, "mode": "uniform_gauge_fixed", "primary": 0.601203312416554, "seed": 44, "updates": 140}
+{"best_checkpoint": 1.0, "mode": "adversarial_recency", "primary": 0.6008043473596184, "seed": 44, "updates": 140}

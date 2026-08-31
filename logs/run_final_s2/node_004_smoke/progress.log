@@ -1,0 +1,4 @@
+{"best_epoch": 1, "family": "gauge_fixed_fm", "member": 0, "primary": 0.6006783348820219, "seed": 42}
+{"best_epoch": 1, "family": "recency_centered_fm", "member": 0, "primary": 0.6001729857871921, "seed": 100045}
+{"best_epoch": 1, "family": "regularized_dcn_hybrid", "member": 0, "primary": 0.6019995072408386, "seed": 200048}
+{"aggregation": "rank", "families": ["gauge_fixed_fm", "recency_centered_fm", "regularized_dcn_hybrid"], "primary": 0.6027732285467577, "selection": "cross_mechanism_ensemble", "weights": [0.2, 0.1, 0.7]}

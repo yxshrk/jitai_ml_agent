@@ -1,0 +1,5 @@
+{"config": {"dropout": 0.28, "gamma": 0.5, "half_life": 7.0, "lr": 0.0009, "step_every": 1, "weight_decay": 0.0003}, "config_id": 0, "primary": 0.5988249, "repeat": 0, "seed": 1042, "stage": "coarse"}
+{"config": {"dropout": 0.315663, "gamma": 0.5, "half_life": 10.0, "lr": 0.0010942401403479557, "step_every": 2, "weight_decay": 0.0015137608380629086}, "config_id": 1, "primary": 0.5983164, "repeat": 0, "seed": 1059, "stage": "coarse"}
+{"config": {"dropout": 0.28, "gamma": 0.5, "half_life": 7.0, "lr": 0.0009, "step_every": 1, "weight_decay": 0.0003}, "config_id": 0, "primary": 0.5996321, "repeat": 0, "seed": 5042, "stage": "refine"}
+{"config": {"dropout": 0.225, "gamma": 0.41, "half_life": 5.25, "lr": 0.0006827198175262654, "step_every": 1, "weight_decay": 0.00010644401677007263}, "config_id": 1, "primary": 0.599096, "repeat": 0, "seed": 5061, "stage": "refine"}
+{"config": {"dropout": 0.28, "gamma": 0.5, "half_life": 7.0, "lr": 0.0009, "step_every": 1, "weight_decay": 0.0003}, "primary": 0.5998461, "repeat": 0, "seed": 42, "stage": "final"}

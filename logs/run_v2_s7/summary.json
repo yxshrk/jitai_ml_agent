@@ -1,0 +1,81 @@
+{
+  "run_dir": "logs/run_v2_s7",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_002",
+  "best_metrics": {
+    "gauc": 0.669794452893507,
+    "ndcg5": 0.5374511348667603,
+    "primary": 0.6036227938801337,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.663253,
+        "val_gauc": 0.667276,
+        "val_ndcg5": 0.535512,
+        "val_primary": 0.601394
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.627568,
+        "val_gauc": 0.669669,
+        "val_ndcg5": 0.53703,
+        "val_primary": 0.60335
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.612678,
+        "val_gauc": 0.669794,
+        "val_ndcg5": 0.537451,
+        "val_primary": 0.603623
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.60214,
+        "val_gauc": 0.668678,
+        "val_ndcg5": 0.536966,
+        "val_primary": 0.602822
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.594409,
+        "val_gauc": 0.66962,
+        "val_ndcg5": 0.537216,
+        "val_primary": 0.603418
+      }
+    ],
+    "config": {
+      "method": "gauge-fixed-bce",
+      "embedding_dim": 16,
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "batch_target_size": 8192,
+      "complete_user_slates": true,
+      "best_epoch": 3,
+      "seed": 42
+    }
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 45858,
+      "out": 3578,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 21642,
+      "out": 22720,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 405,
+      "out": 640,
+      "calls": 1
+    }
+  },
+  "tokens_total": 94843,
+  "wall_s": 4710.8,
+  "self_critique": "Run critique\n\nThe strongest decision was node_002: it responded directly to the observed failure mode and changed the objective in a metric-aware way. Its +0.0018 gain over baseline was the only credible improvement and became the correct incumbent.\n\nSuboptimal aspects:\n- The search converged too early after only three challengers. One accepted improvement is not enough to establish that the local neighborhood is exhausted.\n- Node_001 bundled architecture, loss, recency, dropout, optimizer regularization, and LR scheduling. Its rejection yielded almost no causal information.\n- Node_003 again proposed a broad cross-stage matrix. This creates multiple-comparison and validation-selection risk, especially for gains around 0.0003.\n- The journal reports node_003 at 0.6039 but rejects it while the best remains 0.603623. The rejection may be statistically justified, but the unrounded score, uncertainty, seed count, and acceptance threshold should be recorded explicitly.\n- Variance handling is underdocumented. The baseline sigma of 0.0001 looks precise, but comparable uncertainty is not shown for later nodes. Tiny claimed improvements require paired multi-seed evaluation.\n- The hypotheses relied on checkpoint curves, but the scaffold did not clearly separate objective effects from earlier stopping or checkpoint-selection effects.\n\nScaffold changes:\n- Require each trial to alter one major factor, with explicit ablations for bundled proposals.\n- Evaluate incumbent and challenger on identical seeds and data order; log mean paired delta, standard error/confidence interval, and per-seed results.\n- Freeze validation selection rules and use a final untouched split for confirmation.\n- Record exact scores and the numerical acceptance/rejection criterion.\n- Penalize large configuration matrices unless they are staged and validation-budget-aware.\n- Do not declare convergence until the accepted change has been replicated and at least a few targeted local variants have been tested.\n\nNext run:\nFirst replicate node_002 across several paired seeds. If the gain survives, ablate its components: user-centering alone, gauge fixing alone, and complete-slate training. Then test modest regularization or earlier stopping around node_002, one change at a time. Avoid another architecture-and-training bundle until the source of node_002\u2019s gain is established."
+}

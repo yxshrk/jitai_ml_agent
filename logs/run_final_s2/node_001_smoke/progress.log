@@ -1,0 +1,4 @@
+{"objective": "ordinary_bce_control", "primary": 0.5887432661994623, "seed": 42}
+{"objective": "user_centered_bce", "paired_delta": 0.011935068682559669, "primary": 0.6006783348820219, "seed": 42}
+{"objective": "ordinary_bce_control", "primary": 0.5868139183686092, "seed": 1051}
+{"objective": "user_centered_bce", "paired_delta": 0.013525441117558268, "primary": 0.6003393594861675, "seed": 1051}
