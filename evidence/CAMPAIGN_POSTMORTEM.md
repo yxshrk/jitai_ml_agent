@@ -68,3 +68,16 @@ on the weak base. CONCLUSION: improvements do not add — they overlap; total ru
 quality is set by (a) opener draw and (b) member-structure luck at the close, not
 by the count of known-good mechanisms applied. The omegas are the cleanest
 demonstration that the ~0.6045 single-model wall is mechanism-saturated.
+
+## Addendum: full-campaign mechanical post-mortem (31 Aug morning, 123 runs, tools/postmortem.py)
+- Sub-floor true positives: rejected nodes with real gains (+0.0004-0.0008) recur — incl.
+  a deterministic 0.60573 recency node (night_e/f, ABOVE the champion's 0.60558) that is
+  correctly NON-designatable ("converged, not peak") and statistically noise (+0.00015,
+  single seed). Lesson for future harness: two-stage floor (sub-floor -> reseed-confirm)
+  instead of hard rejection; est. +0.001-0.002 cumulative signal recoverable.
+- Failure taxonomy: llm_parse 65 / timeout 15 / exec 10 / provider 3 / other 6 — all
+  recovered autonomously; parse truncation is the dominant robustness cost (token
+  headroom > reasoning effort, matching the effort-grid measurement).
+- Accept/reject ratio 108/240; every top result across both benchmarks ends in an
+  ensemble close; selector streakiness (ignoring best-card evidence) is the residual
+  inefficiency — addressed in the final steered run (disclosed launch directive).
