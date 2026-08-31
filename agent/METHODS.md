@@ -626,11 +626,11 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - mechanism: Train members under DIFFERENT mechanisms (e.g. temporal-pair-kernel, gauge-fixed-bce, decayed-positive, frozen regularized stack) rather than jittered copies of one recipe; validation-select the member subset and aggregation (rank vs probability average, optional per-member weights) before scoring. Diversity across mechanisms is the untested axis — jittered same-recipe closes are measured at +0.0013.
 - kind: opportunity
 - treats: variance | plateau
-- reference_primary: none (post-hoc 50/50 blends of finished runs measured +0.00017 — in-run validation-selected design is the open question)
+- reference_primary: 0.605828 (CROSS-FAMILY evidence probe 31 Aug: rank-blend of a composite member 0.60443 with the DCN-package ensemble 0.605575 scores 0.605717 at 50/50 and 0.605828 at 25/75 — decorrelated families are where closes pay; same-family composite seeds pay only +0.0003)
 - preconditions: At least 2 mechanism families measured above 0.6040 in this run's lineage; select on validation only.
 - citation: run_bigclock_07 n6 (jitter close +0.0013); evidence/blend_audit.md (caveat)
 - expected_gain / cost: +0.0005-0.0020 primary / medium (several member trainings).
-- status_pure: measured-win (run_final_s2 n4: 0.60499, +0.0010 close from 0.6040 gauge base)
+- status_pure: measured-win (run_final_s2 n4 +0.0010; cross-family blend probe 0.605828 evidence) — the endgame play: build members from BOTH the DCN package and seq-deepfm families, then rank-aggregate across families
 - status_1k: untried
 
 ### snapshot-ensemble: Cyclic-LR snapshot ensemble within one training

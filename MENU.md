@@ -41,7 +41,7 @@ Evidence-ranked priorities (all numbers from run journals):
    (run_final_s4 n3: 0.60521), NO ensemble close ever attempted on that base.
 3. seq-deepfm-author-history — causal pooled author-history DeepFM, measured externally
    0.6047 across 4 seeds (see card). Untried under this harness.
-4. ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
+4. heterogeneous-ensemble-design CROSS-FAMILY close (blend probe: 0.6058 from mixing a composite member with a DCN-package ensemble — decorrelation is where closes pay) or ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
    (bigclock_07, final_s2). The winning shape in every ledger.
 RULE: the library is two-tier — TREATMENT cards match your diagnosis; OPPORTUNITY cards
 (architectures, feature families, sweeps, closes) are diagnosis-independent and ranked
