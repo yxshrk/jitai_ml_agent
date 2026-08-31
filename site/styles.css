@@ -300,3 +300,14 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .frow p b,.frow p i{color:var(--ink);font-style:normal}
 @media (max-width:800px){.frow{grid-template-columns:1fr;gap:4px}}
 #archdiagram .achip{fill:var(--surface);stroke:var(--line)}
+/* walkable diagram: parts dim until their step, the current step is emphasised */
+#archdiagram .apart{transition:opacity .35s ease}
+#archdiagram .apart.off{opacity:.13}
+#archdiagram .apart.lit .abox{stroke-width:2}
+.archlegend{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px;padding:0;list-style:none}
+.archlegend li{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--dim);cursor:default;transition:border-color .2s}
+.archlegend li:hover{border-color:var(--ink)}
+.archlegend .pn{display:block;font-size:11px;letter-spacing:.16em;color:var(--go);font-weight:620;margin-bottom:6px}
+.archlegend b{color:var(--ink);font-weight:600}
+@media (max-width:900px){.archlegend{grid-template-columns:repeat(2,1fr)}}

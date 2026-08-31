@@ -366,69 +366,93 @@ document.querySelectorAll('.entry').forEach(el=>{
 
 })();
 
-/* ---------- architecture diagram (shared: index + presenter) -------------- */
+/* ---------- architecture diagram (shared: index + presenter) --------------
+   Drawn in four parts so it can be walked: agent row, harness row, journal
+   loop-back, stop + exclusion. setArch(k) keeps parts 0..k lit and dims the
+   rest; setArch(-1) lights everything (site default). ---------------------- */
+const ARCH_PARTS=['agent','harness','journal','stop'];
+function setArch(k){
+  const svg=document.getElementById('archdiagram');if(!svg)return;
+  svg.querySelectorAll('[data-part]').forEach(g=>{
+    const i=ARCH_PARTS.indexOf(g.dataset.part);
+    g.classList.toggle('off',k>=0&&i>k);
+    g.classList.toggle('lit',k>=0&&i===k);
+  });
+}
 (function arch(){
   const svg=document.getElementById('archdiagram');if(!svg)return;
-  let h='';
+  const parts={agent:'',harness:'',journal:'',stop:''};
+  let cur='agent';
+  const add=s=>{parts[cur]+=s;};
   const box=(x,y,w,hh,cls,title,sub)=>{
-    h+='<rect class="abox '+cls+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" rx="8"/>';
-    h+='<text class="at" x="'+(x+18)+'" y="'+(y+30)+'">'+title+'</text>';
-    (sub||[]).forEach((t,i)=>{h+='<text class="as" x="'+(x+18)+'" y="'+(y+52+i*18)+'">'+t+'</text>';});
+    add('<rect class="abox '+cls+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" rx="8"/>');
+    add('<text class="at" x="'+(x+18)+'" y="'+(y+30)+'">'+title+'</text>');
+    (sub||[]).forEach((t,i)=>{add('<text class="as" x="'+(x+18)+'" y="'+(y+52+i*18)+'">'+t+'</text>');});
   };
   // labels sit centered on their line, on a small chip so they stay readable
   const arrow=(x1,y1,x2,y2,cls,lbl)=>{
-    h+='<line class="aflow '+(cls||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2
-      +'" marker-end="url(#ah'+(cls||'k')+')"/>';
+    add('<line class="aflow '+(cls||'')+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2
+      +'" marker-end="url(#ah'+(cls||'k')+')"/>');
     if(lbl){
       const lx=(x1+x2)/2, ly=(y1+y2)/2+4, w=lbl.length*7.4+22;
-      h+='<rect class="achip" x="'+(lx-w/2)+'" y="'+(ly-15)+'" width="'+w+'" height="22" rx="11"/>';
-      h+='<text class="albl '+(cls||'')+'" x="'+lx+'" y="'+ly+'" text-anchor="middle">'+lbl+'</text>';
+      add('<rect class="achip" x="'+(lx-w/2)+'" y="'+(ly-15)+'" width="'+w+'" height="22" rx="11"/>');
+      add('<text class="albl '+(cls||'')+'" x="'+lx+'" y="'+ly+'" text-anchor="middle">'+lbl+'</text>');
     }
   };
-  h+='<defs>'+['k','go','no'].map(c=>'<marker id="ah'+c+'" viewBox="0 0 10 10" refX="9" refY="5" '
+  const defs='<defs>'+['k','go','no'].map(c=>'<marker id="ah'+c+'" viewBox="0 0 10 10" refX="9" refY="5" '
     +'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
     +'<path d="M0,0L10,5L0,10z" fill="'+(c==='go'?css('--go'):c==='no'?css('--no'):css('--ink'))+'"/></marker>').join('')+'</defs>';
   // grid: four columns; harness row vertically centered between the other two
   const X=[60,340,620,900],W=220,BH=100,Y1=96,Y2=366,Y3=636;
-  h+='<text class="alane" x="'+(X[3]+W)+'" y="60" text-anchor="end">AGENT · THE LLM PROPOSES</text>';
-  h+='<text class="alane" x="'+X[1]+'" y="'+(Y2-36)+'">HARNESS · DETERMINISTIC · NEVER TRUSTS THE AGENT</text>';
-  // entry point: the run starts by training the published baseline (iteration 0)
-  {const sx=X[0]+W/2, lbl='START · iteration 0: the published baseline, 3 seeds', w=lbl.length*7.4+22;
-   h+='<line class="aflow go" x1="'+sx+'" y1="30" x2="'+sx+'" y2="'+(Y1-2)+'" marker-end="url(#ahgo)"/>';
-   h+='<rect class="achip" x="'+(sx+10)+'" y="44" width="'+w+'" height="22" rx="11"/>';
-   h+='<text class="albl go" x="'+(sx+21)+'" y="59">'+lbl+'</text>';}
-  // top row: left to right
-  box(X[0],Y1,W,BH,'','JOURNAL',['the run\u2019s memory: every','hypothesis, score, failure']);
+  const my1=Y1+BH/2,my2=Y2+BH/2;
+  // part 1: the agent row, left to right
+  cur='agent';
+  add('<text class="alane" x="'+(X[3]+W)+'" y="60" text-anchor="end">AGENT · THE LLM PROPOSES</text>');
   box(X[1],Y1,W,BH,'agent','DIAGNOSE',['reads the last training','curves, names the bottleneck']);
   box(X[2],Y1,W,BH,'agent','TREAT',['picks a treatment from the','42-card method library']);
   box(X[3],Y1,W,BH,'agent','WRITE SCRIPT',['full training script,','against a frozen contract']);
-  // harness row: right to left
-  box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access \u00b7 360 s dry run']);
-  box(X[2],Y2,W,BH,'','TRAIN',['fixed temporal split:','train + valid only']);
-  box(X[1],Y2,W,BH,'','EVALUATE',['official GAUC + nDCG@5','per user \u00b7 primary = mean']);
-  box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain clears calibrated noise']);
-  // parking band
-  box(X[0],Y3,W+60,90,'go','CONVERGENCE RULE',['3 quiet iterations end the','run \u00b7 no human says stop']);
-  box(X[3],Y3,W,90,'no','HIDDEN TEST WINDOW',['not mounted in the workspace:','structurally unreachable']);
-  // workspace boundary around train + screen
-  h+='<rect class="abound" x="'+(X[2]-20)+'" y="'+(Y2-22)+'" width="'+(X[3]+W-X[2]+40)+'" height="'+(BH+44)+'" rx="10"/>';
-  h+='<text class="as" x="'+(X[2]-6)+'" y="'+(Y2+BH+38)+'">agent workspace boundary</text>';
-  // loop arrows
-  const my1=Y1+BH/2,my2=Y2+BH/2;
-  arrow(X[0]+W,my1,X[1],my1,'','');
   arrow(X[1]+W,my1,X[2],my1,'','');
   arrow(X[2]+W,my1,X[3],my1,'','');
+  // part 2: the harness row, right to left, inside the workspace boundary
+  cur='harness';
+  add('<text class="alane" x="'+X[1]+'" y="'+(Y2-36)+'">HARNESS · DETERMINISTIC · NEVER TRUSTS THE AGENT</text>');
   arrow(X[3]+W/2,Y1+BH,X[3]+W/2,Y2-22,'','hands the script off');
+  add('<rect class="abound" x="'+(X[2]-20)+'" y="'+(Y2-22)+'" width="'+(X[3]+W-X[2]+40)+'" height="'+(BH+44)+'" rx="10"/>');
+  add('<text class="as" x="'+(X[2]-6)+'" y="'+(Y2+BH+38)+'">agent workspace boundary</text>');
+  box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access · 360 s dry run']);
+  box(X[2],Y2,W,BH,'','TRAIN',['fixed temporal split:','train + valid only']);
+  box(X[1],Y2,W,BH,'','EVALUATE',['official GAUC + nDCG@5','per user · primary = mean']);
+  box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain clears calibrated noise']);
   arrow(X[3],my2,X[2]+W,my2,'','');
   arrow(X[2],my2,X[1]+W,my2,'','scores');
-  arrow(X[1],my2,X[0]+W,my2,'','\u0394');
+  arrow(X[1],my2,X[0]+W,my2,'','Δ');
+  // part 3: the journal closes the loop; the run starts from the published baseline
+  cur='journal';
+  {const sx=X[0]+W/2, lbl='START · iteration 0: the published baseline, 3 seeds', w=lbl.length*7.4+22;
+   add('<line class="aflow go" x1="'+sx+'" y1="30" x2="'+sx+'" y2="'+(Y1-2)+'" marker-end="url(#ahgo)"/>');
+   add('<rect class="achip" x="'+(sx+10)+'" y="44" width="'+w+'" height="22" rx="11"/>');
+   add('<text class="albl go" x="'+(sx+21)+'" y="59">'+lbl+'</text>');}
+  box(X[0],Y1,W,BH,'','JOURNAL',['the run’s memory: every','hypothesis, score, failure']);
+  arrow(X[0]+W,my1,X[1],my1,'','');
   arrow(X[0]+W/2,Y2,X[0]+W/2,Y1+BH,'go','accept / dead end, journaled');
+  // part 4: what ends the run, and what can never enter it
+  cur='stop';
+  box(X[0],Y3,W+60,90,'go','CONVERGENCE RULE',['3 quiet iterations end the','run · no human says stop']);
+  box(X[3],Y3,W,90,'no','HIDDEN TEST WINDOW',['not mounted in the workspace:','structurally unreachable']);
   arrow(X[0]+W/2,Y2+BH,X[0]+W/2,Y3,'go','');
   arrow(X[3]+W/2,Y2+BH+22,X[3]+W/2,Y3,'no','no path exists');
-  svg.innerHTML=h;
+  svg.innerHTML=defs+ARCH_PARTS.map(p=>'<g class="apart" data-part="'+p+'">'+parts[p]+'</g>').join('');
+  // site: a numbered legend under the diagram lights each part on hover
+  const legend=document.getElementById('archlegend');
+  if(legend){
+    legend.querySelectorAll('[data-part]').forEach(li=>{
+      li.addEventListener('mouseenter',()=>setArch(ARCH_PARTS.indexOf(li.dataset.part)));
+      li.addEventListener('mouseleave',()=>setArch(-1));
+    });
+  }
 })();
 
 /* hooks for presenter mode: present.js drives the same replay machinery */
-window.FR={active,repaint,typeIn,setStage,iters:N.length,heroPlay:window.FR_heroPlay};
+window.FR={active,repaint,typeIn,setStage,setArch,iters:N.length,heroPlay:window.FR_heroPlay};
 delete window.FR_heroPlay;
 })();

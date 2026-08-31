@@ -10,6 +10,9 @@ const overview=document.getElementById('overview');
 const logScene=scenes.findIndex(s=>s.id==='s-log');
 const runScene=scenes.findIndex(s=>s.id==='s-run');
 const loopScene=scenes.findIndex(s=>s.id==='s-loop');
+const archScene=scenes.findIndex(s=>s.id==='s-arch');
+const ARCH_STEPS=4;
+let arch=0; // lit part of the architecture diagram while inside that scene
 const methodsScene=scenes.findIndex(s=>s.id==='s-methods');
 const METHOD_FILTER='ensemble'; // pre-typed glimpse: one slice of the 42 cards, no table scroll on video
 const STAGES=4;
@@ -40,6 +43,7 @@ function show(i,fromLeft){
   if(cur===runScene)FR.heroPlay();
   if(cur===logScene)setLog(fromLeft?steps.length-1:0);
   if(cur===loopScene)setStage(fromLeft?STAGES-1:0);
+  if(cur===archScene)setArch(fromLeft?ARCH_STEPS-1:0);
   if(cur===methodsScene)presetFilter();
 }
 function presetFilter(){
@@ -47,14 +51,17 @@ function presetFilter(){
   inp.value=METHOD_FILTER;inp.dispatchEvent(new Event('input'));
 }
 function setStage(k){stage=k;FR.setStage(k);}
+function setArch(k){arch=k;FR.setArch(k);}
 function next(){
   if(cur===logScene&&step<steps.length-1)return setLog(step+1);
   if(cur===loopScene&&stage<STAGES-1)return setStage(stage+1);
+  if(cur===archScene&&arch<ARCH_STEPS-1)return setArch(arch+1);
   if(cur<scenes.length-1)show(cur+1);
 }
 function prev(){
   if(cur===logScene&&step>0)return setLog(step-1);
   if(cur===loopScene&&stage>0)return setStage(stage-1);
+  if(cur===archScene&&arch>0)return setArch(arch-1);
   if(cur>0)show(cur-1,true);
 }
 /* overview */

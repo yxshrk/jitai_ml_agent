@@ -125,6 +125,12 @@
   scoring, and a calibrated gate. The hidden test window has no path into the loop at
   all.</p>
   <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture: agent lane, harness lane, journal, hidden test excluded"></svg>
+  <ul class="archlegend" id="archlegend" aria-label="walk the diagram">
+    <li data-part="agent"><span class="pn">01 · TOP LANE</span><b>The agent proposes.</b> Reads the last curves, names the bottleneck, picks a card, writes the whole training script.</li>
+    <li data-part="harness"><span class="pn">02 · BOTTOM LANE</span><b>The harness executes and scores.</b> Screens the code, smoke-tests it, trains on the fixed split, scores with the official evaluator, gates the gain against calibrated noise.</li>
+    <li data-part="journal"><span class="pn">03 · THE RETURN</span><b>Everything is journaled.</b> Accept or dead end, the verdict goes back into the run's memory, so later iterations do not relearn it.</li>
+    <li data-part="stop"><span class="pn">04 · THE EDGES</span><b>A rule ends it; the test set never enters.</b> Three quiet iterations (ε = 0.002) stop the run. The hidden test window is not mounted, so no path exists.</li>
+  </ul>
 </div></section>
 
 <section id="evidence"><div class="wrap">
