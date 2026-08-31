@@ -53,3 +53,24 @@ one in the same minute was simply lost.
 - The risk is spending slots on noise: most unconfirmed +0.0003s are noise. The retire rule, the frontier margin of
   one standard error, and the mean-based queue score are the guards; if a run shows the frontier feeding on flukes,
   `FRONTIER_MARGIN_SE` and `FRONTIER_RETIRE_GENERATIONS` are the two dials, and `--no-frontier` is the exit.
+
+## Review fixes (research session, before any run)
+
+The first implementation was reviewed and three defects blocked it; all are fixed, each with a test:
+
+1. **The re-queue was dead code.** The slate was truncated to `k` and *then* sliced at `[k:]`, so nothing was ever
+   returned — the queue's central promise did not hold and `queue_pop(k + 2)`'s extra items were lost. The slate is
+   now `_slate()`: diversity, then screen, then the k best, and everything a collision or the cap left over goes back
+   to the queue — but a candidate the **screen measured and dropped does not**, because it has been answered.
+2. **A childless frontier node never aged.** Barren counts were charged only to parents that produced results, so a
+   node nobody proposed for sat on the frontier forever and `FRONTIER_MAX` filled with abandoned nodes. Every
+   non-champion frontier node present for a whole generation is now charged unless it got an accepted child.
+3. **Near-miss admission could rest on a selected single seed.** `node_mean` falls back to the seed-0 primary, which
+   was being compared against the champion's fresh-seed mean — two different statistics. An unaccepted node now needs
+   `CONFIRM_SEEDS` fresh seeds of its own to join; accepted nodes always have them.
+
+Two further rulings from the same review: the frontier margin may not fall back to `C.SEED_SD` (another run's
+measurement, forbidden in an in-run decision by ADR-0020) — before this run has a pooled sigma the margin is **0**, so
+a node joins only by being *ahead*; and a queued proposal's score is **recomputed at pop time**, since its parent gains
+seeds and moves while it waits. The duplicate key now falls back to the hypothesis text, so two card-less wildcards on
+one parent are two proposals.

@@ -296,11 +296,7 @@ class Loop:
         if not selections:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: selector failed ({err})'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
-        selections = self._diversify(selections)
-        selections = self._screen(selections, g)[:self.k]           # ADR-0015: measure feature candidates before building them; then k
-        if self.frontier_on and len(selections) < len(self.state.get('queue', [])) + len(selections):
-            for extra in [s for s in selections if s.get('popped') == g][self.k:]:
-                self.state.setdefault('queue', []).append(extra)     # popped but unused: back to the queue, not lost
+        selections = self._slate(selections, g)
         if not selections:
             self.j.append({'n': None, 'generation': g, 'action': 'event', 'note': f'generation {g} aborted: every candidate was screened out'})
             return self._close_generation(g, [], diagnosis, snap, t_gen)
@@ -777,10 +773,13 @@ class Loop:
                 self.log(f"  campaign {fam!r} closed: {v['flat_streak']} flat generations (nodes {v['nodes']})")
 
     # ---------------- ADR-0021: the frontier and the proposal queue ----------------
-    def _se(self):
-        """One standard error of a three-seed mean, from this run's pooled seed SD (its own evidence, ADR-0020)."""
+    def _frontier_margin(self):
+        """How far below the champion's fresh-seed mean a node may still be a parent: FRONTIER_MARGIN_SE standard
+        errors of a CONFIRM_SEEDS-seed mean, from THIS run's pooled seed SD. ADR-0020 forbids reading another run's
+        seed constant for an in-run decision, so before this run has a pooled estimate the margin is 0 — a run with no
+        seed evidence cannot call a node 'within noise', but it can still see that one is ahead."""
         sigma, _ = self._sigma()
-        return (sigma or C.SEED_SD) / (C.CONFIRM_SEEDS ** 0.5)
+        return C.FRONTIER_MARGIN_SE * sigma / (C.CONFIRM_SEEDS ** 0.5) if sigma else 0.0
 
     def frontier_update(self, g):
         """Recompute the frontier: the champion, every accepted node, and every node whose fresh-seed mean is within
@@ -790,9 +789,13 @@ class Loop:
             return {}
         fr = self.state.setdefault('frontier', {})
         ch = self.state['champion']; ch_mean = self.champion_mean() or 0.0
-        margin = C.FRONTIER_MARGIN_SE * self._se()
+        margin = self._frontier_margin()
         for v in self.state['nodes'].values():
             if not v.get('metrics') or v['n'] == ch:
+                continue
+            # an unaccepted node joins on its FRESH-seed mean only: node_mean falls back to the seed-0 primary, the
+            # selected maximum ADR-0010 distrusts, and the champion's side of this comparison is a fresh-seed mean
+            if not v.get('accepted') and len(self.fresh_seeds(v['n'])) < C.CONFIRM_SEEDS:
                 continue
             m = self.node_mean(v['n'])
             if m is None or m + margin < ch_mean:
@@ -803,8 +806,6 @@ class Loop:
             e['mean'] = self.node_mean(e['n']); e['n_seeds'] = len(self.fresh_seeds(e['n']))
             if e['n'] == ch:
                 e['barren'] = 0; continue
-            if e.get('added') != g and e.get('accepted_child_gen') != g:
-                pass
             if e['barren'] >= C.FRONTIER_RETIRE_GENERATIONS:
                 self.log(f"  frontier: retiring node_{e['n']:03d} ({e['barren']} generations without an accepted child)")
                 fr.pop(key); self.state['queue'] = [q for q in self.state.get('queue', []) if q.get('parent') != e['n']]
@@ -848,11 +849,13 @@ class Loop:
         """Queue this generation's proposals (parents resolved, duplicates of a pending idea dropped) — ADR-0021: an
         idea outlives the generation that proposed it, so a full slate no longer throws away the runner-up."""
         q = self.state.setdefault('queue', [])
-        pending = {(x.get('parent'), _slug(x.get('mechanism')) or str(x.get('card'))) for x in q}
+        def key_of(x):
+            return (x.get('parent'), _slug(x.get('mechanism')) or _slug(x.get('card')) or (_slug(x.get('hypothesis')) or '')[:60])
+        pending = {key_of(x) for x in q}
         added = 0
         for s in selections:
             item = dict(s); item['parent'], item['merge_parents'] = self._resolve_parents(item)
-            key = (item['parent'], _slug(item.get('mechanism')) or str(item.get('card')))
+            key = key_of(item)
             if key in pending:
                 continue
             item['added'] = g; item['score'] = self._queue_score(item)
@@ -869,6 +872,8 @@ class Loop:
         fr = {e['n'] for e in (self.state.get('frontier') or {}).values()} or {self.state['champion']}
         closed, hard = self._closed_mechanisms(), self._hard_groups()
         fam = self.state.get('campaign'); idx = P.card_index() if fam else {}
+        for item in q:                    # parents gain seeds and move: a waiting proposal is re-scored, not stale-scored
+            item['score'] = self._queue_score(item)
         out, keep = [], []
         for item in sorted(q, key=lambda x: -x.get('score', 0)):
             card = str(item.get('card'))[:40]
@@ -894,22 +899,45 @@ class Loop:
         self.state['queue'] = keep
         return out
 
+    def _slate(self, popped, g):
+        """This generation's k candidates, out of what the queue handed over: distinct components/mechanisms
+        (_diversify), feature candidates measured first (_screen), then the k best. Whatever a collision or the k cap
+        left over goes BACK to the queue — that is the point of having a queue — but a candidate the screen measured
+        and dropped does not: it has been answered (ADR-0021)."""
+        diversified = self._diversify(popped)
+        kept = {id(s) for s in diversified}
+        screened = self._screen(diversified, g)
+        alive = {id(s) for s in screened}
+        running = screened[:self.k]
+        if not self.frontier_on:
+            return running
+        run_ids = {id(s) for s in running}
+        back = [s for s in popped if id(s) not in run_ids and (id(s) not in kept or id(s) in alive)]
+        for s in back:
+            s.pop('popped', None); self.state.setdefault('queue', []).append(s)
+        if back:
+            self.log(f'  queue: {len(back)} proposal(s) returned unrun ({len(self.state.get("queue", []))} waiting)')
+        return running
+
     def _frontier_book(self, g, results):
-        """Book this generation's children to their parents: an accepted child clears a frontier node's barren count,
-        a generation of only rejected children increments it (retirement happens in frontier_update)."""
+        """Charge this generation to every frontier node: an ACCEPTED child clears its barren count, anything else —
+        rejected children, or no children at all because nobody proposed for it — costs it a generation. A node that
+        attracts no work is exactly a node the search has moved past, so it must age out too (retirement itself
+        happens in frontier_update). The champion never ages."""
         fr = self.state.get('frontier') or {}
         by_parent = {}
         for r in results:
             if r.get('parent') is not None and r.get('metrics'):
                 by_parent.setdefault(r['parent'], []).append(r)
-        for pn, rs in by_parent.items():
-            e = fr.get(str(pn))
-            if not e:
-                continue
+        ch = self.state['champion']
+        for e in fr.values():
+            rs = by_parent.get(e['n'], [])
             e['children'] = e.get('children', 0) + len(rs)
+            if e['n'] == ch:
+                e['barren'] = 0; continue
             if any(x.get('accepted') for x in rs):
                 e['barren'] = 0; e['accepted_child_gen'] = g
-            else:
+            elif e.get('added', g) < g:                  # it was on the frontier for the whole generation
                 e['barren'] = e.get('barren', 0) + 1
 
     def _resolve_parents(self, sel):
