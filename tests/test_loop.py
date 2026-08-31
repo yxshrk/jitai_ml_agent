@@ -116,6 +116,13 @@ def test_clean_prompt_contains_no_team_measured_060_values(monkeypatch):
     assert all("- status_1k: untried" in card for card in brain.method_cards.values())
 
 
+def test_clean_bench_contains_no_campaign_values():
+    src = (ROOT / "tools/decision_bench_clean.py").read_text()
+    assert __import__("re").findall(r"0\.60\d+", src) == []
+    for token in ("bigclock", "novel_l1", "clean_c1", "combo_r1", "measured-win"):
+        assert token not in src
+
+
 def test_clean_mode_rejects_seed_scripts(capsys):
     code = main([
         "run", "--data-dir", str(DATA_DIR), "--knowledge", "clean",
