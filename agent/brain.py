@@ -91,8 +91,18 @@ def normalize_proposal_envelope(spec: dict) -> dict:
         raise ValueError("execution_kind must be 'script' or 'farm_close'")
 
     if execution_kind == "script":
-        if not has_code or not isinstance(normalized["code"], str):
-            raise ValueError("script proposal must carry code")
+        edits = normalized.get("edits")
+        has_edits = isinstance(edits, list) and len(edits) > 0
+        if has_edits:
+            for edit in edits:
+                if not (isinstance(edit, dict) and isinstance(edit.get("search"), str)
+                        and edit["search"] and isinstance(edit.get("replace"), str)):
+                    raise ValueError(
+                        "each edit must be {'search': <non-empty str>, 'replace': <str>}")
+        if has_code and has_edits:
+            raise ValueError("script proposal must carry code OR edits, not both")
+        if not has_edits and (not has_code or not isinstance(normalized.get("code"), str)):
+            raise ValueError("script proposal must carry code or edits")
         if plan_keys:
             raise ValueError("script proposal must not carry a farm-close plan")
         return normalized

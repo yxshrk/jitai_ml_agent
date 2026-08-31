@@ -618,8 +618,8 @@ def test_draft_diversity_retries_then_overrides_stubborn_selector(tmp_path, monk
 
 def test_expected_delta_basis_and_minimal_mutation_are_prompt_contracts():
     prompt = prompts.proposer_user_prompt([], "improve", "node_000", "# parent")
-    assert "smallest coherent change" in prompt
-    assert "unnecessary rewrites are defects" in prompt
+    assert "smallest set of search/replace edits" in prompt
+    assert "discarding it is a defect" in prompt
     assert "expected_delta_basis" in prompts.TASK_BRIEF
     assert "specific card expectation or journal line" in prompts.TASK_BRIEF
 
@@ -897,3 +897,48 @@ def test_rewrite_ratio_scores_edits_vs_rewrites():
     assert rewrite_ratio(parent, small_edit) > 0.9
     assert rewrite_ratio(parent, rewrite) < 0.1
     assert rewrite_ratio(parent, parent) == 1.0
+
+
+# ---------- edits proposals (constrained patching) ----------
+
+def test_apply_edits_basics():
+    from harness.loop import EditApplyError, apply_edits
+    parent = "a = 1\nb = 2\nc = 3\n"
+    assert apply_edits(parent, [{"search": "b = 2", "replace": "b = 20"}]) == "a = 1\nb = 20\nc = 3\n"
+    with pytest.raises(EditApplyError, match="not found"):
+        apply_edits(parent, [{"search": "zzz", "replace": "y"}])
+    with pytest.raises(EditApplyError, match="occurs 3 times"):
+        apply_edits(parent, [{"search": " = ", "replace": ": "}])
+    with pytest.raises(EditApplyError, match="no change"):
+        apply_edits(parent, [{"search": "a = 1", "replace": "a = 1"}])
+    # sequential application: later edits see earlier results
+    out = apply_edits(parent, [{"search": "b = 2", "replace": "b = 9"},
+                               {"search": "b = 9\nc = 3", "replace": "b = 9\nc = 30"}])
+    assert out.endswith("c = 30\n")
+
+
+def test_improve_via_edits_runs_edited_parent(tmp_path):
+    from harness.loop import BASELINE_SCRIPT
+    baseline = BASELINE_SCRIPT.read_text()
+    marker = baseline.splitlines()[0]
+    brain = fake_brain(scripts=[{
+        "hypothesis": "edited parent should still run",
+        "edits": [{"search": marker, "replace": marker + "\n# edited-by-agent"}],
+    }])
+    loop = make_loop(tmp_path, brain, max_iters=1, draft_tiers=())
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["action"] == "improve"
+    assert "# edited-by-agent" in loop.nodes["node_001"].code_path.read_text()
+    assert record["error"] is None
+
+
+def test_normalize_envelope_accepts_edits_for_script():
+    from agent.brain import normalize_proposal_envelope
+    spec = normalize_proposal_envelope(
+        {"execution_kind": "script", "edits": [{"search": "x", "replace": "y"}]})
+    assert spec["edits"]
+    with pytest.raises(ValueError, match="not both"):
+        normalize_proposal_envelope(
+            {"execution_kind": "script", "code": "x",
+             "edits": [{"search": "x", "replace": "y"}]})

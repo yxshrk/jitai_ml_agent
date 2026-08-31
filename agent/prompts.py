@@ -78,6 +78,15 @@ every ordinary method uses this form and MUST NOT include a farm-close plan:
  "action": "<draft|debug|improve>",
  "parent": "<parent node id you were given>",
  "code": "<the WHOLE script as a JSON string>"}
+For an IMPROVE proposal, do NOT re-emit the whole script. Replace "code" with
+targeted edit blocks applied verbatim to the parent script:
+ "edits": [{"search": "<exact contiguous snippet copied character-for-character
+from the parent script; must occur exactly once>",
+            "replace": "<the replacement text>"}, ...]
+Edits are applied in order; untouched code stays byte-identical, so the parent's
+debugged trainer, data pipeline, and evaluation scaffolding survive unchanged.
+Copy search text EXACTLY (whitespace included) from the parent script you were
+given. Use several small blocks rather than one giant block.
 """
 
 PROPOSER_MODE = {
@@ -91,9 +100,10 @@ PROPOSER_MODE = {
         "Mode: IMPROVE. Apply one change to the parent script (the current best "
         "node) — atomic by default, or a cited package / internal fan-out per "
         "the task brief. Prefer the highest-expected-gain untried menu item; "
-        "use the journal to avoid rejected ideas. Emit the whole parent file "
-        "with the smallest coherent change needed to test the hypothesis; "
-        "unnecessary rewrites are defects."
+        "use the journal to avoid rejected ideas. Emit \"edits\" blocks (see "
+        "the envelope contract), NOT a whole script: the smallest set of "
+        "search/replace edits that tests the hypothesis. The parent is an "
+        "accepted, debugged artifact; discarding it is a defect."
     ),
     "debug": (
         "Mode: DEBUG. The parent script failed. Preserve its approach and "

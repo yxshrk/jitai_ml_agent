@@ -77,6 +77,35 @@ class Node:
     execution_kind: str = "script"
 
 
+class EditApplyError(ValueError):
+    """An edits-proposal hunk failed to apply to the parent script."""
+
+
+def apply_edits(parent_code: str, edits: list) -> str:
+    """Apply search/replace edit blocks to the parent script, in order.
+
+    Each search snippet must occur EXACTLY ONCE in the current text
+    (constrained patching): untouched code stays byte-identical, so accepted
+    artifacts evolve instead of being re-typed. Mismatches raise EditApplyError
+    with enough detail for one targeted repair round."""
+    text = parent_code
+    for i, edit in enumerate(edits):
+        search = edit["search"]
+        n = text.count(search)
+        if n == 0:
+            raise EditApplyError(
+                f"edit {i}: search text not found in parent script "
+                f"(starts {search[:80]!r}); copy it exactly, whitespace included")
+        if n > 1:
+            raise EditApplyError(
+                f"edit {i}: search text occurs {n} times (starts {search[:80]!r}); "
+                "extend it with surrounding lines until it is unique")
+        text = text.replace(search, edit["replace"], 1)
+    if text == parent_code:
+        raise EditApplyError("edits applied but produced no change to the script")
+    return text
+
+
 def rewrite_ratio(parent_code: str, code: str) -> float:
     """Line-level similarity between parent and proposed script (0..1).
 
@@ -1219,7 +1248,39 @@ class Loop:
             else:
                 if any(key in spec for key in ("farm_close_plan", "ensemble_plan")):
                     raise ValueError("script proposal must not carry a farm-close plan")
-                code = spec["code"]
+                if spec.get("edits"):
+                    if mode == "draft":
+                        raise ValueError("draft proposals must carry code, not edits")
+                    parent_text = parent.code_path.read_text()
+                    try:
+                        code = apply_edits(parent_text, spec["edits"])
+                    except EditApplyError as exc:
+                        retry = self.brain.propose(
+                            self.journal_lines, mode, parent.node_id, parent_text,
+                            directive=(
+                                f"Your edit blocks failed to apply: {exc}. Re-emit the "
+                                "proposal with corrected \"edits\" whose search text is "
+                                "copied exactly from the parent script."),
+                            focus_note=self.focus_note,
+                            traceback_tail=(parent.error or parent.verdict_note)
+                            if mode == "debug" else None,
+                            parent_history=parent_history,
+                            method_selection=node.method_selection,
+                            streak_state=streak_state,
+                            context_mode=self.config.context_mode,
+                            prior_runs=self.prior_runs,
+                            timeout_s=self.config.timeout_s,
+                        )
+                        if retry.get("edits"):
+                            code = apply_edits(parent_text, retry["edits"])
+                            spec = retry
+                        elif isinstance(retry.get("code"), str):
+                            spec, code = retry, retry["code"]
+                        else:
+                            raise
+                        recovery = "edit-apply: repaired"
+                else:
+                    code = spec["code"]
                 if mode == "improve" and parent.node_id != "node_000":
                     # The rule protects the agent's OWN accepted artifacts;
                     # the first improve on the organizer baseline is the
