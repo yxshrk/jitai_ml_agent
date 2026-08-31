@@ -14,6 +14,7 @@ judged number (and the --max-tokens stop) is total in+out across providers.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import tomllib
@@ -66,6 +67,46 @@ class TokenMeter:
         return sum(b["in"] + b["out"] for b in self.per_role.values())
 
 
+PLAN_ENVELOPE_KEYS = ("farm_close_plan", "ensemble_plan")
+
+
+def normalize_proposal_envelope(spec: dict) -> dict:
+    """Validate the code-or-plan proposal union and return its canonical form."""
+    normalized = dict(spec)
+    execution_kind = normalized.get("execution_kind")
+    plan_keys = [key for key in PLAN_ENVELOPE_KEYS if key in normalized]
+    has_code = "code" in normalized
+
+    if execution_kind is None:
+        if has_code and not plan_keys:
+            normalized["execution_kind"] = "script"
+            execution_kind = "script"
+        else:
+            raise ValueError(
+                "proposal missing execution_kind; only legacy code-only proposals "
+                "normalize to script"
+            )
+    if execution_kind not in ("script", "farm_close"):
+        raise ValueError("execution_kind must be 'script' or 'farm_close'")
+
+    if execution_kind == "script":
+        if not has_code or not isinstance(normalized["code"], str):
+            raise ValueError("script proposal must carry code")
+        if plan_keys:
+            raise ValueError("script proposal must not carry a farm-close plan")
+        return normalized
+
+    if has_code:
+        raise ValueError("farm_close proposal must not carry code")
+    if len(plan_keys) != 1:
+        raise ValueError(
+            "farm_close proposal must carry exactly one of farm_close_plan or ensemble_plan"
+        )
+    plan = normalized.pop(plan_keys[0])
+    normalized["farm_close_plan"] = plan
+    return normalized
+
+
 def extract_json_spec(text: str) -> dict:
     """Parse the proposer reply into an experiment spec, with fallbacks."""
     candidates = [text.strip()]
@@ -78,17 +119,15 @@ def extract_json_spec(text: str) -> dict:
     for cand in candidates:
         try:
             spec = json.loads(cand)
-            if isinstance(spec, dict) and (
-                "code" in spec or "farm_close_plan" in spec
-            ):
-                return spec
-        except (json.JSONDecodeError, ValueError):
+        except json.JSONDecodeError:
             continue
+        if isinstance(spec, dict):
+            return normalize_proposal_envelope(spec)
     # Last resort: pull hypothesis + a python fence out of free-form text.
     code = extract_code_block(text)
     hyp = re.search(r'"hypothesis"\s*:\s*"([^"]+)"', text)
     if code and hyp:
-        return {"hypothesis": hyp.group(1), "code": code}
+        return normalize_proposal_envelope({"hypothesis": hyp.group(1), "code": code})
     raise ValueError(f"could not parse proposer reply ({text[:200]!r}...)")
 
 
@@ -384,7 +423,8 @@ class Brain:
         spec = extract_json_spec(text)
         expected_delta = spec.get("expected_delta")
         if (isinstance(expected_delta, bool)
-                or not isinstance(expected_delta, (int, float))):
+                or not isinstance(expected_delta, (int, float))
+                or not math.isfinite(expected_delta)):
             raise ValueError("proposer reply missing numeric expected_delta")
         spec["expected_delta"] = float(expected_delta)
         basis = spec.get("expected_delta_basis")

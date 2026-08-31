@@ -68,10 +68,11 @@ fan-out is ONE node: budget probes so total runtime stays inside the timeout,
 keep probes short (2-3 epochs, optional subsample), and make the final training
 full-length. Do not re-try ideas the journal shows were rejected.
 
-Respond with a single JSON object and nothing else. The farm-close plan contract
-below replaces the `code` field only when the selected method is
-`diverse-family-farm-close`; every other method uses this ordinary form:
-{"hypothesis": "<one falsifiable sentence with expected effect size>",
+Respond with a single JSON object and nothing else. Every proposal is a
+discriminated envelope. A farm-close proposal uses the separate contract below;
+every ordinary method uses this form and MUST NOT include a farm-close plan:
+{"execution_kind":"script",
+ "hypothesis": "<one falsifiable sentence with expected effect size>",
  "expected_delta": <honest numeric expectation for validation-primary delta, e.g. 0.0015>,
  "expected_delta_basis": "<one sentence citing a specific card expectation or journal line>",
  "action": "<draft|debug|improve>",
@@ -107,36 +108,47 @@ ENSEMBLE_CONTRACT = (
     "(numpy allclose check between members and against the parent predictions) and "
     "print per-member validation primaries to progress output. An ensemble whose "
     "final predictions equal the parent's is a no-op and will be rejected by the "
-    "harness."
+    "harness, except when the farm-close executor explicitly selects and records "
+    "the incumbent fallback."
 )
 
 
 FARM_CLOSE_PLAN_CONTRACT = """\
 ## Typed farm-close plan (HARNESS-EXECUTED; overrides whole-script output)
 The selected method is `diverse-family-farm-close`. Do NOT write an orchestration
-script. Return the ordinary hypothesis/expected-delta/action/parent fields plus
-`farm_close_plan` instead of top-level `code`:
-{"hypothesis":"...", "expected_delta":0.0035,
+script or include top-level `code`. Return the ordinary
+hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
+harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
+{"execution_kind":"farm_close",
+ "hypothesis":"...", "expected_delta":0.0035,
  "expected_delta_basis":"...", "action":"<draft|improve>", "parent":"node_NNN",
  "timeout_s":7200,
- "farm_close_plan":{
+ "ensemble_plan":{
    "probe_epochs":2, "admission_primary":0.6040,
+   "full_member_limit":3, "min_probe_blend_gain":0.0,
    "members":[
      {"family":"<distinct-family-id>",
       "script_source":"<existing repo-relative .py path>",
       "config":{"epochs":8,"batch_size":4096,"dropout":0.2}, "seed":42}
    ],
-   "blend":{"method":"rank_average","scope":"per_user"}}}
+   "blend":{"weights":"equal","aggregations":[
+     {"method":"rank_average","scope":"per_user"}]}}}
 
 Schema rules enforced before execution: exactly 4-6 members; every family and seed
-is distinct; each member has exactly one of `script_source` or `code` (a whole
-generated member script), plus a `config` object of CLI dials and an integer seed;
-probe_epochs is 1 or 2; admission_primary is at least 0.6040; blend.method is
-`rank_average`; blend.scope is `per_user` or `global`; unknown fields are invalid.
-Use genuinely different model/objective families. The harness will train probes
-and selected full members concurrently, search probe blends, re-verify at full
-fidelity, and emit the final node artifacts. Budget this sweep for 60-120 minutes
-without exceeding the supplied per-node timeout."""
+is distinct; optional member_id values must also be distinct; each member has
+exactly one of `script_source` or `code` (a whole generated member script), plus a
+`config` object of CLI dials and an integer seed; probe_epochs is 1 or 2;
+full_member_limit is 2 or 3; min_probe_blend_gain defaults to 0 and is a strict
+promotion threshold. Blends use equal weights and one or two declared
+rank-average aggregation rules with `per_user` or `global` scope; the harness
+counts and exhaustively evaluates their complete finite subset enumeration, never
+truncating it based on observed results. Unknown fields are invalid. Use genuinely
+different model/objective families. The harness will train probes and selected
+full members concurrently, use the best probe singleton as the promotion anchor,
+freeze the winning full recipe, re-evaluate it from saved full vectors, and emit
+the final node artifacts. A full singleton or incumbent is a valid recorded
+fallback. Budget this sweep for 60-120 minutes without exceeding the supplied
+per-node timeout."""
 
 
 FIXER_SYSTEM = """\

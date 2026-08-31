@@ -74,6 +74,7 @@ class Node:
     recovery: str | None = None
     farm_close_plan: dict | None = None
     farm_close_plan_path: Path | None = None
+    execution_kind: str = "script"
 
 
 @dataclass
@@ -222,7 +223,7 @@ class Loop:
 
     def run_experiment(self, node: Node, timeout_s: int) -> tuple[RunResult, str]:
         """Run the mandatory smoke stage, then the full experiment if it passes."""
-        if node.action in ("draft", "improve"):
+        if node.action in ("draft", "improve") and node.execution_kind == "script":
             smoke = self.run_script(
                 node.code_path,
                 self.run_dir / f"{node.node_id}_smoke",
@@ -407,6 +408,17 @@ class Loop:
 
     def acceptance(self, node: Node, metrics: dict) -> tuple[bool, str | None]:
         """Returns (accepted, note). May run one confirm reseed."""
+        farm_metrics = metrics.get("farm_close")
+        legitimate_incumbent_fallback = bool(
+            metrics.get("fallback_to_incumbent")
+            or (
+                isinstance(farm_metrics, dict)
+                and farm_metrics.get("fallback_to_incumbent")
+            )
+        )
+        if legitimate_incumbent_fallback:
+            node.failure_stage = None
+            node.fixer_eligible = False
         # No-op guard (ported from teammate harness yash-attempt): predictions
         # byte-identical to the parent's are a disguised no-change.
         try:
@@ -416,7 +428,7 @@ class Loop:
             theirs = (self.run_dir / parent.node_id / "predictions.csv") if parent else None
             if theirs and mine.exists() and theirs.exists():
                 h = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-                if h(mine) == h(theirs):
+                if h(mine) == h(theirs) and not legitimate_incumbent_fallback:
                     # degenerate ensembles collapsed to the parent twice tonight;
                     # give the fixer one shot instead of silently burning the node
                     node.failure_stage = "noop_predictions"
@@ -540,6 +552,7 @@ class Loop:
         plan_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n")
         node.farm_close_plan = plan
         node.farm_close_plan_path = plan_path
+        node.execution_kind = "farm_close"
         prediction_parent = parent
         seen: set[str] = set()
         while prediction_parent.node_id not in seen:
@@ -643,6 +656,7 @@ class Loop:
             "intervention": False,
         }
         if node.farm_close_plan is not None:
+            record["execution_kind"] = node.execution_kind
             record["farm_close_plan"] = node.farm_close_plan
             record["farm_close_plan_path"] = str(node.farm_close_plan_path)
         with self.journal_path.open("a") as handle:
@@ -917,23 +931,50 @@ class Loop:
                 prior_runs=self.prior_runs,
                 timeout_s=self.config.timeout_s,
             )
-            is_farm_close = (
+            execution_kind = spec.get("execution_kind")
+            if execution_kind not in (None, "script", "farm_close"):
+                raise ValueError("execution_kind must be 'script' or 'farm_close'")
+            method_farm_fallback = (
                 (node.method_selection or {}).get("chosen_method_id")
                 == "diverse-family-farm-close"
             )
+            is_farm_close = (
+                execution_kind == "farm_close"
+                or (execution_kind is None and method_farm_fallback)
+            )
             if is_farm_close:
+                if "code" in spec:
+                    raise ValueError("farm_close proposal must not carry code")
+                plan_keys = [
+                    key for key in ("farm_close_plan", "ensemble_plan") if key in spec
+                ]
+                if len(plan_keys) != 1:
+                    raise ValueError(
+                        "farm_close proposal must carry exactly one plan field"
+                    )
                 try:
                     code = self.compile_farm_close_node(
-                        node, spec.get("farm_close_plan"), parent
+                        node, spec[plan_keys[0]], parent
                     )
                 except FarmClosePlanError as exc:
                     spec = self.brain.repair_farm_close_plan(spec, str(exc))
+                    repaired_plan_keys = [
+                        key for key in ("farm_close_plan", "ensemble_plan")
+                        if key in spec
+                    ]
+                    if len(repaired_plan_keys) != 1 or "code" in spec:
+                        raise ValueError(
+                            "repaired farm_close proposal must carry exactly one plan and no code"
+                        )
                     code = self.compile_farm_close_node(
-                        node, spec.get("farm_close_plan"), parent
+                        node, spec[repaired_plan_keys[0]], parent
                     )
                     recovery = "plan-repaired"
             else:
+                if any(key in spec for key in ("farm_close_plan", "ensemble_plan")):
+                    raise ValueError("script proposal must not carry a farm-close plan")
                 code = spec["code"]
+                node.execution_kind = "script"
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             expected_delta = spec.get("expected_delta")
             if (isinstance(expected_delta, bool)
@@ -988,8 +1029,16 @@ class Loop:
             if node.farm_close_plan is not None:
                 try:
                     repaired_spec = self.brain.repair_farm_close_plan(spec, result.error)
+                    repaired_plan_keys = [
+                        key for key in ("farm_close_plan", "ensemble_plan")
+                        if key in repaired_spec
+                    ]
+                    if len(repaired_plan_keys) != 1 or "code" in repaired_spec:
+                        raise ValueError(
+                            "repaired farm_close proposal must carry exactly one plan and no code"
+                        )
                     fixed = self.compile_farm_close_node(
-                        node, repaired_spec.get("farm_close_plan"), parent
+                        node, repaired_spec[repaired_plan_keys[0]], parent
                     )
                 except BudgetExhausted:
                     fixed = code
