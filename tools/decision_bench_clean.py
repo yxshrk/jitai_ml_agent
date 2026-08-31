@@ -203,7 +203,12 @@ def real_state_scenarios():
         if rubric is None:
             continue
         good, bad = rubric
-        out.append(dict(sc, good=set(good), bad=set(bad)))
+        # the clean brain has never seen full-library ids: render the journal in
+        # clean-card vocabulary (same events, its own names for them)
+        journal = [line.replace("package-dial-sweep",
+                                "hyperparam-random-search (wide dial sweep: lr, weight decay, dropout, k)")
+                   for line in sc["journal"]]
+        out.append(dict(sc, journal=journal, good=set(good), bad=set(bad)))
     return out
 
 

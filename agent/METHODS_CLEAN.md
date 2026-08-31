@@ -34,6 +34,13 @@ literature-reported expectations only.
 - COMPOUND CLEARED WINS. After an accepted change the new champion is the
   parent; stack the next change on top of it rather than restarting from the
   baseline.
+- DOSAGE IS EXHAUSTED BY A SWEEP. If the accepted champion came from a dial
+  search that already sampled regularization dials (weight decay, dropout,
+  embedding size, LR schedule/checkpoint), re-applying a regularization or
+  schedule card is not a new hypothesis — those dials were just searched. The
+  next change must introduce a NEW MECHANISM (a different objective, negative
+  sampler, feature source, or architecture), which shifts the optimum and
+  earns its own re-tuning; then close over what worked.
 - HONEST TELEMETRY. When the learning curve is missing or unusable, the
   correct diagnosis is insufficient-telemetry; do not guess a pathology.
   Prefer a low-risk, diagnosis-independent broad move (screening, leakage-safe
