@@ -16,7 +16,12 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+# The run's workspace copy is byte-identical to the exported data/real_ws
+# train.npz (verified 31 Aug); fall back so the recipe runs from a clean clone
+# after `uv run python data/export_real_ws.py`.
 TRAIN_PATH = ROOT / "logs/run_bigclock_07/workspace/train.npz"
+if not TRAIN_PATH.exists():
+    TRAIN_PATH = ROOT / "data/real_ws/train.npz"
 VAL_PATH = ROOT / "logs/run_bigclock_07/workspace/val.npz"
 TEST_PATH = ROOT / "data/test_features/test.npz"
 OUTPUT_PATH = ROOT / "evidence/test_submission_pure.csv"

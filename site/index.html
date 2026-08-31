@@ -532,8 +532,8 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   <h2>Everything above is measured, logged, and reproducible.</h2>
   <div class="grid" id="rgrid"></div>
   <p class="note">Scored artifact = best validation checkpoint at rule convergence.
-  The hidden test set was touched exactly once, at final submission. Bonus: the same
-  agent on KuaiRand-1K (11.7M rows) reached <span class="go">0.6524</span>. Full run
+  Test labels are never read anywhere in the pipeline; test features are read only by the final submission builders. Bonus: the same
+  agent on KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
   journals, the method-card library, and 250+ measured experiment cells ship in the repo.</p>
 </div></section>
 

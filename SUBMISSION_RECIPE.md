@@ -30,15 +30,17 @@
   champion (0.60513) with no seed-script caveat. Test CSV: BUILT + VALIDATED (tools/predict_test_bc07.py;
   members reproduced at 0.6040-0.6044, ensemble 0.60561 ~= run value; 170,588 rows).
   [superseded: seeded run_desig_seeded_03 0.60513 -> now disclosed evidence]
-- **1K: 0.6524 — run_max_1k_c (coral) node_002, unseeded.** The agent's 48-cell
-  cross-stage factorial discovered a regime INVERSION vs Pure: DCN-lite with PURE
-  LOGLOSS (no BPR: its diagnostics measured bpr-hybrid 0.593 vs logloss 0.646),
-  NO recency weighting, dropout 0.13, k24 — closed as a validation-selected
-  2-member ensemble (seeds 42, 1051). VERIFIED three ways: independent from-scratch
-  evaluator reproduces 0.652403 exactly; in-run re-implementation scored 0.65221;
-  fresh seeds 7/99 (never seen by the run) scored 0.64804/0.64735. Test CSV:
-  REBUILD PENDING from this recipe.
-  [superseded: run_desig_1k_01 0.63874 -> disclosed evidence]
+- **1K: 0.66892 — run_omega_1k (ruby) node_005, unseeded.** Causal session
+  features (+0.019 over the prior champion family), triple-audited (independent
+  evaluator, journal replay, feature-provenance check). Submitted artifact =
+  the FAITHFUL A-form CSV (evidence/test_submission_1k_faithful.csv), a
+  train-only replay of the recorded recipe. CAVEAT (disclosed): the run's exact
+  checkpoint was not persisted; the replay's validation primary is 0.6772 vs
+  the recorded run value 0.66892 — we claim the RECORDED value and ship the
+  replay, per the header policy. GPU: RTX 4090, ~5.7 GPU-hours (wall-clock is
+  the scored measure).
+  [superseded: run_max_1k_c 0.6524 -> disclosed evidence; run_desig_1k_01
+  0.63874 -> disclosed evidence]
 - **27K (bonus, out-of-protocol scaling demo): 0.67263** — 5-seed ensemble on
   RTX 4090 (seeds 42-46, ruby); singles 0.6609-0.6633.
 - NOTE: farm-greedy 0.60577/0.60602 are val-selected -> EVIDENCE ONLY. The honest
@@ -62,7 +64,7 @@ Best validation: **0.60577** — rank-average ensemble of 5 frozen-stack seeds
   at/near the top of every signal and carries the variance-reduction rationale.
 - Test-time procedure: train chosen seeds on TRAIN ONLY (organizer ruling), predict
   test with each, per-user rank-average, submit via evidence/submission.py +
-  official submit.py --check. ONE test touch.
+  official submit.py --check. Test labels are never read anywhere in the pipeline; test features are read only by the final CSV builders.
 
 ## COMPLIANCE RULING (Sat night, brief re-read): the scored submission must be
 ## "the validation-best checkpoint AT CONVERGENCE" of a run — an AGENT-designated

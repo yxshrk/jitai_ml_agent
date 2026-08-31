@@ -87,7 +87,7 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 - Train on train; validation used for tuning/selection only (organizer-endorsed).
 - The hidden-test window's **labels are never read**: the export writes features
   only and the predictors assert the archive contains no label-like arrays.
-- The COMPLETE development campaign is disclosed: 113 runs (including incomplete/
+- The COMPLETE development campaign is disclosed: 139 completed runs (snapshot 31 Aug, plus incomplete/
   aborted ones), ~4.8M LLM tokens, ~30 aggregate run-hours — machine-inventoried by
   `tools/audit_runs.py` (logs/RUNS_INVENTORY.md, evidence/run_inventory.csv). The
   submission is the clearly designated best run, per the organizers' webinar guidance.
