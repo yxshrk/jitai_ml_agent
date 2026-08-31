@@ -638,7 +638,7 @@ def test_journal_and_summary_record_knowledge_mode(tmp_path, knowledge_mode):
 
 def test_every_method_card_declares_parseable_reference_primary():
     brain = fake_brain()
-    assert len(brain.method_cards) >= 21
+    assert len(brain.method_cards) >= 10  # lean library on bigclock-plus
     for card in brain.method_cards.values():
         assert "- reference_primary:" in card
         metadata = parse_method_card_metadata(card)

@@ -168,17 +168,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win as champion component (0.5/0.5 hybrid inside the 0.6047 package; pure BCE 0.6038 and pure BPR 0.6036 alone are measured dead)
 - status_1k: untried
 
-### dndcg-lambda: Delta-nDCG lambda weighting for top-5 groups
-- mechanism: Weight within-user positive/negative pair gradients by the absolute nDCG@5 change caused by swapping the pair. Build batches as complete groups sized like the evaluator's top-5 lists.
-- treats: metric-mismatch | flat-signal
-- reference_primary: none
-- preconditions: A correct grouped BPR/listwise implementation and stable position/discount computation are available; binary groups must contain both labels.
-- citation: LambdaRank/LambdaLoss literature; `research/models-losses-hparams.md` section 2
-- expected_gain / cost: Likely +0.000-0.003 primary because five-item binary lists leave little extra discrimination / low-medium.
-- status_pure: measured-dead (lambda-weighted pairs rejected in multiple runs, e.g. qb_b n2 -0.0024, v2_r8 n3 flat)
-- status_1k: untried
-
-
 ### dcn-lite: DCNv2-lite interaction head
 - mechanism: Add one or two explicit cross layers and a small MLP over the five field embeddings. This supplies bounded higher-order interactions without the parameter cost of xDeepFM/AutoInt.
 - kind: opportunity
@@ -190,30 +179,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win as champion architecture (core of every >=0.6042 package)
 - status_1k: untried
 
-### finalmlp: FinalMLP two-stream fusion
-- mechanism: Feed embeddings through two gated MLP streams and combine them with a bilinear fusion head. The streams can capture complementary feature interactions while keeping the network compact.
-- kind: opportunity
-- treats: underfit | flat-signal
-- reference_primary: none
-- preconditions: Only try from a regularized k=16 parent after objective changes; compare multiple seeds because expected architecture deltas match seed noise.
-- citation: FinalMLP, AAAI 2023 (arXiv:2304.00902); FuxiCTR/BARS
-- expected_gain / cost: Estimated +0.001-0.005 over DCN-lite with high uncertainty / medium.
-- status_pure: measured-dead (failed 3-seed confirm, C4 closure)
-- status_1k: untried
-
-### mtl-shared-bottom: Shared-bottom multi-task heads
-- mechanism: Share embeddings/trunk across long_view and a few dense auxiliary outcomes, with small task heads and total auxiliary weight 0.1. Auxiliaries regularize sparse ID representations through extra training-only gradients.
-- kind: opportunity
-- treats: underfit | overfit | flat-signal
-- reference_primary: 0.6039
-- preconditions: click/effective_view/like are targets only, never validation inputs; use 2-4 correlated tasks and guard against seesaw effects.
-- citation: shared-bottom/ESMM literature; HoME (arXiv:2408.05430); `zoo/EXPERIMENTS.md` E3
-- expected_gain / cost: Aux 0.1 tied but edged no-aux, 0.6039 versus 0.6038 three-seed mean / low.
-- status_pure: measured-dead (aux watch-time/social heads below eps across runs 03-05)
-- status_1k: untried
-
-
-
 ### regularization-schedule: Compound dropout, row-L2, weight decay, and LR decay
 - mechanism: Apply MLP dropout around 0.3, accessed-row embedding L2, AdamW decay for dense weights, and decay LR on plateau/epoch. The compound package aims to keep validation ranking alive past epoch 2-3.
 - treats: overfit
@@ -224,59 +189,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win as package component (joint dose in champion; single-dose variants measured flat)
 - status_1k: untried
 
-### swa-ema: SWA or EMA checkpoint averaging
-- mechanism: Maintain an exponential or stochastic average of weights across late checkpoints, then score the averaged model. Averaging reduces optimizer/seed variance without adding inference models.
-- treats: overfit | data-shift
-- reference_primary: none
-- preconditions: Training must produce several useful near-peak checkpoints; do not average far past a sharply collapsing validation curve.
-- citation: SWA (Izmailov et al.); EMA training practice; `research/models-losses-hparams.md` seed-variance guidance
-- expected_gain / cost: Estimated +0.000-0.003 primary, mainly variance reduction / low.
-- status_pure: measured-flat (EMA 0.6025-class results, below eps; weight averaging never cleared the bar)
-- status_1k: untried
-
-### embedding-dim-down: Reduce embedding dimension to k=8
-- mechanism: Halve ID embedding capacity from k=16 to k=8, reducing memorization in sparse user/item rows and forcing more shared signal. Keep the loss and head unchanged for a clean capacity test.
-- treats: overfit
-- reference_primary: none
-- preconditions: Curves peak early and k=32 is already worse; use identical seeds and early stopping because capacity effects are small.
-- citation: `research/models-losses-hparams.md` section 4; MENU item 6 and E2
-- expected_gain / cost: k=32 scored 0.6039 versus k=16 0.6047; k=8 may recover <=0.003 through regularization / low.
-- status_pure: measured-dead (k=8 regression ~-0.005; k=16 optimal on Pure)
-- status_1k: untried
-
-### duration-regime-heads: Short/long duration regime heads
-- mechanism: Route examples through separate prediction heads for videos below versus above the 18-second long_view threshold regime, while sharing embeddings and trunk. This lets ranking functions differ where label censoring changes.
-- kind: opportunity
-- treats: metric-mismatch | data-shift | underfit
-- reference_primary: none
-- preconditions: Both regimes have enough examples and the route uses impression-known duration only; regularize heads toward their shared parent.
-- citation: D2Q duration debiasing, KDD 2022 (arXiv:2206.06003); KuaiRand research notes
-- expected_gain / cost: Estimated +0.002-0.006 if duration bias is material / low-medium.
-- status_pure: measured-flat on Pure (discovered in unseeded wave, never confirmed above eps)
-- status_1k: untried
-
-### user-metadata-crosses: Coarse user-metadata by item/context crosses
-- mechanism: Cross stable coarse user attributes with item/author/context IDs so features vary across candidates within a user. Back off rare crosses to avoid exploding sparse capacity.
-- kind: opportunity
-- treats: flat-signal | data-shift
-- reference_primary: none
-- preconditions: Legal user metadata must exist at inference and each cross must include item-side variation; user-constant features alone cannot change GAUC/nDCG.
-- citation: standard sparse recommender feature crossing; GAUC invariance analysis in `research/models-losses-hparams.md`
-- expected_gain / cost: Estimated +0.001-0.005 with high sparsity risk / medium.
-- status_pure: measured-dead (kitchen-sink L5 0.6017 vs L0 0.6043; crosses lose)
-- status_1k: untried
-
-### session-time-features: Session and fine time context
-- mechanism: Derive causal session position/gap features from impression timestamps and add hour/day context crosses. These represent transient intent and distribution changes that static IDs miss.
-- kind: opportunity
-- treats: data-shift | flat-signal
-- reference_primary: none
-- preconditions: Compute using current/past impressions only, preserve row order, and never use future session events; hour/day basics may already be in the parent.
-- citation: KuaiRand schema/research notes; MENU temporal-context item 9; run_omega_1k n5 journal (exact recipe: gap edges [1,5,15,30,60,180,720]min, position edges [1,2,3,5,8,16], 30-min session cut, hour*tab + weekday*tab crosses, causal running state)
-- expected_gain / cost: MEASURED +0.0192 on 1K (expected only +0.0025 — biggest overshoot of campaign); on Pure untested, prior +0.001-0.005 / medium.
-- status_pure: measured-weak (run_final_s1 n2: +0.0002 as plain fields — consult prediction confirmed; do NOT re-propose plain form on Pure)
-- status_1k: measured-win (run_omega_1k n5: 0.6497->0.6689, independently re-evaluated exact-match)
-
 ### recency-weighting: Exponential training recency weighting
 - mechanism: Weight training rows by age relative to the validation boundary so recent behavior dominates stale impressions. Keep evaluation and sampling unchanged.
 - treats: data-shift
@@ -286,29 +198,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - expected_gain / cost: Expected small but robust shift correction, around +0.001-0.004 / low.
 - status_pure: measured-win as package component (7d half-life in champion; single-dose sub-eps, e.g. night_e +0.0007)
 - status_1k: measured-dead (half-life 3 scored 0.6120 and half-life 14 scored 0.6125; both hurt versus seed-42 frozen half-life 7 at 0.6134)
-
-### covisit-svd-init: Item co-visitation SVD initialization
-- mechanism: Build a train-only user-item incidence matrix, factor its item co-visitation Gram matrix, and initialize item embeddings from the top singular vectors. Fine-tune normally afterward.
-- kind: opportunity
-- treats: underfit | flat-signal
-- reference_primary: none
-- preconditions: Co-visitation uses only training impressions and item embedding dimensions align; useful mainly when random embeddings learn too slowly.
-- citation: classical item-item collaborative filtering and spectral initialization
-- expected_gain / cost: Expected +0.000-0.004; likely only accelerates early learning / medium.
-- status_pure: measured-dead (failed to beat controlled stack, C1)
-- status_1k: untried
-
-### seed-architecture-ensemble: Seed and diverse-architecture rank ensemble
-- mechanism: Train the winning configuration across 3-5 seeds and optionally a genuinely distinct architecture, then average scores or per-user ranks. Diversity reduces variance and uncorrelated ranking errors.
-- kind: opportunity
-- treats: data-shift | flat-signal
-- reference_primary: 0.6047
-- preconditions: Final-stage only; component models must be individually competitive and predictions aligned row-for-row.
-- citation: `research/models-losses-hparams.md` section 4; `zoo/EXPERIMENTS.md` E7
-- expected_gain / cost: Five-seed rank average scored 0.6047 versus seed mean 0.6039, a variance reducer rather than level gain / high training, low implementation.
-- status_pure: superseded by ensemble-design-sweep (seed ensembles measured-win; architecture mixes below eps)
-- status_1k: untried (three frozen-default seeds measured individually; no 1K prediction ensemble measured)
-
 
 ### package-dial-sweep: Literature package with internal dial search
 - mechanism: Implement the full capacity+regularization package (dcn-lite + bpr-hybrid + regularization-schedule + recency-weighting) as ONE node whose script runs a TWO-STAGE internal search, then trains the final model. Stage 1 (coarse): 8-12 short probes over wide ranges — dropout {0.15..0.4}, weight decay {3e-5..3e-3 log-spaced}, LR step-decay variants, recency half-life {3.5, 7, 14}. Stage 2 (refine): 6-10 probes on a DENSER grid centered on stage-1's winner, at longer probe length (4-6 epochs, full rows). Choose values yourself; do not just copy example numbers. Then ONE full-length training with the winning dials, checkpointing EVERY HALF-EPOCH and keeping the validation-best snapshot. When the run clock allows (timeout permitting), close by rank-averaging 5 consecutive seeds of the final config inside the same node or as the follow-up node. Use the wall-clock: probe time is cheap relative to the 6h ceiling; log every probe's config and score in metrics.json history.
@@ -368,54 +257,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_1k: untried
 
 
-### swa-then-ensemble: Per-member weight averaging before seed ensembling
-- mechanism: For each ensemble member, average the weights of the last N half-epoch checkpoints (SWA; or a constant-LR tail) to flatten the member, THEN per-user rank-average across seed members. Distinct from the measured-dead plain EMA/SWA single-model attempt: here averaging is per-member inside an ensemble.
-- kind: opportunity
-- reference_primary: none
-- treats: overfit
-- citation: Izmailov et al. 2018 (SWA); Wortsman et al., Model Soups, ICML 2022.
-- expected_gain / cost: +0.0003..+0.001 on AUC-scale metrics in literature; unknown here / low.
-- status_pure: untried
-- status_1k: untried
-
-### freq-adaptive-reg: Frequency-adaptive embedding regularization / SSE
-- mechanism: Scale embedding weight decay inversely with ID frequency (rare user/author rows get stronger decay), or apply Stochastic Shared Embeddings (randomly swap embedding indices with small probability) on top of the package regularization.
-- reference_primary: none
-- treats: overfit
-- citation: Wu et al., Stochastic Shared Embeddings, NeurIPS 2019; adaptive sparse-embedding regularization literature.
-- expected_gain / cost: consistent small gains over uniform reg in papers; unknown here / low-med.
-- status_pure: measured-flat (SIX attempts, all sub-eps: novel_r1 +0.0004, v2_r8 flat, ruby_y4 +0.0002 grey, v2_1k flat, menu_m3/m4 flat — the single most re-attempted flat card of the campaign; do not re-propose on Pure)
-- status_1k: untried
-
-### group-hard-pair-bpr: User-grouped hard-pair mining for the BPR term
-- mechanism: Batch by user and weight the hardest (max-violation) positive/negative pairs within each user group in the BPR loss, instead of uniform sampled pairs — aligns training pressure with GAUC exactly.
-- reference_primary: none
-- treats: metric-mismatch | flat-signal
-- citation: PDAOM (differentiable Group-AUC optimization); hierarchical group-wise ranking literature.
-- expected_gain / cost: GAUC gains reported over plain pairwise; likely small here / med.
-- status_pure: untried
-- status_1k: untried
-
-### adversarial-recency: Adversarial-validation importance weights instead of fixed half-life
-- mechanism: Train a small classifier to distinguish early-train vs late-train days (proxy for the test shift) using only train rows; use its per-row probability as importance weights in place of the hand-tuned exponential decay. Learns the shift shape instead of assuming it.
-- reference_primary: none
-- treats: data-shift
-- citation: adversarial validation practice (e.g. Lightweight Boosting with Adversarial Validation, 2023).
-- expected_gain / cost: replaces a hand dial with a learned one; unknown, plausibly +-0.0005 / low.
-- status_pure: untried
-- status_1k: untried
-
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] gbdt-diversity-member: LightGBM/CatBoost member for ensemble diversity
-- mechanism: Train a GBDT on train-only encodings of the 5 IDs (frequency counts, train-window rates per user/author/tab-duration) and add it as ONE member of the rank-average ensemble. Alone it will likely be weaker than the neural champion; the play is decorrelated errors. All encodings computed on the train window only (no leakage; no external data).
-- kind: opportunity
-- reference_primary: none
-- treats: flat-signal
-- citation: RecSys Challenge 2024 winning ensembles (NN + LightGBM + CatBoost); MLWave ensembling guide. NOTE: gbdt-lambdarank alone was measured weak here — this card is ONLY the diversity-member use.
-- expected_gain / cost: high-variance; frequently the biggest lever in challenge ensembles / med (needs lightgbm dependency — use sklearn GradientBoosting or pure-torch trees if lightgbm unavailable; stdlib+numpy+torch constraint applies).
-- status_pure: untried
-- status_1k: untried
-
-
 ### gauge-fixed-bce: User-centered BCE (within-user gauge fixing)  [MEASURED WIN]
 - mechanism: Batch complete user slates; replace the pointwise BCE logits with user-centered logits (logit minus that user's batch-mean logit, plus one learned global bias). Gradient of the pointwise term then sums to zero within each user, so it can only learn relative deviations — the only thing GAUC/nDCG measure. Keep the BPR term unchanged.
 - reference_primary: none
@@ -426,15 +267,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win (novel_r1)
 - status_1k: untried
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] signed-sketch-residual: Signed co-consumption sketch rank blend
-- mechanism: Compute recency-weighted per-user long-view residuals r_ui = sqrt(w)(y - user_mean); give each user a fixed 64-dim Rademacher hash vector; video sketch z_i = normalize(sum_u r_ui * h_u); user taste p_u = normalize(sum_j r_uj * z_j); graph score = p_u . z_i with self-contribution removed. Blend WITHIN-USER RANKS: final = rank(champion) + alpha * rank(graph), alpha in {0.05,0.1,0.2} chosen on a train-only rolling holdout. Numpy index_add over a [7600,64] array — minutes of compute.
-- kind: opportunity
-- reference_primary: none
-- treats: flat-signal
-- citation: signed-feedback CF + lightweight graph propagation (LightGCN lineage), compressed to sketches; NOT covered by the measured-dead co-visitation SVD INIT (this is a separate scorer blended at rank level, not an initialization).
-- expected_gain / cost: +0.0003..+0.0012 if errors decorrelate; possibly flat / low-med.
-- status_pure: untried (an earlier status here wrongly duplicated gauge-fixed-bce's novel_r1 n3 win; corrected 1 Sep)
-- status_1k: untried
 
 ### temporal-pair-kernel: Temporally-local pair sampling
 - mechanism: Keep 1 negative per positive, but draw 70% of negatives with probability proportional to exp(-|day_pos - day_neg|/2) (fallback uniform when no opposite label within 3 days); 30% uniform. Pair weight = sqrt(w_pos * w_neg). Redraw each epoch. Changes WHICH comparisons constrain the model, not their scalar weights — orthogonal to recency row-weighting.
@@ -447,59 +279,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 
 
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] broad-to-recent-curriculum: Phase-scheduled recency
-- mechanism: Same rows and model; phase the recency weighting — first half-epoch uniform, then one epoch at 7d half-life, final half-epoch at 3.5d with LR x0.3, optimizer not reset; keep half-epoch validation-best checkpointing so the broad checkpoint can still win.
-- reference_primary: none
-- treats: data-shift
-- citation: curriculum/fine-tune-on-recent practice for temporal splits.
-- expected_gain / cost: +0.0001..+0.0007; the cheapest experiment in this family / low.
-- status_pure: untried
-- status_1k: untried
-
-
-### listwise-regime: Listwise objective in its own training regime
-- mechanism: Per-user listwise (softmax cross-entropy over each user's slate) objective, trained in the regime where a public competitor measured it working: HIGHER capacity (k~32), LOWER lr (~3e-4), LONG training (up to ~100 epochs) with validation patience ~10 instead of our rapid-decay early-peak schedule. The hypothesis: listwise loss changes the overfitting dynamics, so the "listwise is dead" verdict measured under our short-peak regime does not transfer. Probe as a PACKAGE (loss + capacity + schedule together).
-- reference_primary: none
-- treats: metric-mismatch | underfit
-- citation: public Track 2 solution github.com/vrisdng/tiktok-techjam (reports 0.6019 repro -> 0.6034 listwise -> 0.60417 tuned 5-seed, claimed 6-sigma); public solutions are explicitly in-scope per the brief's Resource policy. Our own listwise-softmax card is measured-dead UNDER OUR REGIME ONLY.
-- expected_gain / cost: their measured +0.0016-0.0023 over baseline-repro in their regime; unknown whether it stacks with our package or gauge-fixed-bce / med (long trainings).
-- status_pure: untried (in this regime)
-- status_1k: untried
-
-
-### social-mtl-heads: Multi-signal auxiliary heads (like/follow/comment/forward)
-- mechanism: Add SEVERAL small auxiliary BCE heads at once on the shared representation — like, follow, comment, forward (and optionally click) — each at low weight (~0.05-0.1), targets from the training columns only (never inputs). Distinct from our measured single-aux cards: the hypothesis is that the BUNDLE of sparse social signals regularizes the shared embedding jointly where any one signal is too sparse to matter.
-- kind: opportunity
-- reference_primary: none
-- treats: overfit | flat-signal
-- citation: ESMM-style multi-task (Ma et al., SIGIR 2018; explicitly endorsed by the brief's appendix A.3); observed working in a public Track 2 solution (github.com/9irija/TikTok_TechJam: DeepFM + 4 social heads, +0.0030 primary, 3-seed verified) — public solutions are in-scope per the resource policy.
-- expected_gain / cost: their +0.0030 total includes architecture change; the aux-bundle increment here is unknown — probe on our package / low-med. NOTE: our data export may lack like/follow/comment/forward columns — if unavailable in the npz, use available aux targets (click, play_time_ms-derived) as a reduced bundle and note the limitation.
-- status_pure: untried
-- status_1k: untried
-
-
-### hetero-objective-ensemble: Rank-blend of DIFFERENT-objective models
-- mechanism: Train 2-3 members that differ by OBJECTIVE, not just seed — e.g. (a) the champion package with its BPR-hybrid loss, (b) a gauge-fixed-bce variant, (c) a lambda-weighted pairwise variant — then per-user rank-average them (fixed simple weights like equal or 0.5/0.25/0.25; do NOT sweep weights on validation). Rationale: same-recipe seed members share errors (measured: our homogeneous closes averaged +0.0005 and failed 4/5 times); different objectives decorrelate errors so the blend genuinely cancels mistakes.
-- kind: opportunity
-- reference_primary: none
-- treats: flat-signal | overfit
-- citation: ensemble-diversity theory (Krogh & Vedelsby); observed working in a public Track 2 solution (github.com/Rpkw789/autorec-lab: BPR + multi-task + LambdaLoss rank ensemble, single 0.6042 -> ensemble 0.6060 valid); public solutions in-scope per the resource policy. Apply OUR ensemble gate (rescue/harm) before accepting.
-- expected_gain / cost: their +0.0018 over best single; our two in-run attempts with
-  FRESH members measured BELOW the champion (f7 n4 0.6041 vs 0.6045; f9 n4 0.6046 vs
-  0.6051) — fresh-member fidelity tax again; see member-source calibration on the
-  close cards / med (2-3 full trainings).
-- status_pure: measured-flat with fresh in-run members (two attempts, both sub-champion); untried with polished script_source members
-- status_1k: untried
-
-### lambda-weighted-pairs: nDCG-weighted pairwise loss (LambdaLoss-style)
-- mechanism: Keep the BPR-style pairwise structure but weight each within-user pair by the |nDCG@5 change| that swapping the pair would cause at current ranks (LambdaLoss/LambdaRank weighting) — pairs that can move the top-5 get large gradients, bottom pairs get little. Metric-aligned variant of pairwise training; distinct from the measured-dead LightGBM-LambdaRank (different model class) and from listwise-softmax.
-- reference_primary: none
-- treats: metric-mismatch
-- citation: LambdaLoss framework (Wang et al., CIKM 2018); component of the public autorec-lab ensemble above.
-- expected_gain / cost: unknown alone; their blend gives it 37.5% weight, suggesting standalone competence / low-med.
-- status_pure: untried
-- status_1k: untried
-
 
 ### decayed-positive-sampling: Recency-decayed positive-count user sampling
 - mechanism: Sample WHICH user receives each BPR update proportionally to (sum over their positives of 2^(-days_ago/3))^0.5, then draw one observed pos + one neg from that user. Aligns training attention with positive-count-weighted GAUC and recency; changes gradient ALLOCATION, complementary to row recency weighting. Fixed dials (h=3d, alpha=0.5); no grid.
@@ -510,24 +289,6 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win (run_qb_b n1 package: 0.60466)
 - status_1k: untried
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] small-batch-diversity: Batch-size ensemble-diversity experiment
-- mechanism: Freeze the champion config; train 3 fixed seeds at each of {current, half, quarter} batch size; compare member quality, pairwise correlation, and midrank-ensemble payoff. Target: similar member quality with disagreement concentrated on correctable pairs (NOT maximum disagreement). One controlled experiment, not a search.
-- kind: opportunity
-- reference_primary: none
-- treats: flat-signal
-- citation: public entry (OrangeCat) ablation suggests smaller batches -> more optimizer steps, better sparse-ID learning, more useful seed diversity; our ensemble payoff is config-dependent (measured).
-- expected_gain / cost: 0..+0.0006 via ensemble / med.
-- status_pure: untried
-- status_1k: untried
-
-### relative-watch-component: Relative-advantage watch percentile diversity member
-- mechanism: Train-only target = 0.5*midrank_percentile(play_time_ms within video) + 0.5*midrank_percentile(play_time_ms within user x duration_bucket); train a compact model on the 5 IDs to predict it; use ONLY as a 5-10% rank-blend diversity member, never standalone. Distinct from measured-dead raw watch-time regression (relative target, blend-only role).
-- reference_primary: none
-- treats: flat-signal
-- citation: public entry (wecoai) uses this as a blend component; relative-percentile framing removes trivial duration scale.
-- expected_gain / cost: probably flat, upside +0.0005 / low-med.
-- status_pure: untried
-- status_1k: untried
 
 ### seed-ensemble: Seed ensemble of the champion configuration
 - mechanism: Cancel variance across random initializations by training the champion configuration at several consecutive seeds and per-user rank-averaging their validation predictions.
@@ -550,44 +311,8 @@ Proposer invocation pattern: generate a node that execs `zoo/ensemble_node.py` a
 ## Lower-confidence cards (selectable; screen at ONE seed before investing)
 Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5 impressions/user, so nDCG@5 is full-slate ordering, not top-of-many); full-slate-gauc-loss contradicts the measured "additional negatives hurt" evidence.
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
-- mechanism: After a half-epoch warm-up, per user take the top-M (M<=8) scoring negatives, form a smooth softmax-tail score t_u (tau=0.25), and add softplus(0.25 + t_u - s_pos) averaged over that user's positives, ramping weight 0->0.10 taken from BPR. Targets exactly what nDCG@5 punishes: observed negatives entering the top of the slate.
-- kind: opportunity
-- reference_primary: none
-- treats: metric-mismatch
-- citation: partial-AUC / top-K hard-negative theory (smooth pool variant); distinct from the measured-dead from-scratch hard-negative and listwise-softmax attempts (warm-up + smooth tail + small rider weight).
-- expected_gain / cost: +0.0002..+0.0009, mostly via nDCG / med.
-- status_pure: untried
-- status_1k: untried
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
-- mechanism: Replace sampled BPR with ALL observed pos-neg pairs per user slate, weight sqrt(w_p*w_n), normalize per user, aggregate users weighted by positive count (exactly GAUC's weighting). ~42 impressions/user makes full enumeration cheap. Keep the pointwise term at current weight.
-- reference_primary: none
-- treats: metric-mismatch
-- citation: AUC-consistent pairwise surrogates (Gao & Zhou). CAVEAT: our measured evidence that adding sampled negatives HURT argues against a big gain — treat as a probe, screen at 1 seed first.
-- expected_gain / cost: 0..+0.0008 / low.
-- status_pure: untried
-- status_1k: untried
 
-### ordinal-watch-ratio-fm: Ordinal watch-ratio auxiliary on FM
-- mechanism: Divide play time by min(duration, 18s), bucket the ratio, and train cumulative threshold heads beside long_view BCE. It exposes graded watch depth while preserving the binary scoring head.
-- treats: flat-signal | metric-mismatch
-- reference_primary: 0.6033
-- preconditions: Training outcomes only; cap/clean ratios and preserve ordinal threshold consistency. This card covers the measured FM auxiliary, not a future DCN-native ordinal main objective.
-- citation: TPM, KDD 2023 (arXiv:2306.03392); run_real_04 node_002 and run_real_05 node_003
-- expected_gain / cost: Best measured FM-aux primary 0.6033, below epsilon over 0.6018 baseline; run-04 form scored 0.6026 / low.
-- status_pure: PARENT-CONDITIONAL — dead on the bare FM (original test) but MEASURED WINS as riders on regularized packages (+0.0015 ordinal in run 12/real_05; +0.0018 CWM in deep_l1/run 23). Use on package parents only.
-- status_1k: untried
-
-### cwm-censored-fm: CWM-style censored auxiliary on FM
-- mechanism: Regress observed truncated watch time from shared FM representations; completed plays are right-censored lower bounds and penalize underprediction only. Combine with the long_view BCE head.
-- treats: flat-signal | metric-mismatch | data-shift
-- reference_primary: 0.6022
-- preconditions: Correct censoring at duration and training-only play_time; this measured card is only the cheap FM auxiliary, not the full counterfactual CWM likelihood.
-- citation: Zhao et al., CWM, KDD 2024 (arXiv:2406.07932); run_real_04 node_001
-- expected_gain / cost: Published watch-time GAUC is ~0.713-0.715, but the hackathon FM auxiliary measured 0.6022 and failed confirmation / medium.
-- status_pure: PARENT-CONDITIONAL — dead on the bare FM (original test) but MEASURED WINS as riders on regularized packages (+0.0015 ordinal in run 12/real_05; +0.0018 CWM in deep_l1/run 23). Use on package parents only.
-- status_1k: untried
 
 ## Measured-dead archive (NOT selectable — verdicts preserved for the record)
 
@@ -645,28 +370,6 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-win (run_final_s2 n4 +0.0010; cross-family blend probe 0.605828 evidence) — the endgame play: build members from BOTH the DCN package and seq-deepfm families, then rank-aggregate across families
 - status_1k: untried
 
-### snapshot-ensemble: Cyclic-LR snapshot ensemble within one training
-- mechanism: Use a cyclic LR schedule and save a checkpoint at each cycle minimum; rank-average the snapshots' scores. Ensemble diversity for the price of ONE training run; distinct from SWA/EMA weight averaging (scores are averaged, not weights).
-- kind: opportunity
-- treats: variance | overfit
-- reference_primary: none
-- preconditions: Training long enough for >=3 LR cycles; validation-select which snapshots enter.
-- citation: Snapshot Ensembles (Huang et al. 2017)
-- expected_gain / cost: +0.0003-0.0010 primary / low.
-- status_pure: untried
-- status_1k: untried
-
-### gated-session-residual: Pure-tuned session context via gated residual tower
-- mechanism: Add causal session features tuned for Pure's sparsity — HOUR-level gaps (0,1,2-3,4-7,8-23h,1-3d,4-7d,>7d), session = same (user,date,hour), position buckets (0,1,2,3,4-5,6-8,9+), crosses position*tab then position*duration_bucket then hour*tab — fed through a small zero-initialized residual tower with a learnable gate (init ~0.1) ON TOP of the frozen-shape champion scorer. Route pairwise/BPR loss to the BASE score only; pointwise BCE to the total. Keeps the champion anchor intact and avoids session/BPR gradient interference (1K matched configs: session gain +0.0180 under logloss vs only +0.0036 under BPR-hybrid).
-- kind: opportunity
-- treats: data-shift | flat-signal
-- reference_primary: none on Pure; mechanism family measured +0.0192 on 1K (run_omega_1k n5)
-- preconditions: Include anchor, +session, +session+pair ablation fits before the final fit; Pure sessions are sparse (85% of validation rows are position 0) so expect most gain from position 1-8 rows.
-- citation: run_omega_1k n5 journal; gpt-5.6-sol consult 31 Aug (gap/position bucket redesign for Pure density; gradient routing)
-- expected_gain / cost: +0.0018-0.0032 est. (consult); session-alone est +0.0014 — composite needed to clear eps / medium.
-- status_pure: measured-marginal (run_final_s2 n3: +0.0006 sub-eps; run_final_s3 n3: 0.6044 grey-rejected — real but small on Pure)
-- status_1k: variant measured-win
-
 ### context-stratified-pairs: Same-context BPR negative stratification
 - kind: opportunity
 - mechanism: Draw a fraction of BPR negatives from the SAME (user, date, hour) or (user, date, tab) context as the positive (~30% same-context on Pure — sparser sessions than 1K; fall back same-day, then uniform). Pairs the model must separate are the ones the metric actually scores: contemporaneous impressions in one slate. Distinct from temporal-pair-kernel (soft day-distance kernel); this is hard context stratification.
@@ -678,78 +381,4 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-win (run_final_s4 n3: 0.60521, +0.0015 from 0.6038 gauge base — largest single-mechanism gain of the final wave; NO ensemble close attempted on this base yet — highest-priority follow-up)
 - status_1k: untried
 
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] directional-temporal-pair-weighting: Forward-time pair emphasis
-- mechanism: In temporally-local BPR, weight pairs where the negative is LATER than the positive more heavily than earlier-negative pairs — the deployed model always ranks into the future, so future-negative comparisons match the test-time direction of drift.
-- treats: data-shift | ranking-mismatch
-- reference_primary: none
-- preconditions: temporal-pair-kernel (or any day-aware pair sampler) present.
-- citation: external playbook §4.14; complements measured temporal-pair-kernel (+0.0014).
-- expected_gain / cost: +0.0003-0.0010 est / low.
-- status_pure: untried
-- status_1k: untried
 
-### gap-conditioned-recency: Exposure-gap-conditioned weighting
-- mechanism: Replace the single global recency half-life with weights conditioned on hours since the user's previous impression: recent-gap rows get milder decay, long-gap "returning user" rows stronger recency emphasis. Two or three gap buckets, one weight multiplier each, validation-selected.
-- treats: data-shift
-- reference_primary: none
-- preconditions: hour-level timestamps (available); recency weighting present.
-- citation: gpt-5.6-sol consult §3 (gap-aware recency); session-gap evidence from run_omega_1k.
-- expected_gain / cost: +0.0003-0.0012 est / low.
-- status_pure: untried
-- status_1k: untried
-
-### affine-gauge-bce: Per-user affine gauge removal
-- mechanism: Extend gauge-fixed-bce: remove both the per-user mean AND scale of logits within each user's batch group before BCE (z-score the logits per user, learn a global temperature). Removes all per-user affine nuisance the rank metrics ignore.
-- treats: ranking-mismatch
-- reference_primary: gauge-fixed-bce (mean-only) measured 0.60447 (run_novel_r1)
-- preconditions: multiple impressions per user per batch; guard tiny groups (>=3 rows).
-- citation: external playbook §4.3; extends measured gauge-fixed-bce.
-- expected_gain / cost: +0.0003-0.0010 over mean-only / low.
-- status_pure: untried
-- status_1k: untried
-
-#### [archived — attention hygiene 1 Sep; never adopted, speculative] wr-pair-coverage: Without-replacement balanced pair coverage
-- mechanism: Sample BPR negatives without replacement per epoch (cycling through each user's negative pool) instead of iid draws, guaranteeing every negative constrains the model each epoch; balances gradient exposure on small slates.
-- treats: variance | ranking-mismatch
-- reference_primary: none
-- preconditions: per-user negative pools precomputed; keeps pair count unchanged.
-- citation: external playbook §4.4.
-- expected_gain / cost: +0.0002-0.0008 est / low.
-- status_pure: untried
-- status_1k: untried
-
-### seq-deepfm-author-history: Causal pooled author-history DeepFM
-- mechanism: DeepFM over the 5 base fields + hour/weekday/is_rand context, plus a POOLED CAUSAL AUTHOR-HISTORY representation: for each impression, mean-pool embeddings of the user's previous N=12 authors (strictly past rows only). Reference config: embedding_dim 12, hidden 48, history_length 12, lr 0.00115, wd 3e-6, dropout 0.05, ~10-12 epochs with best-checkpoint selection.
-- kind: opportunity
-- treats: flat-signal | data-shift
-- reference_primary: 0.604735 single / 0.604609 4-seed mean (teammate branch codex/project-2-kuairand-agent, runs/RESULTS.md — independent codebase, validation-only discipline documented)
-- preconditions: strict causality of the history window (past rows only); guard cold-start rows (empty history -> zero vector). NOTE: our earlier DIN-lite refutation targeted attention-style sequence heads; this pooled form is measured to work — do not conflate.
-- citation: teammate research branch (Aditya), 4-seed replication; DeepFM (Guo et al. 2017)
-- expected_gain / cost: +0.0025-0.0030 single vs baseline measured externally; untried under our harness/ensemble close / medium.
-- status_pure: measured-win-external (not yet reproduced under this harness)
-- status_1k: untried
-
-### seq-deepfm-composite: Sequence DeepFM + watch-time aux + session context (full package)
-- mechanism: The complete measured composite on top of seq-deepfm-author-history: (a) base Sequence DeepFM — 5 fields + hour/weekday/is_rand context + mean-pooled causal 12-author history; (b) censor-aware watch-time AUXILIARY head (play_time treated as censored at duration; training-only supervision) — NOTE: watch-time aux is measured DEAD on FM/DCN architectures but measured ALIVE (+0.0005) on this DeepFM base — the dead-list is architecture-conditional; (c) causal session metadata fields (gap-since-previous-impression buckets, within-session position); (d) close: mean-LOGIT average of 2-3 independently seeded members.
-- kind: opportunity
-- treats: flat-signal | data-shift | variance
-- reference_primary: 0.6043-0.6046 as implemented by autonomous runs (the in-run expectation to plan against). HUMAN-ASSISTED dev evidence, NOT reproduced by any autonomous run and NOT an in-run headroom figure: teammate singles 0.6051-0.6058 across 7 seeds; 2-member mean-logit 0.606116 (independently re-verified from saved score files) — teammate research branch codex/project-2-kuairand-agent runs/RESULTS.md
-- preconditions: Implement the FULL package — a partial port measured only 0.6033 (run_menu_m4): the context fields, causal history discipline, and aux head must all be present. 2-member selection from a 7-seed sweep carries selection optimism ~0.0003-5; prefer predeclared consecutive seeds.
-- citation: teammate research (Aditya), independently verified; DeepFM (Guo et al. 2017); censored watch-time modeling (CWM, KDD'24)
-- expected_gain / cost: package 0.6043-0.6045 as agent-implemented (probe: 3-seed rank-avg 0.60477 — close adds only +0.0003, members correlated); teammate reference 0.6055-0.6061 requires FULL fidelity (context fields + aux head + logit averaging) / high.
-- status_pure: measured-win as agent-implemented (0.6043-0.6046); the teammate's 0.6055-0.6061 tier is human-assisted evidence not yet reproduced under this harness
-- status_1k: untried
-
-### diverse-family-farm-close: One-node multi-family member farm + cross-family blend
-- kind: opportunity
-- note: STRATEGY BUNDLE (composes package-dial-sweep + temporal-pair-kernel + seq-deepfm-composite + recency-weighting + rank aggregation). Cards are normally atomic methods; bundles are the pragmatic vehicle for strategies until the v3 strategy layer.
-- mechanism: ONE node, in three phases: (PHASE 1, ~30 min) train ONE probe-fidelity member (1-2 epochs) per candidate family, then evaluate ALL blend combinations of the probe members on validation — blending is nearly free (rank-average of saved score vectors) — to map which families COMPLEMENT; (PHASE 2) full-train only the 2-3 complementary families; (PHASE 3) blend the full members, RE-VERIFY the winning combination at full fidelity (probe-level correlations are an assumption, not a guarantee), emit. Original single-phase form: ONE node that reproduces the campaign's measured cross-family evidence internally: train ONE member from EACH measured-win family, each per its own card's recipe — (a) the regularized DCN package (package-dial-sweep dials, ~0.6042), (b) temporal-pair-kernel on that package (~0.6045-52), (c) seq-deepfm-composite (~0.6044), (d) a recency-weighted FM/DCN variant (~0.6045-50). VALIDATE each member's primary individually (progress-log it; ADMIT only members >=0.6040), then per-user or global RANK-AVERAGE the admitted members. Cross-family decorrelation is the entire point: same-family seed ensembles measured +0.0003; cross-family equal-weight blends of exactly these families measured 0.6058-0.6065 (team evidence probe, 31 Aug).
-- treats: variance | plateau
-- reference_primary: 0.605863 (selection-free ALL-family equal blend of one member per clean run; best combos 0.6060-0.6065)
-- verdict_pure: external-win
-- evidence_primary: 0.605863
-- preconditions: MEMBER SOURCE CALIBRATION (measured 1 Sep): the 0.6058-0.6065 reference evidence blends POLISHED artifacts that each took a full run to produce. Members freshly written inside one node measured 0.5975-0.6046 (f7 n3, f8 n3, f9 n3 all fell back to the incumbent) — first-draft fidelity tax 0.001-0.004. PREFER script_source members from THIS run's own trained nodes (a rejected sibling within ~0.002 of the champion is a finished, measured member); expect the reference-class gain ONLY when >=2 strong distinct artifacts already exist in the lineage. This is a CLOSING move, never an opener: its members must be derived from an already-established champion script (a strong single model measured in THIS run); members written cold from the baseline at iteration 1 are untested code and measured as broken (gauc below 0.5) or weak, and the executor then falls back to the incumbent, spending the iteration for nothing. Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
-- citation: team evidence probes 31 Aug (logs/RUNS.md recipe-search line); component recipes: package-dial-sweep, temporal-pair-kernel, seq-deepfm-composite, recency-weighting cards.
-- expected_gain / cost: +0.0035-0.0045 over baseline IN ONE NODE (eps-clearing) if >=3 members admit; degrades gracefully to the best single member / high runtime (one node, plan 60-90 min).
-- status_pure: untried as a single node (every component + the blend measured separately)
-- status_1k: untried
