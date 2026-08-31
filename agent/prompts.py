@@ -251,6 +251,14 @@ DATASET_CONTEXT = {
     ),
 }
 
+STATE_DISCIPLINE = (
+    "State discipline: the CURRENT run's facts are only what the journal above "
+    "records. Prior-run digests and method-card evidence are background knowledge "
+    "from OTHER runs; never assert them as events of this run (a method was "
+    "'already accepted' here only if THIS journal says so)."
+)
+
+
 def _streak_section(streak_state: dict) -> str:
     return (
         "## Convergence pressure\n"
@@ -318,6 +326,7 @@ def selector_user_prompt(
             "before the convergence rule ends the run."
         ),
         _streak_section(streak_state),
+        STATE_DISCIPLINE,
         diversity,
     ]
     if preference_note:

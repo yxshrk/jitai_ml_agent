@@ -1002,6 +1002,10 @@ class Loop:
             self.stagnation += 1
             self.no_improve_streak += 1
             self.nodes[node.node_id] = node
+            raw = getattr(self.brain, "last_raw_reply", None)
+            if raw:
+                # persist the unparseable reply so parse failures are diagnosable
+                (self.run_dir / f"{node.node_id}_raw_reply.txt").write_text(raw)
             self.record(n, node, time.time() - start, "skipped", "proposal unparseable/failed")
             return
         if directive:

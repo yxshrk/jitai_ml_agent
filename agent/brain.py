@@ -425,6 +425,7 @@ class Brain:
             timeout_s=timeout_s,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
+        self.last_raw_reply = text  # persisted by the loop on parse failure
         spec = extract_json_spec(text)
         expected_delta = spec.get("expected_delta")
         if (isinstance(expected_delta, bool)
