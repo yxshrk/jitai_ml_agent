@@ -184,6 +184,10 @@ class Loop:
         cmd = [sys.executable, str(script), "--data-dir", str(self.workspace),
                "--out-dir", str(out_dir), "--seed", str(seed)]
         env = {"PYTHONPATH": str(ROOT), "PATH": "/usr/bin:/bin", "HOME": str(Path.home())}
+        # pass through thread caps so multi-run hosts don't thrash (pods: 128 visible cores)
+        for _k in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+            if os.environ.get(_k):
+                env[_k] = os.environ[_k]
         if smoke_epochs is not None:
             env["SMOKE_EPOCHS"] = str(smoke_epochs)
         start = time.time()
