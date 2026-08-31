@@ -936,7 +936,7 @@ class Loop:
                 raise ValueError("execution_kind must be 'script' or 'farm_close'")
             method_farm_fallback = (
                 (node.method_selection or {}).get("chosen_method_id")
-                == "diverse-family-farm-close"
+                in ("diverse-family-farm-close", "heterogeneous-ensemble-design")
             )
             is_farm_close = (
                 execution_kind == "farm_close"

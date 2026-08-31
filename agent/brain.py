@@ -272,6 +272,11 @@ class _OpenAIBackend:
             "max_output_tokens": max_tokens,
             "reasoning": {"effort": os.environ.get("AGENT_REASONING_EFFORT", "medium")},
         }
+        # Optional sampling override for bench sweeps; reasoning models that
+        # reject the parameter simply never see it set.
+        temp = os.environ.get("AGENT_TEMPERATURE")
+        if temp:
+            payload["temperature"] = float(temp)
         request = urllib.request.Request(
             self.URL,
             data=json.dumps(payload).encode(),

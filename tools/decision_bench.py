@@ -86,6 +86,23 @@ SCENARIOS = [
              "dndcg-lambda", "finalmlp", "covisit-svd-init"},
     ),
     dict(
+        name="endgame_eps_math",
+        note="farm_f1 failure state (31 Aug): streak=2 so the run ends unless THIS "
+             "iteration gains >= eps=0.002; same-family seed closes measure well "
+             "below eps, so only a cross-family close has evidence reaching the bar",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [draft] "seq-deepfm-composite" primary=0.6037 ACCEPTED (+0.0018, below eps: strike 1)',
+            'node_002 [draft] "gauge-fixed-bce" primary=0.6046 ACCEPTED (+0.0010, below eps: strike 2)',
+        ],
+        history=CURVE_NONE,
+        streak={"no_improve_streak": 2, "iterations_done": 3, "max_iters": 16},
+        good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
+        bad={"ensemble-design-sweep", "seed-ensemble", "swa-then-ensemble",
+             "regularization-schedule", "freq-adaptive-reg", "session-time-features"},
+        expect_plan=True,
+    ),
+    dict(
         name="farm_close_uniquely_right",
         note="two DIFFERENT families independently measured near the ceiling, "
              "plateau streak, clock half spent: the doctrine answer is the "

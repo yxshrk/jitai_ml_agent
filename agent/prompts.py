@@ -115,8 +115,9 @@ ENSEMBLE_CONTRACT = (
 
 FARM_CLOSE_PLAN_CONTRACT = """\
 ## Typed farm-close plan (HARNESS-EXECUTED; overrides whole-script output)
-The selected method is `diverse-family-farm-close`. Do NOT write an orchestration
-script or include top-level `code`. Return the ordinary
+The selected method is a cross-family ensemble strategy (farm-close or
+heterogeneous ensemble design). Do NOT write an orchestration script or include
+top-level `code`. Return the ordinary
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
 {"execution_kind":"farm_close",
@@ -199,9 +200,15 @@ CONVERGENCE_PRESSURE = (
     "remaining budget. Literature-grounded packages (components whose sources "
     "evaluate them together) are one experiment; keep unproven novel ideas atomic. "
     "Plan the run so its final iterations produce the strongest possible finished "
-    "artifact (a gated ensemble close of the best configuration is usually that), "
-    "rather than leaving the run un-finalized. Do not change what counts as an "
-    "iteration in response to the streak."
+    "artifact rather than leaving the run un-finalized. Do the epsilon arithmetic "
+    "before choosing: if the streak means the run ends unless THIS iteration "
+    "improves best-so-far by at least epsilon, then a move whose own evidence caps "
+    "its gain below epsilon cannot extend the run no matter how proven it is; on "
+    "such an iteration prefer the eligible move with the largest evidence-supported "
+    "expected gain at or above epsilon (combining decorrelated mechanism families "
+    "generally out-gains re-seeding one family). A proven small-gain close is the "
+    "right pick only when no eligible move has evidence reaching epsilon. Do not "
+    "change what counts as an iteration in response to the streak."
 )
 
 
@@ -354,7 +361,8 @@ def proposer_user_prompt(
             f"selector diagnosis: {method_selection.get('diagnosis', '')}\n"
             f"selector why: {method_selection.get('why', '')}"
         )
-        if method_selection.get("chosen_method_id") == "diverse-family-farm-close":
+        if method_selection.get("chosen_method_id") in (
+                "diverse-family-farm-close", "heterogeneous-ensemble-design"):
             parts.append(FARM_CLOSE_PLAN_CONTRACT)
     if streak_state is not None:
         parts.append(_streak_section(streak_state))
