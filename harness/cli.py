@@ -51,6 +51,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--max-usd", type=float, default=10.0,
                      help="per-run soft dollar ceiling (hard cap = BUDGET_USD in .env)")
     run.add_argument("--timeout-s", type=int, default=600)
+    run.add_argument("--fast-forward-epochs", type=int, default=None,
+                     help="diagnostic shakeout: cap every training stage at N epochs; "
+                          "decisions/code auditable in minutes, never designation-eligible")
     run.add_argument("--sigma", type=float, default=None,
                      help="skip baseline calibration and use this sigma")
     run.add_argument("--baseline-script", type=Path, default=None,
@@ -142,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
         max_usd=args.max_usd,
         timeout_s=args.timeout_s,
         sigma=args.sigma,
+        fast_forward_epochs=args.fast_forward_epochs,
         context_mode=args.context_mode,
         dataset=args.dataset,
         knowledge_mode=args.knowledge,

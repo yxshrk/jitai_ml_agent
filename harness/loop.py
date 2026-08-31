@@ -106,8 +106,15 @@ class LoopConfig:
     plan_budget: bool = False
     resume_from: Path | None = None  # prior run dir to continue from (disclosed experiment lineage)
     resume_at: int = 0  # continue from just before this iteration (>= 1)
+    # Fast-forward shakeout mode: cap EVERY training stage (calibration, smoke,
+    # full, confirms, farm members) at this many epochs so a whole run's decisions
+    # and code can be audited in minutes. Diagnostic only — metrics are probe-level
+    # and the run is NEVER designation-eligible.
+    fast_forward_epochs: int | None = None
 
     def __post_init__(self) -> None:
+        if self.fast_forward_epochs is not None and self.fast_forward_epochs < 1:
+            raise ValueError("fast_forward_epochs must be >= 1")
         if self.context_mode not in ("compact", "full"):
             raise ValueError("context_mode must be 'compact' or 'full'")
         if self.dataset not in ("pure", "1k"):
@@ -241,6 +248,8 @@ class Loop:
         cmd = [sys.executable, str(script), "--data-dir", str(self.workspace),
                "--out-dir", str(out_dir), "--seed", str(seed)]
         env = build_subprocess_env({"NODE_TIMEOUT_S": str(timeout_s)})
+        if smoke_epochs is None:
+            smoke_epochs = self.config.fast_forward_epochs  # fast-forward: cap full runs too
         if smoke_epochs is not None:
             env["SMOKE_EPOCHS"] = str(smoke_epochs)
         start = time.time()

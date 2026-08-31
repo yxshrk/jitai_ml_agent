@@ -266,3 +266,30 @@ literature-reported expectations only.
 - expected_gain / cost: Ensemble literature consistently reports that decorrelated members gain more than additional seeds of one model; gain is bounded by the strength of the best member / high training (several fits), low implementation (harness-executed).
 - status_pure: untried
 - status_1k: untried
+
+### context-stratified-pairs: Same-context pairwise negative stratification
+- mechanism: Draw a fraction of pairwise (BPR) negatives from the SAME context as the positive (e.g. same user-and-time-bucket or same surface), with tiered fallback to coarser contexts when no opposite-label row exists; keep total negatives per positive unchanged. Rationale: ranking metrics score contemporaneous impressions in one slate, so the pairs the model must separate are same-context pairs (in-batch/slate negative sampling practice).
+- treats: metric-mismatch | data-shift
+- preconditions: A pairwise loss with within-user grouping already present; contexts without opposite-label rows need a fallback tier.
+- citation: BPR (Rendle et al. 2009); in-batch/slate negative sampling practice in production rankers (e.g. sampled softmax two-tower literature, Yi et al. 2019).
+- expected_gain / cost: Small single-mechanism refinements of negative sampling typically report low-single-digit basis-point ranking gains / low.
+- status_pure: untried
+- status_1k: untried
+
+### listwise-regime: Listwise objective in its own training regime
+- mechanism: Per-user listwise softmax cross-entropy over each user's slate, trained as a PACKAGE with the regime listwise papers use: adequate capacity, lower learning rate, long training with validation patience. A listwise loss changes overfitting dynamics, so it must be evaluated with its own schedule rather than a schedule tuned for a pointwise loss.
+- treats: metric-mismatch | underfit
+- preconditions: Slates (user groups) available in training batches; budget for longer trainings.
+- citation: ListNet (Cao et al. 2007) / ListMLE; LambdaLoss framework (Wang et al. 2018).
+- expected_gain / cost: Listwise-vs-pointwise comparisons in LTR literature report ranking-metric gains when the objective was previously mismatched / medium (long trainings).
+- status_pure: untried
+- status_1k: untried
+
+### seq-deepfm-composite: Sequence-context DeepFM with censored watch-time auxiliary
+- mechanism: DeepFM over the categorical fields plus (a) causally pooled interaction history (mean-pool embeddings of items/authors seen STRICTLY before the impression), (b) session/time context fields, and (c) a censored watch-time auxiliary head (play time censored at item duration; training-only supervision). Close with mean-logit averaging over independently seeded members.
+- treats: flat-signal | data-shift | variance
+- preconditions: Timestamps for causal ordering; duration available for censoring; implement the FULL package — the components are reported jointly, not as atoms.
+- citation: DeepFM (Guo et al. 2017); DIN/sequence-pooling practice (Zhou et al. 2018); censored watch-time modeling (CWM, KDD 2024); Deep Ensembles (Lakshminarayanan et al. 2017).
+- expected_gain / cost: Sequence context on top of factorization models is one of the most consistently reported gains in CTR literature / high (implementation-heavy).
+- status_pure: untried
+- status_1k: untried

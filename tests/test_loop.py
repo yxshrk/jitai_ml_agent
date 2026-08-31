@@ -855,3 +855,22 @@ def test_smoke_sanity_gate_passes_healthy_script(tmp_path):
     loop.run()
     record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
     assert record["error"] is None or "smoke sanity gate" not in record["error"]
+
+
+# ---------- fast-forward shakeout mode ----------
+
+def test_fast_forward_caps_full_runs(tmp_path):
+    # SLOW_SCRIPT sleeps 30s unless SMOKE_EPOCHS is set: with fast-forward it
+    # must finish (the cap reaches the FULL stage, not just smoke).
+    brain = fake_brain(scripts=[{"hypothesis": "slow without cap", "code": SLOW_SCRIPT}])
+    loop = make_loop(tmp_path, brain, max_iters=1, timeout_s=8, fast_forward_epochs=1)
+    loop.run()
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert record["error"] is None
+    assert record["metrics"]["primary"] == 0.9
+
+
+def test_cli_accepts_fast_forward_epochs():
+    args = build_parser().parse_args(
+        ["run", "--data-dir", str(DATA_DIR), "--fast-forward-epochs", "1"])
+    assert args.fast_forward_epochs == 1
