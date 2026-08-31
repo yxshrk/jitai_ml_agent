@@ -68,7 +68,9 @@ fan-out is ONE node: budget probes so total runtime stays inside the timeout,
 keep probes short (2-3 epochs, optional subsample), and make the final training
 full-length. Do not re-try ideas the journal shows were rejected.
 
-Respond with a single JSON object and nothing else:
+Respond with a single JSON object and nothing else. The farm-close plan contract
+below replaces the `code` field only when the selected method is
+`diverse-family-farm-close`; every other method uses this ordinary form:
 {"hypothesis": "<one falsifiable sentence with expected effect size>",
  "expected_delta": <honest numeric expectation for validation-primary delta, e.g. 0.0015>,
  "expected_delta_basis": "<one sentence citing a specific card expectation or journal line>",
@@ -107,6 +109,34 @@ ENSEMBLE_CONTRACT = (
     "final predictions equal the parent's is a no-op and will be rejected by the "
     "harness."
 )
+
+
+FARM_CLOSE_PLAN_CONTRACT = """\
+## Typed farm-close plan (HARNESS-EXECUTED; overrides whole-script output)
+The selected method is `diverse-family-farm-close`. Do NOT write an orchestration
+script. Return the ordinary hypothesis/expected-delta/action/parent fields plus
+`farm_close_plan` instead of top-level `code`:
+{"hypothesis":"...", "expected_delta":0.0035,
+ "expected_delta_basis":"...", "action":"<draft|improve>", "parent":"node_NNN",
+ "timeout_s":7200,
+ "farm_close_plan":{
+   "probe_epochs":2, "admission_primary":0.6040,
+   "members":[
+     {"family":"<distinct-family-id>",
+      "script_source":"<existing repo-relative .py path>",
+      "config":{"epochs":8,"batch_size":4096,"dropout":0.2}, "seed":42}
+   ],
+   "blend":{"method":"rank_average","scope":"per_user"}}}
+
+Schema rules enforced before execution: exactly 4-6 members; every family and seed
+is distinct; each member has exactly one of `script_source` or `code` (a whole
+generated member script), plus a `config` object of CLI dials and an integer seed;
+probe_epochs is 1 or 2; admission_primary is at least 0.6040; blend.method is
+`rank_average`; blend.scope is `per_user` or `global`; unknown fields are invalid.
+Use genuinely different model/objective families. The harness will train probes
+and selected full members concurrently, search probe blends, re-verify at full
+fidelity, and emit the final node artifacts. Budget this sweep for 60-120 minutes
+without exceeding the supplied per-node timeout."""
 
 
 FIXER_SYSTEM = """\
@@ -312,6 +342,8 @@ def proposer_user_prompt(
             f"selector diagnosis: {method_selection.get('diagnosis', '')}\n"
             f"selector why: {method_selection.get('why', '')}"
         )
+        if method_selection.get("chosen_method_id") == "diverse-family-farm-close":
+            parts.append(FARM_CLOSE_PLAN_CONTRACT)
     if streak_state is not None:
         parts.append(_streak_section(streak_state))
     if timeout_s:
@@ -353,6 +385,18 @@ def fixer_user_prompt(code: str, traceback_tail: str) -> str:
         f"Failing script:\n```python\n{code}\n```\n\n"
         f"Traceback tail:\n```\n{traceback_tail}\n```\n\n"
         "Return the fixed whole script in one ```python block."
+    )
+
+
+def farm_close_repair_user_prompt(spec: dict, validation_error: str) -> str:
+    return (
+        FARM_CLOSE_PLAN_CONTRACT
+        + "\n\n## Invalid farm-close proposal\n"
+        + json.dumps(spec, sort_keys=True)
+        + "\n\n## Harness validation/execution error\n"
+        + validation_error[-4000:]
+        + "\n\nReturn one corrected complete experiment-spec JSON object only. Preserve the "
+          "hypothesis and measured-evidence basis unless the correction requires changing them."
     )
 
 

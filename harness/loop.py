@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import difflib
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -34,6 +33,13 @@ import numpy as np
 
 from agent.budget import BudgetExhausted
 from agent.brain import parse_method_card_metadata
+from harness.farm_close import (
+    FarmClosePlanError,
+    build_subprocess_env,
+    render_plan_node,
+    validate_script_sources,
+    validate_plan as validate_farm_close_plan,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE_SCRIPT = ROOT / "zoo" / "fm_torch.py"
@@ -66,6 +72,8 @@ class Node:
     failure_stage: str | None = None
     fixer_eligible: bool = False
     recovery: str | None = None
+    farm_close_plan: dict | None = None
+    farm_close_plan_path: Path | None = None
 
 
 @dataclass
@@ -185,11 +193,7 @@ class Loop:
                 output_path.unlink()
         cmd = [sys.executable, str(script), "--data-dir", str(self.workspace),
                "--out-dir", str(out_dir), "--seed", str(seed)]
-        env = {"PYTHONPATH": str(ROOT), "PATH": "/usr/bin:/bin", "HOME": str(Path.home())}
-        # pass through thread caps so multi-run hosts don't thrash (pods: 128 visible cores)
-        for _k in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
-            if os.environ.get(_k):
-                env[_k] = os.environ[_k]
+        env = build_subprocess_env({"NODE_TIMEOUT_S": str(timeout_s)})
         if smoke_epochs is not None:
             env["SMOKE_EPOCHS"] = str(smoke_epochs)
         start = time.time()
@@ -244,18 +248,28 @@ class Loop:
                     self.nodes_dir / "000.py")
         node.code_path.write_text(code)
         primaries = []
+        selected_calibration_dir: Path | None = None
         # With an externally supplied sigma (tests / reruns) one baseline run suffices.
         seeds = self.config.calib_seeds if self.config.sigma is None else (self.config.seed,)
         for i, seed in enumerate(seeds):
             # Calibration runs trusted baseline code: never let a tight experiment
             # timeout (e.g. in tests) starve it.
-            result = self.run_script(node.code_path, self.run_dir / f"calib_seed{seed}", seed,
+            calibration_dir = self.run_dir / f"calib_seed{seed}"
+            result = self.run_script(node.code_path, calibration_dir, seed,
                                      max(self.config.timeout_s, 120))
             if not result.ok:
                 raise RuntimeError(f"baseline calibration failed (seed {seed}): {result.error}")
             primaries.append(result.metrics["primary"])
             if seed == self.config.seed or i == 0:
                 node.metrics, node.primary = result.metrics, result.metrics["primary"]
+                selected_calibration_dir = calibration_dir
+        # Materialize node_000 like every other node so ensemble/no-op checks can
+        # compare directly with a baseline parent.
+        baseline_node_dir = self.run_dir / node.node_id
+        baseline_node_dir.mkdir(parents=True, exist_ok=True)
+        if selected_calibration_dir is not None:
+            for output_name in ("predictions.csv", "metrics.json"):
+                shutil.copy2(selected_calibration_dir / output_name, baseline_node_dir / output_name)
         if self.config.sigma is not None:
             self.sigma = self.config.sigma
         else:
@@ -513,6 +527,37 @@ class Loop:
         selection = node.method_selection or {}
         return self.method_metadata(selection.get("chosen_method_id"))["reference_primary"]
 
+    def compile_farm_close_node(self, node: Node, plan_value: object, parent: Node) -> str:
+        """Validate a typed plan, persist it, and compile the harness-owned wrapper."""
+        plan = validate_farm_close_plan(plan_value)
+        validate_script_sources(plan)
+        for index, member in enumerate(plan["members"]):
+            if "code" in member:
+                leak = self.check_code_leakage(member["code"])
+                if leak:
+                    raise FarmClosePlanError(f"members[{index}].code: {leak}")
+        plan_path = self.nodes_dir / f"{node.node_id.split('_')[1]}.farm.json"
+        plan_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n")
+        node.farm_close_plan = plan
+        node.farm_close_plan_path = plan_path
+        prediction_parent = parent
+        seen: set[str] = set()
+        while prediction_parent.node_id not in seen:
+            seen.add(prediction_parent.node_id)
+            prediction_path = self.run_dir / prediction_parent.node_id / "predictions.csv"
+            if prediction_path.exists():
+                break
+            ancestor = self.nodes.get(prediction_parent.parent)
+            if ancestor is None:
+                prediction_path = None
+                break
+            prediction_parent = ancestor
+        return render_plan_node(
+            plan,
+            parent_predictions=prediction_path,
+            base_seed=self.config.seed,
+        )
+
     # ---------- bookkeeping ----------
 
     @staticmethod
@@ -597,6 +642,9 @@ class Loop:
             "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
             "intervention": False,
         }
+        if node.farm_close_plan is not None:
+            record["farm_close_plan"] = node.farm_close_plan
+            record["farm_close_plan_path"] = str(node.farm_close_plan_path)
         with self.journal_path.open("a") as handle:
             handle.write(json.dumps(record) + "\n")
         status = node.status.upper()
@@ -869,6 +917,23 @@ class Loop:
                 prior_runs=self.prior_runs,
                 timeout_s=self.config.timeout_s,
             )
+            is_farm_close = (
+                (node.method_selection or {}).get("chosen_method_id")
+                == "diverse-family-farm-close"
+            )
+            if is_farm_close:
+                try:
+                    code = self.compile_farm_close_node(
+                        node, spec.get("farm_close_plan"), parent
+                    )
+                except FarmClosePlanError as exc:
+                    spec = self.brain.repair_farm_close_plan(spec, str(exc))
+                    code = self.compile_farm_close_node(
+                        node, spec.get("farm_close_plan"), parent
+                    )
+                    recovery = "plan-repaired"
+            else:
+                code = spec["code"]
             node.hypothesis = str(spec.get("hypothesis", "(no hypothesis)"))
             expected_delta = spec.get("expected_delta")
             if (isinstance(expected_delta, bool)
@@ -880,7 +945,6 @@ class Loop:
             if not isinstance(expected_delta_basis, str) or not expected_delta_basis.strip():
                 raise ValueError("proposer expected_delta_basis must be a non-empty string")
             node.expected_delta_basis = expected_delta_basis.strip()
-            code = spec["code"]
             timeout_s = min(int(spec.get("timeout_s", self.config.timeout_s)), self.config.timeout_s)
         except BudgetExhausted as exc:
             node.status, node.error = "failed", f"budget_exhausted: {exc}"
@@ -921,22 +985,43 @@ class Loop:
             node.error = result.error
             node.failure_stage = failed_stage
             node.fixer_eligible = True
-            try:
-                fixed = self.brain.fix(code, result.error)
-            except BudgetExhausted:
-                fixed = code
-                self.stop_reason = "budget_exhausted"
-            except Exception as exc:
-                fixed = code
-                print(f"[loop] fixer failed: {exc}", file=sys.stderr)
-            if fixed != code and not self.check_code_leakage(fixed):
-                node.code_path.write_text(fixed)
-                result, failed_stage = self.run_experiment(node, timeout_s)
-                recovery = "patched" if result.ok else "reverted"
-                if not result.ok:
-                    node.failure_stage = failed_stage
+            if node.farm_close_plan is not None:
+                try:
+                    repaired_spec = self.brain.repair_farm_close_plan(spec, result.error)
+                    fixed = self.compile_farm_close_node(
+                        node, repaired_spec.get("farm_close_plan"), parent
+                    )
+                except BudgetExhausted:
+                    fixed = code
+                    self.stop_reason = "budget_exhausted"
+                except Exception as exc:
+                    fixed = code
+                    print(f"[loop] farm-close plan repair failed: {exc}", file=sys.stderr)
+                if fixed != code:
+                    node.code_path.write_text(fixed)
+                    result, failed_stage = self.run_experiment(node, timeout_s)
+                    recovery = "plan-repaired" if result.ok else "reverted"
+                    if not result.ok:
+                        node.failure_stage = failed_stage
+                else:
+                    recovery = "reverted"
             else:
-                recovery = "reverted"
+                try:
+                    fixed = self.brain.fix(code, result.error)
+                except BudgetExhausted:
+                    fixed = code
+                    self.stop_reason = "budget_exhausted"
+                except Exception as exc:
+                    fixed = code
+                    print(f"[loop] fixer failed: {exc}", file=sys.stderr)
+                if fixed != code and not self.check_code_leakage(fixed):
+                    node.code_path.write_text(fixed)
+                    result, failed_stage = self.run_experiment(node, timeout_s)
+                    recovery = "patched" if result.ok else "reverted"
+                    if not result.ok:
+                        node.failure_stage = failed_stage
+                else:
+                    recovery = "reverted"
 
         change_summary = node.hypothesis
         if result.ok:

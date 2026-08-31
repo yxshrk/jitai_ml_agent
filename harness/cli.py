@@ -74,11 +74,36 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--provider", choices=["openai", "anthropic"], default=None,
                      help="LLM provider (default: models.toml default_provider)")
     run.add_argument("--dry-run", action="store_true", help="FakeBrain, no API calls")
+    farm = sub.add_parser(
+        "farm-close", help="execute one validated typed farm-close plan directly"
+    )
+    farm.add_argument("--plan", type=Path, required=True)
+    farm.add_argument("--data-dir", type=Path, required=True)
+    farm.add_argument("--out-dir", type=Path, required=True)
+    farm.add_argument("--seed", type=int, default=42)
+    farm.add_argument("--timeout-s", type=float, default=7200.0,
+                      help="whole three-phase budget; 3600-7200s recommended")
+    farm.add_argument("--parent-predictions", type=Path, required=True,
+                      help="parent validation predictions for the no-op guard")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "farm-close":
+        from harness.farm_close import run_plan
+
+        plan = json.loads(args.plan.read_text(encoding="utf-8"))
+        run_plan(
+            plan,
+            args.data_dir,
+            args.out_dir,
+            timeout_s=args.timeout_s,
+            execution_seed=args.seed,
+            base_seed=args.seed,
+            parent_predictions=args.parent_predictions,
+        )
+        return 0
     if args.knowledge == "clean" and (args.seed_scripts or args.draft_tiers):
         print(
             "error: --knowledge clean cannot be combined with --seed-scripts or --draft-tiers; "

@@ -78,7 +78,9 @@ def extract_json_spec(text: str) -> dict:
     for cand in candidates:
         try:
             spec = json.loads(cand)
-            if isinstance(spec, dict) and "code" in spec:
+            if isinstance(spec, dict) and (
+                "code" in spec or "farm_close_plan" in spec
+            ):
                 return spec
         except (json.JSONDecodeError, ValueError):
             continue
@@ -391,6 +393,18 @@ class Brain:
         spec.setdefault("action", mode)
         spec.setdefault("parent", parent_id)
         return spec
+
+    def repair_farm_close_plan(self, spec: dict, error: str) -> dict:
+        """Give an invalid typed plan one bounded proposer repair attempt."""
+        user = prompts.farm_close_repair_user_prompt(spec, error)
+        text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
+        repaired = extract_json_spec(text)
+        repaired.setdefault("hypothesis", spec.get("hypothesis", "farm-close repair"))
+        repaired.setdefault("expected_delta", spec.get("expected_delta"))
+        repaired.setdefault("expected_delta_basis", spec.get("expected_delta_basis"))
+        repaired.setdefault("action", spec.get("action", "improve"))
+        repaired.setdefault("parent", spec.get("parent"))
+        return repaired
 
     def select_method(
         self,

@@ -184,6 +184,10 @@ class FakeBrain:
             return fixed
         return code  # no fix available: return unchanged (will fail again)
 
+    def repair_farm_close_plan(self, spec: dict, error: str) -> dict:
+        self.meter.add("fake/fake/proposer", 50, 25)
+        return spec
+
     def reflect(self, journal_lines) -> str:
         self.meter.add("fake/fake/reflector", 40, 20)
         return "Focus on item-side aggregate features (tier 3)."
