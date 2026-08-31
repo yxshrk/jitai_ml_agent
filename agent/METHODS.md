@@ -156,7 +156,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Training batches expose complete user groups; retain rows from one-class users for the BCE term. The known-best parent already contains this and should not receive another mix sweep.
 - citation: Rendle et al., BPR; RankTower (arXiv:2407.12385); `zoo/EXPERIMENTS.md` E5
 - expected_gain / cost: Already delivered primary 0.6048 at seed 42; changing the 0.5 mix is expected <=0.001 / low once grouping exists.
-- status_pure: running-elsewhere (frozen known-best stack; pure BCE 0.6038 and pure BPR 0.6036 are measured dead)
+- status_pure: measured-win as champion component (0.5/0.5 hybrid inside the 0.6047 package; pure BCE 0.6038 and pure BPR 0.6036 alone are measured dead)
 - status_1k: untried
 
 ### dndcg-lambda: Delta-nDCG lambda weighting for top-5 groups
@@ -166,7 +166,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: A correct grouped BPR/listwise implementation and stable position/discount computation are available; binary groups must contain both labels.
 - citation: LambdaRank/LambdaLoss literature; `research/models-losses-hparams.md` section 2
 - expected_gain / cost: Likely +0.000-0.003 primary because five-item binary lists leave little extra discrimination / low-medium.
-- status_pure: running-elsewhere (C3 campaign in CURRENT DIRECTIVE dead-list ledger)
+- status_pure: measured-dead (lambda-weighted pairs rejected in multiple runs, e.g. qb_b n2 -0.0024, v2_r8 n3 flat)
 - status_1k: untried
 
 
@@ -177,7 +177,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Use k=16, hidden around 128, GAUC early stopping, and the known-best hybrid loss; more depth is within noise and overfits.
 - citation: DCNv2; FuxiCTR/BARS; `zoo/EXPERIMENTS.md` E1-E3
 - expected_gain / cost: Accepted stack primary 0.6039 +/- 0.0010, +0.0023 over official baseline / low.
-- status_pure: running-elsewhere (core known-best architecture)
+- status_pure: measured-win as champion architecture (core of every >=0.6042 package)
 - status_1k: untried
 
 ### finalmlp: FinalMLP two-stream fusion
@@ -187,7 +187,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Only try from a regularized k=16 parent after objective changes; compare multiple seeds because expected architecture deltas match seed noise.
 - citation: FinalMLP, AAAI 2023 (arXiv:2304.00902); FuxiCTR/BARS
 - expected_gain / cost: Estimated +0.001-0.005 over DCN-lite with high uncertainty / medium.
-- status_pure: running-elsewhere (C4 formal closure campaign)
+- status_pure: measured-dead (failed 3-seed confirm, C4 closure)
 - status_1k: untried
 
 ### mtl-shared-bottom: Shared-bottom multi-task heads
@@ -197,7 +197,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: click/effective_view/like are targets only, never validation inputs; use 2-4 correlated tasks and guard against seesaw effects.
 - citation: shared-bottom/ESMM literature; HoME (arXiv:2408.05430); `zoo/EXPERIMENTS.md` E3
 - expected_gain / cost: Aux 0.1 tied but edged no-aux, 0.6039 versus 0.6038 three-seed mean / low.
-- status_pure: running-elsewhere (kept in known-best stack)
+- status_pure: measured-dead (aux watch-time/social heads below eps across runs 03-05)
 - status_1k: untried
 
 
@@ -209,7 +209,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Learning curves peak early then fall. Do not repeat the single-dose dropout 0.15 or AdamW 1e-4 variants; make a coherent aggressive package and select on GAUC.
 - citation: `research/models-losses-hparams.md` section 4; MENU CURRENT DIRECTIVE
 - expected_gain / cost: Plausible +0.002-0.008 if it changes peak epoch; single-dose forms were flat around 0.604-0.605 / low.
-- status_pure: running-elsewhere (C2 joint grid; single-dose variants measured dead)
+- status_pure: measured-win as package component (joint dose in champion; single-dose variants measured flat)
 - status_1k: untried
 
 ### swa-ema: SWA or EMA checkpoint averaging
@@ -219,7 +219,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Training must produce several useful near-peak checkpoints; do not average far past a sharply collapsing validation curve.
 - citation: SWA (Izmailov et al.); EMA training practice; `research/models-losses-hparams.md` seed-variance guidance
 - expected_gain / cost: Estimated +0.000-0.003 primary, mainly variance reduction / low.
-- status_pure: running-elsewhere (C2 schedule campaign)
+- status_pure: measured-flat (EMA 0.6025-class results, below eps; weight averaging never cleared the bar)
 - status_1k: untried
 
 ### embedding-dim-down: Reduce embedding dimension to k=8
@@ -229,7 +229,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Curves peak early and k=32 is already worse; use identical seeds and early stopping because capacity effects are small.
 - citation: `research/models-losses-hparams.md` section 4; MENU item 6 and E2
 - expected_gain / cost: k=32 scored 0.6039 versus k=16 0.6047; k=8 may recover <=0.003 through regularization / low.
-- status_pure: running-elsewhere (C2 dimension sweep)
+- status_pure: measured-dead (k=8 regression ~-0.005; k=16 optimal on Pure)
 - status_1k: untried
 
 ### duration-regime-heads: Short/long duration regime heads
@@ -239,7 +239,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Both regimes have enough examples and the route uses impression-known duration only; regularize heads toward their shared parent.
 - citation: D2Q duration debiasing, KDD 2022 (arXiv:2206.06003); KuaiRand research notes
 - expected_gain / cost: Estimated +0.002-0.006 if duration bias is material / low-medium.
-- status_pure: running-elsewhere (C3 campaign)
+- status_pure: measured-flat on Pure (discovered in unseeded wave, never confirmed above eps)
 - status_1k: untried
 
 ### user-metadata-crosses: Coarse user-metadata by item/context crosses
@@ -249,7 +249,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Legal user metadata must exist at inference and each cross must include item-side variation; user-constant features alone cannot change GAUC/nDCG.
 - citation: standard sparse recommender feature crossing; GAUC invariance analysis in `research/models-losses-hparams.md`
 - expected_gain / cost: Estimated +0.001-0.005 with high sparsity risk / medium.
-- status_pure: running-elsewhere (C3 campaign)
+- status_pure: measured-dead (kitchen-sink L5 0.6017 vs L0 0.6043; crosses lose)
 - status_1k: untried
 
 ### session-time-features: Session and fine time context
@@ -269,7 +269,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Temporal split and trustworthy dates are available; normalize weights and retain enough effective sample size.
 - citation: standard temporal covariate-shift weighting; KuaiRand date-split research notes
 - expected_gain / cost: Expected small but robust shift correction, around +0.001-0.004 / low.
-- status_pure: running-elsewhere (C1 historical campaign)
+- status_pure: measured-win as package component (7d half-life in champion; single-dose sub-eps, e.g. night_e +0.0007)
 - status_1k: measured-dead (half-life 3 scored 0.6120 and half-life 14 scored 0.6125; both hurt versus seed-42 frozen half-life 7 at 0.6134)
 
 ### covisit-svd-init: Item co-visitation SVD initialization
@@ -279,7 +279,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Co-visitation uses only training impressions and item embedding dimensions align; useful mainly when random embeddings learn too slowly.
 - citation: classical item-item collaborative filtering and spectral initialization
 - expected_gain / cost: Expected +0.000-0.004; likely only accelerates early learning / medium.
-- status_pure: running-elsewhere (C1 historical campaign)
+- status_pure: measured-dead (failed to beat controlled stack, C1)
 - status_1k: untried
 
 ### seed-architecture-ensemble: Seed and diverse-architecture rank ensemble
@@ -289,7 +289,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Final-stage only; component models must be individually competitive and predictions aligned row-for-row.
 - citation: `research/models-losses-hparams.md` section 4; `zoo/EXPERIMENTS.md` E7
 - expected_gain / cost: Five-seed rank average scored 0.6047 versus seed mean 0.6039, a variance reducer rather than level gain / high training, low implementation.
-- status_pure: running-elsewhere (C2 architecture ensemble; seed ensemble measured)
+- status_pure: superseded by ensemble-design-sweep (seed ensembles measured-win; architecture mixes below eps)
 - status_1k: untried (three frozen-default seeds measured individually; no 1K prediction ensemble measured)
 
 
@@ -300,7 +300,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Use the npz fast path; keep probes short; the final training must be full-length. The sweep is internal to the node — one iteration, one artifact.
 - citation: standard hyperparameter search practice (random/grid search, Bergstra & Bengio JMLR 2012); package composition per DCNv2/BPR training setups.
 - expected_gain / cost: package at tuned dials measured 0.6047 +/- 0.0003; untuned dials measured 0.595-0.602 — the sweep is what closes that gap / medium-high runtime (one node).
-- status_pure: untried
+- status_pure: measured-win (bigclock_07 n3 0.60424; novel_l1 n2 0.60387; the standard strong opener)
 - status_1k: untried
 
 
@@ -312,7 +312,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Fractional designs are fine when the full product exceeds the time budget; keep probes comparable (same epochs/rows). Final training full-length.
 - citation: factorial experiment design (Fisher; standard DOE practice); ablation-study methodology.
 - expected_gain / cost: subsumes package-dial-sweep with broader coverage; measured best known combination scores 0.6047 +/- 0.0003 at tuned dials / very high runtime (one node; use a long timeout).
-- status_pure: untried
+- status_pure: measured-win (qb_b n1 0.60466; final_f1 n1 0.60403; high variance across draws)
 - status_1k: untried
 
 ### combo-sweep: Add-on combination search on the tuned package
@@ -322,7 +322,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Parent must be an accepted tuned package (not the raw baseline). Budget probes to the timeout; final training full-length.
 - citation: ablation-study methodology (standard practice); ESMM multi-task aux framing (Ma et al., SIGIR 2018); duration-bias line (D2Q KDD 2022, CWM KDD 2024).
 - expected_gain / cost: individually measured add-ons range +0.0008..+0.0015 on suitable parents; compounding unknown — that is what this node measures / high runtime (one node).
-- status_pure: untried
+- status_pure: measured-mixed (novel_r1 n1 +0.0005 sub-eps; 1k_push n6 catastrophic on 1K; use narrowly)
 - status_1k: untried
 
 ### ensemble-design-sweep: Ensemble configuration search at close
@@ -343,7 +343,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - preconditions: Apply to the best accepted single-model champion. This is the canonical last node of a run.
 - citation: Deep Ensembles (Lakshminarayanan et al., NeurIPS 2017); rank aggregation practice.
 - expected_gain / cost: +0.0004..+0.0015 depending on parent seed variance / medium-high runtime.
-- status_pure: untried
+- status_pure: measured-win (bigclock_07 n6 close +0.0013 -> 0.605575 CHAMPION; final_s2 hetero variant +0.0010)
 - status_1k: untried
 
 
