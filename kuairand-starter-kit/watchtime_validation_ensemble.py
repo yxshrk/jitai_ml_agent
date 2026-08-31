@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument("--scores_dir", required=True)
     parser.add_argument("--seeds", default="11,5,6,7")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--experiment_name", default="watchtime_validation_ensemble")
     return parser.parse_args()
 
 
@@ -44,7 +45,7 @@ def main(args):
         raise ValueError("Score vector length does not match the fixed validation split")
     metrics = {name: float(value) for name, value in evaluate(users, labels, np.mean(scores, axis=0)).items()}
     report = {
-        "phase": "watchtime_validation_ensemble",
+        "phase": args.experiment_name,
         "selection_split": "validation",
         "test_data_used": False,
         "aggregation": "mean_logit",

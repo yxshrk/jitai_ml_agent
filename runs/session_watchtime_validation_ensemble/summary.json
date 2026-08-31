@@ -1,0 +1,22 @@
+{
+  "aggregation": "mean_logit",
+  "member_score_files": [
+    "../runs/session_watchtime_sequence_deepfm/seed_5_scores.npy",
+    "../runs/session_watchtime_sequence_deepfm/seed_7_scores.npy"
+  ],
+  "metrics": {
+    "GAUC": 0.6736526018141852,
+    "nDCG@5": 0.5385800273824712,
+    "primary": 0.6061163145983282,
+    "rows": 124909.0,
+    "users": 22377.0
+  },
+  "note": "Seeds were selected from validation experiments; confirm the fixed recipe on an earlier chronological holdout before final submission.",
+  "phase": "session_watchtime_validation_ensemble",
+  "seeds": [
+    5,
+    7
+  ],
+  "selection_split": "validation",
+  "test_data_used": false
+}

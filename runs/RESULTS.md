@@ -15,7 +15,7 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Context FM + video age, seed 0 | 0.60122 | Reject |
 | Context FM + click auxiliary head, seed 0 | 0.60189 | Reject |
 | Mean of three kept Context FM members | 0.60236 | Candidate ensemble |
-| Mean-logit ensemble of three kept Context FM members | **0.60289** | Current leader |
+| Mean-logit ensemble of three kept Context FM members | **0.60289** | Earlier leader |
 | Context FM, 32-dimensional embeddings, seed 3 | 0.60221 | Reject: extra capacity overfit |
 | Context FM wide-cross bundle, seed 3 | 0.59973 | Reject: exact crosses overfit |
 | Regularized Context FM, seed 0 | 0.59751 | Reject: dropout/decay over-regularized |
@@ -35,8 +35,11 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Causal positive-history tag/music matching, seed 5 | 0.604100 | Reject: lower than mean-pool control |
 | Feedback-conditioned causal author history, seed 5 | 0.604442 | Reject: lower than mean-pool control |
 | Censor-aware watch-time auxiliary, seeds 5-11 | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep: richer training-only supervision |
-| Selected four-member watch-time mean-logit ensemble (11, 5, 6, 7) | **0.605521** | Current leader; validate fixed recipe on an earlier chronological holdout |
+| Selected four-member watch-time mean-logit ensemble (11, 5, 6, 7) | **0.605521** | Previous leader; validate fixed recipe on an earlier chronological holdout |
 | Watch-time + CrossNet, seed 5 | 0.605110 | Near tie; not used in selected ensemble |
 | Watch-time + click-cascade auxiliary, seed 5 | 0.605193 | Small single-seed gain, but a 5--50% blend with the selected watch-time ensemble scored 0.605410--0.605500; reject as non-complementary |
+| Click-to-long-view probability-product inference, seed 5 | 0.604316 | Reject: directly ranking by the learned click cascade was weaker than the direct long-view head |
+| Causal session metadata + watch-time auxiliary, seeds 5--11 | 0.605754 / 0.605179 / 0.605601 / 0.605380 / 0.605366 / 0.605115 / 0.605614 | Keep: prior-impression gap and within-session position are outcome-free but useful context |
+| Selected two-member session-aware watch-time mean-logit ensemble (5, 7) | **0.606116** | Current validation leader; selected from a fixed seven-seed sweep, so confirm on an earlier chronological holdout before submission |
 
-The current leader adds a censor-aware, training-only watch-time head to the causal Sequence DeepFM and averages four independently trained selected checkpoints. The next research iteration should validate the fixed ensemble recipe on an earlier chronological holdout and retain the validation-only model-selection rule.
+The current leader adds censor-aware, training-only watch-time supervision and causal, label-free session context to the Sequence DeepFM. It averages the independently trained seed-5 and seed-7 members. The next research iteration should validate this fixed recipe on an earlier chronological holdout and retain the validation-only model-selection rule.

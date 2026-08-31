@@ -25,6 +25,7 @@ from evaluate import evaluate
 SPLITS = {"train": (20220408, 20220421), "valid": (20220422, 20220428)}
 BASE_FIELDS = ("user_id", "video_id", "author_id", "tab", "dur_bucket", "hour", "weekday", "is_rand")
 CONTENT_FIELDS = ("positive_tag_overlap", "positive_music_overlap")
+SESSION_FIELDS = ("previous_gap_bucket", "session_position")
 AUXILIARY_TASKS = ("is_click", "is_profile_enter", "is_like", "is_follow")
 HYPOTHESIS = (
     "A pooled causal author-history representation will capture short-term user "
@@ -116,6 +117,46 @@ def add_positive_content_features(rows, enabled):
         assign(row)
 
 
+def add_session_features(rows, enabled):
+    """Add causal impression-metadata features without reading any outcome label.
+
+    Users tend to scroll through a burst of nearby impressions.  The last
+    observed timestamp and position within that burst are available at serving
+    time, and records sharing a timestamp are assigned before any of them
+    update state so the construction is order-independent.
+    """
+    if not enabled:
+        for split_rows in rows.values():
+            for row in split_rows:
+                row["previous_gap_bucket"] = "0"
+                row["session_position"] = "0"
+        return
+    state = {}
+    ordered = sorted(rows["train"] + rows["valid"], key=lambda row: row["timestamp"])
+    start = 0
+    while start < len(ordered):
+        end = start + 1
+        timestamp = ordered[start]["timestamp"]
+        while end < len(ordered) and ordered[end]["timestamp"] == timestamp:
+            end += 1
+        pending = []
+        for row in ordered[start:end]:
+            previous = state.get(row["user_id"])
+            if previous is None:
+                gap_bucket, position = 0, 0
+            else:
+                gap_ms, previous_position = timestamp - previous[0], previous[1]
+                # Buckets: <=1m, <=5m, <=30m, <=6h, <=1d, >1d.
+                gap_bucket = 1 if gap_ms <= 60_000 else 2 if gap_ms <= 300_000 else 3 if gap_ms <= 1_800_000 else 4 if gap_ms <= 21_600_000 else 5 if gap_ms <= 86_400_000 else 6
+                position = min(10, previous_position + 1) if gap_ms <= 1_800_000 else 0
+            row["previous_gap_bucket"] = str(gap_bucket)
+            row["session_position"] = str(position)
+            pending.append((row["user_id"], position))
+        for user_id, position in pending:
+            state[user_id] = (timestamp, position)
+        start = end
+
+
 def add_history(rows, history_length, validation_history_mode, history_source, history_feedback):
     if history_source not in ("all_exposures", "positive_long_view"):
         raise ValueError(f"Unknown history source: {history_source}")
@@ -197,19 +238,22 @@ def pair_batches(rng, positive_indices, positive_users, negatives, batch_size):
         yield positives, negative_batch
 
 
-def encode(rows, history_length, include_positive_content, include_history_feedback):
-    fields = BASE_FIELDS + (CONTENT_FIELDS if include_positive_content else ())
+def encode(rows, history_length, include_positive_content, include_history_feedback, include_session_features):
+    fields = BASE_FIELDS + (SESSION_FIELDS if include_session_features else ()) + (CONTENT_FIELDS if include_positive_content else ())
     duration_edges = np.quantile(
         np.asarray([row["duration_ms"] for row in rows["train"]]), np.linspace(0, 1, 11)[1:-1]
     )
 
     def raw(row):
-        values = (
+        base_values = (
             row["user_id"], row["video_id"], row["author_id"], row["tab"],
             str(int(np.searchsorted(duration_edges, row["duration_ms"]))), row["hour"], row["weekday"], row["is_rand"],
-            row["positive_tag_overlap"], row["positive_music_overlap"],
         )
-        return values if include_positive_content else values[:len(BASE_FIELDS)]
+        session_values = (row["previous_gap_bucket"], row["session_position"])
+        content_values = (row["positive_tag_overlap"], row["positive_music_overlap"])
+        return base_values + (session_values if include_session_features else ()) + (
+            content_values if include_positive_content else ()
+        )
 
     vocabularies = [dict() for _ in fields]
     for row in rows["train"]:
@@ -353,7 +397,7 @@ class SequenceDeepFM(nn.Module):
         return primary
 
 
-def predict(model, features, history, feedback, device, batch_size):
+def predict(model, features, history, feedback, device, batch_size, cascade_prediction="direct"):
     values = []
     model.eval()
     with torch.inference_mode():
@@ -361,7 +405,22 @@ def predict(model, features, history, feedback, device, batch_size):
             batch_features = torch.from_numpy(features[start : start + batch_size]).to(device)
             batch_history = torch.from_numpy(history[start : start + batch_size]).to(device)
             batch_feedback = torch.from_numpy(feedback[start : start + batch_size]).to(device)
-            values.append(model(batch_features, batch_history, batch_feedback).cpu().numpy())
+            if cascade_prediction == "direct":
+                values.append(model(batch_features, batch_history, batch_feedback).cpu().numpy())
+            else:
+                primary, _, _, click_logits, conditional_logits = model(
+                    batch_features, batch_history, batch_feedback, return_heads=True
+                )
+                cascade_log_probability = functional.logsigmoid(click_logits) + functional.logsigmoid(conditional_logits)
+                if cascade_prediction == "product":
+                    # long-view is a nested event: P(click) * P(long-view | click).
+                    # Log probability preserves its ranking and avoids underflow.
+                    prediction = cascade_log_probability
+                elif cascade_prediction == "mean_with_direct":
+                    prediction = 0.5 * primary + 0.5 * cascade_log_probability
+                else:
+                    raise ValueError(f"Unknown cascade prediction mode: {cascade_prediction}")
+                values.append(prediction.cpu().numpy())
     return np.concatenate(values)
 
 
@@ -380,9 +439,10 @@ def run(args):
     device = torch.device("cpu")
     rows = load_rows(args.data_dir)
     add_positive_content_features(rows, args.positive_content_features)
+    add_session_features(rows, args.session_features)
     add_history(rows, args.history_length, args.validation_history_mode, args.history_source, args.history_feedback)
     encoded, field_dimensions, author_padding, fields = encode(
-        rows, args.history_length, args.positive_content_features, args.history_feedback
+        rows, args.history_length, args.positive_content_features, args.history_feedback, args.session_features
     )
     train_x, train_history, train_feedback, train_y, train_auxiliary, train_watch, train_censored, train_users = encoded["train"]
     valid_x, valid_history, valid_feedback, valid_y, _, _, _, valid_users = encoded["valid"]
@@ -444,7 +504,7 @@ def run(args):
             loss.backward()
             optimizer.step()
             losses.append(loss.item())
-        scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
+        scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size, args.cascade_prediction)
         metrics = {name: float(value) for name, value in evaluate(valid_users, valid_y, scores).items()}
         event = {"epoch": epoch, "train_loss": round(float(np.mean(losses)), 7), "metrics": metrics}
         trajectory.append(event)
@@ -489,7 +549,7 @@ def run(args):
                 loss.backward()
                 optimizer.step()
                 losses.append(loss.item())
-            scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
+            scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size, args.cascade_prediction)
             metrics = {name: float(value) for name, value in evaluate(valid_users, valid_y, scores).items()}
             event = {"phase": "pairwise_finetune", "epoch": epoch, "train_loss": round(float(np.mean(losses)), 7), "metrics": metrics}
             trajectory.append(event)
@@ -499,7 +559,7 @@ def run(args):
                 best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
                 best_event = event
     model.load_state_dict(best_state)
-    selected_scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
+    selected_scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size, args.cascade_prediction)
     if args.validation_scores_out:
         score_path = Path(args.validation_scores_out)
         if score_path.exists():
@@ -516,6 +576,8 @@ def run(args):
         "watchtime_aux_weight": args.watchtime_aux_weight,
         "cross_layers": args.cross_layers,
         "click_cascade_weight": args.click_cascade_weight,
+        "cascade_prediction": args.cascade_prediction,
+        "session_features": args.session_features,
         "positive_content_features": args.positive_content_features,
         "best": best_event,
         "trajectory": trajectory,
@@ -546,6 +608,10 @@ def parse_args():
     parser.add_argument(
         "--positive_content_features", action="store_true",
         help="Use causal train-long-view tag/music overlap features; validation receives frozen train profiles.",
+    )
+    parser.add_argument(
+        "--session_features", action="store_true",
+        help="Use causal previous-impression gap and within-session position metadata features.",
     )
     parser.add_argument("--embedding_dim", type=int, default=16)
     parser.add_argument("--hidden_dim", type=int, default=64)
@@ -579,6 +645,10 @@ def parse_args():
     parser.add_argument(
         "--click_cascade_weight", type=float, default=0.0,
         help="Training-only click and click-conditioned long-view cascade loss weight.",
+    )
+    parser.add_argument(
+        "--cascade_prediction", choices=("direct", "product", "mean_with_direct"), default="direct",
+        help="Rank with the direct long-view head or a click-to-long-view cascade at inference.",
     )
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--patience", type=int, default=3)

@@ -43,8 +43,10 @@ by a fresh-seed confirmation. It has **not** been run yet.
 Source: `kuairand-starter-kit/sequence_deepfm.py`.
 
 Inputs are categorical user ID, video ID, author ID, tab, duration-decile,
-hour, weekday, and randomized-exposure flag. Every field has its own embedding
-table. The score combines:
+hour, weekday, randomized-exposure flag, prior-impression gap bucket, and
+within-session position. The two session fields are calculated from timestamps
+only: no outcome label is read, and records at the same timestamp cannot see
+one another. Every field has its own embedding table. The score combines:
 
 1. a first-order linear term;
 2. an FM second-order interaction term over the eight field embeddings;
@@ -115,9 +117,12 @@ maintained in `runs/RESULTS.md`.
 | Causal positive-history tag/music matching | 0.604100 (seed 5) | Reject; below mean-pool control |
 | Feedback-conditioned causal author history | 0.604442 (seed 5) | Reject; below mean-pool control |
 | Censor-aware watch-time auxiliary | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep; the first repeatable richer training-only supervision signal |
-| Selected watch-time ensemble (seeds 11, 5, 6, 7) | **0.605521** | Current leader; selected on validation and should be checked chronologically |
+| Selected watch-time ensemble (seeds 11, 5, 6, 7) | **0.605521** | Previous leader; selected on validation and should be checked chronologically |
 | Watch-time + CrossNet | 0.605110 (seed 5) | Near tie; excluded from selected ensemble |
 | Watch-time + click-cascade auxiliary | 0.605193 (seed 5) | Small individual improvement, but it did not improve the selected watch-time ensemble at any tested blend weight |
+| Click-to-long-view probability-product inference | 0.604316 (seed 5) | Reject; the explicit event cascade ranked worse than direct long-view prediction |
+| Causal session metadata + watch-time auxiliary | 0.605754 / 0.605179 / 0.605601 / 0.605380 / 0.605366 / 0.605115 / 0.605614 (seeds 5--11) | Keep; outcome-free session context is a new complementary signal |
+| Selected session-aware watch-time ensemble (seeds 5, 7) | **0.606116** | Current validation leader; simple equal-weight mean of saved logits |
 
 ## Commit checkpoints
 
@@ -130,7 +135,8 @@ maintained in `runs/RESULTS.md`.
 | `f157ae4` | Added the bounded API-guided configuration-search agent and its pilot artifacts |
 | `c7a735d` / `2c0dc48` / `b40cb6b` / `7f83a89` | Recorded negative causal-history, objective, attention, and content controls |
 | `0e0fbbb` | Added the censor-aware watch-time head and selected validation ensemble |
-| pending next commit | Add the click-cascade control and its non-complementary blend result |
+| `e4d3be2` | Added the click-cascade control and its non-complementary blend result |
+| pending next commit | Add causal session metadata, the seven-seed sweep, and the 0.606116 validation ensemble |
 
 ## Useful answers for team questions
 
