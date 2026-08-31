@@ -45,3 +45,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | novel_l1 | laptop | max_hours | 5 | 0.60524 | CLEAN researcher run: invented-card pair-kernel +0.0014; its 0.6055 ensemble FAILED fresh-seed confirm (discipline held); official best node_004 |
 | final_r6 | ruby | converged | 3 | 0.60258 | weak dial-sweep draw; gap-conditioned-recency +0.0003 sub-eps (first measurement) |
 | final_s5 | coral | converged | 4 | 0.60399 | selector took stage-matrix path, not context-pairs; its close (0.60449) rejected sub-eps. CAMPAIGN COMPLETE |
+| last_r7/last_1k/last_s6 | ruby/coral | KILLED early | - | - | discarded: library synced mid-run (intervention taint) + pre-floor-v2 harness; relaunched as v2_* |
