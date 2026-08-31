@@ -214,6 +214,7 @@ def check_plan_emission(brain, sc, sel):
             sc["journal"], "draft", "node_002", "",
             method_selection=sel, streak_state=sc["streak"],
             parent_history=sc["history"], context_mode="compact",
+            parent_code_path="logs/run_bigclock_07/nodes/003.py",
         )
         spec = normalize_proposal_envelope(spec)
         if spec.get("execution_kind") != "farm_close":
@@ -221,7 +222,10 @@ def check_plan_emission(brain, sc, sel):
         validate_plan(spec["farm_close_plan"])
         plan = spec["farm_close_plan"]
         families = [m["family"] for m in plan["members"]]
-        return f"valid ({len(families)} members: {', '.join(families)})"
+        kinds = ["src" if "script_source" in m else "code" for m in plan["members"]]
+        anchored = "script_source" in plan["members"][0]
+        return (f"valid ({len(families)} members: {', '.join(families)}; "
+                f"sources={kinds}; anchor_is_champion_script={anchored})")
     except (ValueError, FarmClosePlanError) as exc:
         return f"invalid: {str(exc)[:160]}"
 

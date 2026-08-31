@@ -33,6 +33,11 @@ body.present{overflow:hidden;height:100vh}
 #s-title h1{font-size:clamp(34px,4.1vw,72px);line-height:1.12;font-weight:600}
 #s-title .what{margin:26px auto 0;max-width:72ch;color:var(--dim);font-size:19px;line-height:1.55}
 #s-title .names{margin-top:34px;color:var(--dim);font-size:17px}
+/* statement beats: one script sentence, full screen */
+.scene.statement{text-align:center}
+.scene.statement .kicker{font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);font-weight:520;margin-bottom:26px}
+.scene.statement h1{font-size:clamp(34px,3.6vw,64px);line-height:1.14;font-weight:600;max-width:24ch}
+.scene.statement .what{margin:26px auto 0;max-width:60ch;color:var(--dim);font-size:19px;line-height:1.55}
 /* scene 2: run chart */
 #s-run #herochart{display:block;width:100%;max-width:min(1240px,calc(66vh*(1120/480)));
   aspect-ratio:1120/480;height:auto;margin:28px auto 0;background:var(--surface);
@@ -135,7 +140,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-run" data-title="The run" data-cap="one clean run, bigclock_07 · 6 of 50 iterations · 17.0 min · <b>+0.0040</b> · green accepted, red dead ends, amber VOID">
   <div class="wrap">
     <div class="eyebrow">the run · bigclock_07</div>
-    <h2>Every iteration, measured.</h2>
+    <h2>In one clean run, with zero mid-run interventions, it took the official baseline from 0.6016 to 0.6056.</h2>
     <svg id="herochart" viewBox="0 0 1120 480" aria-label="validation score per iteration"></svg>
   </div>
 </div>
@@ -144,7 +149,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-loop" data-title="The loop" data-cap="diagnose → treat → retrain → measure · no human picks the next move">
   <div class="wrap">
     <div class="eyebrow">the machine</div>
-    <h2>Diagnose, treat, retrain, measure. Repeat until the stopping rule fires.</h2>
+    <h2>Every iteration has four steps: diagnose, treat, retrain, measure.</h2>
     <div class="stages" id="stages">
       <div class="stage" data-s="0">
         <div class="snum">01</div><h3>DIAGNOSE</h3>
@@ -181,7 +186,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness checks and scores · stopping rule: 3 iterations without +0.002 on the best ends the run · hidden test set has no path in">
   <div class="wrap">
     <div class="eyebrow">the system</div>
-    <h2>One loop, two halves. A rule ends it, not a person.</h2>
+    <h2>The agent proposes; the harness executes, scores and journals.</h2>
     <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture"></svg>
   </div>
 </div>
@@ -190,7 +195,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-log" data-title="Log replay" data-cap="journal.jsonl replayed one iteration per key · baseline 0.6018 → 0.6042 → 0.6056 · iteration 04 VOID, loop continues">
   <div class="wrap">
     <div class="eyebrow">the run · bigclock_07 · replayed from its journal file</div>
-    <h2>Six iterations, replayed.</h2>
+    <h2>Now the run we submitted. Six iterations, seventeen minutes, on a CPU.</h2>
     <div class="cols">
       <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
       <div class="entries" id="entries"></div>
@@ -198,11 +203,18 @@ body.present{overflow:hidden;height:100vh}
   </div>
 </div>
 
-<!-- 6 · six harness safeguards, in the script's order -->
+<!-- 6 · payoff beat: the script's closing line of the run walkthrough -->
+<div class="scene statement" id="s-noperson" data-title="No person" data-cap="bigclock_07 · 6 iterations · 17.0 min · <b>0.6016 → 0.6056</b> · 0 mid-run interventions">
+  <div class="kicker">THE RUN, IN ONE LINE</div>
+  <h1>No person chose an experiment, edited a script, or restarted anything.</h1>
+  <p class="what">The next question is what kept it honest while it did that.</p>
+</div>
+
+<!-- 7 · six harness safeguards, in the script's order -->
 <div class="scene" id="s-harness" data-title="Harness" data-cap="six safeguards · honesty built into the plumbing, not asked for in a prompt">
   <div class="wrap">
     <div class="eyebrow">the harness</div>
-    <h2>The agent is only half the system. The other half never trusts it.</h2>
+    <h2>The agent's judgment matters, but the harness matters just as much.</h2>
     <div class="scenebody">
     <div class="enggrid">
       <div class="engcard"><div class="onum">01</div><h3>Structural leakage guard</h3>
@@ -242,7 +254,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-methods" data-title="Method cards" data-cap="42 cards, live from agent/METHODS.md · one card was invented by a run itself · full library on the site">
   <div class="wrap">
     <div class="eyebrow">the knowledge</div>
-    <h2>42 method cards, cited and measured. A glimpse.</h2>
+    <h2>Exactly 42 cards, from cited literature and our own measured evidence. One was invented by a run itself.</h2>
     <div class="mtools"><input id="msearch" type="search" placeholder="filter 42 cards: bpr, dcn, recency, ensemble…" aria-label="filter method cards"></div>
     <div class="scenebody"><div id="methodslib"></div></div>
   </div>
@@ -252,7 +264,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-principles" data-title="Principles" data-cap="five principles · the exhibit must prove the agent, not us">
   <div class="wrap">
     <div class="eyebrow">design principles</div>
-    <h2>Five principles behind every call we made.</h2>
+    <h2>We never learn the recipe ourselves and hand it to the agent.</h2>
     <div class="principles">
       <div class="principle"><div class="pn">01</div><h3>Clean runs</h3>
         <p>The submitted run starts from the <b>published baseline</b> with no seed
@@ -281,7 +293,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-model" data-title="Model and effort" data-cap="decision bench per model and effort · logs/bench_model_sweep.json and the sweep logs · <b>sol at medium</b> chosen">
   <div class="wrap">
     <div class="eyebrow">model and effort</div>
-    <h2>Which LLM, and how hard it thinks: measured, not guessed.</h2>
+    <h2>The model is gpt-5.6-sol at medium effort. Medium was the measured sweet spot.</h2>
     <table class="mtable" aria-label="model and reasoning effort sweep on the decision bench">
       <thead><tr><th>model</th><th>effort</th><th>temperature</th><th class="n">good</th><th class="n">ok</th><th class="n">bad</th><th class="n">error</th><th>note</th></tr></thead>
       <tbody>
@@ -310,7 +322,7 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-receipts" data-title="Receipts" data-cap="0.6016 → 0.6056 (+0.0040) · 6 of 50 iterations · 17.0 min · 115,315 tokens · 0 mid-run interventions">
   <section id="receipts" class="wrap">
     <div class="eyebrow">the receipts</div>
-    <h2>Everything above is measured, logged, and reproducible.</h2>
+    <h2>Six of a possible fifty iterations, seventeen minutes, no GPU, zero mid-run interventions.</h2>
     <div class="grid" id="rgrid"></div>
     <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
     Test labels are never read anywhere in the pipeline. Bonus: the same agent on

@@ -1110,6 +1110,7 @@ class Loop:
                 full_context=self.full_proposer_context() if self.config.context_mode == "full" else None,
                 prior_runs=self.prior_runs,
                 timeout_s=self.config.timeout_s,
+                parent_code_path=str(parent.code_path),
             )
             execution_kind = spec.get("execution_kind")
             if execution_kind not in (None, "script", "farm_close"):

@@ -117,9 +117,10 @@ FARM_CLOSE_PLAN_CONTRACT = """\
 ## Typed farm-close plan (HARNESS-EXECUTED; overrides whole-script output)
 The selected method is a cross-family ensemble strategy (farm-close or
 heterogeneous ensemble design). Do NOT write an orchestration script or include
-top-level `code`. Every member must carry its own `code` field: write each
-member's single-fit script yourself (you cannot see the filesystem, so never
-reference a script path you have not been shown in this conversation). Return the ordinary
+top-level `code`. Member 1 (the anchor) MUST reference the champion node script
+via `script_source` exactly as given in ANCHOR SCRIPT below; every other member
+carries its own `code`, derived from that champion script (you cannot see the
+filesystem, so never reference any other path). Return the ordinary
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
 {"execution_kind":"farm_close",
@@ -130,11 +131,17 @@ harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
    "probe_epochs":2,
    "full_member_limit":3, "min_probe_blend_gain":0.0,
    "members":[
-     {"family":"<distinct-family-id>",
-      "code":"<a COMPLETE single-fit training script as a JSON string, per the
+     {"family":"<the champion's family>",
+      "script_source":"<THIS RUN'S CHAMPION NODE SCRIPT PATH, given below as
+ANCHOR SCRIPT. The anchor member is the accepted champion itself, reused
+verbatim, never rewritten: a rewrite loses the measured quality>",
+      "config":{}, "seed":42},
+     {"family":"<a DIFFERENT mechanism family>",
+      "code":"<a COMPLETE single-fit training script as a JSON string, derived
+from the champion script by changing only what this family changes; per the
 node contract: reads --data-dir/--out-dir/--seed, honors SMOKE_EPOCHS, ONE
 training trajectory, no internal search or ensembling>",
-      "config":{}, "seed":42}
+      "config":{}, "seed":43}
    ],
    "blend":{"weights":"equal","aggregations":[
      {"method":"rank_average","scope":"per_user"}]}}}
@@ -373,6 +380,7 @@ def proposer_user_prompt(
     selected_method_card: str | None = None,
     streak_state: dict | None = None,
     context_mode: str = "compact",
+    parent_code_path: str | None = None,
     full_context: str | None = None,
     prior_runs: str | None = None,
     timeout_s: int | None = None,
@@ -400,6 +408,10 @@ def proposer_user_prompt(
         if method_selection.get("chosen_method_id") in (
                 "diverse-family-farm-close", "heterogeneous-ensemble-design"):
             parts.append(FARM_CLOSE_PLAN_CONTRACT)
+            parts.append(
+                "## ANCHOR SCRIPT (use verbatim as members[0].script_source)\n"
+                + (parent_code_path or "(unavailable: write all members as code)")
+            )
     if streak_state is not None:
         parts.append(_streak_section(streak_state))
     if timeout_s:

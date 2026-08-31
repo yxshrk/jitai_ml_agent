@@ -428,6 +428,7 @@ class Brain:
         full_context: str | None = None,
         prior_runs: str | None = None,
         timeout_s: int | None = None,
+        parent_code_path: str | None = None,
     ) -> dict:
         selected_card = None
         if method_selection:
@@ -445,6 +446,7 @@ class Brain:
             full_context=full_context,
             prior_runs=prior_runs,
             timeout_s=timeout_s,
+            parent_code_path=parent_code_path,
         )
         text = self._call("proposer", self.static_prefix, user, self.max_code_tokens)
         self.last_raw_reply = text  # persisted by the loop on parse failure
