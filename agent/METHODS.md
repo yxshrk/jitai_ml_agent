@@ -727,3 +727,16 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - expected_gain / cost: package 0.6043-0.6045 as agent-implemented (probe: 3-seed rank-avg 0.60477 — close adds only +0.0003, members correlated); teammate reference 0.6055-0.6061 requires FULL fidelity (context fields + aux head + logit averaging) / high.
 - status_pure: measured-win-external (verified scores; not yet reproduced under this harness — HIGHEST-PRIORITY target)
 - status_1k: untried
+
+### diverse-family-farm-close: One-node multi-family member farm + cross-family blend
+- kind: opportunity
+- mechanism: ONE node that reproduces the campaign's measured cross-family evidence internally: train ONE member from EACH measured-win family, each per its own card's recipe — (a) the regularized DCN package (package-dial-sweep dials, ~0.6042), (b) temporal-pair-kernel on that package (~0.6045-52), (c) seq-deepfm-composite (~0.6044), (d) a recency-weighted FM/DCN variant (~0.6045-50). VALIDATE each member's primary individually (progress-log it; ADMIT only members >=0.6040), then per-user or global RANK-AVERAGE the admitted members. Cross-family decorrelation is the entire point: same-family seed ensembles measured +0.0003; cross-family equal-weight blends of exactly these families measured 0.6058-0.6065 (team evidence probe, 31 Aug).
+- treats: variance | plateau
+- reference_primary: 0.605863 (selection-free ALL-family equal blend of one member per clean run; best combos 0.6060-0.6065)
+- verdict_pure: external-win
+- evidence_primary: 0.605863
+- preconditions: Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
+- citation: team evidence probes 31 Aug (logs/RUNS.md recipe-search line); component recipes: package-dial-sweep, temporal-pair-kernel, seq-deepfm-composite, recency-weighting cards.
+- expected_gain / cost: +0.0035-0.0045 over baseline IN ONE NODE (eps-clearing) if >=3 members admit; degrades gracefully to the best single member / high runtime (one node, plan 60-90 min).
+- status_pure: untried as a single node (every component + the blend measured separately)
+- status_1k: untried

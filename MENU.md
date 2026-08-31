@@ -35,13 +35,14 @@ full-history 3x-token context (A/B measured). FinalMLP failed 3-seed confirm —
 ## CURRENT DIRECTIVE (updated Mon 31 Aug — supersedes the watch-time directive, whose
 ## themes are all MEASURED DEAD: CWM/censored, ordinal watch-ratio, listwise. Do NOT re-test.)
 Evidence-ranked priorities (all numbers from run journals):
-1. seq-deepfm-composite — teammate-verified full package at 0.6055-0.6061 validation
+1. diverse-family-farm-close — ONE node: train one member per measured-win family and rank-average across families (the measured 0.6058-0.6065 evidence, agent-reachable in a single eps-clearing iteration; see card)
+2. seq-deepfm-composite — teammate-verified full package at 0.6055-0.6061 validation
    (see card; partial ports fail — implement completely). HIGHEST PRIORITY.
-2. context-stratified-pairs on a gauge-fixed-bce or dial-swept base — measured +0.0015
+3. context-stratified-pairs on a gauge-fixed-bce or dial-swept base — measured +0.0015
    (run_final_s4 n3: 0.60521), NO ensemble close ever attempted on that base.
-3. seq-deepfm-author-history — causal pooled author-history DeepFM, measured externally
+4. seq-deepfm-author-history — causal pooled author-history DeepFM, measured externally
    0.6047 across 4 seeds (see card). Untried under this harness.
-4. heterogeneous-ensemble-design CROSS-FAMILY close (blend probe: 0.6058 from mixing a composite member with a DCN-package ensemble — decorrelation is where closes pay) or ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
+5. heterogeneous-ensemble-design CROSS-FAMILY close (blend probe: 0.6058 from mixing a composite member with a DCN-package ensemble — decorrelation is where closes pay) or ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
    (bigclock_07, final_s2). The winning shape in every ledger.
 RULE: the library is two-tier — TREATMENT cards match your diagnosis; OPPORTUNITY cards
 (architectures, feature families, sweeps, closes) are diagnosis-independent and ranked
