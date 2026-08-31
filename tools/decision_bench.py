@@ -21,6 +21,8 @@ CURVE_OVERFIT = [{"epoch": e, "train_loss": 0.55 - 0.01 * e,
                  for e in range(1, 11)]
 CURVE_NONE: list = []
 
+F4_NODE002_CURVE = [{"epoch": 1, "train_loss": null, "val_gauc": 0.656895, "val_primary": 0.593472}, {"epoch": 2, "train_loss": null, "val_gauc": 0.662607, "val_primary": 0.597593}, {"epoch": 3, "train_loss": null, "val_gauc": 0.666214, "val_primary": 0.600637}, {"epoch": 4, "train_loss": null, "val_gauc": 0.667006, "val_primary": 0.601295}, {"epoch": 5, "train_loss": null, "val_gauc": 0.668237, "val_primary": 0.602319}, {"epoch": 6, "train_loss": null, "val_gauc": 0.668707, "val_primary": 0.602584}, {"epoch": 7, "train_loss": null, "val_gauc": 0.669069, "val_primary": 0.602833}, {"epoch": 8, "train_loss": null, "val_gauc": 0.669443, "val_primary": 0.603106}, {"epoch": 9, "train_loss": null, "val_gauc": 0.669412, "val_primary": 0.603117}, {"epoch": 10, "train_loss": null, "val_gauc": 0.669376, "val_primary": 0.603119}]
+
 SCENARIOS = [
     dict(
         name="strong_opener_full_streak",
@@ -149,6 +151,24 @@ SCENARIOS = [
         ],
         history=CURVE_NONE,
         streak={"no_improve_streak": 2, "iterations_done": 3, "max_iters": 16},
+        good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
+        bad={"seq-deepfm-composite", "package-dial-sweep", "gauge-fixed-bce",
+             "regularization-schedule", "seed-ensemble", "ensemble-design-sweep"},
+        expect_plan=True,
+    ),
+    dict(
+        name="f4r_exact_state",
+        note="EXACT live state of farm_f4r iteration 3 (journal lines verbatim from "
+             "the logged selector prompt; parent curve = f4 node_002 history after "
+             "normalization). Streak 2, best 0.6029. The margin-maximal move with "
+             "corrected card evidence is the cross-family close.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [<-node_000] draft "(proposal failed)" no-metric FAILED',
+            'node_002 [<-node_001] debug "Replacing ordinary pointwise logits with complete-slate user-centered BCE logits while leaving the hybrid BPR term and regularization unchanged will improve validation primary by approximately 0.0026 through better alignment with within-user ranking metrics." primary=0.6029 ACCEPTED',
+        ],
+        history=F4_NODE002_CURVE,
+        streak={"no_improve_streak": 2, "n_converge": 3, "iters_left": 13},
         good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
         bad={"seq-deepfm-composite", "package-dial-sweep", "gauge-fixed-bce",
              "regularization-schedule", "seed-ensemble", "ensemble-design-sweep"},
