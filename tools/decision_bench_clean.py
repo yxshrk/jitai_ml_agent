@@ -181,10 +181,12 @@ REAL_STATE_RUBRIC = {
     "chain_open": (  # swept opener first
         {"hyperparam-random-search"}, {"seed-ensemble", "seed-architecture-ensemble",
                                        "heterogeneous-ensemble-design", "recency-weighting"}),
-    "chain_after_strong_opener": (  # compound an orthogonal mechanism before closing
-        {"context-stratified-pairs"}, {"seed-ensemble", "seed-architecture-ensemble",
-                                       "heterogeneous-ensemble-design", "regularization-schedule",
-                                       "recency-weighting", "bpr-hybrid", "dcn-lite"}),
+    "chain_after_strong_opener": (  # compound a NEW mechanism before closing; in the
+        # clean world the swept opener is the logloss FM, so a pairwise objective
+        # (bpr-hybrid) is a new mechanism, as is the sampler
+        {"context-stratified-pairs", "bpr-hybrid", "dcn-lite"},
+        {"seed-ensemble", "seed-architecture-ensemble", "heterogeneous-ensemble-design",
+         "regularization-schedule", "recency-weighting"}),
     "chain_after_ctx_tie": (  # close over own lineage (or one more rider)
         {"seed-ensemble", "seed-architecture-ensemble", "heterogeneous-ensemble-design"},
         {"regularization-schedule", "recency-weighting", "bpr-hybrid", "dcn-lite",
