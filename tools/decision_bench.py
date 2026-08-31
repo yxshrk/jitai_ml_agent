@@ -241,6 +241,56 @@ SCENARIOS = [
         bad={"hetero-objective-ensemble", "diverse-family-farm-close",
              "heterogeneous-ensemble-design", "listwise-regime", "social-mtl-heads"},
     ),
+    dict(
+        name="chain_open",
+        note="1 Sep lean-library chain, step 1 (real f9 state): fresh calibrated "
+             "baseline. Right = the swept package opener; wrong = any close or a "
+             "single atom.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0002)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 0, "iterations_done": 0, "max_iters": 16},
+        good={"package-dial-sweep", "stage-matrix-sweep"},
+        bad={"seed-ensemble", "ensemble-design-sweep", "heterogeneous-ensemble-design",
+             "diverse-family-farm-close", "recency-weighting", "bpr-hybrid"},
+    ),
+    dict(
+        name="chain_after_strong_opener",
+        note="1 Sep chain, step 2 (real f9 state): swept package accepted at 0.6051 "
+             "single, streak 0. Right = compound an ORTHOGONAL mechanism with its own "
+             "re-sweep (sampler/objective rider); wrong = close already, or re-apply "
+             "a component the package contains.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0002)',
+            'node_001 [<-node_000] draft "package-dial-sweep" primary=0.6051 ACCEPTED (+0.0033, single model, 48-probe sweep)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 0, "iterations_done": 1, "max_iters": 16},
+        good={"context-stratified-pairs", "temporal-pair-kernel", "gauge-fixed-bce",
+              "decayed-positive-sampling", "combo-sweep"},
+        bad={"seed-ensemble", "ensemble-design-sweep", "diverse-family-farm-close",
+             "heterogeneous-ensemble-design", "regularization-schedule",
+             "recency-weighting", "bpr-hybrid", "dcn-lite"},
+    ),
+    dict(
+        name="chain_after_ctx_tie",
+        note="1 Sep chain, step 3 (real f9 state): ctx re-sweep node tied the champion "
+             "(0.6051, rejected +0.00002, strike 1). Right = close over the run's OWN "
+             "lineage (both strong artifacts exist) or one more orthogonal rider; "
+             "wrong = a fresh-member farm, or an embedded component.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0002)',
+            'node_001 [<-node_000] draft "package-dial-sweep" primary=0.6051 ACCEPTED (+0.0033, single model)',
+            'node_002 [<-node_001] improve "context-stratified-pairs (re-swept with rho)" primary=0.6051 REJECTED (+0.00002 below floor: strike 1)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 1, "iterations_done": 2, "max_iters": 16},
+        good={"ensemble-design-sweep", "seed-ensemble", "heterogeneous-ensemble-design",
+              "temporal-pair-kernel", "gauge-fixed-bce", "decayed-positive-sampling"},
+        bad={"diverse-family-farm-close", "regularization-schedule", "recency-weighting",
+             "bpr-hybrid", "dcn-lite", "package-dial-sweep"},
+    ),
 ]
 
 

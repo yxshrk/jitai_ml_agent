@@ -178,6 +178,17 @@ REAL_STATE_RUBRIC = {
     "close_rejected_strengthen_first": (  # failed-confirm close: strengthen members, do not re-roll
         {"seq-deepfm-composite", "dcn-lite", "bpr-hybrid",
          "context-stratified-pairs", "hyperparam-random-search"}, _ENS_ANY),
+    "chain_open": (  # swept opener first
+        {"hyperparam-random-search"}, {"seed-ensemble", "seed-architecture-ensemble",
+                                       "heterogeneous-ensemble-design", "recency-weighting"}),
+    "chain_after_strong_opener": (  # compound an orthogonal mechanism before closing
+        {"context-stratified-pairs"}, {"seed-ensemble", "seed-architecture-ensemble",
+                                       "heterogeneous-ensemble-design", "regularization-schedule",
+                                       "recency-weighting", "bpr-hybrid", "dcn-lite"}),
+    "chain_after_ctx_tie": (  # close over own lineage (or one more rider)
+        {"seed-ensemble", "seed-architecture-ensemble", "heterogeneous-ensemble-design"},
+        {"regularization-schedule", "recency-weighting", "bpr-hybrid", "dcn-lite",
+         "hyperparam-random-search"}),
     "farm_close_uniquely_right": (  # two families near ceiling + plateau: cross-family close
         _ENS_CROSS, {"seed-ensemble", "regularization-schedule",
                      "recency-weighting", "swa-ema"}),
