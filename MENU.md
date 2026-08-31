@@ -32,23 +32,17 @@ not missing information. Schedules: rapid step LR decay is the only schedule fam
 that beats the plateau (sweep campaign). Context finding: compact agent context beats
 full-history 3x-token context (A/B measured). FinalMLP failed 3-seed confirm — closed.
 
-## CURRENT DIRECTIVE (after runs 01-02 both converged at ~0.604)
-Single-dose regularization (dropout 0.15, AdamW wd 1e-4) measured FLAT. Do not
-re-test. Drafts should START from the known-best stack (DCN-lite: 1-2 cross layers
-+ MLP 128 on the 5 offset-encoded npz fields, hybrid 0.5 BPR + 0.5 logloss, early
-stop on valid GAUC — the pattern of accepted node_002) and spend iterations ONLY on
-the unexplored objective family, one theme each:
-1. CWM-style censored watch-time loss: treat play_time_ms as a censored observation
-   (completed play = truncated at duration_ms); one-sided regression auxiliary or
-   main loss; published GAUC 0.713 on this dataset (KDD'24).
-2. Ordinal watch-ratio auxiliary: bucket play_time/min(duration,18s) into ordinal
-   classes; cumulative-link or multi-head ordinal loss as auxiliary at weight 0.2-0.5.
-3. Per-user listwise softmax over the user's impressions (temperature-scaled),
-   possibly mixed with logloss.
-4. If 1-3 all flat: aggressive regularization package (dropout 0.3 + wd 1e-3 +
-   lr decay 0.5/epoch + 20 epochs) as one compound theme.
-
-Ranked by expected gain per unit implementation risk:
+## CURRENT DIRECTIVE (updated Mon 31 Aug — supersedes the watch-time directive, whose
+## themes are all MEASURED DEAD: CWM/censored, ordinal watch-ratio, listwise. Do NOT re-test.)
+Evidence-ranked priorities (all numbers from run journals):
+1. context-stratified-pairs on a gauge-fixed-bce or dial-swept base — measured +0.0015
+   (run_final_s4 n3: 0.60521), NO ensemble close ever attempted on that base. Highest EV.
+2. seq-deepfm-author-history — causal pooled author-history DeepFM, measured externally
+   0.6047 across 4 seeds (see card). Untried under this harness.
+3. ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
+   (bigclock_07, final_s2). The winning shape in every ledger.
+RULE: a card with measured-win status on this dataset is an eligible candidate under ANY
+diagnosis; diagnosis-fit is a tiebreaker among untried cards, not a filter on proven ones.
 
 ## Tier 1 — do first
 1. **Within-user pairwise loss (BPR)** on the same FM features. Build (pos, neg) pairs
