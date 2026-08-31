@@ -4,6 +4,43 @@ Literature-derived method cards for clean-knowledge runs. These cards describe
 mechanisms, applicability, implementation preconditions, citations, and
 literature-reported expectations only.
 
+## Research doctrine (general methodology, never campaign results)
+
+- SCREEN BEFORE YOU BET. Early iterations should buy information cheaply: one
+  fan-out node can probe many mechanisms or dial settings with short trainings
+  (2-3 epochs, optional subsample) and train only the winner at full fidelity.
+  Random search over wide log-uniform ranges beats hand-picked grids (Bergstra
+  & Bengio, JMLR 2012); successive halving allocates probe budget efficiently
+  (Hyperband/ASHA, Li et al. 2018). A broad screen dominates a single narrow
+  bet whenever several plausible mechanisms are untried.
+- BUDGET ARITHMETIC. A short probe costs a small fraction of a node's
+  wall-clock budget while a full-fidelity training costs many probes; spend
+  most of a search node on probes and reserve the remainder for the final
+  full-length training. Finishing a search node early is wasted information,
+  not efficiency.
+- KEEP YOUR OWN LEDGER. In-run measurements on THIS dataset outrank any
+  literature prior. When the journal shows a mechanism produced an accepted
+  gain, exploit it: tune, regularize, or compose within that direction before
+  opening unrelated bets. When the journal shows a mechanism family rejected
+  twice, treat that family as dead for this run and do not retry variants of
+  the same mechanism.
+- COMPOUND CLEARED WINS. After an accepted change the new champion is the
+  parent; stack the next change on top of it rather than restarting from the
+  baseline.
+- HONEST TELEMETRY. When the learning curve is missing or unusable, the
+  correct diagnosis is insufficient-telemetry; do not guess a pathology.
+  Prefer a low-risk, diagnosis-independent broad move (screening, leakage-safe
+  features) over a treatment chosen on a guessed diagnosis.
+- CLOSE WITH DIVERSITY. Ensembles gain most from members that are individually
+  competitive AND decorrelated: independent initializations plus modest
+  configuration variation reduce correlated errors (Deep Ensembles,
+  Lakshminarayanan et al. 2017). Reserve the final iterations to close with an
+  ensemble of the champion family before the convergence rule ends the run.
+- CONVERGENCE PRESSURE. The run ends after consecutive sub-epsilon iterations;
+  as the streak grows, shift from exploring new mechanisms toward finishing
+  moves with reliable literature-reported payoff (ensembling, checkpoint
+  averaging) so the run ends with its strongest artifact.
+
 ### bpr-hybrid: Within-user BPR + pointwise hybrid
 - mechanism: Form positive/negative pairs only inside each user's impressions and optimize logistic score differences. Mix a pairwise ranking objective with BCE so ranking alignment does not discard pointwise stabilization.
 - treats: metric-mismatch | flat-signal
@@ -77,6 +114,7 @@ literature-reported expectations only.
 - status_1k: untried
 
 ### regularization-schedule: Compound dropout, row-L2, weight decay, and LR decay
+- kind: opportunity
 - mechanism: Apply MLP dropout, accessed-row embedding L2, dense-weight decay, and learning-rate decay. The compound package aims to keep validation ranking improving after an early peak.
 - treats: overfit
 - preconditions: Learning curves peak early and then fall; tune the package coherently and select on ranking quality.
@@ -122,6 +160,7 @@ literature-reported expectations only.
 - status_1k: untried
 
 ### session-time-features: Session and fine time context
+- kind: opportunity
 - mechanism: Derive causal session position and gap features from impression timestamps and add time-context crosses. These represent transient intent and distribution changes that static IDs miss.
 - treats: data-shift | flat-signal
 - preconditions: Compute features from current and past impressions only, preserve row order, and never use future session events.
@@ -149,6 +188,7 @@ literature-reported expectations only.
 - status_1k: untried
 
 ### seed-architecture-ensemble: Seed and diverse-architecture rank ensemble
+- kind: opportunity
 - mechanism: Train a competitive configuration across several seeds and optionally add a genuinely distinct architecture, then average scores or per-user ranks. Diversity reduces variance and uncorrelated ranking errors.
 - treats: data-shift | flat-signal
 - preconditions: Final-stage only; component models must be individually competitive and predictions aligned row-for-row.
@@ -158,6 +198,7 @@ literature-reported expectations only.
 - status_1k: untried
 
 ### seed-ensemble: Seed ensemble of the champion configuration
+- kind: opportunity
 - mechanism: Cancel variance across random initializations by training the champion configuration at several seeds and per-user rank-averaging their validation predictions.
 - treats: flat-signal
 - preconditions: A champion configuration must already exist and promising single-model moves must be exhausted. This is a standard closing move, not an opening move.
@@ -169,6 +210,7 @@ literature-reported expectations only.
 - member diversity: At run time, reason about whether seed diversity is enough or whether to write a custom node instead of calling `zoo/ensemble_node.py`. A custom node may train members with deliberately varied configurations around the champion (for example, different dropout, learning rate, or half-life choices) and rank-average their outputs. Configuration diversity can cancel correlated errors that seed diversity alone cannot, but one bad or outlier member can drag down the whole committee, so keep variations modest. This is an agent decision, not a prescribed range.
 
 ### item-aggregates: Train-window item/author target aggregates
+- kind: opportunity
 - mechanism: Add Bayesian-smoothed video and author long_view rates computed only on training dates. Candidate-varying rates can affect within-user order, unlike user-only rates.
 - treats: flat-signal | data-shift
 - preconditions: Compute statistics strictly within the training window with no validation or future leakage.
@@ -192,5 +234,25 @@ literature-reported expectations only.
 - preconditions: Requires grouped sorting, leakage-safe engineered features, and an execution environment that provides LightGBM.
 - citation: LightGBM LambdaRank documentation and learning-to-rank literature
 - expected_gain / cost: LambdaRank literature reports strong top-ranked ordering on grouped tabular problems, while blending can help when model errors are complementary / medium.
+- status_pure: untried
+- status_1k: untried
+
+### hyperparam-random-search: Wide random-search dial sweep with short probes
+- kind: opportunity
+- treats: overfit | underfit | flat-signal
+- mechanism: One fan-out node samples many configurations (learning rate, weight decay, dropout, embedding dimension, epoch/checkpoint choice) from wide log-uniform ranges, scores each with a short probe training, prunes losers early, then trains the best configuration at full fidelity. Random search covers a high-dimensional dial space far better than a hand-picked grid of round numbers.
+- preconditions: Probes must share the exact data pipeline and evaluator with the final training; budget probes so the node finishes inside the timeout; log every probe config and score for auditability.
+- citation: Bergstra & Bengio, JMLR 2012 (random search); Li et al. 2018 (Hyperband/ASHA successive halving)
+- expected_gain / cost: Random-search literature reports it reliably outperforms grid search at equal budget because only a few dials matter and wide sampling finds unintuitive optima / low per probe, one node total.
+- status_pure: untried
+- status_1k: untried
+
+### mechanism-screen: Multi-mechanism screening matrix with short probes
+- kind: opportunity
+- treats: flat-signal | insufficient-telemetry
+- mechanism: One fan-out node implements several small candidate mechanisms (for example a pairwise-loss term, an interaction head, recency weighting, item aggregates) as toggles, probes each alone and in a few pairs with short trainings, and promotes only the strongest combination to a full-fidelity final training. This converts uncertainty over which mechanism family fits the dataset into a cheap measured ranking.
+- preconditions: Each toggle must be independently correct and leakage-safe; keep probes short and comparable; record the full probe matrix in metrics history.
+- citation: Bergstra & Bengio, JMLR 2012; Hyperband/ASHA (Li et al. 2018); ablation-matrix practice in FuxiCTR/BARS benchmark literature
+- expected_gain / cost: Benchmark-suite literature reports that measured screening across mechanism families avoids committing budget to a mismatched family and typically finds the dataset's dominant lever early / medium runtime, one node.
 - status_pure: untried
 - status_1k: untried

@@ -19,7 +19,24 @@ from harness.loop import ROOT, Loop, LoopConfig
 CLEAN_TASK_CONTEXT = """\
 Dataset: KuaiRand short-video recommendation ({dataset} track).
 Metrics: within-user GAUC, per-user nDCG@5, and their mean primary score.
-Splits: train on the fixed training split and evaluate only on the fixed validation split."""
+Splits: train on the fixed training split and evaluate only on the fixed validation split.
+
+Research doctrine (general methodology; you have no prior results on this benchmark):
+- Screen before you bet: open with broad, cheap information-buying moves — one
+  fan-out node probing many dial settings or mechanisms with short trainings and
+  a full-fidelity final beats a single narrow architecture bet (random search:
+  Bergstra & Bengio 2012; successive halving: Hyperband/ASHA).
+- Budget arithmetic: probes are cheap relative to the node clock; spend most of
+  a search node on probes, reserve the rest for the full-length final training.
+- Keep your own ledger: in-run measurements on this dataset outrank literature
+  priors. Compose and tune what your journal shows working; never retry a
+  mechanism family your journal shows rejected twice.
+- Compound cleared wins: build each change on the current champion.
+- Honest telemetry: with no usable learning curve, diagnose
+  insufficient-telemetry and pick a low-risk broad move; do not guess.
+- Close with diversity: reserve the final iterations for an ensemble of the
+  champion family — diverse members (seeds plus modest config variation)
+  reduce correlated errors (Deep Ensembles, Lakshminarayanan et al. 2017)."""
 
 
 def build_parser() -> argparse.ArgumentParser:
