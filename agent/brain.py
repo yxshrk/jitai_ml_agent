@@ -124,6 +124,7 @@ def parse_method_card_metadata(card_text: str, dataset: str = "pure") -> dict:
     if dataset not in ("pure", "1k"):
         raise ValueError("dataset must be 'pure' or '1k'")
     treats_match = re.search(r"^- treats:\s*(.+)$", card_text, re.MULTILINE)
+    kind_match = re.search(r"^- kind:\s*(treatment|opportunity)\s*$", card_text, re.MULTILINE)
     reference_match = re.search(
         r"^- reference_primary:\s*(none|[-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*$",
         card_text,
@@ -147,6 +148,7 @@ def parse_method_card_metadata(card_text: str, dataset: str = "pure") -> dict:
         reference = float(reference_match.group(1))
     return {
         "treats": [part.strip() for part in treats_match.group(1).split("|")] if treats_match else [],
+        "kind": kind_match.group(1) if kind_match else "treatment",
         "reference_primary": reference,
         "expected_gain": max(gains, default=0.0),
         "measured_dead": bool(status_match and status_match.group(1).startswith("measured-dead")),
@@ -167,6 +169,35 @@ def method_cards_for_dataset(methods_text: str, dataset: str) -> str:
         elif match.group(1) == active:
             lines.append(f"- status: {match.group(2)}")
     return "\n".join(lines)
+
+
+def two_tier_methods_text(methods_text: str) -> str:
+    """Render the card library as two sections: diagnosis-matched treatments and
+    evidence-ranked, diagnosis-independent opportunities (v2 selection design)."""
+    matches = list(re.finditer(r"^### [a-z0-9-]+: .+$", methods_text, re.MULTILINE))
+    if not matches:
+        return methods_text
+    preamble = methods_text[: matches[0].start()].rstrip()
+    cards = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(methods_text)
+        cards.append(methods_text[match.start():end].strip())
+    treatments, opportunities = [], []
+    for card in cards:
+        meta = parse_method_card_metadata(card)
+        (opportunities if meta["kind"] == "opportunity" else treatments).append((card, meta))
+    def rank(item):
+        card, meta = item
+        status = (meta.get("status") or "")
+        return (0 if "measured-win" in status else 1, -(meta["reference_primary"] or 0.0))
+    opportunities.sort(key=rank)
+    parts = [preamble,
+             "\n## TREATMENT CARDS — match these to your diagnosis\n",
+             "\n\n".join(card for card, _ in treatments),
+             "\n## OPPORTUNITY CARDS — diagnosis-independent; ranked by measured evidence; "
+             "always in your consideration set\n",
+             "\n\n".join(card for card, _ in opportunities)]
+    return "\n".join(parts)
 
 
 def extract_code_block(text: str) -> str | None:
@@ -367,7 +398,7 @@ class Brain:
         preference_note: str | None = None,
     ) -> dict:
         user = prompts.selector_user_prompt(
-            method_cards_for_dataset(self.methods_text, dataset),
+            two_tier_methods_text(method_cards_for_dataset(self.methods_text, dataset)),
             journal_lines, parent_history, streak_state,
             excluded_families=excluded_families,
             enforce_family_exclusion=enforce_family_exclusion,

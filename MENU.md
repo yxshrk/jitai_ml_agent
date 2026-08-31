@@ -43,8 +43,9 @@ Evidence-ranked priorities (all numbers from run journals):
    0.6047 across 4 seeds (see card). Untried under this harness.
 4. ensemble-design-sweep close on ANY champion >=0.6045 — closes measure +0.0010-0.0013
    (bigclock_07, final_s2). The winning shape in every ledger.
-RULE: a card with measured-win status on this dataset is an eligible candidate under ANY
-diagnosis; diagnosis-fit is a tiebreaker among untried cards, not a filter on proven ones.
+RULE: the library is two-tier — TREATMENT cards match your diagnosis; OPPORTUNITY cards
+(architectures, feature families, sweeps, closes) are diagnosis-independent and ranked
+by measured evidence in your menu. Weigh opportunities every iteration.
 
 ## Tier 1 — do first
 1. **Within-user pairwise loss (BPR)** on the same FM features. Build (pos, neg) pairs

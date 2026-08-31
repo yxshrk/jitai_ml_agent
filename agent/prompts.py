@@ -239,7 +239,11 @@ def selector_user_prompt(
             "Diagnose from evidence: a validation peak followed by decline is overfit; "
             "a curve still rising at stop is underfit; a flat curve is flat-signal; "
             "objective/evaluator disagreement is metric-mismatch; temporal degradation "
-            "is data-shift."
+            "is data-shift. Selection policy: TREATMENT cards should match your "
+            "diagnosis; OPPORTUNITY cards are diagnosis-independent upgrades — weigh "
+            "them by their measured evidence every iteration, especially when your "
+            "diagnosis is low-confidence (e.g. missing or unusable learning-curve "
+            "telemetry)."
         ),
         _streak_section(streak_state),
         diversity,
