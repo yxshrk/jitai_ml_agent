@@ -17,7 +17,9 @@ evaluator `harness.evaluate_provisional.evaluate(user_ids, labels, scores)`.
 Higher is better. Improvements below 0.002 on validation are noise.
 
 Hard rules for every script you emit (CONTRACTS.md section 3):
-- Emit ONE WHOLE runnable Python script. Never a diff, never a fragment.
+- DRAFT and DEBUG proposals emit ONE WHOLE runnable Python script (never a
+  fragment). IMPROVE proposals instead emit "edits" blocks per the envelope
+  contract below — the harness applies them to the parent script.
 - CLI: `python <script> --data-dir <d> --out-dir <o> [--seed 42]` via argparse.
   Default seed 42. Deterministic given the seed.
 - FAST PATH (use it when present): `<data-dir>/train.npz` and `<data-dir>/val.npz` hold
@@ -39,7 +41,8 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
   fan-out nodes SHOULD append one line per completed probe (config + score) to
   `<out-dir>/progress.log` so the search is observable while it runs; besides
   that, only write the two output files.
-- Stay within the runtime timeout (default 600s); prefer small/fast models.
+- Stay within the runtime timeout (the NODE_TIMEOUT_S environment variable,
+  set by the harness); prefer small/fast models.
 - Read environment variable `SMOKE_EPOCHS` as an integer when present and cap
   every training phase's epoch count to that value. `SMOKE_EPOCHS=1` is the
   harness sanity pass and must still write predictions.csv and metrics.json.

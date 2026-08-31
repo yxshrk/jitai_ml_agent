@@ -9,7 +9,9 @@ JSON emitted by the proposer, executed by the harness:
   "expected_delta_basis": "The bpr-hybrid card measured primary 0.6048.",
   "parent": "node_007",               // solution-tree node this builds on, or "baseline"
   "action": "improve",                // draft | debug | improve
-  "code": "<WHOLE runnable script>",  // whole-file rewrite, never a diff (research/agent-design.md #3)
+  "code": "<WHOLE runnable script>",  // draft/debug: whole file. improve: instead
+  // "edits": [{"search": "<exact parent snippet, unique>", "replace": "..."}]
+  // applied verbatim to the parent (1 Sep: constrained patching; one repair round)
   "timeout_s": 600
 }
 ```
@@ -144,20 +146,22 @@ before primary`; `realized_delta` is null when the iteration errors. Evidence re
 expected versus realized delta per iteration and mean absolute calibration error over only
 the iterations whose realized delta is non-null.
 
-For `action == "improve"`, the proposer emits the whole parent file but makes the smallest
-coherent change needed to test its one hypothesis. Unnecessary rewrites are defects; this
-constraint does not change the whole-script JSON output format.
+For `action == "improve"` (1 Sep), the proposer emits `edits` — exact-match
+search/replace blocks applied to the parent script (each hunk must match exactly once;
+one targeted repair round on mismatch; whole-`code` fallback accepted). Untouched code
+is byte-identical, so accepted artifacts evolve instead of being re-typed. A similarity
+gate (>=40% of parent lines survive, agent-authored parents only) backstops rewrites.
 
-Every draft or improve node has two-stage execution. Before its full run, the harness runs
-the same script with `SMOKE_EPOCHS=1` and a fixed 120-second timeout, requiring a zero exit
-and valid `predictions.csv` plus `metrics.json`. Nonzero exit, timeout, missing outputs, or
-invalid metrics immediately marks `failure_stage="smoke"` and `fixer_eligible=true`; no
-full-run budget is spent. The existing fixer gets one attempt, and patched draft/improve
-code must pass a fresh smoke before its full run. Scripts must parse `SMOKE_EPOCHS` as an
-integer and cap every training phase's epoch count accordingly. A script that ignores the
-variable is allowed: if it completes with valid outputs within 120 seconds, smoke passes.
-Debug nodes keep the existing single-stage execution because they are themselves the
-fix attempt.
+Every draft, improve, or debug node has two-stage execution (debug included since
+1 Sep — a "debug" label must not bypass the gate). Before its full run, the harness runs
+the same script with `SMOKE_EPOCHS=1` and a 360-second timeout, requiring a zero exit
+and valid `predictions.csv` plus `metrics.json`. It then applies the SMOKE SANITY GATE
+(1 Sep): 1-epoch GAUC below 0.5, or 1-epoch primary more than 0.010 below the
+baseline's own 1-epoch probe (`smoke_reference.json`, built at calibration), marks
+`failure_stage="smoke"` and `fixer_eligible=true`; no full-run budget is spent. The
+margin separates measured populations: sane 1-epoch implementations land 0.592-0.600,
+broken ones <=0.590. The fixer gets one attempt; patched code must pass a fresh smoke.
+Scripts must parse `SMOKE_EPOCHS` and cap every training phase accordingly.
 
 The reflector still runs every 5 iterations and additionally whenever stagnation reaches
 3 or more; it receives all METHODS.md card ids so its focus note can re-rank them.
@@ -169,7 +173,9 @@ Acceptance: calibrate sigma from 3 baseline seeds; accept if delta >= 2*sigma
 (floor 0.002); 0-2sigma -> one reseed confirm run; else revert.
 Convergence: OFFICIAL rule — converged when validation primary has not improved by
 more than epsilon=0.002 over the last N=3 consecutive COMPLETED iterations (accepted,
-rejected, errored all count), vs best-so-far. Journal line 0 = reproduce_baseline
+rejected, errored all count — EXCEPT transient provider/infrastructure errors, 1 Sep:
+those retry once after a pause and never count a strike, because an outage is not
+evidence about the search), vs best-so-far. Journal line 0 = reproduce_baseline
 (3-seed calibration doubles as the brief's required baseline reproduction). Every
 iteration record carries a unified "diff" vs its parent node (brief requirement).
 Harness owns timeouts, validity checks, best-node argmax, stopping.

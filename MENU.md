@@ -35,7 +35,11 @@ full-history 3x-token context (A/B measured). FinalMLP failed 3-seed confirm —
 ## CURRENT DIRECTIVE (updated Mon 31 Aug — supersedes the watch-time directive, whose
 ## themes are all MEASURED DEAD: CWM/censored, ordinal watch-ratio, listwise. Do NOT re-test.)
 Evidence-ranked priorities (all numbers from run journals):
-1. diverse-family-farm-close — ONE node: train one member per measured-win family and rank-average across families (the measured 0.6058-0.6065 evidence, agent-reachable in a single eps-clearing iteration; see card)
+1. RECALIBRATED (1 Sep): the 0.6058-0.6065 close evidence uses POLISHED artifacts;
+   in-node fresh members measured 0.5975-0.6046 and every fresh-member close (f7-f9)
+   fell back to its incumbent. Closes pay only over EXISTING strong artifacts (own
+   trained nodes via script_source, or the champion verbatim via seed ensemble).
+   The proven opener is the 48-probe swept package (best single: 0.605102, run_f9).
 2. seq-deepfm-composite — teammate-verified full package at 0.6055-0.6061 validation
    (see card; partial ports fail — implement completely). HIGHEST PRIORITY.
 3. context-stratified-pairs on a gauge-fixed-bce or dial-swept base — measured +0.0015
@@ -108,9 +112,10 @@ by measured evidence in your menu. Weigh opportunities every iteration.
     Expect +0.002-0.006 from the blend.
     MEASURED (valid, seed 42): LGBM alone 0.5974 (below baseline); every rank blend with the NN hurts — dead (E8).
 
-12. **Seed ensemble**: average predictions over 3-5 seeds of the best config.
-    Free +0.002-0.005, do at the very end.
-    MEASURED (valid): 5-seed rank-average of best.py = 0.6047 vs seed-mean 0.6039 — variance reducer, ~best-single-seed level (E7).
+12. **Seed ensemble**: average predictions over 3-5 seeds of the best config, at the
+    very end. MEASURED BASE-DEPENDENT (1 Sep): +0.0014 off a 0.6042 single; only
+    +0.0002 off a heavily tuned 0.6051 single — the gain shrinks near the
+    0.6055-0.6060 ceiling. (E7: 5-seed of best.py 0.6047 vs seed-mean 0.6039.)
 
 13. **CWM-style censored watch-time loss** (KDD'24) - the published SOTA idea.
     High risk/reward; only if iterations remain.
