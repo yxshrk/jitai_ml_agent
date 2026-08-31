@@ -64,3 +64,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | decision replay | laptop | evidence | 3 decisions | 0.60599 | OPTIMISTIC CACHED-ARTIFACT COUNTERFACTUAL (external review wording): selector choices replayed over cached tuned artifacts reach 0.60599 under favorable conditions (global ranks, canned curves, no reseed gate); indicative of judgment quality, NOT an autonomous result |
 | ruby_y3 | ruby | converged | 3 | 0.60400 | pre-bench library run; grey-accepted freq (+0.0008 with z-pass — floor-v2 working as intended) then converged |
 | cpu_c1 | cpupod | converged | 5 | 0.60403 | 2nd genuine composite adoption held as peak; close never landed |
+| ruby_w1 | ruby | converged | 4 | 0.60412 | FIRST live farm-close execution: accepted, no collapse (contracts held); gain small (+0.0002) from weak member base |
