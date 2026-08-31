@@ -181,6 +181,26 @@ SCENARIOS = [
         expect_plan=True,
     ),
     dict(
+        name="close_rejected_strengthen_first",
+        note="farm_f6r post-rejection state (31 Aug): a cross-family close scored "
+             "above the incumbent but failed the repeat-seed confirm. Re-rolling the "
+             "same close is not a new experiment; the right move adds a stronger "
+             "distinct member (a measured package from another family) before closing again.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [<-node_000] draft "package-dial-sweep" primary=0.6014 REJECTED (defective implementation)',
+            'node_002 [<-node_000] draft "seq-deepfm-composite" primary=0.6042 ACCEPTED (+0.0024)',
+            'node_003 [<-node_002] improve "gauge-fixed-bce" primary=0.6042 REJECTED',
+            'node_004 [<-node_002] improve "heterogeneous-ensemble-design (farm-close: blend 0.6050 vs incumbent 0.6042)" primary=0.6050 REJECTED (confirm reruns fell back to incumbent: gain not repeatable)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 2, "n_converge": 3, "iters_left": 11},
+        good={"package-dial-sweep", "stage-matrix-sweep", "context-stratified-pairs",
+              "temporal-pair-kernel"},
+        bad={"heterogeneous-ensemble-design", "diverse-family-farm-close",
+             "seed-ensemble", "ensemble-design-sweep", "regularization-schedule"},
+    ),
+    dict(
         name="farm_close_uniquely_right",
         note="two DIFFERENT families independently measured near the ceiling, "
              "plateau streak, clock half spent: the doctrine answer is the "

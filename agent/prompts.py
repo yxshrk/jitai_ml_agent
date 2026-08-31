@@ -229,7 +229,11 @@ CONVERGENCE_PRESSURE = (
     "card's original baseline: an unspent package whose measured absolute score "
     "sits near the current best offers almost no headroom, while a close whose "
     "evidence exceeds every single-model score in the ledger offers the most. A proven small-gain close is the "
-    "right pick only when no eligible move has evidence reaching epsilon. Do not "
+    "right pick only when no eligible move has evidence reaching epsilon. If a "
+    "close was just REJECTED for a gain that did not repeat, its members were "
+    "too close to the incumbent: re-rolling the same blend with new seeds is not "
+    "a new experiment; add a stronger, distinct member first (a measured package "
+    "from another family) and close again afterwards. Do not "
     "change what counts as an iteration in response to the streak."
 )
 
