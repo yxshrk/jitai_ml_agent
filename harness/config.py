@@ -20,8 +20,6 @@ MAX_CONFIRM_SEEDS = 5             # adaptive: two more fresh seeds when the z-sc
 MIN_EFFECT = 0.0005               # acceptance: the fresh-seed mean gain over the champion must be at least this ...
 Z_CRIT = 3.0                      # ... and at least Z_CRIT standard errors with the POOLED seed SD (a z-test, not a 3-vs-3 t-test)
 Z_BORDER = 2.0                    # below this the candidate is rejected outright; between Z_BORDER and Z_CRIT more seeds decide
-SEED_SD_PRIOR = 0.0003            # prior on the seed-to-seed SD of the primary (live_01/02), blended with the run's pooled estimate
-SEED_SD_PRIOR_DF = 4              # weight of that prior in degrees of freedom
 N_CONVERGE = 3                    # official N
 RESET_MIN_GAIN = 0.001            # the convergence streak resets when the champion's fresh-seed mean has risen by at least this since
                                   # the last reset (cumulative, like min_delta against best-seen): eps/2 on a statistic with ~1/3 the
@@ -32,7 +30,9 @@ SMOKE_TIMEOUT_S = 120
 RUN_TIMEOUT_S = 1800
 DEFAULT_SEED = 0                  # same seed for every node in a run, so single-seed deltas are not seed noise
 MAX_DIFF_LINES = 200              # an 'improve' node changing more lines than this is bounced back once (edit, don't rewrite)
-SEED_SD = 0.0003                  # measured seed-to-seed SD of the validation primary (baseline seeds 0/1/2)
+SEED_SD = 0.0003                  # seed-to-seed SD of the primary measured in earlier runs. KB BOOKKEEPING ONLY (the ledger's
+                                  # mapping-violation margin, kb/methods/ledger.py): no decision inside a run may read it, and
+                                  # the acceptance test does not — it pools this run's own seed runs and nothing else (ADR-0020).
 
 # Static firewall (ADR-0005): an agent script containing any of these strings is rejected before it runs.
 FORBIDDEN_PATTERNS = ['KuaiRand-Pure', 'log_standard_4_22', 'log_standard_4_08', 'log_random',
@@ -66,7 +66,8 @@ def rules_text():
     the LLM roles read can never drift from what the code does (ADR-0012)."""
     return (f"ACCEPTANCE (code, ADR-0010/0011/0012): a candidate whose seed-{DEFAULT_SEED} delta is positive is re-run with {CONFIRM_SEEDS} "
             f"FRESH seeds; it is accepted iff its fresh-seed mean gain over the champion's fresh-seed mean is >= {MIN_EFFECT} AND "
-            f"z >= {Z_CRIT}, where z uses the seed SD pooled over every seed run of this run (prior {SEED_SD_PRIOR}); a borderline "
+            f"z >= {Z_CRIT}, where z uses the seed SD pooled over every seed run OF THIS RUN and no prior from any other run "
+            f"(ADR-0020: the run decides on its own evidence); a borderline "
             f"z in [{Z_BORDER}, {Z_CRIT}) gets {MAX_CONFIRM_SEEDS - CONFIRM_SEEDS} more seeds before the decision; a node whose "
             f"predictions are byte-identical to its parent's is a no-op and is rejected without seeds. "
             f"CONVERGENCE (code, ADR-0012): the streak resets when the champion's fresh-seed mean has risen by >= {RESET_MIN_GAIN} since "

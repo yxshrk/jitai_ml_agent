@@ -47,15 +47,22 @@ def pick_champion(results):
         return c.get('delta_mean', r.get('realized_delta') or 0.0)
     return max(acc, key=lambda r: (gain(r), r['metrics']['primary']))['n']
 
-def pooled_sigma(samples, prior=C.SEED_SD_PRIOR, prior_df=C.SEED_SD_PRIOR_DF):
-    """Seed-to-seed SD of the primary pooled over every node with >= 2 fresh seeds (Bessel), blended with the prior:
-    sigma^2 = (sum (n_i - 1) s_i^2 + prior_df * prior^2) / (sum (n_i - 1) + prior_df). Seed noise is a property of
-    the data + model family (every node measured so far: 0.0002-0.0005), so pooling turns a 2-df t-test into a z-test."""
+def pooled_sigma(samples):
+    """Seed-to-seed SD of the primary pooled over every node of THIS RUN with >= 2 fresh seeds (Bessel):
+    sigma^2 = sum (n_i - 1) s_i^2 / sum (n_i - 1). Seed noise is a property of the data + model family (every node
+    measured so far: 0.0002-0.0005), so pooling turns a 2-df t-test into a z-test.
+
+    ADR-0020: no prior from earlier runs is blended in. A run's acceptance decisions must rest on evidence the run
+    itself gathered, so that what is submitted is the product of one autonomous search rather than of knowledge
+    carried between runs. The prior it replaces (0.0003 at 4 df, from live_01/02) sat below every run's true seed SD
+    (0.00035-0.00044 measured), so it shrank sigma and inflated every z; removing it makes the test stricter.
+    Returns (sigma, df); sigma is None when no node yet has two fresh seeds, and the caller falls back to the
+    candidate's own SD."""
     ss, df = 0.0, 0
     for v in samples:
         if len(v) >= 2:
             ss += (len(v) - 1) * statistics.variance(v); df += len(v) - 1
-    return ((ss + prior_df * prior ** 2) / (df + prior_df)) ** 0.5, df
+    return ((ss / df) ** 0.5 if df else None), df
 
 def confirm_stats(v_node, v_ch, sigma):
     """z-test of the difference of fresh-seed means with the pooled seed SD: returns
@@ -132,7 +139,7 @@ class Loop:
     def champion_mean(self):
         return self.node_mean(self.state['champion'])
     def _sigma(self):
-        """Seed SD pooled over every node of this run with >= 2 fresh seeds, blended with the prior."""
+        """Seed SD pooled over every node of this run with >= 2 fresh seeds — this run's evidence only (ADR-0020)."""
         return pooled_sigma([self.fresh_seeds(int(k)) for k in self.state['nodes']])
     def code_of(self, n): return self.j.node_path(n).read_text()
 
@@ -842,7 +849,8 @@ class Loop:
 
     def _confirm_with_seeds(self, n):
         """ADR-0012 statistics: FRESH seeds (1..CONFIRM_SEEDS) for the candidate and the champion (cached), a z-test of
-        the difference of their means with the seed SD pooled over the whole run (prior 0.0003), acceptance iff the gain
+        the difference of their means with the seed SD pooled over this run's own seed runs (no outside prior, ADR-0020),
+        acceptance iff the gain
         is >= MIN_EFFECT and z >= Z_CRIT; a borderline z gets two more seeds first. Seed 0 is the selected screen and is
         reported but not counted. Measured reason: the best of k single-seed branches is biased upward — +0.0022 on one
         seed was +0.0017 over three; a 3-vs-3 t-test at 2.5 passed 3-6 % of null candidates."""
@@ -853,8 +861,11 @@ class Loop:
         if not v_node or not v_ch:
             return False, {'error': 'confirmation seeds failed', 'node_seeds': v_node, 'champion_seeds': v_ch}
         def sigma_for(v):
-            """Pooled sigma, unless the node's own seeds are clearly more unstable (sample SD > 2x pooled, p ~ 5 % under homogeneity)."""
+            """Pooled sigma, unless the node's own seeds are clearly more unstable (sample SD > 2x pooled, p ~ 5 % under
+            homogeneity); the node's own SD also stands in when this run has no pooled estimate yet (ADR-0020)."""
             s_pool, df = self._sigma(); s_own = statistics.stdev(v) if len(v) > 1 else 0.0
+            if s_pool is None:
+                return (s_own, 0, True)
             return (s_own, df, True) if s_own > 2 * s_pool else (s_pool, df, False)
         sigma, df, own = sigma_for(v_node)
         m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
@@ -870,7 +881,8 @@ class Loop:
         return accepted, {'node_seed0': self.node(n)['metrics']['primary'], 'node_seeds': v_node, 'champion_seeds': v_ch,
                           'delta_mean': round(diff, 5), 'se': round(se, 6), 'z': round(z, 2), 'sigma_pooled': round(sigma, 6),
                           'sigma_df': df, 'sigma_from_node_only': own, 'adaptive': adaptive,
-                          'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the pooled seed SD'}
+                          'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the seed SD pooled over '
+                                  f'this run only (ADR-0020: no prior from other runs)'}
 
     def _result_view(self, rec):
         m = rec.get('metrics') or {}

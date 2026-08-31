@@ -44,8 +44,17 @@ def test_pick_champion_and_confirm_stats():
     assert pick_champion(res) == 6                               # accepted, best seed-mean gain — not the best single seed
     assert pick_champion([res[0], res[3]]) is None
     from harness.loop import pooled_sigma
-    sigma, df = pooled_sigma([[0.60147, 0.60176, 0.60109], [0.60304, 0.60232, 0.60261]])
+    a, b = [0.60147, 0.60176, 0.60109], [0.60304, 0.60232, 0.60261]
+    sigma, df = pooled_sigma([a, b])
     assert df == 4 and 0.00025 < sigma < 0.00035
+    # ADR-0020: the SD is pooled over THIS RUN's seed runs and nothing else — no prior from earlier runs
+    import statistics as _st
+    pure = ((2 * _st.variance(a) + 2 * _st.variance(b)) / 4) ** 0.5
+    assert sigma == pytest.approx(pure, rel=1e-12)
+    assert sigma > (((2 * _st.variance(a) + 2 * _st.variance(b) + 4 * 0.0003 ** 2) / 8) ** 0.5)   # the old prior shrank it
+    assert pooled_sigma([[0.6]]) == (None, 0) and pooled_sigma([]) == (None, 0)   # nothing of its own yet -> caller uses the node's own SD
+    assert not hasattr(C, 'SEED_SD_PRIOR') and not hasattr(C, 'SEED_SD_PRIOR_DF')
+    assert 'no prior' in C.rules_text() or 'no other' in C.rules_text().lower() or 'OF THIS RUN' in C.rules_text()
     m1, m2, diff, se, z, ok = confirm_stats([0.60447, 0.6045, 0.60399], [0.60304, 0.60232, 0.60261], 0.0003)   # live_04 node_015
     assert diff == pytest.approx(0.00166, abs=1e-5) and z > 6 and ok
     assert confirm_stats([0.6035, 0.6036, 0.6034], [0.6030, 0.6031, 0.6029], 0.0003)[5] is False   # +0.0005 at z ~ 2: borderline, not accepted
