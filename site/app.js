@@ -18,11 +18,23 @@ addEventListener('scroll',()=>{
 
 /* ---------- hero chart: the whole run, self-drawing ---------------------- */
 (function hero(){
-  const svg=$('#herochart'), W=640, Hh=420, P=52;
-  const S0=0.6005,S1=0.6062;
+  const svg=$('#herochart'), W=1120, Hh=480, P=64, PT=44, PB=70;
+  const S0=0.6005,S1=0.6065;
   const xs=i=>P+i/(N.length-1||1)*(W-2*P);
-  const ys=v=>Hh-P-(Math.min(S1,Math.max(S0,v))-S0)/(S1-S0)*(Hh-2*P);
-  let h='<line class="axis" x1="'+P+'" y1="'+(Hh-P)+'" x2="'+(W-P)+'" y2="'+(Hh-P)+'"/>';
+  const ys=v=>Hh-PB-(Math.min(S1,Math.max(S0,v))-S0)/(S1-S0)*(Hh-PB-PT);
+  let h='';
+  for(let gx=P,step=(W-2*P)/((N.length-1||1)*2);gx<=W-P+1;gx+=step)
+    h+='<line class="axis" x1="'+gx+'" y1="'+ys(S1)+'" x2="'+gx+'" y2="'+(Hh-PB)+'"/>';
+  for(let v=S0;v<=S1+1e-9;v+=0.0005){
+    const major=Math.round(v*10000)%10===0;
+    h+='<line class="axis" x1="'+P+'" y1="'+ys(v)+'" x2="'+(W-P)+'" y2="'+ys(v)+'"'+(major?'':' opacity="0.45"')+'/>';
+    if(major)h+='<text class="axistext" x="'+(P-10)+'" y="'+(ys(v)+4)+'" text-anchor="end">'+v.toFixed(3)+'</text>';
+  }
+  h+='<line class="axis" x1="'+P+'" y1="'+(Hh-PB)+'" x2="'+(W-P)+'" y2="'+(Hh-PB)+'"/>';
+  N.forEach((n,i)=>{h+='<text class="axistext" x="'+xs(i)+'" y="'+(Hh-PB+24)+'" text-anchor="middle">'
+    +String(i).padStart(2,'0')+'</text>';});
+  h+='<text class="axistext" x="'+P+'" y="'+(ys(S1)-16)+'">validation primary ↑</text>';
+  h+='<text class="axistext" x="'+(W-P)+'" y="'+(Hh-PB+48)+'" text-anchor="end">iteration →</text>';
   h+='<line class="baseline-l" x1="'+P+'" y1="'+ys(BASELINE)+'" x2="'+(W-P)+'" y2="'+ys(BASELINE)+'"/>';
   h+='<text class="axistext" x="'+(W-P)+'" y="'+(ys(BASELINE)-6)+'" text-anchor="end">baseline 0.6016</text>';
   const acc=N.map((n,i)=>({n,i})).filter(o=>o.n.accepted&&o.n.primary!=null);
@@ -34,46 +46,46 @@ addEventListener('scroll',()=>{
   h+='<text class="axistext" x="'+xs(acc[acc.length-1].i)+'" y="'
     +(ys(BEST)-10)+'" text-anchor="end" fill="'+css('--go')+'">'+BEST.toFixed(4)+'</text>';
   svg.innerHTML=h;
+  // size the chart to exactly fill the viewport space left under the text,
+  // so nothing below the hero peeks and nothing gets clipped
+  const fitHero=()=>{
+    svg.style.maxWidth='';
+    const hint=document.querySelector('.scrollhint');
+    const avail=innerHeight-svg.getBoundingClientRect().top
+      -(hint?hint.getBoundingClientRect().height:60)-10;
+    const w=Math.min(svg.parentElement.clientWidth,avail*(W/Hh));
+    svg.style.maxWidth=Math.max(420,Math.floor(w))+'px';
+  };
+  fitHero();addEventListener('resize',fitHero);
   const line=$('#heroline'), len=line.getTotalLength();
   line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
   requestAnimationFrame(()=>{line.style.transition='stroke-dashoffset 2.4s ease .4s';line.style.strokeWidth=3;
     line.style.strokeDashoffset=0;});
 })();
 
-/* ---------- loop diagram -------------------------------------------------- */
+/* ---------- loop: cycle the stage highlight ------------------------------ */
 (function loop(){
-  const stages=['DIAGNOSE','TREAT','RETRAIN','MEASURE'];
-  const g=$('#loopg');let h='';
-  const bw=150,bh=44,y=40,gap=(820-4*bw-40)/3;
-  stages.forEach((s,i)=>{
-    const x=20+i*(bw+gap);
-    h+='<rect class="boxr" x="'+x+'" y="'+y+'" width="'+bw+'" height="'+bh+'" rx="3"/>';
-    h+='<text x="'+(x+bw/2)+'" y="'+(y+bh/2+5)+'" text-anchor="middle">'+s+'</text>';
-    if(i<3)h+='<path class="arrow" d="M'+(x+bw+4)+' '+(y+bh/2)+' L'+(x+bw+gap-6)+' '+(y+bh/2)+'"/>';
-  });
-  // loopback arrow measure -> diagnose
-  h+='<path class="arrow" d="M'+(20+3*(bw+gap)+bw/2)+' '+(y+bh+6)
-    +' C '+(20+3*(bw+gap)+bw/2)+' 135, '+(20+bw/2)+' 135, '+(20+bw/2)+' '+(y+bh+6)+'"/>';
-  h+='<text class="axistext" x="410" y="128" text-anchor="middle" fill="'+css('--dim')
-    +'">accept only if Δ ≥ ε on validation · stop on 3 quiet iterations</text>';
-  h+='<circle id="looppulse" class="pulse" r="4" cx="20" cy="'+(y+bh/2)+'"/>';
-  g.innerHTML=h;
-  // pulse orbiting the loop
-  const pulse=$('#looppulse');const xsP=[95,95+bw+gap,95+2*(bw+gap),95+3*(bw+gap)];
-  let t=0;setInterval(()=>{t=(t+1)%4;
-    pulse.setAttribute('cx',xsP[t]);},1200);
+  const cards=document.querySelectorAll('.stage');if(!cards.length)return;
+  let t=0;cards[0].classList.add('live');
+  setInterval(()=>{cards[t].classList.remove('live');t=(t+1)%cards.length;
+    cards[t].classList.add('live');},2200);
 })();
 
 /* ---------- mission log --------------------------------------------------- */
-const CH={W:560,H:420,P:46,S0:0.6005,S1:0.6062};
+const CH={W:720,H:560,P:60,S0:0.6005,S1:0.6065};
 const cx=i=>CH.P+i/(N.length-1||1)*(CH.W-2*CH.P);
 const cy=v=>CH.H-CH.P-(Math.min(CH.S1,Math.max(CH.S0,v))-CH.S0)/(CH.S1-CH.S0)*(CH.H-2*CH.P);
 (function bigChart(){
   const svg=$('#bigchart');let h='';
-  for(let v=0.601;v<=CH.S1;v+=0.001){
-    h+='<line class="axis" x1="'+CH.P+'" y1="'+cy(v)+'" x2="'+(CH.W-CH.P)+'" y2="'+cy(v)+'" opacity="0.5"/>';
-    h+='<text class="axistext" x="'+(CH.P-8)+'" y="'+(cy(v)+4)+'" text-anchor="end">'+v.toFixed(3)+'</text>';
+  for(let gx=CH.P,step=(CH.W-2*CH.P)/((N.length-1||1)*2);gx<=CH.W-CH.P+1;gx+=step)
+    h+='<line class="axis" x1="'+gx+'" y1="'+cy(CH.S1)+'" x2="'+gx+'" y2="'+(CH.H-CH.P)+'"/>';
+  for(let v=CH.S0;v<=CH.S1+1e-9;v+=0.0005){
+    const major=Math.round(v*10000)%10===0;
+    h+='<line class="axis" x1="'+CH.P+'" y1="'+cy(v)+'" x2="'+(CH.W-CH.P)+'" y2="'+cy(v)+'"'+(major?'':' opacity="0.45"')+'/>';
+    if(major)h+='<text class="axistext" x="'+(CH.P-10)+'" y="'+(cy(v)+4)+'" text-anchor="end">'+v.toFixed(3)+'</text>';
   }
+  h+='<text class="axistext" x="'+CH.P+'" y="'+(cy(CH.S1)-12)+'">validation primary ↑</text>';
+  h+='<text class="axistext" x="'+(CH.W-CH.P)+'" y="'+(CH.H-CH.P+38)+'" text-anchor="end">iteration →</text>';
   h+='<line class="baseline-l" x1="'+CH.P+'" y1="'+cy(BASELINE)+'" x2="'+(CH.W-CH.P)+'" y2="'+cy(BASELINE)+'"/>';
   h+='<text class="axistext" x="'+(CH.W-CH.P)+'" y="'+(cy(BASELINE)+16)+'" text-anchor="end" fill="'
     +css('--no')+'">baseline</text>';
@@ -87,29 +99,59 @@ const cy=v=>CH.H-CH.P-(Math.min(CH.S1,Math.max(CH.S0,v))-CH.S0)/(CH.S1-CH.S0)*(C
         +'" x2="'+(cx(i)-6)+'" y2="'+(cy(CH.S0)-12)+'"/></g>';
       return;
     }
-    if(n.accepted)h+='<circle id="nd'+i+'" class="nodedot" r="5" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>';
-    else h+='<g id="nd'+i+'" class="dead"><circle r="5" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>'
-      +'<line x1="'+(cx(i)-7)+'" y1="'+(cy(n.primary)+7)+'" x2="'+(cx(i)+7)+'" y2="'+(cy(n.primary)-7)+'"/></g>';
-    h+='<text class="axistext" x="'+cx(i)+'" y="'+(CH.H-CH.P+18)+'" text-anchor="middle">'
+    if(n.accepted)h+='<circle id="nd'+i+'" class="nodedot" r="7" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>';
+    else h+='<g id="nd'+i+'" class="dead"><circle r="7" cx="'+cx(i)+'" cy="'+cy(n.primary)+'"/>'
+      +'<line x1="'+(cx(i)-9)+'" y1="'+(cy(n.primary)+9)+'" x2="'+(cx(i)+9)+'" y2="'+(cy(n.primary)-9)+'"/></g>';
+    h+='<text id="ilbl'+i+'" class="axistext iterlbl" x="'+cx(i)+'" y="'+(CH.H-CH.P+20)+'" text-anchor="middle">'
       +String(i).padStart(2,'0')+'</text>';
   });
+  h+='<circle id="curpt" class="curpt" r="12"/>';
+  h+='<text id="curlbl" class="axistext curlbl" text-anchor="middle" opacity="0"></text>';
   svg.innerHTML=h;
 })();
-function traceUpTo(k){ // accepted polyline through iteration k
-  const pts=[];
-  N.forEach((n,i)=>{if(i<=k&&n.accepted&&n.primary!=null)pts.push(cx(i)+','+cy(n.primary));});
-  $('#bigtrace').setAttribute('points',pts.join(' '));
+/* full trace drawn once; reveal is a smooth dashoffset so the line grows and
+   shrinks with scroll direction */
+let traceLens=null,traceTotal=0;
+function initTrace(){
+  const pts=[],idxs=[];
+  N.forEach((n,i)=>{if(n.accepted&&n.primary!=null){pts.push([cx(i),cy(n.primary)]);idxs.push(i);}});
+  const el=$('#bigtrace');
+  el.setAttribute('points',pts.map(p=>p.join(',')).join(' '));
+  traceTotal=el.getTotalLength();
+  traceLens={};let acc=0;
+  for(let j=0;j<pts.length;j++){
+    if(j>0)acc+=Math.hypot(pts[j][0]-pts[j-1][0],pts[j][1]-pts[j-1][1]);
+    traceLens[idxs[j]]=acc;
+  }
+  el.style.strokeDasharray=traceTotal;el.style.strokeDashoffset=traceTotal;
 }
+function traceUpTo(k){ // reveal the accepted line through iteration k
+  if(traceLens==null)initTrace();
+  let len=0;
+  Object.keys(traceLens).forEach(i=>{if(+i<=k)len=Math.max(len,traceLens[i]);});
+  $('#bigtrace').style.strokeDashoffset=traceTotal-len;
+}
+
+/* pin the chart so it locks vertically centered in the viewport, while its
+   resting position stays snug under the section heading */
+(function pinCenter(){
+  const pin=document.getElementById('chartpin');if(!pin)return;
+  const set=()=>{
+    const h=pin.getBoundingClientRect().height;
+    pin.style.top=Math.max(64,Math.round((innerHeight-h)/2))+'px';
+  };
+  set();addEventListener('resize',set);
+})();
 
 /* entries */
 function headline(n,i){
   const sel=n.selection||{};
-  if(i===0)return 'Reproduce the baseline. <span class="go">0.6018</span> — base camp.';
+  if(i===0)return 'Reproduce the baseline. <span class="go">0.6018</span>. Base camp.';
   if(n.primary==null)return 'Node crashed mid-run. Logged as <span class="amber">VOID</span>, loop continues.';
   const m='tries <b>'+esc(nice(sel.chosen_method_id||'a new package'))+'</b>';
   return n.accepted
     ?m+' → <span class="go">'+n.primary.toFixed(4)+'</span>. Cleared the bar.'
-    :m+' → <span class="no">'+n.primary.toFixed(4)+'</span>. Below ε — dead end.';
+    :m+' → <span class="no">'+n.primary.toFixed(4)+'</span>. Below ε. Dead end.';
 }
 (function entries(){
   const box=$('#entries');
@@ -142,35 +184,65 @@ function headline(n,i){
   // final entry: convergence
   box.insertAdjacentHTML('beforeend','<div class="entry" data-i="conv">'
     +'<span class="stamp acc">CONVERGED</span><h3>STOP</h3>'
-    +'<div>Three consecutive iterations inside <b>ε = 0.002</b> — the official rule fires. '
+    +'<div>Three consecutive iterations inside <b>ε = 0.002</b>, so the official rule fires. '
     +'Final: <span class="go">'+BEST.toFixed(6)+'</span>, +'+(BEST-BASELINE).toFixed(4)
     +' over the baseline. No human said stop.</div></div>');
 })();
 
-/* typewriter */
+/* journal quotes render immediately */
 function typeIn(el){
-  const full=el.dataset.full||'';if(el.dataset.done)return;el.dataset.done=1;
-  let k=0;const t=setInterval(()=>{
-    k+=3;el.innerHTML=full.slice(0,k);
-    if(k>=full.length){clearInterval(t);el.closest('.quote').classList.add('done');}
-  },12);
+  if(el.dataset.done)return;el.dataset.done=1;
+  el.innerHTML=el.dataset.full||'';
 }
 
-/* scroll activation */
-let bestSoFar=BASELINE;
+/* scroll activation: draws on the way down, undraws on the way back up */
+const active=new Set();
+function repaint(){
+  let maxI=-1,conv=active.has('conv');
+  active.forEach(i=>{if(i!=='conv')maxI=Math.max(maxI,+i);});
+  N.forEach((n,k)=>{
+    const nd=document.getElementById('nd'+k);
+    if(nd)nd.classList.toggle('onn',k<=maxI||conv);
+  });
+  $('#epsband').classList.toggle('onn',conv);
+  traceUpTo(conv?N.length:maxI);
+  let best=BASELINE;
+  N.forEach((n,k)=>{if((k<=maxI||conv)&&n.accepted&&n.primary!=null)best=Math.max(best,n.primary);});
+  if(conv)best=BEST;
+  $('#barscore').textContent=best.toFixed(4);
+  // label the iteration the reader is currently on
+  const pt=$('#curpt'),lb=$('#curlbl');
+  let cur=conv?-1:maxI;
+  if(cur>=0&&N[cur]){
+    const n=N[cur],y=n.primary!=null?cy(n.primary):cy(CH.S0)-6; // VOID cross is drawn 12px tall above the axis; ring centers on it
+    pt.setAttribute('cx',cx(cur));pt.setAttribute('cy',y);pt.style.opacity=.9;
+    lb.setAttribute('x',cx(cur));lb.setAttribute('y',y-24);
+    lb.textContent='ITER '+String(cur).padStart(2,'0')+(n.primary!=null?' · '+n.primary.toFixed(4):' · VOID');
+    lb.setAttribute('opacity',1);
+  }else{pt.style.opacity=0;lb.setAttribute('opacity',0);}
+}
+/* hysteresis: activate at 60% visible, deactivate only below 20% (scrolling up),
+   so a card hovering near one threshold cannot flicker on and off */
 const io=new IntersectionObserver(es=>es.forEach(e=>{
-  if(!e.isIntersecting)return;
-  const el=e.target;el.classList.add('onn');
-  const i=el.dataset.i;
-  el.querySelectorAll('.typed').forEach(typeIn);
-  if(i==='conv'){$('#epsband').classList.add('onn');traceUpTo(N.length);$('#barscore').textContent=BEST.toFixed(4);return;}
-  const k=+i,n=N[k];
-  const nd=document.getElementById('nd'+k);if(nd)nd.classList.add('onn');
-  traceUpTo(k);
-  if(n&&n.accepted&&n.primary!=null)bestSoFar=Math.max(bestSoFar,n.primary);
-  $('#barscore').textContent=bestSoFar.toFixed(4);
-}),{threshold:0.45});
+  const el=e.target,i=el.dataset.i,r=e.intersectionRatio;
+  if(r>=0.5&&!active.has(i)){
+    active.add(i);el.classList.add('onn');
+    el.querySelectorAll('.typed').forEach(typeIn);
+  }else if(r<=0.05&&active.has(i)&&e.boundingClientRect.top>0){
+    // left the viewport downward: the reader scrolled back up past this entry
+    active.delete(i);el.classList.remove('onn');
+  }else return;
+  repaint();
+}),{rootMargin:'0px 0px -45% 0px',threshold:[0.05,0.5]});
 document.querySelectorAll('.entry').forEach(el=>io.observe(el));
+
+/* hover an entry: highlight its point on the chart */
+document.querySelectorAll('.entry').forEach(el=>{
+  const i=el.dataset.i;if(i==null||i==='conv')return;
+  const marks=()=>[document.getElementById('nd'+i),document.getElementById('ilbl'+i)].filter(Boolean);
+  el.addEventListener('mouseenter',()=>marks().forEach(m=>m.classList.add('hl')));
+  el.addEventListener('mouseleave',()=>marks().forEach(m=>m.classList.remove('hl')));
+});
 
 /* ---------- receipts ------------------------------------------------------ */
 (function receipts(){
@@ -193,34 +265,45 @@ document.querySelectorAll('.entry').forEach(el=>io.observe(el));
   const Wt=window.WEIGHTS;const grid=document.getElementById('evgrid');
   if(!grid)return;
   if(!Wt){grid.innerHTML='<p class="lede">(instrumented data missing — run tools/instrument_weights.py)</p>';return;}
-  const panels=[['baseline','BASELINE','memorizes what it barely saw'],
-                ['treated','AGENT-TREATED','rare videos stay grounded']];
-  const PW=520,PH=300,P=40;
+  const panels=[['baseline','BASELINE','rare-video embeddings balloon'],
+                ['treated','AGENT-TREATED','rare-video embeddings stay bounded']];
+  const PW=560,PH=300,P=40;
   grid.innerHTML=panels.map(([key,title,subtitle])=>{
     const snaps=Wt[key];
     const maxN=Math.max(...Wt.baseline.concat(Wt.treated).flatMap(s=>s.norms));
-    const xs=i=>P+i/(snaps.length-1)*(PW-2*P);
+    const PR=84; const xs=i=>P+i/(snaps.length-1)*(PW-P-PR-P);
     const ys=v=>PH-P-(v/maxN)*(PH-2*P);
     let h='<div class="evpanel"><div class="t"><b>'+title+'</b> · '+subtitle+'</div>'
       +'<svg viewBox="0 0 '+PW+' '+PH+'">';
-    h+='<line class="axis" x1="'+P+'" y1="'+(PH-P)+'" x2="'+(PW-P)+'" y2="'+(PH-P)+'"/>';
-    h+='<text class="axistext" x="'+P+'" y="'+(PH-P+18)+'">training →</text>';
-    h+='<text class="axistext" x="'+P+'" y="'+(P-10)+'">embedding size</text>';
-    for(let d=9;d>=0;d--){
+    for(let gx=P;gx<=PW-P-PR+1;gx+=(PW-P-PR-P)/10)
+      h+='<line class="axis" x1="'+gx+'" y1="'+P+'" x2="'+gx+'" y2="'+(PH-P)+'"/>';
+    for(let gy=PH-P;gy>=P-1;gy-=(PH-2*P)/6)
+      h+='<line class="axis" x1="'+P+'" y1="'+gy+'" x2="'+(PW-P-PR)+'" y2="'+gy+'"/>';
+    h+='<line class="axis" x1="'+P+'" y1="'+(PH-P)+'" x2="'+(PW-P-PR)+'" y2="'+(PH-P)+'"/>';
+    h+='<text class="axistext" x="'+P+'" y="'+(PH-P+18)+'">training epochs →</text>';
+    h+='<text class="axistext" x="'+P+'" y="'+(P-10)+'">average embedding size</text>';
+    // three lines only: rarest decile (the story), median, most seen
+    const series=[[0,'var(--no)',2.5,'rarest 10%'],
+                  [4,'var(--faint)',1.6,'median'],
+                  [9,'#8A8A84',1.6,'most seen']];
+    series.forEach(([d,col,wid,name])=>{
       const pts=snaps.map((s,i)=>xs(i)+','+ys(s.norms[d])).join(' ');
-      const rare=d<=2;
-      h+='<polyline class="evline" data-key="'+key+'" points="'+pts+'" stroke="'
-        +(rare?'var(--no)':'var(--faint)')+'" stroke-width="'+(rare?2:1.2)+'" opacity="'+(rare?0.95:0.8)+'"/>';
-    }
+      h+='<polyline class="evline" data-key="'+key+'" points="'+pts+'" stroke="'+col
+        +'" stroke-width="'+wid+'"/>';
+      const endy=ys(snaps[snaps.length-1].norms[d]);
+      h+='<text class="evlbl" x="'+(PW-P-PR+8)+'" y="'+(endy+4)+'" style="fill:'
+        +(d===0?'var(--no)':'var(--dim)')+'">'+name+'</text>';
+    });
     const last=snaps[snaps.length-1];
+    const midi=Math.floor(snaps.length*0.55);
     if(key==='baseline'){
-      h+='<text class="evnote" x="'+(PW-P-6)+'" y="'+(ys(Math.max(...last.norms.slice(0,3)))-14)
-        +'" text-anchor="end">rare videos ballooning ↑</text>';
+      h+='<text class="evnote" x="'+xs(midi)+'" y="'+(ys(snaps[midi].norms[0])+24)
+        +'" text-anchor="middle">never stops growing ↗</text>';
     }else{
-      h+='<text class="evnote" x="'+(PW-P)+'" y="'+(ys(Math.max(...last.norms.slice(0,3)))-10)
-        +'" text-anchor="end" fill="var(--go)">held down by the treatments</text>';
+      h+='<text class="evnote" x="'+xs(midi)+'" y="'+(ys(snaps[midi].norms[0])-16)
+        +'" text-anchor="middle" style="fill:var(--go)">flattens out ✓</text>';
     }
-    h+='<text class="axistext" x="'+(PW-P)+'" y="'+(PH-P+18)+'" text-anchor="end">final valid '
+    h+='<text class="axistext" x="'+(PW-P-PR)+'" y="'+(PH-P+18)+'" text-anchor="end">final valid '
       +last.primary.toFixed(4)+'</text>';
     h+='</svg></div>';
     return h;
@@ -233,7 +316,7 @@ document.querySelectorAll('.entry').forEach(el=>io.observe(el));
       ln.style.strokeDasharray=len;ln.style.strokeDashoffset=len;
       setTimeout(()=>{ln.style.strokeDashoffset=0;},60*(i%12));
     });
-  }),{threshold:0.3});
+  }),{threshold:0.65});
   io2.observe(grid);
 })();
 })();
