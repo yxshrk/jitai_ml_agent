@@ -36,6 +36,12 @@ literature-reported expectations only.
   configuration variation reduce correlated errors (Deep Ensembles,
   Lakshminarayanan et al. 2017). Reserve the final iterations to close with an
   ensemble of the champion family before the convergence rule ends the run.
+- ENDGAME MARGIN ARITHMETIC. Near the end of a run (streak building, or few
+  iterations left), a candidate is only worth an iteration if its expected gain
+  clears the acceptance threshold WITH margin; a small treatment whose typical
+  effect sits at or below epsilon is dominated by a diverse ensemble close,
+  whose expected gain compounds independent errors. Do the comparison
+  explicitly before spending a late iteration on a small treatment.
 - CONVERGENCE PRESSURE. The run ends after consecutive sub-epsilon iterations;
   as the streak grows, shift from exploring new mechanisms toward finishing
   moves with reliable literature-reported payoff (ensembling, checkpoint
