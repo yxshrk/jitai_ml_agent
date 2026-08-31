@@ -94,12 +94,14 @@ def test_slate_returns_the_unrun_to_the_queue_but_not_the_screened_out(tmp_path,
     popped = [{'type': 'improve', 'card': 'a', 'target_component': 'loss', 'mechanism': 'm1', 'parent': 14, 'popped': 4, 'hypothesis': 'a'},
               {'type': 'improve', 'card': 'b', 'target_component': 'features', 'mechanism': 'm2', 'parent': 17, 'popped': 4, 'hypothesis': 'b'},
               {'type': 'improve', 'card': 'c', 'target_component': 'loss', 'mechanism': 'm3', 'parent': 14, 'popped': 4, 'hypothesis': 'c'},
-              {'type': 'improve', 'card': 'd', 'target_component': 'model', 'mechanism': 'm4', 'parent': 14, 'popped': 4, 'hypothesis': 'd'}]
+              {'type': 'improve', 'card': 'd', 'target_component': 'model', 'mechanism': 'm4', 'parent': 14, 'popped': 4, 'hypothesis': 'd'},
+              {'type': 'improve', 'card': 'e', 'target_component': 'encoding', 'mechanism': 'm5', 'parent': 17, 'popped': 4, 'hypothesis': 'e'}]
     monkeypatch.setattr(lp, '_screen', lambda sels, g: [s for s in sels if s['card'] != 'd'])     # 'd' measured and dropped
     running = lp._slate(popped, 4)
     assert [s['card'] for s in running] == ['a', 'b']                       # k = 2 …
     waiting = [s['card'] for s in lp.state['queue']]
     assert 'c' in waiting                                                    # … 'c' lost the component collision: back in the queue
+    assert 'e' in waiting                                                    # … 'e' survived diversity AND the screen, cut only by the k cap
     assert 'd' not in waiting                                                # … 'd' was measured by the screen: answered, not requeued
     assert all('popped' not in s for s in lp.state['queue'])
 

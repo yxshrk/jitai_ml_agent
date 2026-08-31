@@ -25,3 +25,9 @@ def test_one_fake_generation():
     assert (C.RUNS / run_id / 'summary.json').exists() and (C.RUNS / run_id / 'journal.md').exists()
     gen = [r for r in recs if r.get('action') == 'generation'][0]
     assert gen['streak'] in (0, 1)
+    # ADR-0021 wiring through a real generation: every proposal was queued and run, so nothing waits; the champion is
+    # on the frontier; the generation record and the summary carry both. Blocker 1 was invisible without an assertion.
+    assert gen['queue_pending'] == 0 and loop.state['queue'] == []
+    assert [e['n'] for e in gen['frontier'] if e['champion']] == [loop.state['champion']]
+    assert str(loop.state['champion']) in loop.state['frontier']
+    assert summary['frontier_on'] is True and summary['queue_pending'] == 0
