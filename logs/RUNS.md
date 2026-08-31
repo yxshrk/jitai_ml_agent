@@ -51,3 +51,5 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | v2_r9 | ruby | KILLED early | - | - | stale-knowledge lottery ticket cut to free GPU for v2_1k session node; corrected-knowledge GPU run queued for when v2_1k ends |
 | menu_m4 | coral | converged | 3 | 0.60335 | corrected-knowledge run GENUINELY chose seq-deepfm card (unsteered) — measured 0.6033 vs external 0.6047: one-node port shortfall or transfer gap |
 | v2_1k | ruby | converged | 3 | 0.62110 (baseline) | steered 1K run failed: session node crashed on impl, no in-run ensemble -> 1K artifact = faithful A-form per policy |
+| pod experiment | runpod | terminated | - | - | 2x 2xRTX4090 secure pods: CPU quota oversubscribed (~1 effective core/trainer despite caps) — unusable for CPU-bound loop; ~$1.8 spent; lesson: GPU pods != CPU capacity |
+| menu_m3/m5 | coral | DIED (disk full) | - | - | coral disk refilled to 100%; coral retired as run host |
