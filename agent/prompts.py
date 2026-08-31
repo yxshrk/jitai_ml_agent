@@ -284,6 +284,7 @@ def selector_user_prompt(
     dataset: str = "pure",
     prior_runs: str | None = None,
     preference_note: str | None = None,
+    measured_gains: bool = True,
 ) -> str:
     history = parent_history or []
     if history:
@@ -330,8 +331,8 @@ def selector_user_prompt(
             "telemetry). Phase guidance an expert follows: OPEN with the strongest "
             "unapplied opportunity for this problem class; once opportunities plateau, "
             "DIAGNOSE and treat what the evidence shows; CLOSE with an ensemble card "
-            "before the convergence rule ends the run.\n"
-            "Measured gain classes on this benchmark (from the campaign ledger; use "
+            "before the convergence rule ends the run."
+            + ("\nMeasured gain classes on this benchmark (from the campaign ledger; use "
             "them to rank 'strongest'): in-node SWEEPS and multi-component PACKAGES "
             "(dial/stage-matrix sweeps, the sequence composite) open at +0.0024 to "
             "+0.0035 over baseline and are the only moves that reliably clear epsilon "
@@ -342,6 +343,7 @@ def selector_user_prompt(
             "member and more than any atom from a strong base. The measured winning "
             "shape is package -> compose one or two atoms -> cross-family close; an "
             "atom chosen as the OPENER spends the iteration on a sub-epsilon strike."
+               if measured_gains else "")
         ),
         _streak_section(streak_state),
         STATE_DISCIPLINE,

@@ -482,8 +482,7 @@ class Brain:
             enforce_family_exclusion=enforce_family_exclusion,
             dataset=dataset,
             prior_runs=prior_runs,
-            preference_note=preference_note,
-        )
+            preference_note=preference_note, measured_gains=(self.knowledge_mode == "full"))
         text = self._call(
             "selector",
             prompts.SELECTOR_SYSTEM,

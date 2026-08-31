@@ -17,7 +17,9 @@ hyperparameter sweeps, 7 seed-member fits, and 6 candidate ensemble designs, all
 recorded in probe logs — we report both the decision count and the internal work,
 and the validation set was used adaptively for those selections, so hidden-test
 performance is the decisive generalization test.
-Bonus: KuaiRand-1K **0.6524 designated ({{TBD: 0.66892 pending audit}})
+Bonus: KuaiRand-1K **0.66892** designated (`run_omega_1k`, causal session
+features; triple-audited: exact independent re-evaluation, fresh-seed
+replications 0.674/0.677, within-hour shuffle 0.66517).
 KuaiRand-27K 0.67263 (out-of-protocol GPU scaling demo).
 
 ## How the agent works
@@ -54,7 +56,8 @@ LR ×0.57 every 2 epochs) and were later reproduced from scratch (0.60561).
   builder/checker, test CSVs (built train-only; test labels never read).
 - `logs/` — one directory per run: `journal.jsonl` (hypothesis, diff, metrics,
   errors/recovery per iteration), node code, probe logs, `summary.json`.
-  `logs/RUNS_INVENTORY.md` (machine-generated) indexes all 113 disclosed runs.
+  `logs/RUNS_INVENTORY.md` (machine-generated) indexes all disclosed runs
+  (139 completed at the 31 Aug snapshot, plus incomplete/aborted).
 - `data/` — exporters and (gitignored) encoded splits; `data/official/` is the
   organizer evaluation code.
 - `tests/` — pytest suite (119 tests) covering the harness, scoring parity, and
@@ -88,7 +91,7 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 - The hidden-test window's **labels are never read**: the export writes features
   only and the predictors assert the archive contains no label-like arrays.
 - The COMPLETE development campaign is disclosed: 139 completed runs (snapshot 31 Aug, plus incomplete/
-  aborted ones), ~4.8M LLM tokens, ~30 aggregate run-hours — machine-inventoried by
+  aborted ones), ~9.9M LLM tokens, ~140 aggregate run-hours — machine-inventoried by
   `tools/audit_runs.py` (logs/RUNS_INVENTORY.md, evidence/run_inventory.csv). The
   submission is the clearly designated best run, per the organizers' webinar guidance.
 - Human/agent boundary: humans built the harness and curated measured method-card
@@ -113,4 +116,16 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 
 ## Team contributions
 
-(fill in per member before submission)
+Team jit.ai. Roles below are placeholders; each member fills in their own line
+before submission. Keep claims specific and traceable (name the runs, files, or
+experiments you own).
+
+- **{{NAME}}** — {{e.g. harness architecture and acceptance/convergence logic;
+  named files or subsystems}}
+- **{{NAME}}** — {{e.g. agent prompts, method-card library and knowledge loop;
+  named cards or runs}}
+- **{{NAME}}** — {{e.g. experiment campaign operations, fleet, audits;
+  named ledgers}}
+- **{{NAME}}** — {{e.g. evidence site, video, Devpost, figures}}
+
+Shared: {{anything genuinely joint — designation decisions, compliance review}}.
