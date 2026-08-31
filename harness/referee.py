@@ -156,7 +156,8 @@ class RunResult:
     pred_hash: Optional[str] = None     # md5 of predictions.csv: byte-identical to the parent's = a no-op node
     def to_dict(self): return asdict(self)
 
-def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra=None, timeout=None, extra_args=(), threads=None):
+def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra=None, timeout=None, extra_args=(), threads=None,
+               env_extra=None, data_dir=None):
     """Execute one experiment script under the contract; validate and score its valid predictions."""
     code_path, out_dir = Path(code_path).resolve(), Path(out_dir).resolve()   # the subprocess runs with cwd=workspace
     res = RunResult(stage='smoke' if smoke else 'full', out_dir=str(out_dir))
@@ -166,7 +167,7 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
         res.stage, res.error = 'static', f'forbidden reference(s) in script: {hits}'
         return res
     out_dir.mkdir(parents=True, exist_ok=True)
-    cmd = [sys.executable, str(code_path), '--data-dir', str(C.WS_DATA), '--out-dir', str(out_dir), '--seed', str(seed), *extra_args]
+    cmd = [sys.executable, str(code_path), '--data-dir', str(data_dir or C.WS_DATA), '--out-dir', str(out_dir), '--seed', str(seed), *extra_args]
     if score_extra:
         cmd += ['--score-extra', str(score_extra)]
     # scripts import the official scorer with `from evaluate import evaluate`; Python puts the script's own
@@ -175,6 +176,8 @@ def run_script(code_path, out_dir, seed=C.DEFAULT_SEED, smoke=False, score_extra
                PYTHONPATH=str(C.WORKSPACE) + (os.pathsep + os.environ['PYTHONPATH'] if os.environ.get('PYTHONPATH') else ''))
     if smoke:
         env['SMOKE_EPOCHS'] = '1'
+    if env_extra:      # ADR-0019: the refit fixes the epoch count through the contract's SMOKE_EPOCHS cap
+        env.update({k: str(v) for k, v in env_extra.items()})
     if threads:   # parallel branches must not oversubscribe the cores
         for var in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS', 'VECLIB_MAXIMUM_THREADS'):
             env[var] = str(threads)

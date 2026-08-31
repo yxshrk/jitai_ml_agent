@@ -237,3 +237,4 @@ kb/literature/text/
 
 # feature-screen data dir (workspace/data with outcome columns stripped from valid.csv; regenerated)
 workspace/data_probe/
+workspace/data_refit/

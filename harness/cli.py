@@ -31,6 +31,9 @@ def main():
     r.add_argument('--no-screen', action='store_true', help='skip the feature screen (ADR-0015): build every feature candidate unmeasured')
     r.add_argument('--no-campaigns', action='store_true', help='no family campaigns: every generation is a breadth generation (pre-ADR-0016 behaviour)')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
+    s.add_argument('--refit', action='store_true', help='ADR-0019: refit the node on train + valid at its validated epoch count before scoring the test features')
+    s.add_argument('--epochs', type=int, default=None, help='with --refit: override the epoch count (default: the node metrics.json best_epoch)')
+    s.add_argument('--baseline-csv', default=None, help='with --refit: an existing train-only submission to rank-correlate against (sanity)')
     s.add_argument('--run-id', required=True); s.add_argument('--node', type=int, required=True)
     s.add_argument('--out', default='submission.csv')
     d = sub.add_parser('distill', help='fold a run journal back into the method cards (cross-run memory) and archive its wildcards as new cards')
@@ -62,6 +65,10 @@ def main():
                     screen=not a.no_screen, campaigns=not a.no_campaigns, designation=a.designation)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
+        if getattr(a, 'refit', False):
+            from .refit import refit_submission
+            print(json.dumps(refit_submission(a.run_id, a.node, a.out, epochs=a.epochs, baseline_csv=a.baseline_csv), indent=1, default=str))
+            return
         from .submit import make_submission
         print(json.dumps(make_submission(a.run_id, a.node, a.out), indent=1))
     elif a.cmd == 'distill':
