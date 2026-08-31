@@ -1220,7 +1220,7 @@ class Loop:
                 if any(key in spec for key in ("farm_close_plan", "ensemble_plan")):
                     raise ValueError("script proposal must not carry a farm-close plan")
                 code = spec["code"]
-                if mode == "improve" and parent.action != "baseline":
+                if mode == "improve" and parent.node_id != "node_000":
                     # The rule protects the agent's OWN accepted artifacts;
                     # the first improve on the organizer baseline is the
                     # agent's first authorship and may restructure freely.
