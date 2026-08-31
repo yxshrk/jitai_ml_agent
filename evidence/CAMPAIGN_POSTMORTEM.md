@@ -123,3 +123,17 @@ per-member logging); no-op collapse now fixer-eligible (one repair shot instead 
 burned node). Report lesson: the two highest-cost reliability defects were both
 *silent success-shaped failures* (identical-output ensembles, missing telemetry) —
 guards that make degeneracy loud are worth more than retries.
+
+## Decision bench + decision replay (1 Sep early hours)
+Built two evaluation tools that separate agent JUDGMENT from EXECUTION without training:
+(1) decision bench — selector picks on frozen decision-states with known-good sets;
+found its worst picks traced to stale card evidence (freq-adaptive-reg 6x-flat card
+still read neutral), not bad reasoning; after evidence corrections + two general
+principles (no re-sweep after clearing win; insufficient-telemetry is an honest
+diagnosis) bench = 8/8. (2) decision replay — selector chooses over an evolving state,
+each pick executed instantly from cached tuned artifacts: 3 decisions reached 0.60599
+(above the designated 0.605575) when the close is executed per its card (design search,
+never below best member). Conclusion: judgment suffices; the live bottleneck is
+close-node code-generation fidelity (guards shipped: ensemble contract, no-op fixer,
+design-search language). Bench constitution: fixes may only be evidence corrections or
+general principles, never state-specific answers.
