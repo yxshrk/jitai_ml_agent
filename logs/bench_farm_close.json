@@ -1,0 +1,71 @@
+{
+  "label": "cached-artifact validation (assembler bench, no training, no LLM)",
+  "checks": [
+    {
+      "name": "singleton:champ",
+      "passed": true,
+      "detail": "primary 0.605575 vs audited 0.605575"
+    },
+    {
+      "name": "singleton:tkern",
+      "passed": true,
+      "detail": "primary 0.605146 vs audited 0.605146"
+    },
+    {
+      "name": "singleton:dsamp",
+      "passed": true,
+      "detail": "primary 0.604657 vs audited 0.604657"
+    },
+    {
+      "name": "singleton:gbce",
+      "passed": true,
+      "detail": "primary 0.604479 vs audited 0.604479"
+    },
+    {
+      "name": "enumeration",
+      "passed": true,
+      "detail": "15 candidates vs declared 15"
+    },
+    {
+      "name": "four-way-blend",
+      "passed": true,
+      "detail": "primary 0.605639 vs audit midrank 0.605639"
+    },
+    {
+      "name": "anchor",
+      "passed": true,
+      "detail": "anchor ('package-seed-ensemble',) primary 0.605575"
+    },
+    {
+      "name": "portfolio",
+      "passed": true,
+      "detail": "selected ('decayed-positive-sampling', 'package-seed-ensemble') gain +0.000077"
+    },
+    {
+      "name": "singleton-path",
+      "passed": true,
+      "detail": "gain bar 1.0 -> singleton ('package-seed-ensemble',)"
+    },
+    {
+      "name": "determinism",
+      "passed": true,
+      "detail": "selected set stable under permutation: ['decayed-positive-sampling', 'package-seed-ensemble']"
+    },
+    {
+      "name": "full-selection",
+      "passed": true,
+      "detail": "winner incumbent ('incumbent',) 0.605575"
+    },
+    {
+      "name": "tie-retains-incumbent",
+      "passed": true,
+      "detail": "exact tie -> incumbent"
+    },
+    {
+      "name": "blend-math",
+      "passed": true,
+      "detail": "independent recomputation matches candidate scores"
+    }
+  ],
+  "all_passed": true
+}

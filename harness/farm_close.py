@@ -374,10 +374,13 @@ def read_predictions(path: Path) -> PredictionVector:
 
 
 def _assert_aligned(reference: PredictionVector, other: PredictionVector, name: str) -> None:
+    # Alignment is row_id + user: row_id is contract-enforced validation-file
+    # order and user is the grouping key the evaluator scores by. video_id is
+    # NOT compared because zoo families legitimately emit different encodings
+    # of it (raw ids vs feature indices); it plays no role in blending/metrics.
     if not (
         np.array_equal(reference.row_ids, other.row_ids)
         and np.array_equal(reference.users, other.users)
-        and np.array_equal(reference.videos, other.videos)
     ):
         raise ValueError(f"{name} prediction rows do not align with the other members")
 

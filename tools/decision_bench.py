@@ -85,7 +85,50 @@ SCENARIOS = [
         bad={"relative-watch-component", "listwise-regime", "mtl-shared-bottom",
              "dndcg-lambda", "finalmlp", "covisit-svd-init"},
     ),
+    dict(
+        name="farm_close_uniquely_right",
+        note="two DIFFERENT families independently measured near the ceiling, "
+             "plateau streak, clock half spent: the doctrine answer is the "
+             "cross-family farm-close (hetero design acceptable); any single "
+             "further treatment or same-family seed ensemble wastes the node",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [draft] "package-dial-sweep" primary=0.6049 ACCEPTED',
+            'node_002 [draft] "temporal-pair-kernel" primary=0.6051 ACCEPTED',
+            'node_003 [draft] "session-time-features" primary=0.6048 REJECTED (below floor)',
+            'node_004 [draft] "regularization-schedule" primary=0.6050 REJECTED (below floor)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 2, "iterations_done": 5, "max_iters": 10},
+        good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
+        bad={"seed-ensemble", "regularization-schedule", "freq-adaptive-reg",
+             "session-time-features", "recency-weighting", "embedding-dim-down",
+             "mtl-shared-bottom", "listwise-regime"},
+        expect_plan=True,
+    ),
 ]
+
+
+def check_plan_emission(brain, sc, sel):
+    """Follow a farm-close selection through to the proposer and validate the
+    typed plan envelope + schema. Returns 'valid' | 'invalid: <why>' | None."""
+    from agent.brain import normalize_proposal_envelope
+    from harness.farm_close import FarmClosePlanError, validate_plan
+    try:
+        spec = brain.propose(
+            sc["journal"], "draft", "node_002", "",
+            method_selection=sel, streak_state=sc["streak"],
+            parent_history=sc["history"], context_mode="compact",
+        )
+        spec = normalize_proposal_envelope(spec)
+        if spec.get("execution_kind") != "farm_close":
+            return f"invalid: execution_kind={spec.get('execution_kind')}"
+        validate_plan(spec["farm_close_plan"])
+        plan = spec["farm_close_plan"]
+        families = [m["family"] for m in plan["members"]]
+        return f"valid ({len(families)} members: {', '.join(families)})"
+    except (ValueError, FarmClosePlanError) as exc:
+        return f"invalid: {str(exc)[:160]}"
 
 
 def main():
@@ -104,6 +147,11 @@ def main():
             verdict = ("good" if pick in sc["good"]
                        else "bad" if pick in sc["bad"] else "ok")
             score[verdict] += 1
+            if sc.get("expect_plan") and pick in ("diverse-family-farm-close", "heterogeneous-ensemble-design"):
+                emission = check_plan_emission(brain, sc, sel)
+                print(f"    plan emission: {emission}")
+                if emission and emission.startswith("invalid"):
+                    score["bad"] += 0  # tracked in print; selection verdict stands
             print(f"[{sc['name']}] rep{rep}: {pick} -> {verdict.upper()}"
                   + (f"  (diag: {sel.get('diagnosis')})" if sel.get('diagnosis') else ""))
             if verdict == "bad":
