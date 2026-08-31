@@ -93,3 +93,20 @@ new card, absent from ALL consideration sets) -> three sub-eps iterations -> con
 measured-win cards to the selector regardless of diagnosis match (a "wildcard slot"),
 since diagnosis errors otherwise hide the strongest evidence. Both are future-work;
 the live steered runs (v2_s7/r9) bypass the issue via launch directives.
+
+## The stale-knowledge class (31 Aug late morning — biggest systemic finding)
+Audit of every selector-visible input found TWO stale layers that shaped the whole
+campaign: (1) MENU.md CURRENT DIRECTIVE still recommended the watch-time objective
+family (measured dead Fri night) to every selector since Friday — and --draft-tiers
+"steering" never reached the selector at all (proposer-only), so directive-based
+steering (v2_s7, v2_1k draft slots) silently failed; (2) 17 method cards carried
+obsolete statuses — champion components labeled running-elsewhere, and the
+championship-winning closes (ensemble-design-sweep, package-dial-sweep,
+stage-matrix-sweep) labeled UNTRIED. Selectors systematically under-valued proven
+cards and re-litigated dead ones. Notable: bigclock_07 won DESPITE the stale
+directive (its selector overrode dead advice). Fixes shipped: evidence-ranked MENU
+directive + measured-win-any-diagnosis rule + all statuses set to ledger verdicts;
+menu_m3/m4 are the first runs with fully-correct knowledge. Lesson for the report:
+knowledge-base freshness is as load-bearing as the acceptance statistics — a
+research system needs mechanical status regeneration from the ledger, not manual
+curation.
