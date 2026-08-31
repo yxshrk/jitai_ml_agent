@@ -118,9 +118,12 @@ FARM_CLOSE_PLAN_CONTRACT = """\
 The selected method is a cross-family ensemble strategy (farm-close or
 heterogeneous ensemble design). Do NOT write an orchestration script or include
 top-level `code`. Member 1 (the anchor) MUST reference the champion node script
-via `script_source` exactly as given in ANCHOR SCRIPT below; every other member
-carries its own `code`, derived from that champion script (you cannot see the
-filesystem, so never reference any other path). Return the ordinary
+via `script_source` exactly as given in ANCHOR SCRIPT below (the example path
+above is illustrative; use the real one); the anchor is the accepted champion
+reused verbatim, never rewritten, because a rewrite loses its measured quality.
+Every other member carries its own `code`, derived from that champion script by
+changing only what its family changes. Family ids are kebab-case
+(`^[a-z][a-z0-9-]+$`), distinct, and seeds are distinct. Return the ordinary
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
 {"execution_kind":"farm_close",
@@ -131,12 +134,10 @@ harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
    "probe_epochs":2,
    "full_member_limit":3, "min_probe_blend_gain":0.0,
    "members":[
-     {"family":"<the champion's family>",
-      "script_source":"<THIS RUN'S CHAMPION NODE SCRIPT PATH, given below as
-ANCHOR SCRIPT. The anchor member is the accepted champion itself, reused
-verbatim, never rewritten: a rewrite loses the measured quality>",
+     {"family":"seq-deepfm-composite",
+      "script_source":"logs/run_X/nodes/002.py",
       "config":{}, "seed":42},
-     {"family":"<a DIFFERENT mechanism family>",
+     {"family":"regularized-dcn-package",
       "code":"<a COMPLETE single-fit training script as a JSON string, derived
 from the champion script by changing only what this family changes; per the
 node contract: reads --data-dir/--out-dir/--seed, honors SMOKE_EPOCHS, ONE
