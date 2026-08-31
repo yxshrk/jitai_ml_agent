@@ -133,6 +133,13 @@ rejected this run is CLOSED for deepening for the rest of the run (the state lis
 deepen must change the mechanism, not the dose, the sampling fraction or the group (live_06 spent five nodes shrinking
 one rejected mechanism: 10 %% -> 5 %% -> 2.5 %%); groups marked HARD in the state are not deepen targets; a deepen of a
 near-miss node edits THAT node's script, so its "parent" is that node's id.
+FRONTIER AND QUEUE (ADR-0021): you are not restricted to the champion. The state lists a FRONTIER — every node worth
+building on, including unconfirmed near-misses whose fresh-seed mean is within one standard error of the champion's
+(three earlier runs' highest-mean node was such a node and nobody ever built on it) — and a QUEUE of proposals already
+waiting. Set "parent" to whichever frontier node your candidate should edit, and spread your candidates across the
+frontier where the evidence supports it rather than piling every slot on the champion. Your proposals go into the
+queue: the best eligible ones run this generation and the rest wait, so propose the idea you believe in even when the
+generation looks full, and never repeat something already queued.
 CAMPAIGN (ADR-0016): when the state names a campaign family, EVERY candidate of yours except the Consolidator's
 merge/retest slots belongs to that family (its cards are listed with their status): the family's untried or
 not-yet-stacked cards take the free slot, the rest are variants of the family's mechanisms on the champion, each with
@@ -439,10 +446,24 @@ def _campaign_state(ctx):
              if camp else "CAMPAIGN this generation: none (breadth generation, or every family is closed)\n")
             + f"Families (status, best seed-mean gain, flat generations while campaigning): {rows or 'none'}\n")
 
+def _frontier_state(ctx):
+    """ADR-0021: the nodes worth building on (not only the champion) and the proposals already waiting."""
+    fr = ctx.get('frontier') or []
+    if not fr:
+        return ''
+    rows = '; '.join(f"node_{e['n']:03d}{'*' if e['champion'] else ''} mean {e['mean']:.5f} "
+                     f"({'accepted' if e['accepted'] else 'unconfirmed'}, {e['children']} children"
+                     + (f", {e['barren_generations']} barren" if e['barren_generations'] else '') + ')' for e in fr)
+    q = ctx.get('queue') or []
+    qrows = ('; '.join(f"[{x['parent']}] {x.get('card')} ({x.get('mechanism') or x.get('target_component')}, score {x.get('score', 0):+.4f})"
+                       for x in q[:8]) if q else 'empty')
+    return (f"FRONTIER (nodes you may build on; * = champion; a node retires after 2 generations without an accepted child): {rows}\n"
+            f"QUEUE (proposals already waiting, best first — do not repeat them; they run when a slot frees): {qrows}\n")
+
 def _rules_state(ctx):
     """ADR-0014 planning state: what the free slot may take, what is closed, what is hard, what the champion reads."""
     hard = ctx.get('hard_groups') or {}; closed = ctx.get('closed_mechanisms') or {}
-    return (_campaign_state(ctx) + f"Untried cards (free-slot priority 1): {', '.join(ctx.get('untried') or []) or 'none'}\n"
+    return (_frontier_state(ctx) + _campaign_state(ctx) + f"Untried cards (free-slot priority 1): {', '.join(ctx.get('untried') or []) or 'none'}\n"
             f"Proven cards not in the champion stack (free-slot priority 2): {', '.join(ctx.get('proven_not_on_stack') or []) or 'none'}\n"
             f"Champion input set (columns / side-table fields its script references): {', '.join(ctx.get('champion_inputs') or []) or 'unknown'}\n"
             f"Closed mechanisms (deepens rejected this run; not to be deepened again): "

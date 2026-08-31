@@ -58,6 +58,19 @@ CAMPAIGN_LAST_FAMILIES = ('ensembling',)
 # may be designated iff, with MAX_CONFIRM_SEEDS fresh seeds, its gain over the champion is >= MIN_EFFECT at z >= Z_BORDER.
 DESIGNATION_DEFAULT = 'strict'
 
+# ADR-0021: the search keeps a FRONTIER of progressing nodes, not one champion, and a persistent QUEUE of proposals
+# over it. A node joins the frontier when its fresh-seed mean is at or above the champion's minus one standard error
+# (accepted or not — three runs' highest-mean node was an unaccepted near-miss nobody ever built on); it retires after
+# FRONTIER_RETIRE_GENERATIONS generations without an accepted descendant. Proposals the planners make are queued with
+# their parent, survive the generation that produced them, and are popped by score — so a good idea is no longer lost
+# because a slot was full. Promotion and designation are untouched: only a seed-confirmed node becomes champion, and
+# only accepted nodes can be submitted (ADR-0012), which is what makes liberal exploration safe.
+FRONTIER_RETIRE_GENERATIONS = 2
+FRONTIER_MAX = 6                  # nodes on the frontier at once (the champion always among them)
+FRONTIER_MARGIN_SE = 1.0          # how far below the champion's fresh-seed mean a node may still be a frontier parent
+QUEUE_MAX = 40                    # pending proposals kept; the lowest-scoring are dropped beyond this
+QUEUE_STALE_GENERATIONS = 3       # a proposal not popped within this many generations is dropped
+
 def libs_text():
     """The library rule as one sentence, generated from AVAILABLE_LIBS so prompts cannot drift from the contract."""
     return ('LIBRARIES (ADR-0014): ' + ', '.join(AVAILABLE_LIBS) + ' and the standard library are available to scripts; '

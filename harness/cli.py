@@ -30,6 +30,7 @@ def main():
     r.add_argument('--no-distill', action='store_true', help='do not fold the journal into the cards when the run ends')
     r.add_argument('--no-screen', action='store_true', help='skip the feature screen (ADR-0015): build every feature candidate unmeasured')
     r.add_argument('--no-campaigns', action='store_true', help='no family campaigns: every generation is a breadth generation (pre-ADR-0016 behaviour)')
+    r.add_argument('--no-frontier', action='store_true', help='no frontier/queue: every candidate branches from the champion (pre-ADR-0021 behaviour)')
     s = sub.add_parser('submit', help='write the test submission for a node of a run')
     s.add_argument('--refit', action='store_true', help='ADR-0019: refit the node on train + valid at its validated epoch count before scoring the test features')
     s.add_argument('--epochs', type=int, default=None, help='with --refit: override the epoch count (default: the node metrics.json best_epoch)')
@@ -62,7 +63,8 @@ def main():
         loop = Loop(a.run_id, brain, k=a.k, max_nodes=a.max_nodes, max_generations=a.max_generations, seed=a.seed,
                     parallel=not a.no_parallel, confirm_seeds=not a.no_confirm, final_reseed=not a.no_final_reseed,
                     iteration_unit=a.iteration_unit, wildcard=not a.no_wildcard, librarian=not a.no_librarian, auto_distill=not a.no_distill, convergence=a.convergence, k_later=a.k_later,
-                    screen=not a.no_screen, campaigns=not a.no_campaigns, designation=a.designation)
+                    screen=not a.no_screen, campaigns=not a.no_campaigns, designation=a.designation,
+                    frontier=not a.no_frontier)
         print(json.dumps(loop.run(), indent=1, default=str))
     elif a.cmd == 'submit':
         if getattr(a, 'refit', False):
