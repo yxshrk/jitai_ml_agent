@@ -83,4 +83,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | ff1 | laptop | converged | 3 | 0.60184 | clean fast-forward shakeout: found debug-gate bypass, margin miscal, screen fidelity weakness for ~$8 (75100 tokens, 34 min) |
 | f8 | ruby | converged | 4 | 0.60471 | first stacked-accept lineage (snippet-backed ctx-pairs); killed by 503-as-strike; state extends to 0.60576 with cross-run artifacts (132067 tokens, 39 min) |
 | f9 | ruby | converged | 4 | 0.60510 | best autonomous single model ever (48-probe opener); endgame banking gap found+fixed; own-artifact ceiling 0.60546 (177285 tokens, 36 min) |
-| c9 | coral | running | - | 0.60332@3 | clean/no-digest arm: third screen build passed gate+fixer loop (in flight) |
+| c9 | coral | converged | 4 | 0.60332 | clean/no-digest arm: 2 failed screen builds (gate-caught) then accepted screen; converged on build-failure strikes; snippet+pivot fixes landed post-launch (87296 tokens, 30 min) |

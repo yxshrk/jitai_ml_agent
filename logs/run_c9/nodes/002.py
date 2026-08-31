@@ -1,0 +1,712 @@
+"""Multi-mechanism screening over the official KuaiRand fast path.
+
+Screens independently correct, leakage-safe regularization, recency weighting,
+pairwise ranking, DeepFM interaction, and impression-frequency mechanisms before
+full-fidelity training of the strongest robust configuration.
+"""
+import argparse
+import csv
+import json
+import os
+import sys
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data.official.evaluate import evaluate as official_evaluate
+
+
+class ScreenFM(torch.nn.Module):
+    def __init__(self, total_dim, k=16, dropout=0.0, deep_hidden=0, use_freq=False):
+        super().__init__()
+        self.k = int(k)
+        self.dropout = float(dropout)
+        self.deep_hidden = int(deep_hidden)
+        self.use_freq = bool(use_freq)
+        self.emb = torch.nn.Embedding(total_dim, self.k)
+        self.lin = torch.nn.Embedding(total_dim, 1)
+        self.bias = torch.nn.Parameter(torch.zeros(1))
+        torch.nn.init.normal_(self.emb.weight, std=0.01)
+        torch.nn.init.zeros_(self.lin.weight)
+        if self.deep_hidden > 0:
+            self.deep1 = torch.nn.Linear(5 * self.k, self.deep_hidden)
+            self.deep2 = torch.nn.Linear(self.deep_hidden, 1)
+            torch.nn.init.xavier_uniform_(self.deep1.weight)
+            torch.nn.init.zeros_(self.deep1.bias)
+            torch.nn.init.normal_(self.deep2.weight, std=0.01)
+            torch.nn.init.zeros_(self.deep2.bias)
+        if self.use_freq:
+            self.freq_lin = torch.nn.Linear(3, 1)
+            torch.nn.init.zeros_(self.freq_lin.weight)
+            torch.nn.init.zeros_(self.freq_lin.bias)
+
+    def forward(self, x, freq=None):
+        e = self.emb(x)
+        if self.dropout > 0.0:
+            e_used = F.dropout(e, p=self.dropout, training=self.training)
+        else:
+            e_used = e
+        s = e_used.sum(1)
+        pair = 0.5 * (s * s - (e_used * e_used).sum(1)).sum(1)
+        out = self.bias + self.lin(x).sum((1, 2)) + pair
+        if self.deep_hidden > 0:
+            h = F.relu(self.deep1(e_used.reshape(e_used.shape[0], -1)))
+            h = F.dropout(h, p=self.dropout, training=self.training)
+            out = out + self.deep2(h).squeeze(1)
+        if self.use_freq:
+            out = out + self.freq_lin(freq).squeeze(1)
+        return out
+
+
+def _mapping(values):
+    result = {}
+    for value in values:
+        if value not in result:
+            result[value] = len(result) + 1
+    return result
+
+
+def load_csv_data(data_dir):
+    train_rows = []
+    train_path = os.path.join(data_dir, "train.csv")
+    with open(train_path, "r", newline="") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            train_rows.append((
+                row["user_id"], row["video_id"], row["tab"],
+                float(row["duration_ms"]), float(row["long_view"]),
+                float(row["date"])
+            ))
+
+    val_rows = []
+    val_path = os.path.join(data_dir, "val.csv")
+    with open(val_path, "r", newline="") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            val_rows.append((
+                row["user_id"], row["video_id"], row["tab"],
+                float(row["duration_ms"]), float(row["long_view"])
+            ))
+
+    user_map = _mapping([r[0] for r in train_rows])
+    video_map = _mapping([r[1] for r in train_rows])
+    tab_map = _mapping([r[2] for r in train_rows])
+    field_dims = np.asarray([
+        len(user_map) + 1,
+        len(video_map) + 1,
+        1,
+        len(tab_map) + 1,
+        32,
+    ], dtype=np.int64)
+    offsets = np.concatenate([
+        np.zeros(1, dtype=np.int64),
+        np.cumsum(field_dims[:-1]),
+    ])
+
+    def encode(rows):
+        x = np.zeros((len(rows), 5), dtype=np.int64)
+        for i, row in enumerate(rows):
+            x[i, 0] = user_map.get(row[0], 0)
+            x[i, 1] = video_map.get(row[1], 0)
+            x[i, 2] = 0
+            x[i, 3] = tab_map.get(row[2], 0)
+            duration = max(float(row[3]), 0.0)
+            x[i, 4] = min(31, int(np.log2(1.0 + duration / 1000.0)))
+        return x + offsets.reshape(1, -1)
+
+    tr = {
+        "X": encode(train_rows),
+        "y": np.asarray([r[4] for r in train_rows], dtype=np.float32),
+        "user": np.asarray([r[0] for r in train_rows]),
+        "date": np.asarray([r[5] for r in train_rows], dtype=np.float64),
+        "field_dims": field_dims,
+    }
+    va = {
+        "X": encode(val_rows),
+        "y": np.asarray([r[4] for r in val_rows], dtype=np.float32),
+        "user": np.asarray([r[0] for r in val_rows]),
+    }
+    video_out = np.asarray([r[1] for r in val_rows])
+    return tr, va, video_out
+
+
+def normalize_metrics(metrics):
+    return {
+        "gauc": float(metrics["GAUC"] if "GAUC" in metrics else metrics["gauc"]),
+        "ndcg5": float(metrics.get("nDCG@5", metrics.get("ndcg5"))),
+        "primary": float(metrics["primary"]),
+    }
+
+
+def make_frequency_features(x_train, x_val, total_dim):
+    train_parts = []
+    val_parts = []
+    for field in range(3):
+        counts = np.bincount(
+            x_train[:, field], minlength=total_dim
+        ).astype(np.float32)
+        train_value = np.log1p(counts[x_train[:, field]])
+        val_value = np.log1p(counts[x_val[:, field]])
+        mean = float(train_value.mean())
+        std = float(train_value.std())
+        if std < 1e-6:
+            std = 1.0
+        train_parts.append((train_value - mean) / std)
+        val_parts.append((val_value - mean) / std)
+    return (
+        np.stack(train_parts, axis=1).astype(np.float32),
+        np.stack(val_parts, axis=1).astype(np.float32),
+    )
+
+
+def make_recency_base(dates):
+    dates = np.asarray(dates)
+    if len(dates) == 0:
+        return np.empty(0, dtype=np.float32)
+    _, inverse = np.unique(dates, return_inverse=True)
+    denom = max(int(inverse.max()), 1)
+    return inverse.astype(np.float32) / float(denom) - 0.5
+
+
+def make_pair_pool(users, labels):
+    users = np.asarray(users)
+    labels = np.asarray(labels)
+    order = np.argsort(users, kind="mergesort")
+    sorted_users = users[order]
+    starts = np.r_[0, np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1]
+    ends = np.r_[starts[1:], len(order)]
+    positive = []
+    negative = []
+    for start, end in zip(starts, ends):
+        idx = order[start:end]
+        pos = idx[labels[idx] > 0.5]
+        neg = idx[labels[idx] <= 0.5]
+        if len(pos) and len(neg):
+            positive.append(int(pos[0]))
+            negative.append(int(neg[0]))
+    return (
+        torch.tensor(positive, dtype=torch.long),
+        torch.tensor(negative, dtype=torch.long),
+    )
+
+
+def default_config():
+    return {
+        "k": 16,
+        "lr": 0.001,
+        "weight_decay": 0.0,
+        "dropout": 0.0,
+        "recency": 0.0,
+        "pairwise": 0.0,
+        "deep_hidden": 0,
+        "use_freq": False,
+        "cosine": False,
+    }
+
+
+def build_configs(count, seed):
+    base = default_config()
+    configs = [dict(base)]
+
+    singles = [
+        ("weight_decay", 1e-5), ("weight_decay", 5e-5),
+        ("weight_decay", 2e-4), ("dropout", 0.1),
+        ("dropout", 0.25), ("dropout", 0.35),
+        ("k", 8), ("k", 24), ("k", 32),
+        ("recency", 0.25), ("recency", 0.5), ("recency", 1.0),
+        ("pairwise", 0.05), ("pairwise", 0.1), ("pairwise", 0.2),
+        ("deep_hidden", 32), ("deep_hidden", 64),
+        ("use_freq", True), ("cosine", True),
+        ("lr", 0.0005), ("lr", 0.002),
+    ]
+    for key, value in singles:
+        config = dict(base)
+        config[key] = value
+        configs.append(config)
+
+    paired = [
+        {"weight_decay": 5e-5, "dropout": 0.1},
+        {"weight_decay": 5e-5, "k": 8},
+        {"weight_decay": 1e-5, "recency": 0.5},
+        {"weight_decay": 5e-5, "pairwise": 0.1},
+        {"weight_decay": 5e-5, "deep_hidden": 32, "dropout": 0.1},
+        {"weight_decay": 5e-5, "use_freq": True},
+        {"dropout": 0.1, "deep_hidden": 64},
+        {"pairwise": 0.1, "recency": 0.5},
+        {"pairwise": 0.1, "use_freq": True},
+        {"deep_hidden": 32, "use_freq": True},
+        {"recency": 0.5, "use_freq": True},
+        {"cosine": True, "weight_decay": 5e-5},
+    ]
+    for changes in paired:
+        config = dict(base)
+        config.update(changes)
+        configs.append(config)
+
+    rng = np.random.RandomState(seed + 1701)
+    choices = {
+        "k": [8, 16, 24, 32],
+        "lr": [0.0005, 0.001, 0.002],
+        "weight_decay": [0.0, 1e-6, 1e-5, 5e-5, 2e-4],
+        "dropout": [0.0, 0.1, 0.2, 0.35],
+        "recency": [0.0, 0.25, 0.5, 1.0],
+        "pairwise": [0.0, 0.05, 0.1, 0.2],
+        "deep_hidden": [0, 32, 64],
+        "use_freq": [False, True],
+        "cosine": [False, True],
+    }
+    seen = {json.dumps(c, sort_keys=True) for c in configs}
+    while len(configs) < count:
+        config = {
+            key: values[int(rng.randint(len(values)))]
+            for key, values in choices.items()
+        }
+        signature = json.dumps(config, sort_keys=True)
+        if signature not in seen:
+            seen.add(signature)
+            configs.append(config)
+    return configs[:count]
+
+
+def run_training(config, epochs, run_seed, tensors, arrays, device, eval_fn,
+                 early_stop=False):
+    torch.manual_seed(run_seed)
+    np.random.seed(run_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(run_seed)
+
+    xt, yt, xv, zt, zv, pair_pos, pair_neg = tensors
+    users_val, labels_val, recency_base = arrays
+    model = ScreenFM(
+        int(config["total_dim"]),
+        k=int(config["k"]),
+        dropout=float(config["dropout"]),
+        deep_hidden=int(config["deep_hidden"]),
+        use_freq=bool(config["use_freq"]),
+    ).to(device)
+
+    if float(config["weight_decay"]) > 0.0:
+        optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=float(config["lr"]),
+            weight_decay=float(config["weight_decay"]),
+        )
+    else:
+        optimizer = torch.optim.Adam(
+            model.parameters(), lr=float(config["lr"])
+        )
+
+    scheduler = None
+    if bool(config["cosine"]):
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=max(int(epochs), 1),
+            eta_min=float(config["lr"]) * 0.1,
+        )
+
+    recency = float(config["recency"])
+    if recency > 0.0:
+        weights_np = np.exp(recency * recency_base).astype(np.float32)
+        weights_np /= max(float(weights_np.mean()), 1e-8)
+        train_weights = torch.from_numpy(weights_np)
+    else:
+        train_weights = None
+
+    n = len(yt)
+    batch_size = 8192
+    best_primary = -1.0
+    best_scores = None
+    best_metrics = None
+    best_epoch = 0
+    patience = 0
+    curve = []
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(run_seed + 313)
+
+    for epoch in range(int(epochs)):
+        model.train()
+        permutation = torch.randperm(n, generator=generator)
+        loss_sum = 0.0
+        rows_seen = 0
+
+        for start in range(0, n, batch_size):
+            idx = permutation[start:start + batch_size]
+            xb = xt[idx].to(device, non_blocking=True)
+            yb = yt[idx].to(device, non_blocking=True)
+            zb = zt[idx].to(device, non_blocking=True)
+
+            optimizer.zero_grad(set_to_none=True)
+            logits = model(xb, zb)
+            point_loss = F.binary_cross_entropy_with_logits(
+                logits, yb, reduction="none"
+            )
+            if train_weights is not None:
+                wb = train_weights[idx].to(device, non_blocking=True)
+                loss = (point_loss * wb).mean()
+            else:
+                loss = point_loss.mean()
+
+            pair_weight = float(config["pairwise"])
+            if pair_weight > 0.0 and len(pair_pos) > 0:
+                pair_count = min(max(256, len(idx) // 2), len(pair_pos))
+                choice = torch.randint(
+                    len(pair_pos), (pair_count,), generator=generator
+                )
+                pos_idx = pair_pos[choice]
+                neg_idx = pair_neg[choice]
+                both_idx = torch.cat([pos_idx, neg_idx])
+                pair_x = xt[both_idx].to(device, non_blocking=True)
+                pair_z = zt[both_idx].to(device, non_blocking=True)
+                pair_logits = model(pair_x, pair_z)
+                pos_logits = pair_logits[:pair_count]
+                neg_logits = pair_logits[pair_count:]
+                ranking_loss = F.softplus(
+                    -(pos_logits - neg_logits)
+                ).mean()
+                loss = loss + pair_weight * ranking_loss
+
+            loss.backward()
+            optimizer.step()
+            loss_sum += float(loss.detach().cpu()) * len(idx)
+            rows_seen += len(idx)
+
+        if scheduler is not None:
+            scheduler.step()
+
+        model.eval()
+        score_parts = []
+        with torch.no_grad():
+            for start in range(0, len(xv), 65536):
+                xb = xv[start:start + 65536].to(
+                    device, non_blocking=True
+                )
+                zb = zv[start:start + 65536].to(
+                    device, non_blocking=True
+                )
+                score_parts.append(model(xb, zb).detach().cpu().numpy())
+
+        scores = np.concatenate(score_parts).astype(np.float64, copy=False)
+        current = normalize_metrics(eval_fn(users_val, labels_val, scores))
+        curve.append({
+            "epoch": epoch + 1,
+            "train_loss": round(loss_sum / max(rows_seen, 1), 6),
+            "val_gauc": round(current["gauc"], 6),
+            "val_ndcg5": round(current["ndcg5"], 6),
+            "val_primary": round(current["primary"], 6),
+        })
+
+        if current["primary"] > best_primary + 1e-8:
+            best_primary = current["primary"]
+            best_scores = scores.copy()
+            best_metrics = current
+            best_epoch = epoch + 1
+            patience = 0
+        else:
+            patience += 1
+            if early_stop and patience >= 2:
+                break
+
+    result = {
+        "primary": float(best_metrics["primary"]),
+        "gauc": float(best_metrics["gauc"]),
+        "ndcg5": float(best_metrics["ndcg5"]),
+        "best_epoch": int(best_epoch),
+        "epochs_run": len(curve),
+        "curve": curve,
+    }
+    del model, optimizer
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
+    return result, best_scores
+
+
+def append_progress(path, record):
+    with open(path, "a") as fh:
+        fh.write(json.dumps(record, sort_keys=True) + "\n")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data-dir", required=True)
+    parser.add_argument("--out-dir", required=True)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--epochs", type=int, default=12)
+    args = parser.parse_args()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
+    if device.type == "cuda":
+        torch.cuda.manual_seed_all(args.seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    try:
+        torch.use_deterministic_algorithms(True)
+    except Exception:
+        pass
+
+    os.makedirs(args.out_dir, exist_ok=True)
+    progress_path = os.path.join(args.out_dir, "progress.log")
+    with open(progress_path, "w"):
+        pass
+
+    fast_path = (
+        os.path.exists(os.path.join(args.data_dir, "train.npz"))
+        and os.path.exists(os.path.join(args.data_dir, "val.npz"))
+    )
+
+    if fast_path:
+        tr = np.load(os.path.join(args.data_dir, "train.npz"))
+        va = np.load(os.path.join(args.data_dir, "val.npz"))
+        video_out = (
+            np.asarray(va["video"])
+            if "video" in va.files
+            else np.zeros(len(va["y"]), dtype=np.int64)
+        )
+        eval_fn = official_evaluate
+    else:
+        tr, va, video_out = load_csv_data(args.data_dir)
+        from harness.evaluate_provisional import evaluate as provisional_evaluate
+        eval_fn = provisional_evaluate
+
+    field_dims = np.asarray(tr["field_dims"], dtype=np.int64)
+    total_dim = int(field_dims.sum())
+    x_train_np = np.asarray(tr["X"], dtype=np.int64)
+    x_val_np = np.asarray(va["X"], dtype=np.int64)
+
+    if fast_path:
+        offsets = np.concatenate([
+            np.zeros(1, dtype=np.int64),
+            np.cumsum(field_dims[:-1]),
+        ])
+        combined_local = True
+        for field, dim in enumerate(field_dims):
+            train_col = x_train_np[:, field]
+            val_col = x_val_np[:, field]
+            if (
+                (train_col.size and (
+                    int(train_col.min()) < 0 or int(train_col.max()) >= int(dim)
+                ))
+                or
+                (val_col.size and (
+                    int(val_col.min()) < 0 or int(val_col.max()) >= int(dim)
+                ))
+            ):
+                combined_local = False
+                break
+        if combined_local:
+            x_train_np = x_train_np + offsets.reshape(1, -1)
+            x_val_np = x_val_np + offsets.reshape(1, -1)
+
+    if x_train_np.size and (
+        int(x_train_np.min()) < 0 or int(x_train_np.max()) >= total_dim
+    ):
+        raise ValueError("train X indices are outside offset-encoded field_dims")
+    if x_val_np.size and (
+        int(x_val_np.min()) < 0 or int(x_val_np.max()) >= total_dim
+    ):
+        raise ValueError("validation X indices are outside offset-encoded field_dims")
+
+    y_train_np = np.asarray(tr["y"], dtype=np.float32)
+    y_val_np = np.asarray(va["y"], dtype=np.float32).astype(int)
+    users_train = np.asarray(tr["user"])
+    users_val = np.asarray(va["user"])
+
+    z_train_np, z_val_np = make_frequency_features(
+        x_train_np, x_val_np, total_dim
+    )
+    recency_base = make_recency_base(np.asarray(tr["date"]))
+    pair_pos, pair_neg = make_pair_pool(users_train, y_train_np)
+
+    xt = torch.from_numpy(x_train_np)
+    yt = torch.from_numpy(y_train_np)
+    xv = torch.from_numpy(x_val_np)
+    zt = torch.from_numpy(z_train_np)
+    zv = torch.from_numpy(z_val_np)
+    tensors = (xt, yt, xv, zt, zv, pair_pos, pair_neg)
+    arrays = (users_val, y_val_np, recency_base)
+
+    smoke_value = os.environ.get("SMOKE_EPOCHS")
+    smoke_cap = int(smoke_value) if smoke_value is not None else None
+
+    def capped(value):
+        if smoke_cap is None:
+            return max(1, int(value))
+        return max(1, min(int(value), smoke_cap))
+
+    if smoke_cap is not None:
+        initial_count = 8
+        refine_count = 2
+        confirm_count = 1
+    elif device.type == "cuda":
+        initial_count = 192
+        refine_count = 48
+        confirm_count = 16
+    else:
+        initial_count = 64
+        refine_count = 20
+        confirm_count = 8
+
+    probe_epochs = capped(min(6, args.epochs))
+    full_epochs = capped(args.epochs)
+    configs = build_configs(initial_count, args.seed)
+    for config in configs:
+        config["total_dim"] = total_dim
+
+    history = []
+    initial_results = []
+    for index, config in enumerate(configs):
+        result, _ = run_training(
+            config, probe_epochs, args.seed, tensors,
+            arrays, device, eval_fn, early_stop=False
+        )
+        record = {
+            "stage": "probe",
+            "probe_id": index,
+            "seed": args.seed,
+            "config": {
+                k: v for k, v in config.items() if k != "total_dim"
+            },
+            **result,
+        }
+        history.append(record)
+        initial_results.append((result["primary"], index, config))
+        append_progress(progress_path, {
+            "stage": "probe",
+            "probe_id": index,
+            "primary": result["primary"],
+            "config": record["config"],
+        })
+
+    initial_results.sort(key=lambda item: (-item[0], item[1]))
+    finalists = initial_results[:min(refine_count, len(initial_results))]
+    refined_results = []
+
+    for rank, (_, original_index, config) in enumerate(finalists):
+        result, _ = run_training(
+            config, full_epochs, args.seed, tensors,
+            arrays, device, eval_fn, early_stop=False
+        )
+        record = {
+            "stage": "refine",
+            "probe_id": original_index,
+            "refine_rank": rank,
+            "seed": args.seed,
+            "config": {
+                k: v for k, v in config.items() if k != "total_dim"
+            },
+            **result,
+        }
+        history.append(record)
+        refined_results.append((
+            result["primary"], original_index, config, result
+        ))
+        append_progress(progress_path, {
+            "stage": "refine",
+            "probe_id": original_index,
+            "refine_rank": rank,
+            "primary": result["primary"],
+            "config": record["config"],
+        })
+
+    refined_results.sort(key=lambda item: (-item[0], item[1]))
+    confirmation_pool = refined_results[
+        :min(confirm_count, len(refined_results))
+    ]
+    robust_results = []
+
+    for rank, (
+        refined_primary, original_index, config, refined_result
+    ) in enumerate(confirmation_pool):
+        confirm_seed = args.seed + 10000 + original_index
+        result, _ = run_training(
+            config, full_epochs, confirm_seed, tensors,
+            arrays, device, eval_fn, early_stop=False
+        )
+        robust_primary = 0.5 * (refined_primary + result["primary"])
+        record = {
+            "stage": "confirm",
+            "probe_id": original_index,
+            "confirm_rank": rank,
+            "seed": confirm_seed,
+            "config": {
+                k: v for k, v in config.items() if k != "total_dim"
+            },
+            "robust_primary": robust_primary,
+            **result,
+        }
+        history.append(record)
+        robust_results.append((
+            robust_primary, refined_primary, original_index, config
+        ))
+        append_progress(progress_path, {
+            "stage": "confirm",
+            "probe_id": original_index,
+            "confirm_rank": rank,
+            "primary": result["primary"],
+            "robust_primary": robust_primary,
+            "config": record["config"],
+        })
+
+    robust_results.sort(key=lambda item: (-item[0], -item[1], item[2]))
+    winner_robust, _, winner_index, winner_config = robust_results[0]
+
+    final_result, final_scores = run_training(
+        winner_config, full_epochs, args.seed, tensors, arrays, device,
+        eval_fn, early_stop=True
+    )
+    final_record = {
+        "stage": "final",
+        "probe_id": winner_index,
+        "seed": args.seed,
+        "robust_selection_primary": winner_robust,
+        "config": {
+            k: v for k, v in winner_config.items() if k != "total_dim"
+        },
+        **final_result,
+    }
+    history.append(final_record)
+    append_progress(progress_path, {
+        "stage": "final",
+        "probe_id": winner_index,
+        "primary": final_result["primary"],
+        "robust_selection_primary": winner_robust,
+        "config": final_record["config"],
+    })
+
+    final_metrics = normalize_metrics(
+        eval_fn(users_val, y_val_np, final_scores)
+    )
+    metrics_payload = {
+        "gauc": final_metrics["gauc"],
+        "ndcg5": final_metrics["ndcg5"],
+        "primary": final_metrics["primary"],
+        "selected_probe_id": winner_index,
+        "selected_config": {
+            k: v for k, v in winner_config.items() if k != "total_dim"
+        },
+        "selection_robust_primary": winner_robust,
+        "history": history,
+    }
+
+    with open(os.path.join(args.out_dir, "metrics.json"), "w") as fh:
+        json.dump(metrics_payload, fh)
+
+    with open(
+        os.path.join(args.out_dir, "predictions.csv"), "w", newline=""
+    ) as fh:
+        writer = csv.writer(fh)
+        writer.writerow(["row_id", "user_id", "video_id", "score"])
+        for index, score in enumerate(final_scores):
+            writer.writerow([
+                index,
+                users_val[index],
+                video_out[index],
+                format(float(score), ".6g"),
+            ])
+
+
+if __name__ == "__main__":
+    main()

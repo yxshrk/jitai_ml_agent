@@ -13,7 +13,7 @@ these runs started from, plus the evidence-only exhibits), `logs/RUNS.md`
 | ff1 | clean, fast-forward | laptop | 3 | 0.601838 (baseline) | converged | 34 min | shakeout: found 3 harness holes for ~$8 |
 | f8 | measured-memory | ruby | 4 | 0.604714 | converged | 39 min | first stacked-accept lineage; killed by a 503 counted as a strike |
 | f9 | measured-memory | ruby | 4 | **0.605102** | converged | 36 min | best autonomous single model ever; endgame banking gap |
-| c9 | clean (no digest) | coral | in progress | 0.603324 @ iter 3 | — | — | clean arm recovers from implementation failures via gate+fixer |
+| c9 | clean (no digest) | coral | 4 | 0.603324 | converged | 30 min | clean arm recovered from 2 failed builds via gate+fixer, then converged on build-failure strikes |
 
 Designations are UNCHANGED: Pure = bigclock_07 **0.605575**, 1K = omega_1k
 0.66892. No run tonight beat the designation; the measured single-run ceiling
@@ -82,13 +82,19 @@ Designations are UNCHANGED: Pure = bigclock_07 **0.605575**, 1K = omega_1k
   trained nodes as members (a rejected sibling within ~0.002 of the champion is
   a finished, measured member; fresh code only for families never built).
 
-### c9 (clean/no-digest, coral, in progress at time of writing)
+### c9 (clean/no-digest, coral; converged 0.603324, 4 iters, 30 min)
 - n1 mechanism-screen crashed (unseen-id indexing); n2/n3 attempts gate-caught
   at ~0.590; the THIRD build passed and was ACCEPTED at 0.603324 — the
   gate+fixer loop converting implementation failure into a working screen.
+- Converged immediately after: the two failed builds were strikes 1-2 and the
+  accepted screen's +0.0015 was sub-epsilon (strike 3). One working iteration
+  total; final 0.603324 vs the clean arm's prior best 0.6041 (pure_clean2).
 - Fixes triggered: methodology-only screen skeleton snippet (probe loop,
   successive-halving budget, unseen-id invariant); doctrine now distinguishes
-  implementation-dead (pivot after two failed builds) from evidence-dead.
+  implementation-dead (pivot after two failed builds) from evidence-dead —
+  both landed AFTER c9's launch (its brain cached the older library), so c9 is
+  the motivating case, not a test of the fix. Open question its self-critique
+  raises: should failed BUILDS count convergence strikes at all?
 
 ## Cross-run findings (the report's spine)
 
