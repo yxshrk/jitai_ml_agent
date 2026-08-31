@@ -1,0 +1,1 @@
+{"aggregation":{"method":"identity"},"candidate_kind":"singleton","members":[{"config":{},"family":"regularized-dcn-package","member_id":"regularized-dcn-package","phase":"full","predictions_path":"full/00_regularized-dcn-package/predictions.csv","seed":42}],"schema_version":"farm-close.recipe.v1","source_phase":"full","weights":[1.0]}

@@ -1,0 +1,7 @@
+{
+  "resumed_from": "/home/pallav/mle-agent/logs/run_farm_f4",
+  "resumed_at": 3,
+  "intervention": false,
+  "designation_eligible": false,
+  "note": "resumed lineage: continued from the prior run's state under current agent code; experiment, not a designation candidate"
+}

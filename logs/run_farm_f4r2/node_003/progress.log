@@ -1,0 +1,7 @@
+{"config": {}, "family": "recency-weighted-bilinear-fm", "gauc": 0.6620790362358093, "member": 3, "ndcg5": 0.5336219668388367, "phase": "probe", "primary": 0.597850501537323, "seed": 3069, "status": "completed"}
+{"config": {}, "family": "temporal-pair-kernel", "gauc": 0.6560205817222595, "member": 1, "ndcg5": 0.5310219526290894, "phase": "probe", "primary": 0.593521237373352, "seed": 1051, "status": "completed"}
+{"config": {}, "family": "regularized-dcn-package", "gauc": 0.6677840948104858, "member": 0, "ndcg5": 0.5357897281646729, "phase": "probe", "primary": 0.6017869114875793, "seed": 42, "status": "completed"}
+{"config": {}, "family": "causal-seq-deepfm-composite", "gauc": 0.6676262617111206, "member": 2, "ndcg5": 0.5361374020576477, "phase": "probe", "primary": 0.6018818616867065, "seed": 2060, "status": "completed"}
+{"config": {}, "family": "regularized-dcn-package", "gauc": 0.6712086200714111, "member": 0, "ndcg5": 0.537788987159729, "phase": "full", "primary": 0.6044988036155701, "seed": 42, "status": "completed"}
+{"config": {}, "family": "causal-seq-deepfm-composite", "gauc": 0.6679254770278931, "member": 2, "ndcg5": 0.5370241403579712, "phase": "full", "primary": 0.6024748086929321, "seed": 2060, "status": "completed"}
+{"fallback_to_incumbent": false, "fallback_to_singleton": true, "families": ["regularized-dcn-package"], "gauc": 0.6712089655759875, "kind": "single_member", "ndcg5": 0.5377885613598755, "phase": "final", "primary": 0.6044987634679315, "status": "completed"}
