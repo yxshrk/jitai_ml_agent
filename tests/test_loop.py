@@ -1007,3 +1007,32 @@ def test_replay_smoke_gate_margin_on_measured_populations(tmp_path):
     for sane in (0.5919, 0.5923, 0.5937, 0.5949, 0.5970, 0.6001):  # sweep reps
         assert gate(sane) is None, sane
     assert gate(0.60, gauc=0.49) is not None   # below-chance GAUC always fails
+
+
+def test_transient_proposer_error_retries_and_takes_no_strike(tmp_path, monkeypatch):
+    # f8 replay: a 503 from the provider consumed the third convergence strike
+    # and ended the run. Transient infra errors must retry once and never count.
+    import harness.loop as loop_mod
+    monkeypatch.setattr(loop_mod, "TRANSIENT_RETRY_SLEEP_S", 0.0)
+    brain = fake_brain()
+    calls = {"n": 0}
+    def flaky_propose(**kwargs):
+        calls["n"] += 1
+        raise RuntimeError("HTTP Error 503: Service Unavailable")
+    brain.propose = flaky_propose
+    loop = make_loop(tmp_path, brain, max_iters=1, draft_tiers=())
+    loop.run()
+    assert calls["n"] == 2  # retried once
+    assert loop.no_improve_streak == 0  # no convergence strike from infra
+    record = json.loads((loop.run_dir / "journal.jsonl").read_text().splitlines()[1])
+    assert "503" in record["error"]
+
+
+def test_hard_proposer_error_still_takes_strike(tmp_path):
+    brain = fake_brain()
+    def broken_propose(**kwargs):
+        raise ValueError("proposer reply missing numeric expected_delta")
+    brain.propose = broken_propose
+    loop = make_loop(tmp_path, brain, max_iters=1, draft_tiers=())
+    loop.run()
+    assert loop.no_improve_streak == 1

@@ -106,6 +106,17 @@ def apply_edits(parent_code: str, edits: list) -> str:
     return text
 
 
+TRANSIENT_ERROR_MARKERS = ("503", "502", "429", "Service Unavailable",
+                           "Bad Gateway", "timed out", "Connection reset",
+                           "Connection refused", "Temporary failure")
+TRANSIENT_RETRY_SLEEP_S = 20.0  # tests may patch to 0
+
+
+def is_transient_error(exc: BaseException) -> bool:
+    text = str(exc)
+    return any(marker in text for marker in TRANSIENT_ERROR_MARKERS)
+
+
 def rewrite_ratio(parent_code: str, code: str) -> float:
     """Line-level similarity between parent and proposed script (0..1).
 
@@ -1193,8 +1204,22 @@ class Loop:
             parent_history = normalize_history((parent.metrics or {}).get("history", []))
             if mode in ("draft", "improve"):
                 node.method_selection = self.select_method(parent_history, streak_state, mode)
-            spec = self.brain.propose(
-                self.journal_lines, mode, parent.node_id, parent.code_path.read_text(),
+            def _propose_with_transient_retry(**kwargs):
+                try:
+                    return self.brain.propose(**kwargs)
+                except BudgetExhausted:
+                    raise
+                except Exception as exc:
+                    if not is_transient_error(exc):
+                        raise
+                    print(f"[loop] transient proposer error, retrying once: {exc}",
+                          file=sys.stderr)
+                    time.sleep(TRANSIENT_RETRY_SLEEP_S)
+                    return self.brain.propose(**kwargs)
+
+            spec = _propose_with_transient_retry(
+                journal_lines=self.journal_lines, mode=mode, parent_id=parent.node_id,
+                parent_code=parent.code_path.read_text(),
                 directive=directive, focus_note=self.focus_note,
                 traceback_tail=(parent.error or parent.verdict_note) if mode == "debug" else None,
                 parent_history=parent_history,
@@ -1346,7 +1371,10 @@ class Loop:
             if not node.code_path.exists():
                 node.code_path.write_text(f"# proposal failed before any code was produced\n# error: {exc}\n")
             self.stagnation += 1
-            self.no_improve_streak += 1
+            if not is_transient_error(exc):
+                # an infrastructure outage is not evidence the search plateaued
+                # (f8 died counting a 503 as its third convergence strike)
+                self.no_improve_streak += 1
             self.nodes[node.node_id] = node
             raw = getattr(self.brain, "last_raw_reply", None)
             if raw:
