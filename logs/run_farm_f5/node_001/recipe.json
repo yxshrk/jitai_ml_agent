@@ -1,0 +1,1 @@
+{"aggregation":{"method":"identity"},"candidate_kind":"incumbent","incumbent_predictions_path":"/home/pallav/mle-agent/logs/run_farm_f5/node_000/predictions.csv","members":[],"schema_version":"farm-close.recipe.v1","source_phase":"incumbent","weights":[]}

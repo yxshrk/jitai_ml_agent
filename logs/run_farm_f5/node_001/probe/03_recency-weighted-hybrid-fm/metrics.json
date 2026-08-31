@@ -1,0 +1,1 @@
+{"gauc": 0.3616988706831662, "ndcg5": 0.4076629196389841, "primary": 0.3846808951610752, "history": [{"epoch": 1, "train_loss": 0.657684, "val_primary": 0.384346}, {"epoch": 2, "train_loss": 0.643342, "val_primary": 0.384681}]}
