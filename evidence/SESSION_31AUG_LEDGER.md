@@ -164,3 +164,12 @@ f8's champion; sub-floor, would have been grey-zone). Artifacts:
 logs/counterfactual_f8_iter4_spec0.json, logs/counterfactual_f8_iter4_node.py,
 logs/counterfactual_f8_iter4_out/. Confirms: sane decision, modest gain, the
 503 did not cost the designation.
+
+## 1 Sep ~04:15 — screen-snippet live bench verdict + memory audit
+Screen skeleton snippet did NOT measurably improve mechanism-screen fidelity:
+3/3 clean-proposer first-tries scored 0.5887-0.5919 (no-snippet baseline was
+0.5919-0.5981); fix rounds hung on a stalled LLM call, bench killed. Snippet
+retained (methodology-tier, harmless) but claims about it must be negative.
+Full memory audit of METHODS.md completed: six contradictions fixed (see
+commit "memory audit"); pyflakes sweep clean except archival tools; f10/c10
+launched on the audited memory.
