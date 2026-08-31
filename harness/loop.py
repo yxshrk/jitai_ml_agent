@@ -65,6 +65,7 @@ class Node:
     verdict_note: str | None = None
     failure_stage: str | None = None
     fixer_eligible: bool = False
+    recovery: str | None = None
 
 
 @dataclass
@@ -592,7 +593,7 @@ class Loop:
             "tokens_in": self.brain.meter.last_in,
             "tokens_out": self.brain.meter.last_out,
             "error": node.error,
-            "recovery": recovery,
+            "recovery": recovery or node.recovery,
             "usd_total": round(getattr(self.brain, "usd_total", 0.0), 4),
             "intervention": False,
         }
