@@ -117,6 +117,7 @@ maintained in `runs/RESULTS.md`.
 | Censor-aware watch-time auxiliary | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep; the first repeatable richer training-only supervision signal |
 | Selected watch-time ensemble (seeds 11, 5, 6, 7) | **0.605521** | Current leader; selected on validation and should be checked chronologically |
 | Watch-time + CrossNet | 0.605110 (seed 5) | Near tie; excluded from selected ensemble |
+| Watch-time + click-cascade auxiliary | 0.605193 (seed 5) | Small individual improvement, but it did not improve the selected watch-time ensemble at any tested blend weight |
 
 ## Commit checkpoints
 
@@ -128,7 +129,8 @@ maintained in `runs/RESULTS.md`.
 | `aea6dc4` / `d8846c6` | Documented and confirmed corrected Sequence DeepFM across four seeds |
 | `f157ae4` | Added the bounded API-guided configuration-search agent and its pilot artifacts |
 | `c7a735d` / `2c0dc48` / `b40cb6b` / `7f83a89` | Recorded negative causal-history, objective, attention, and content controls |
-| pending next commit | Add the censor-aware watch-time head and selected validation ensemble |
+| `0e0fbbb` | Added the censor-aware watch-time head and selected validation ensemble |
+| pending next commit | Add the click-cascade control and its non-complementary blend result |
 
 ## Useful answers for team questions
 

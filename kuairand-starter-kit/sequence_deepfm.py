@@ -249,7 +249,7 @@ class SequenceDeepFM(nn.Module):
     def __init__(
         self, field_dimensions, author_padding, embedding_dim, hidden_dim, dropout,
         history_recency_decay, history_encoder, history_length, auxiliary_enabled, history_feedback_enabled, watchtime_enabled,
-        cross_layers,
+        cross_layers, cascade_enabled,
     ):
         super().__init__()
         self.embeddings = nn.ModuleList(
@@ -267,6 +267,8 @@ class SequenceDeepFM(nn.Module):
         self.deep_out = nn.Linear(hidden_dim, 1)
         self.auxiliary_out = nn.Linear(hidden_dim, len(AUXILIARY_TASKS)) if auxiliary_enabled else None
         self.watchtime_out = nn.Linear(hidden_dim, 1) if watchtime_enabled else None
+        self.click_out = nn.Linear(hidden_dim, 1) if cascade_enabled else None
+        self.conditional_long_view_out = nn.Linear(hidden_dim, 1) if cascade_enabled else None
         self.bias = nn.Parameter(torch.zeros(()))
         self.history_recency_decay = history_recency_decay
         self.history_encoder = history_encoder
@@ -292,7 +294,10 @@ class SequenceDeepFM(nn.Module):
         if self.history_feedback is not None:
             nn.init.normal_(self.history_feedback.weight, mean=0.0, std=0.01)
             self.history_feedback.weight.data[2].zero_()
-        for layer in list(self.deep_hidden) + [self.deep_out, self.auxiliary_out, self.watchtime_out, *self.cross_layers, self.cross_out]:
+        for layer in list(self.deep_hidden) + [
+            self.deep_out, self.auxiliary_out, self.watchtime_out, self.click_out, self.conditional_long_view_out,
+            *self.cross_layers, self.cross_out,
+        ]:
             if layer is None:
                 continue
             if isinstance(layer, nn.Linear):
@@ -342,6 +347,8 @@ class SequenceDeepFM(nn.Module):
         if return_heads:
             return primary, (self.auxiliary_out(hidden) if self.auxiliary_out is not None else None), (
                 self.watchtime_out(hidden).squeeze(1) if self.watchtime_out is not None else None
+            ), (self.click_out(hidden).squeeze(1) if self.click_out is not None else None), (
+                self.conditional_long_view_out(hidden).squeeze(1) if self.conditional_long_view_out is not None else None
             )
         return primary
 
@@ -383,6 +390,7 @@ def run(args):
         field_dimensions, author_padding, args.embedding_dim, args.hidden_dim, args.dropout,
         args.history_recency_decay, args.history_encoder, args.history_length, bool(args.auxiliary_weight), args.history_feedback,
         bool(args.watchtime_aux_weight), args.cross_layers,
+        bool(args.click_cascade_weight),
     ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
@@ -402,12 +410,15 @@ def run(args):
             feedback = torch.from_numpy(train_feedback[indices]).to(device)
             labels = torch.from_numpy(train_y[indices]).to(device)
             optimizer.zero_grad(set_to_none=True)
-            if args.auxiliary_weight or args.watchtime_aux_weight:
-                primary_logits, auxiliary_logits, watch_predictions = model(features, history, feedback, return_heads=True)
+            if args.auxiliary_weight or args.watchtime_aux_weight or args.click_cascade_weight:
+                primary_logits, auxiliary_logits, watch_predictions, click_logits, conditional_logits = model(
+                    features, history, feedback, return_heads=True
+                )
             else:
                 primary_logits = model(features, history, feedback)
                 auxiliary_logits = None
                 watch_predictions = None
+                click_logits = conditional_logits = None
             loss = functional.binary_cross_entropy_with_logits(primary_logits, labels)
             if args.auxiliary_weight:
                 auxiliary_labels = torch.from_numpy(train_auxiliary[indices]).to(device)
@@ -421,6 +432,15 @@ def run(args):
                     censored, functional.relu(watch_targets - watch_predictions).square(), (watch_predictions - watch_targets).square()
                 ).mean()
                 loss = loss + args.watchtime_aux_weight * watch_loss
+            if args.click_cascade_weight:
+                click_labels = torch.from_numpy(train_auxiliary[indices, 0]).to(device)
+                cascade_loss = functional.binary_cross_entropy_with_logits(click_logits, click_labels)
+                clicked = click_labels > 0
+                if clicked.any():
+                    cascade_loss = cascade_loss + functional.binary_cross_entropy_with_logits(
+                        conditional_logits[clicked], labels[clicked]
+                    )
+                loss = loss + args.click_cascade_weight * cascade_loss
             loss.backward()
             optimizer.step()
             losses.append(loss.item())
@@ -495,6 +515,7 @@ def run(args):
         "history_feedback": args.history_feedback,
         "watchtime_aux_weight": args.watchtime_aux_weight,
         "cross_layers": args.cross_layers,
+        "click_cascade_weight": args.click_cascade_weight,
         "positive_content_features": args.positive_content_features,
         "best": best_event,
         "trajectory": trajectory,
@@ -555,6 +576,10 @@ def parse_args():
         help="Training-only censor-aware watch-time loss weight; long_view BCE remains the scored head.",
     )
     parser.add_argument("--cross_layers", type=int, default=0, help="Number of explicit CrossNet layers alongside the FM and MLP.")
+    parser.add_argument(
+        "--click_cascade_weight", type=float, default=0.0,
+        help="Training-only click and click-conditioned long-view cascade loss weight.",
+    )
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=8192)

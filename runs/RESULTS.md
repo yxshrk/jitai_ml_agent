@@ -37,5 +37,6 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Censor-aware watch-time auxiliary, seeds 5-11 | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep: richer training-only supervision |
 | Selected four-member watch-time mean-logit ensemble (11, 5, 6, 7) | **0.605521** | Current leader; validate fixed recipe on an earlier chronological holdout |
 | Watch-time + CrossNet, seed 5 | 0.605110 | Near tie; not used in selected ensemble |
+| Watch-time + click-cascade auxiliary, seed 5 | 0.605193 | Small single-seed gain, but a 5--50% blend with the selected watch-time ensemble scored 0.605410--0.605500; reject as non-complementary |
 
 The current leader adds a censor-aware, training-only watch-time head to the causal Sequence DeepFM and averages four independently trained selected checkpoints. The next research iteration should validate the fixed ensemble recipe on an earlier chronological holdout and retain the validation-only model-selection rule.
