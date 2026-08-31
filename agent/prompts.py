@@ -330,7 +330,18 @@ def selector_user_prompt(
             "telemetry). Phase guidance an expert follows: OPEN with the strongest "
             "unapplied opportunity for this problem class; once opportunities plateau, "
             "DIAGNOSE and treat what the evidence shows; CLOSE with an ensemble card "
-            "before the convergence rule ends the run."
+            "before the convergence rule ends the run.\n"
+            "Measured gain classes on this benchmark (from the campaign ledger; use "
+            "them to rank 'strongest'): in-node SWEEPS and multi-component PACKAGES "
+            "(dial/stage-matrix sweeps, the sequence composite) open at +0.0024 to "
+            "+0.0035 over baseline and are the only moves that reliably clear epsilon "
+            "from a fresh baseline; single ATOMIC mechanisms (a loss tweak, recency, "
+            "a regularization schedule) add +0.0005 to +0.0013 and only compound well "
+            "ON TOP of an established package; same-family SEED ensembles add +0.0003 "
+            "to +0.0013; CROSS-FAMILY closes add +0.0009 to +0.0013 over the best "
+            "member and more than any atom from a strong base. The measured winning "
+            "shape is package -> compose one or two atoms -> cross-family close; an "
+            "atom chosen as the OPENER spends the iteration on a sub-epsilon strike."
         ),
         _streak_section(streak_state),
         STATE_DISCIPLINE,
