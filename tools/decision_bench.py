@@ -101,7 +101,8 @@ SCENARIOS = [
         good={"seq-deepfm-composite", "package-dial-sweep", "stage-matrix-sweep",
               "context-stratified-pairs", "temporal-pair-kernel"},
         bad={"regularization-schedule", "freq-adaptive-reg", "embedding-dim-down",
-             "swa-then-ensemble", "seed-ensemble", "session-time-features"},
+             "swa-then-ensemble", "seed-ensemble", "session-time-features",
+             "diverse-family-farm-close", "heterogeneous-ensemble-design"},
     ),
     dict(
         name="endgame_eps_math",

@@ -10,6 +10,8 @@ const overview=document.getElementById('overview');
 const logScene=scenes.findIndex(s=>s.id==='s-log');
 const runScene=scenes.findIndex(s=>s.id==='s-run');
 const loopScene=scenes.findIndex(s=>s.id==='s-loop');
+const methodsScene=scenes.findIndex(s=>s.id==='s-methods');
+const METHOD_FILTER='ensemble'; // pre-typed glimpse: one slice of the 42 cards, no table scroll on video
 const STAGES=4;
 let stage=0; // lit stage card while inside the loop scene
 /* log substeps: iterations 0..N-1 then convergence */
@@ -38,6 +40,11 @@ function show(i,fromLeft){
   if(cur===runScene)FR.heroPlay();
   if(cur===logScene)setLog(fromLeft?steps.length-1:0);
   if(cur===loopScene)setStage(fromLeft?STAGES-1:0);
+  if(cur===methodsScene)presetFilter();
+}
+function presetFilter(){
+  const inp=document.getElementById('msearch');if(!inp||inp.value)return;
+  inp.value=METHOD_FILTER;inp.dispatchEvent(new Event('input'));
 }
 function setStage(k){stage=k;FR.setStage(k);}
 function next(){
@@ -72,6 +79,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='Home')show(0);
   else if(e.key==='End')show(scenes.length-1);
   else if(/^[1-9]$/.test(e.key)&&+e.key<=scenes.length)show(+e.key-1);
+  else if(e.key==='0'&&scenes.length>=10)show(9);
 });
 /* click advances, except on interactive elements */
 addEventListener('click',e=>{

@@ -31,7 +31,8 @@ body.present{overflow:hidden;height:100vh}
 #s-title .team{font-family:'PP Mori',"Switzer",sans-serif;font-size:30px;font-weight:600;
   margin-bottom:34px}
 #s-title h1{font-size:clamp(34px,4.1vw,72px);line-height:1.12;font-weight:600}
-#s-title .names{margin-top:38px;color:var(--dim);font-size:17px}
+#s-title .what{margin:26px auto 0;max-width:72ch;color:var(--dim);font-size:19px;line-height:1.55}
+#s-title .names{margin-top:34px;color:var(--dim);font-size:17px}
 /* scene 2: run chart */
 #s-run #herochart{display:block;width:100%;max-width:min(1240px,calc(66vh*(1120/480)));
   aspect-ratio:1120/480;height:auto;margin:28px auto 0;background:var(--surface);
@@ -42,7 +43,7 @@ body.present{overflow:hidden;height:100vh}
 .scene .eyebrow{margin-bottom:10px}
 .scene h2{font-size:clamp(24px,2.4vw,36px);font-weight:600;margin-bottom:14px}
 .scene .lede{color:var(--dim);max-width:88ch}
-/* scene 4: log replay, chart left + one entry right */
+/* scene 5: log replay, chart left + one entry right */
 #s-log .cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
   gap:48px;align-items:center;margin-top:26px}
 #s-log #chartpin{position:static}
@@ -51,18 +52,52 @@ body.present{overflow:hidden;height:100vh}
 #s-log .entries{display:block;padding:0}
 #s-log .entry{display:none;opacity:1;transform:none}
 #s-log .entry.pcur{display:block}
+#s-log .entry.isvoid{border-color:var(--amber);box-shadow:0 1px 2px rgba(20,20,18,.04),0 12px 28px rgba(148,106,12,.14)}
 #s-log .entry details{display:none} /* long journal dumps stay on the site page */
 /* scenes with tall content scroll inside the frame */
 .scenebody{width:100%;max-height:calc(100vh - 260px);overflow-y:auto}
 #s-receipts .note{max-width:none}
-/* scene 6: engineering cards are informational here, not links */
+/* harness cards are informational here, not links */
 .scene .engcard{cursor:default}
 .scene .engcard .more{display:none}
+.scene .engcard .onum{font-size:11.5px;letter-spacing:.16em;color:var(--go);font-weight:620;margin-bottom:6px}
+/* method glimpse: a single filtered slice, no scrolling table */
+#s-methods .mtools{margin:18px 0 12px}
+#s-methods .scenebody{max-height:calc(100vh - 330px)}
+/* design principles: five cards in a row */
+.principles{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:38px}
+.principle{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  box-shadow:var(--shadow);padding:22px 22px 20px}
+.principle .pn{font-size:11.5px;letter-spacing:.16em;color:var(--go);font-weight:620;margin-bottom:8px}
+.principle h3{font-family:'PP Mori',"Switzer",sans-serif;font-size:16px;font-weight:600;margin-bottom:10px}
+.principle p{font-size:13.5px;color:var(--dim);line-height:1.6}
+.principle p b{color:var(--ink)}
+/* model and effort: a small bench table */
+.mtable{margin-top:30px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  box-shadow:var(--shadow);background:var(--surface);width:100%;border-collapse:collapse;font-size:14.5px}
+.mtable th,.mtable td{padding:12px 18px;text-align:left;border-top:1px solid var(--grid2)}
+.mtable th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:600;border-top:0}
+.mtable td.n{text-align:right;font-variant-numeric:tabular-nums}
+.mtable th.n{text-align:right}
+.mtable td.m{font-family:'PP Mori',"Switzer",sans-serif;font-weight:600}
+.mtable tr.pick td{background:rgba(11,143,92,.05)}
+.mtable tr.pick td.m,.mtable tr.pick td.note{color:var(--go)}
+.mtable td.note{color:var(--dim);font-size:13px}
+.mtable td.note b{font-weight:620}
+.mtable .bad{color:var(--no);font-weight:620}
+.mtable .err{color:var(--amber);font-weight:620}
+.mnotes{margin-top:18px;color:var(--dim);font-size:14px;line-height:1.6;max-width:110ch}
+.mnotes b{color:var(--ink);font-weight:600}
+.mstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:22px;box-shadow:var(--shadow)}
+.mstrip>div{background:var(--surface);padding:14px 16px}
+.mstrip b{display:block;font-size:22px;font-weight:600;font-family:'PP Mori',"Switzer",sans-serif}
+.mstrip span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 /* overview (Esc) */
 #overview{position:fixed;inset:0;z-index:20;display:none;align-items:center;
   justify-content:center;background:rgba(247,247,245,.96)}
 #overview.on{display:flex}
-#overview .grid{display:grid;grid-template-columns:repeat(4,220px);gap:16px}
+#overview .grid{display:grid;grid-template-columns:repeat(5,220px);gap:16px}
 #overview button{font:14px "Switzer",sans-serif;text-align:left;cursor:pointer;
   background:var(--surface);border:1px solid var(--line);border-radius:10px;
   box-shadow:var(--shadow);padding:16px 18px;color:var(--ink)}
@@ -74,22 +109,29 @@ body.present{overflow:hidden;height:100vh}
 @media (max-height:900px){
   #s-log #bigchart{max-height:60vh}
   .scene{padding:44px 56px 80px}
+  .principles{gap:14px}
+  .principle{padding:18px 18px 16px}
+  .principle p{font-size:12.5px}
+  .mtable th,.mtable td{padding:9px 16px}
+  .mtable{font-size:13.5px}
 }
 </style>
 </head>
 <body class="present">
 
-<!-- 1 · title -->
-<div class="scene" id="s-title" data-title="Title" data-cap="an autonomous ML research agent on KuaiRand-Pure">
+<!-- 1 · title: team, X to Y, zero mid-run interventions -->
+<div class="scene" id="s-title" data-title="Title" data-cap="an autonomous ML research agent on KuaiRand-Pure · <b>0.6016 → 0.6056</b> · 0 mid-run interventions">
   <div class="kicker">TIKTOK TECHJAM 2026 · TRACK 2 · KUAIRAND-PURE</div>
   <div class="team">jit.ai</div>
-  <h1>An agent taught itself to rank.<br>
+  <h1>An agent that improves its own ranking model.<br>
     <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.</h1>
-  <div class="names">Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</div>
+  <p class="what">It trains a model that predicts which videos a user will keep watching, then
+  diagnoses that model, changes it, retrains, and measures again, in a loop that no person steers.</p>
+  <div class="names">Rohan Kulshrestha · Aditya Ghosh · Yash Raj Khandelwal · Avinash Parthiban Elangovan</div>
 </div>
 
 <!-- 2 · the run chart -->
-<div class="scene" id="s-run" data-title="The run" data-cap="one run, six iterations: green accepted, red dead ends, no human said stop">
+<div class="scene" id="s-run" data-title="The run" data-cap="one clean run, bigclock_07 · 6 of 50 iterations · 17.0 min · <b>+0.0040</b> · green accepted, red dead ends, amber VOID">
   <div class="wrap">
     <div class="eyebrow">the run · bigclock_07</div>
     <h2>Every iteration, measured.</h2>
@@ -98,7 +140,7 @@ body.present{overflow:hidden;height:100vh}
 </div>
 
 <!-- 3 · the loop -->
-<div class="scene" id="s-loop" data-title="The loop" data-cap="no human picks the next move; a convergence rule, not a person, ends the run">
+<div class="scene" id="s-loop" data-title="The loop" data-cap="diagnose → treat → retrain → measure · no human picks the next move">
   <div class="wrap">
     <div class="eyebrow">the machine</div>
     <h2>Diagnose, treat, retrain, measure. Repeat until the rule says stop.</h2>
@@ -121,27 +163,28 @@ body.present{overflow:hidden;height:100vh}
       <div class="stage" data-s="3">
         <div class="snum">04</div><h3>MEASURE</h3>
         <p>The official evaluator scores GAUC and nDCG@5 per user; primary = the mean.
-        A change is kept only if it clears a calibrated acceptance gate; the run ends
-        when three consecutive iterations fail to improve the best by ε = 0.002.</p>
+        A change is kept only if it clears the calibrated acceptance gate (floor 0.0005,
+        repeat-seed z-test). The run ends when 3 consecutive iterations fail to improve
+        the best by ε = 0.002.</p>
       </div>
     </div>
-    <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations</span></div>
+    <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations (ε = 0.002)</span></div>
   </div>
 </div>
 
-<!-- architecture -->
-<div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness disposes; the hidden test window has no path in">
+<!-- 4 · architecture + convergence rule -->
+<div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness disposes · convergence: 3 iterations without +0.002 on the best ends the run · hidden test has no path in">
   <div class="wrap">
     <div class="eyebrow">the system</div>
-    <h2>One loop, two halves.</h2>
+    <h2>One loop, two halves. A rule ends it, not a person.</h2>
     <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture"></svg>
   </div>
 </div>
 
-<!-- 4 · mission log replay -->
-<div class="scene" id="s-log" data-title="Log replay" data-cap="the journal, replayed one iteration at a time">
+<!-- 5 · mission log replay, one iteration per key -->
+<div class="scene" id="s-log" data-title="Log replay" data-cap="journal.jsonl replayed one iteration per key · baseline 0.6018 → 0.6042 → 0.6056 · iteration 04 VOID, loop continues">
   <div class="wrap">
-    <div class="eyebrow">the run · replayed from journal.jsonl</div>
+    <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
     <h2>Six iterations, replayed.</h2>
     <div class="cols">
       <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
@@ -150,122 +193,113 @@ body.present{overflow:hidden;height:100vh}
   </div>
 </div>
 
-<!-- 5 · evidence -->
-<div class="scene" id="s-evidence" data-title="Evidence" data-cap="same videos, same data; the only difference is the treatments the agent chose">
-  <div class="wrap">
-    <div class="eyebrow">the evidence</div>
-    <h2>What the diagnosis looked like inside the model.</h2>
-    <p class="lede">The <span class="no">red line</span> is the rarest 10% of videos.
-    In the <b>baseline</b> their embeddings never stop growing: memorization. After
-    the <b>agent's treatments</b> they flatten out, and validation rises 0.6015 → 0.6044.</p>
-    <div id="evgrid"></div>
-  </div>
-</div>
-
-<!-- 6 · harness engineering -->
-<div class="scene" id="s-harness" data-title="Harness" data-cap="honesty is structural, not behavioral">
+<!-- 6 · six harness safeguards, in the script's order -->
+<div class="scene" id="s-harness" data-title="Harness" data-cap="six safeguards · honesty is structural, not behavioral">
   <div class="wrap">
     <div class="eyebrow">the harness</div>
     <h2>The agent is only half the system. The other half never trusts it.</h2>
     <div class="scenebody">
     <div class="enggrid">
-      <div class="engcard"><h3>Structural leakage guard</h3>
+      <div class="engcard"><div class="onum">01</div><h3>Structural leakage guard</h3>
         <p>The hidden test window is never mounted into the agent's workspace, and
         generated code is screened before execution. Not touching the test set is a
         property of the filesystem, not a promise in a prompt.</p></div>
-      <div class="engcard"><h3>Calibrated acceptance gate</h3>
-        <p>Baseline seed noise is measured first, so every gain is read in sigmas.
-        Borderline gains must repeat on a second seed (a z-test) before acceptance,
-        and a convergence rule ends the run, never a person.</p></div>
-      <div class="engcard"><h3>Method cards, not vibes</h3>
-        <p>The agent's knowledge is 42 cards: mechanism, preconditions, and measured
-        evidence per technique. A two-tier menu separates proven treatments from
-        ranked opportunities, and a strategy layer matches them to the run phase.</p></div>
-      <div class="engcard"><h3>Telemetry-gated diagnosis</h3>
-        <p>A diagnosis may only cite curves that were actually recorded. When we found
-        stale knowledge silently mis-steering selection, we rebuilt the channel and
-        disclosed the discarded runs rather than hiding them.</p></div>
-      <div class="engcard"><h3>Typed ensemble plans</h3>
+      <div class="engcard"><div class="onum">02</div><h3>Calibrated acceptance gate</h3>
+        <p>Baseline seed noise is measured first (3 seeds, σ ≈ 0.0001), so every gain
+        is read in sigmas. Grey-zone gains above the 0.0005 floor must repeat on a
+        second seed and pass a z-test before acceptance.</p></div>
+      <div class="engcard"><div class="onum">03</div><h3>Method cards, not vibes</h3>
+        <p>The agent's knowledge is 42 cards: mechanism, preconditions, citation, and
+        measured evidence per technique. A two-tier menu separates proven treatments
+        from ranked opportunities, and a strategy layer matches them to the run phase.</p></div>
+      <div class="engcard"><div class="onum">04</div><h3>Decision benches</h3>
+        <p>Selector quality is tested like code: frozen run-state fixtures with known
+        right answers, replayed against the brain after every change, without a
+        training run. Bench fixes may only be evidence corrections or general
+        principles, never canned answers.</p></div>
+      <div class="engcard"><div class="onum">05</div><h3>Deterministic ensemble planning</h3>
         <p>For the closing move, the agent emits a typed, schema-validated plan and a
         deterministic assembler executes it: parallel family probes, exhaustive blend
         enumeration, full-fidelity re-verification. No LLM in the measurement path.</p></div>
-      <div class="engcard"><h3>Decision benches</h3>
-        <p>Selector quality is tested like code: frozen run-state fixtures with known
-        right answers, replayed against the brain after every change. Bench fixes may
-        only be evidence corrections or general principles, never canned answers.</p></div>
+      <div class="engcard"><div class="onum">06</div><h3>Telemetry-gated diagnosis</h3>
+        <p>A diagnosis may only cite curves that were actually recorded. When we found
+        stale knowledge silently mis-steering selection, we rebuilt the channel and
+        disclosed the discarded runs rather than hiding them.</p></div>
     </div>
     </div>
   </div>
 </div>
 
-<!-- 7 · method library -->
-<div class="scene" id="s-methods" data-title="Method cards" data-cap="live from agent/METHODS.md · one card was invented by a run itself">
+<!-- 7 · method library glimpse, pre-filtered -->
+<div class="scene" id="s-methods" data-title="Method cards" data-cap="42 cards, live from agent/METHODS.md · one card was invented by a run itself · full library on the site">
   <div class="wrap">
     <div class="eyebrow">the knowledge</div>
-    <h2>42 method cards, cited and measured.</h2>
+    <h2>42 method cards, cited and measured. A glimpse.</h2>
     <div class="mtools"><input id="msearch" type="search" placeholder="filter 42 cards: bpr, dcn, recency, ensemble…" aria-label="filter method cards"></div>
     <div class="scenebody"><div id="methodslib"></div></div>
   </div>
 </div>
 
-<!-- design decisions -->
-<div class="scene" id="s-decisions" data-title="Design decisions" data-cap="each call had a cheaper alternative; each alternative lost for a measured reason">
+<!-- 8 · design principles -->
+<div class="scene" id="s-principles" data-title="Principles" data-cap="five principles · the exhibit must prove the agent, not us">
   <div class="wrap">
-    <div class="eyebrow">design decisions</div>
-    <h2>What we chose, and what it cost.</h2>
-    <div class="scenebody">
-    <div class="decisions">
-      <div class="decision"><h3>Designate only clean runs</h3>
-        <p>The submitted run starts from the published baseline with no seed scripts.</p>
-        <div class="versus"><s>seed the run with our best code</s> → <b>provenance over score</b></div></div>
-      <div class="decision"><h3>Method cards, not a mega-prompt</h3>
-        <p>42 versioned cards: citation, mechanism, preconditions, measured evidence.</p>
-        <div class="versus"><s>ever-growing prompt of tips</s> → <b>auditable, honest states</b></div></div>
-      <div class="decision"><h3>Medium reasoning effort</h3>
-        <p>High and extra-high were measured: proposals truncate or fail.</p>
-        <div class="versus"><s>max effort everywhere</s> → <b>measured reliability</b></div></div>
-      <div class="decision"><h3>Floor-v2 acceptance, in sigmas</h3>
-        <p>Noise calibrated first; borderline gains must repeat on a fresh seed (z-test).</p>
-        <div class="versus"><s>accept any positive delta</s> → <b>phantoms rejected</b></div></div>
-      <div class="decision"><h3>The agent plans, the harness executes</h3>
-        <p>Typed, schema-validated ensemble plans; a deterministic assembler runs them.</p>
-        <div class="versus"><s>LLM runs the measurement</s> → <b>no LLM in the measurement path</b></div></div>
-      <div class="decision"><h3>Failure is data</h3>
-        <p>One fixer repair attempt, then VOID, journaled. Iteration 04 is a VOID, on the chart.</p>
-        <div class="versus"><s>retry until green</s> → <b>every failure visible</b></div></div>
-    </div>
+    <div class="eyebrow">design principles</div>
+    <h2>Five principles behind every call we made.</h2>
+    <div class="principles">
+      <div class="principle"><div class="pn">01</div><h3>Clean runs</h3>
+        <p>The submitted run starts from the <b>published baseline</b> with no seed
+        scripts. We never learn the winning route ourselves and hand it back; the
+        agent must find each turn itself.</p></div>
+      <div class="principle"><div class="pn">02</div><h3>Grounded action</h3>
+        <p>Every move is one of <b>42 method cards</b>: a cited technique with a
+        mechanism, preconditions, and measured evidence. No arbitrary knob-turning.</p></div>
+      <div class="principle"><div class="pn">03</div><h3>Noise awareness</h3>
+        <p>Baseline noise is calibrated first (<b>σ ≈ 0.0001</b>). Gains are read in
+        sigmas; borderline gains must repeat on a fresh seed and pass a z-test
+        before they count.</p></div>
+      <div class="principle"><div class="pn">04</div><h3>Learning from failure</h3>
+        <p>Every hypothesis, dead end, and crash is journaled. A VOID stays on the
+        chart. The <b>139-run ledger</b> feeds the cards, so the agent inherits the
+        useful lessons and not the noise.</p></div>
+      <div class="principle"><div class="pn">05</div><h3>Bounded authority</h3>
+        <p>The agent chooses the next experiment and writes the script. The
+        <b>harness</b> screens, trains, scores, gates, and stops. No LLM in the
+        measurement path.</p></div>
     </div>
   </div>
 </div>
 
-<!-- measured findings -->
-<div class="scene" id="s-findings" data-title="The experiments" data-cap="every row is a ledger line, not an opinion">
+<!-- 9 · model and effort choice -->
+<div class="scene" id="s-model" data-title="Model and effort" data-cap="decision bench per model and effort · logs/bench_model_sweep.json and the sweep logs · <b>sol at medium</b> chosen">
   <div class="wrap">
-    <div class="eyebrow">the experiments</div>
-    <h2>139 runs. These are the numbers that survived.</h2>
-    <div class="scenebody">
-    <div class="findings">
-      <div class="frow"><div class="fnum go">+0.0013 vs +0.0003</div>
-        <p><b>Cross-family blends beat same-family seed ensembles</b> by an order of magnitude. Strong package first, cross-family close: the endgame shape.</p></div>
-      <div class="frow"><div class="fnum">k = 3 … 12 flat</div>
-        <p><b>Blend member count does not matter on Pure</b>: 3 to 12 all land in 0.6048-0.6050, within noise.</p></div>
-      <div class="frow"><div class="fnum">k = 16</div>
-        <p><b>Embedding width is dataset-sized</b>: 16 optimal on Pure; peak near 48 on the 8x larger 1K.</p></div>
-      <div class="frow"><div class="fnum no">+0.0004, killed</div>
-        <p><b>ε = 0.002 silently kills honest small steps</b> from a strong base; hence a gate calibrated in sigmas.</p></div>
-      <div class="frow"><div class="fnum">0.6055 - 0.6060</div>
-        <p><b>The measured single-run ceiling</b> across the campaign's 139 runs. The designated run sits on it.</p></div>
-      <div class="frow"><div class="fnum go">0.60524</div>
-        <p><b>One mechanism was invented by a run itself</b>: temporal-pair-kernel, card written afterwards from the journal.</p></div>
-      <div class="frow"><div class="fnum">4/10 → 10/10</div>
-        <p><b>Judgment is tested like code</b>: the clean strategy bench, fixed by methodology alone.</p></div>
-    </div>
+    <div class="eyebrow">model and effort</div>
+    <h2>Measured on the decision bench, not guessed.</h2>
+    <table class="mtable" aria-label="model and reasoning effort sweep on the decision bench">
+      <thead><tr><th>model</th><th>effort</th><th>temperature</th><th class="n">good</th><th class="n">ok</th><th class="n">bad</th><th class="n">error</th><th>note</th></tr></thead>
+      <tbody>
+        <tr class="pick"><td class="m">gpt-5.6-sol</td><td>medium</td><td>default</td><td class="n">4</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"><b>chosen</b> · no bad picks; 5 scenarios in this block</td></tr>
+        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>default</td><td class="n">5</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n">0</td><td class="note">failed <b>endgame_eps_math</b>: the ε arithmetic scenario</td></tr>
+        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>0.2</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n"><span class="err">6</span></td><td class="note">HTTP 400 on every call: temperature not accepted by the API</td></tr>
+        <tr><td class="m">gpt-5.6-luna</td><td>low</td><td>default</td><td class="n">5</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"></td></tr>
+        <tr><td class="m">gpt-5.6-luna</td><td>medium</td><td>default</td><td class="n">3</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n"><span class="err">2</span></td><td class="note">bad pick on two_strikes_on_good_base; 2 calls refused by the spend cap</td></tr>
+        <tr><td class="m">gpt-5.6-terra</td><td>low</td><td>default</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="note">passed all 6</td></tr>
+        <tr><td class="m">gpt-5.6-terra</td><td>medium</td><td>default</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="note">passed all 6</td></tr>
+      </tbody>
+    </table>
+    <p class="mnotes">Six frozen run states with a known right next move. <b>sol at medium</b> is the
+    proposer for the designated run. In the run ledger, high and extra-high effort proposals
+    truncate or fail (runs 16-22, 27, 28), so medium is a measured choice, not a default.</p>
+    <div class="mstrip">
+      <div><b>139</b><span>completed agent runs</span></div>
+      <div><b>~250</b><span>measured experiment cells</span></div>
+      <div><b>42</b><span>method cards</span></div>
+      <div><b>4/10 → 10/10</b><span>clean strategy bench, methodology fixes only</span></div>
     </div>
   </div>
 </div>
 
-<!-- 8 · receipts -->
-<div class="scene" id="s-receipts" data-title="Receipts" data-cap="every number on this page has a run directory behind it">
+<!-- 10 · receipts -->
+<div class="scene" id="s-receipts" data-title="Receipts" data-cap="0.6016 → 0.6056 (+0.0040) · 6 of 50 iterations · 17.0 min · 115,315 tokens · 0 mid-run interventions">
   <section id="receipts" class="wrap">
     <div class="eyebrow">the receipts</div>
     <h2>Everything above is measured, logged, and reproducible.</h2>
@@ -273,8 +307,8 @@ body.present{overflow:hidden;height:100vh}
     <p class="note">Scored artifact = best validation checkpoint at rule convergence, CPU only, no GPU.
     Test labels are never read anywhere in the pipeline. Bonus: the same agent on
     KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
-    journals, the method-card library, and 250+ measured experiment cells ship in the repo.<br>
-    team <b>jit.ai</b> · Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</p>
+    journals, the 42-card method library, and ~250 measured experiment cells from 139 runs ship in the repo.<br>
+    team <b>jit.ai</b> · Rohan Kulshrestha · Aditya Ghosh · Yash Raj Khandelwal · Avinash Parthiban Elangovan</p>
   </section>
 </div>
 

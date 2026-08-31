@@ -736,7 +736,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - reference_primary: 0.605863 (selection-free ALL-family equal blend of one member per clean run; best combos 0.6060-0.6065)
 - verdict_pure: external-win
 - evidence_primary: 0.605863
-- preconditions: Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
+- preconditions: This is a CLOSING move, never an opener: its members must be derived from an already-established champion script (a strong single model measured in THIS run); members written cold from the baseline at iteration 1 are untested code and measured as broken (gauc below 0.5) or weak, and the executor then falls back to the incumbent, spending the iteration for nothing. Budget the node like a sweep (it is 4 trainings + blend): use most of the timeout; log every member's config+primary; obey the ensemble contract (distinct seeds, member-distinctness assertion, never emit parent-identical predictions). A member that fails to train is dropped, not blended.
 - citation: team evidence probes 31 Aug (logs/RUNS.md recipe-search line); component recipes: package-dial-sweep, temporal-pair-kernel, seq-deepfm-composite, recency-weighting cards.
 - expected_gain / cost: +0.0035-0.0045 over baseline IN ONE NODE (eps-clearing) if >=3 members admit; degrades gracefully to the best single member / high runtime (one node, plan 60-90 min).
 - status_pure: untried as a single node (every component + the blend measured separately)

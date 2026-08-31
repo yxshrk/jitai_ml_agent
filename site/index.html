@@ -15,10 +15,12 @@
 <div id="prog"></div>
 
 <header id="hero"><div class="wrap">
-  <h1>An agent taught itself to rank.<br>
+  <h1>An agent that improves its own ranking model.<br>
     <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.<span class="cursor"></span></h1>
-  <p class="sub">This page is its flight recorder: every hypothesis, every dead end,
-  every accepted fix, replayed from the run journal of one autonomous research loop.</p>
+  <p class="sub">It trains a model that predicts which videos a user will keep watching, then
+  diagnoses that model, changes it, retrains, and measures again, with no person steering.
+  This page is its flight recorder: every hypothesis, every dead end, every accepted fix,
+  replayed from the run journal.</p>
   <div class="flexgap"></div>
   <svg id="herochart" viewBox="0 0 1120 480" aria-label="validation score per iteration"></svg>
   <div class="scrollhint">▼ SCROLL TO REPLAY THE RUN</div>

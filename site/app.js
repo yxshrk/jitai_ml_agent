@@ -99,7 +99,7 @@ const cy=v=>CH.H-CH.P-(Math.min(CH.S1,Math.max(CH.S0,v))-CH.S0)/(CH.S1-CH.S0)*(C
   h+='<polyline id="bigtrace" class="trace" points=""/>';
   N.forEach((n,i)=>{
     if(n.primary==null){
-      h+='<g id="nd'+i+'" class="dead"><line x1="'+(cx(i)-6)+'" y1="'+(cy(CH.S0)+0)+'" x2="'
+      h+='<g id="nd'+i+'" class="dead void"><line x1="'+(cx(i)-6)+'" y1="'+(cy(CH.S0)+0)+'" x2="'
         +(cx(i)+6)+'" y2="'+(cy(CH.S0)-12)+'" /><line x1="'+(cx(i)+6)+'" y1="'+cy(CH.S0)
         +'" x2="'+(cx(i)-6)+'" y2="'+(cy(CH.S0)-12)+'"/></g>';
       h+='<text id="ilbl'+i+'" class="axistext iterlbl" x="'+cx(i)+'" y="'+(CH.H-CH.P+20)+'" text-anchor="middle">'
@@ -172,7 +172,7 @@ function headline(n,i){
     const sel=n.selection||{};
     const stamp=n.primary==null?'<span class="stamp void">VOID</span>'
       :n.accepted?'<span class="stamp acc">ACCEPTED</span>':'<span class="stamp rej">DEAD END</span>';
-    let h='<div class="entry" data-i="'+i+'">'+stamp+'<h3>ITER '+String(i).padStart(2,'0')+'</h3>'
+    let h='<div class="entry'+(n.primary==null?' isvoid':'')+'" data-i="'+i+'">'+stamp+'<h3>ITER '+String(i).padStart(2,'0')+'</h3>'
       +'<div>'+headline(n,i)+'</div>';
     if(sel.diagnosis||sel.why){
       // trim the journal excerpt at a sentence boundary, never mid-word
@@ -243,6 +243,7 @@ function repaint(){
     lb.setAttribute('x',cx(cur));lb.setAttribute('y',y-24);
     lb.textContent='ITER '+String(cur).padStart(2,'0')+(n.primary!=null?' · '+n.primary.toFixed(4):' · VOID');
     lb.setAttribute('opacity',1);
+    lb.classList.toggle('void',n.primary==null);
   }else{pt.style.opacity=0;lb.setAttribute('opacity',0);}
 }
 /* hysteresis: activate at 60% visible, deactivate only below 20% (scrolling up),
@@ -270,7 +271,7 @@ document.querySelectorAll('.entry').forEach(el=>{
 
 /* ---------- receipts ------------------------------------------------------ */
 (function receipts(){
-  const wall=M.wall_s?Math.round(M.wall_s/60)+' min':'n/a';
+  const wall=M.wall_s?(M.wall_s/60).toFixed(1)+' min':'n/a';
   // per-metric finals come from the designated run's scored artifact
   const fin=[...N].reverse().find(n=>n.selected_ensemble)?.selected_ensemble||{};
   const cells=[
@@ -280,7 +281,7 @@ document.querySelectorAll('.entry').forEach(el=>{
     ['+'+(BEST-BASELINE).toFixed(4),'gain vs validation baseline (0.6016)'],
     [String(M.iterations||6)+' of 50','iterations to convergence'],
     [wall,'agent wall-clock'],
-    [((M.tokens||0)/1000).toFixed(0)+'k','LLM tokens, in + out'],
+    [(M.tokens||0).toLocaleString('en-US'),'LLM tokens, in + out'],
     [M.stop==='converged'?'ε rule':'cap','what ended the run'],
     ['0','mid-run interventions'],
   ];
