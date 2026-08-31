@@ -222,7 +222,7 @@ class Loop:
                 node.code_path,
                 self.run_dir / f"{node.node_id}_smoke",
                 self.config.seed,
-                120,
+                360,  # heavy architectures (DeepFM/history pooling) cannot smoke in 120s
                 smoke_epochs=1,
             )
             if not smoke.ok:
@@ -402,6 +402,10 @@ class Loop:
             if theirs and mine.exists() and theirs.exists():
                 h = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
                 if h(mine) == h(theirs):
+                    # degenerate ensembles collapsed to the parent twice tonight;
+                    # give the fixer one shot instead of silently burning the node
+                    node.failure_stage = "noop_predictions"
+                    node.fixer_eligible = True
                     return False, "no-op: predictions byte-identical to parent"
         except Exception:
             pass

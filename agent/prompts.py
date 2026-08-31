@@ -98,6 +98,16 @@ PROPOSER_MODE = {
     ),
 }
 
+ENSEMBLE_CONTRACT = (
+    "When implementing ANY ensemble/member card: each member MUST be trained with a "
+    "distinct seed; after scoring, ASSERT member score vectors are not identical "
+    "(numpy allclose check between members and against the parent predictions) and "
+    "print per-member validation primaries to progress output. An ensemble whose "
+    "final predictions equal the parent's is a no-op and will be rejected by the "
+    "harness."
+)
+
+
 FIXER_SYSTEM = """\
 You fix broken Python scripts. You get a script and the tail of its traceback.
 Return ONLY the corrected whole script inside one ```python fenced block.
@@ -315,6 +325,7 @@ def proposer_user_prompt(
             "unexplored.")
     if directive:
         parts.append(f"Directive: {directive}")
+    parts.append(ENSEMBLE_CONTRACT)
     parts.append(f'## Parent node "{parent_id}" (full code)\n```python\n{parent_code}\n```')
     if parent_history:
         rows = "\n".join(
