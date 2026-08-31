@@ -221,6 +221,26 @@ SCENARIOS = [
              "mtl-shared-bottom", "listwise-regime"},
         expect_plan=True,
     ),
+    dict(
+        name="bank_last_gain",
+        note="f9 iter-4 state (1 Sep): 0.6051 single-model champion, cross-family "
+             "close just rejected (weak fresh members), streak 2. No card evidence "
+             "reaches eps=0.002, so the run ends this iteration either way; the "
+             "deliverable is best-so-far. Right move = the reliable small gain "
+             "(seed ensemble of the champion, +0.0003..+0.001); wrong = another "
+             "long-shot blend or atom that forfeits the bankable gain.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0004)',
+            'node_001 [<-node_000] draft "package-dial-sweep" primary=0.6051 ACCEPTED (+0.0033, single model, 48-probe sweep)',
+            'node_002 [<-node_001] improve "context-stratified-pairs" primary=0.6051 REJECTED (+0.00002, below floor: strike 1)',
+            'node_003 [<-node_001] improve "diverse-family-farm-close (members: temporal 0.6035, seq-deepfm 0.6012; blend fell back to incumbent)" primary=0.6051 REJECTED (strike 2)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 2, "n_converge": 3, "iters_left": 12},
+        good={"seed-ensemble", "swa-then-ensemble", "snapshot-ensemble"},
+        bad={"hetero-objective-ensemble", "diverse-family-farm-close",
+             "heterogeneous-ensemble-design", "listwise-regime", "social-mtl-heads"},
+    ),
 ]
 
 
