@@ -282,8 +282,20 @@ class _OpenAIBackend:
             data=json.dumps(payload).encode(),
             headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(request, timeout=600) as response:
-            body = json.load(response)
+        # One retry on transient transport failures: a single slow call must not
+        # cost an iteration (and with it a convergence strike).
+        last_error = None
+        for attempt in range(2):
+            try:
+                with urllib.request.urlopen(request, timeout=900) as response:
+                    body = json.load(response)
+                break
+            except (TimeoutError, urllib.error.URLError, ConnectionError) as exc:
+                if isinstance(exc, urllib.error.HTTPError):
+                    raise
+                last_error = exc
+        else:
+            raise last_error
         texts = []
         for item in body.get("output", []):
             if item.get("type") == "message":
