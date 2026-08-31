@@ -133,7 +133,10 @@ principles (no re-sweep after clearing win; insufficient-telemetry is an honest
 diagnosis) bench = 8/8. (2) decision replay — selector chooses over an evolving state,
 each pick executed instantly from cached tuned artifacts: 3 decisions reached 0.60599
 (above the designated 0.605575) when the close is executed per its card (design search,
-never below best member). Conclusion: judgment suffices; the live bottleneck is
-close-node code-generation fidelity (guards shipped: ensemble contract, no-op fixer,
+never below best member). Conclusion (tempered per external review): the replay is an optimistic cached-
+artifact counterfactual — evidence that judgment is strong, not proof it suffices;
+the bench cannot yet distinguish good judgment from an always-pick-the-close constant
+policy (fix: held-out states, conflicting-optima scenarios, constant-policy baselines).
+Close-node code-generation fidelity remains the leading suspect for the live gap (guards shipped: ensemble contract, no-op fixer,
 design-search language). Bench constitution: fixes may only be evidence corrections or
 general principles, never state-specific answers.

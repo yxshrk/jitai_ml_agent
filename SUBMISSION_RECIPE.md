@@ -4,13 +4,16 @@
 - Preferred (C): if run_v2_1k designates an in-run ensemble close, submit THAT exact
   artifact (member checkpoints + aggregation as recorded in its journal).
 - Fallback (A): faithful reproduction of run_omega_1k node_005's converged checkpoint
-  (0.66892). NOTE: our first replay scored 0.6772 — reconcile the procedure difference
-  (final-fit epochs/early-stop state) or disclose reconstruction limitations; never
-  label a differing rerun as the 0.66892 checkpoint.
+  (0.66892). RECONCILIATION (final): the checkpoint state was not persisted and GPU kernels are
+  nondeterministic, so bit-exact reproduction is impossible; the same code path/seed/
+  config replays at 0.6772 (recipe variance 0.667-0.677 measured across seeds). We
+  claim ONLY the recorded 0.66892; the submitted CSV is the replayed artifact with
+  this limitation disclosed in the receipt.
 - Rejected (B): the post-run 3-seed ensemble (val 0.6802) is DEVELOPMENT EVIDENCE ONLY
-  (better-than-converged artifact violates checkpoint-at-convergence absent an explicit
-  organizer ruling). evidence/test_submission_1k_omega.csv is therefore NOT the
-  submission unless C fails AND A proves unreconstructable (then disclose fully).
+  and is NOT the submission under any circumstance (external review: an emergency-
+  substitution exception is itself a compliance hole — removed 1 Sep). If A proves
+  unreconstructable, we submit A's best-effort replay WITH the reconstruction
+  limitation disclosed, never B.
 - Receipt fields per artifact: run/node id, stop reason, config+preprocessing hashes,
   member seeds/epochs, aggregation + tie policy, exact validation metrics, CSV row
   count + sha256, selected in-run vs reconstructed. Probe disclosure: evidence/PROBE_MANIFEST.md.

@@ -61,6 +61,6 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | ruby_y2 | ruby | converged | 3 | 0.60361 | quiet path (gauge accept, no composite pick) |
 | recipe search | laptop | evidence | - | 0.605938 | direct equal-weight cross-family blends over agent-authored members: pairkern+comp42+comp43 best; robust cluster 0.6058-0.6059; evidence-only (team-mixed), agent path = in-run hetero close |
 | cpu_c2 | cpupod | converged | 4 | 0.60399 | quiet path |
-| decision replay | laptop | evidence | 3 decisions | 0.60599 | selector choices executed faithfully from cached tuned artifacts (dial->ctxpairs->design-searched close, 0.7 composite+0.3 pairkern): agent judgment reaches 0.6060-class; live gap = close-node codegen fidelity |
+| decision replay | laptop | evidence | 3 decisions | 0.60599 | OPTIMISTIC CACHED-ARTIFACT COUNTERFACTUAL (external review wording): selector choices replayed over cached tuned artifacts reach 0.60599 under favorable conditions (global ranks, canned curves, no reseed gate); indicative of judgment quality, NOT an autonomous result |
 | ruby_y3 | ruby | converged | 3 | 0.60400 | pre-bench library run; grey-accepted freq (+0.0008 with z-pass — floor-v2 working as intended) then converged |
 | cpu_c1 | cpupod | converged | 5 | 0.60403 | 2nd genuine composite adoption held as peak; close never landed |
