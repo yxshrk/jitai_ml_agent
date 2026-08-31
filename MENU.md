@@ -125,3 +125,10 @@ by measured evidence in your menu. Weigh opportunities every iteration.
 - Improvements < 0.002 on validation are within noise (baseline seed std 0.0008;
   official epsilon = 0.002). Acceptance rule: keep a change only if val primary
 Acceptance: >=0.002 accepts outright; smaller positive deltas enter a 2-reseed z-tested grey confirm (floor 0.0005). Regressions revert.
+
+## STRATEGY LAYER (the philosophy; cards are atomic methods, bundles marked as such)
+Open with the strongest unapplied opportunity -> probe cheaply before committing full
+budget -> keep small confirmed gains (grey confirm) -> farm DIVERSE-family members,
+not same-family seeds -> close by rank-aggregating ACROSS families -> stop when the
+rule says stop. (v3 design: promote this to a first-class layer the selector reasons
+over, with cards strictly atomic.)
