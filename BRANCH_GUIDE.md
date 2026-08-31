@@ -113,6 +113,10 @@ maintained in `runs/RESULTS.md`.
 | Positive-only causal author history | 0.604659 (seed 5) | Reject; below all-exposure author history |
 | Candidate-conditioned author-history attention | 0.604519 (seed 5) | Reject; below mean-pool control |
 | Causal positive-history tag/music matching | 0.604100 (seed 5) | Reject; below mean-pool control |
+| Feedback-conditioned causal author history | 0.604442 (seed 5) | Reject; below mean-pool control |
+| Censor-aware watch-time auxiliary | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep; the first repeatable richer training-only supervision signal |
+| Selected watch-time ensemble (seeds 11, 5, 6, 7) | **0.605521** | Current leader; selected on validation and should be checked chronologically |
+| Watch-time + CrossNet | 0.605110 (seed 5) | Near tie; excluded from selected ensemble |
 
 ## Commit checkpoints
 
@@ -123,7 +127,8 @@ maintained in `runs/RESULTS.md`.
 | `26a0dd3` | Added heterogeneous Context-FM/BPR ensemble scoring and its confirmation artifacts |
 | `aea6dc4` / `d8846c6` | Documented and confirmed corrected Sequence DeepFM across four seeds |
 | `f157ae4` | Added the bounded API-guided configuration-search agent and its pilot artifacts |
-| pending next commit | Record the negative DeepFM ensemble and rolling-metadata controls |
+| `c7a735d` / `2c0dc48` / `b40cb6b` / `7f83a89` | Recorded negative causal-history, objective, attention, and content controls |
+| pending next commit | Add the censor-aware watch-time head and selected validation ensemble |
 
 ## Useful answers for team questions
 

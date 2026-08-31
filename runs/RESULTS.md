@@ -33,5 +33,9 @@ All decisions below use only the fixed train and validation splits. No test metr
 | Positive-only causal author history, seed 5 | 0.604659 | Reject: lower than all-exposure history |
 | Candidate-conditioned author-history attention, seed 5 | 0.604519 | Reject: lower than mean-pool control |
 | Causal positive-history tag/music matching, seed 5 | 0.604100 | Reject: lower than mean-pool control |
+| Feedback-conditioned causal author history, seed 5 | 0.604442 | Reject: lower than mean-pool control |
+| Censor-aware watch-time auxiliary, seeds 5-11 | 0.605084 / 0.604608 / 0.604466 / 0.604567 / 0.604954 / 0.604714 / 0.604862 | Keep: richer training-only supervision |
+| Selected four-member watch-time mean-logit ensemble (11, 5, 6, 7) | **0.605521** | Current leader; validate fixed recipe on an earlier chronological holdout |
+| Watch-time + CrossNet, seed 5 | 0.605110 | Near tie; not used in selected ensemble |
 
-The contextual fields only help as a group. The next research iteration should prioritize train-history features with strict time ordering and out-of-fold safeguards; retain the validation-only model-selection rule and record each outer experiment's hypothesis, diff, metrics, and any recovery event.
+The current leader adds a censor-aware, training-only watch-time head to the causal Sequence DeepFM and averages four independently trained selected checkpoints. The next research iteration should validate the fixed ensemble recipe on an earlier chronological holdout and retain the validation-only model-selection rule.

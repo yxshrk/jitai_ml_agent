@@ -23,10 +23,8 @@ from evaluate import evaluate
 
 
 SPLITS = {"train": (20220408, 20220421), "valid": (20220422, 20220428)}
-FIELDS = (
-    "user_id", "video_id", "author_id", "tab", "dur_bucket", "hour", "weekday", "is_rand",
-    "positive_tag_overlap", "positive_music_overlap",
-)
+BASE_FIELDS = ("user_id", "video_id", "author_id", "tab", "dur_bucket", "hour", "weekday", "is_rand")
+CONTENT_FIELDS = ("positive_tag_overlap", "positive_music_overlap")
 AUXILIARY_TASKS = ("is_click", "is_profile_enter", "is_like", "is_follow")
 HYPOTHESIS = (
     "A pooled causal author-history representation will capture short-term user "
@@ -70,6 +68,7 @@ def load_rows(data_dir):
                         "music_id": videos.get(source_row["video_id"], ("UNK", frozenset(), "UNK"))[2],
                         "tab": source_row["tab"],
                         "duration_ms": float(source_row["duration_ms"]),
+                        "play_time_ms": float(source_row["play_time_ms"]),
                         "hour": str(int(source_row["hourmin"]) // 100),
                         "weekday": weekday(int(source_row["date"])),
                         "is_rand": source_row["is_rand"],
@@ -117,12 +116,22 @@ def add_positive_content_features(rows, enabled):
         assign(row)
 
 
-def add_history(rows, history_length, validation_history_mode, history_source):
+def add_history(rows, history_length, validation_history_mode, history_source, history_feedback):
     if history_source not in ("all_exposures", "positive_long_view"):
         raise ValueError(f"Unknown history source: {history_source}")
     if history_source == "positive_long_view" and validation_history_mode == "rolling_metadata":
         raise ValueError("positive_long_view history cannot consume validation metadata without labels")
+    if history_feedback and validation_history_mode == "rolling_metadata":
+        raise ValueError("feedback-conditioned history requires frozen train history; validation labels are unavailable")
     histories = defaultdict(lambda: deque(maxlen=history_length))
+
+    def assign(row):
+        events = histories[row["user_id"]]
+        if history_feedback:
+            row["history_authors"] = tuple(event[0] for event in events)
+            row["history_feedback"] = tuple(event[1] for event in events)
+        else:
+            row["history_authors"] = tuple(events)
     order = sorted(range(len(rows["train"])), key=lambda index: rows["train"][index]["timestamp"])
     start = 0
     while start < len(order):
@@ -132,15 +141,15 @@ def add_history(rows, history_length, validation_history_mode, history_source):
             end += 1
         for order_index in range(start, end):
             row = rows["train"][order[order_index]]
-            row["history_authors"] = tuple(histories[row["user_id"]])
+            assign(row)
         for order_index in range(start, end):
             row = rows["train"][order[order_index]]
             if history_source == "all_exposures" or row["label"]:
-                histories[row["user_id"]].append(row["author_id"])
+                histories[row["user_id"]].append((row["author_id"], row["label"]) if history_feedback else row["author_id"])
         start = end
     if validation_history_mode == "frozen_train":
         for row in rows["valid"]:
-            row["history_authors"] = tuple(histories[row["user_id"]])
+            assign(row)
         return
     if validation_history_mode != "rolling_metadata":
         raise ValueError(f"Unknown validation history mode: {validation_history_mode}")
@@ -156,7 +165,7 @@ def add_history(rows, history_length, validation_history_mode, history_source):
             end += 1
         for order_index in range(start, end):
             row = rows["valid"][order[order_index]]
-            row["history_authors"] = tuple(histories[row["user_id"]])
+            assign(row)
         for order_index in range(start, end):
             row = rows["valid"][order[order_index]]
             histories[row["user_id"]].append(row["author_id"])
@@ -188,19 +197,21 @@ def pair_batches(rng, positive_indices, positive_users, negatives, batch_size):
         yield positives, negative_batch
 
 
-def encode(rows, history_length):
+def encode(rows, history_length, include_positive_content, include_history_feedback):
+    fields = BASE_FIELDS + (CONTENT_FIELDS if include_positive_content else ())
     duration_edges = np.quantile(
         np.asarray([row["duration_ms"] for row in rows["train"]]), np.linspace(0, 1, 11)[1:-1]
     )
 
     def raw(row):
-        return (
+        values = (
             row["user_id"], row["video_id"], row["author_id"], row["tab"],
             str(int(np.searchsorted(duration_edges, row["duration_ms"]))), row["hour"], row["weekday"], row["is_rand"],
             row["positive_tag_overlap"], row["positive_music_overlap"],
         )
+        return values if include_positive_content else values[:len(BASE_FIELDS)]
 
-    vocabularies = [dict() for _ in FIELDS]
+    vocabularies = [dict() for _ in fields]
     for row in rows["train"]:
         for field_index, value in enumerate(raw(row)):
             if value not in vocabularies[field_index]:
@@ -210,27 +221,35 @@ def encode(rows, history_length):
     author_padding = dimensions[2]
     encoded = {}
     for split, split_rows in rows.items():
-        features = np.empty((len(split_rows), len(FIELDS)), dtype=np.int64)
+        features = np.empty((len(split_rows), len(fields)), dtype=np.int64)
         history = np.full((len(split_rows), history_length), author_padding, dtype=np.int64)
+        feedback = np.full((len(split_rows), history_length), 2, dtype=np.int64)
         labels = np.empty(len(split_rows), dtype=np.float32)
         auxiliary = np.empty((len(split_rows), len(AUXILIARY_TASKS)), dtype=np.float32)
+        watch_targets = np.empty(len(split_rows), dtype=np.float32)
+        watch_censored = np.empty(len(split_rows), dtype=np.bool_)
         users = []
         for row_index, row in enumerate(split_rows):
             for field_index, value in enumerate(raw(row)):
                 features[row_index, field_index] = vocabularies[field_index].get(value, unknowns[field_index])
             for history_index, author_id in enumerate(row["history_authors"][-history_length:]):
                 history[row_index, history_index] = vocabularies[2].get(author_id, unknowns[2])
+                if include_history_feedback:
+                    feedback[row_index, history_index] = row["history_feedback"][-history_length:][history_index]
             labels[row_index] = row["label"]
             auxiliary[row_index] = row["auxiliary"]
+            watch_targets[row_index] = np.log1p(min(row["play_time_ms"], row["duration_ms"]) / 1000.0)
+            watch_censored[row_index] = row["duration_ms"] > 0 and row["play_time_ms"] >= row["duration_ms"]
             users.append(row["user_id"])
-        encoded[split] = (features, history, labels, auxiliary, users)
-    return encoded, dimensions, author_padding
+        encoded[split] = (features, history, feedback, labels, auxiliary, watch_targets, watch_censored, users)
+    return encoded, dimensions, author_padding, fields
 
 
 class SequenceDeepFM(nn.Module):
     def __init__(
         self, field_dimensions, author_padding, embedding_dim, hidden_dim, dropout,
-        history_recency_decay, history_encoder, history_length,
+        history_recency_decay, history_encoder, history_length, auxiliary_enabled, history_feedback_enabled, watchtime_enabled,
+        cross_layers,
     ):
         super().__init__()
         self.embeddings = nn.ModuleList(
@@ -246,12 +265,16 @@ class SequenceDeepFM(nn.Module):
         input_dimension = embedding_dim * (len(field_dimensions) + 1)
         self.deep_hidden = nn.Sequential(nn.Linear(input_dimension, hidden_dim), nn.ReLU(), nn.Dropout(dropout))
         self.deep_out = nn.Linear(hidden_dim, 1)
-        self.auxiliary_out = nn.Linear(hidden_dim, len(AUXILIARY_TASKS))
+        self.auxiliary_out = nn.Linear(hidden_dim, len(AUXILIARY_TASKS)) if auxiliary_enabled else None
+        self.watchtime_out = nn.Linear(hidden_dim, 1) if watchtime_enabled else None
         self.bias = nn.Parameter(torch.zeros(()))
         self.history_recency_decay = history_recency_decay
         self.history_encoder = history_encoder
         self.history_length = history_length
         self.history_positions = nn.Embedding(history_length, embedding_dim) if history_encoder == "candidate_attention" else None
+        self.history_feedback = nn.Embedding(3, embedding_dim, padding_idx=2) if history_feedback_enabled else None
+        self.cross_layers = nn.ModuleList(nn.Linear(input_dimension, 1) for _ in range(cross_layers))
+        self.cross_out = nn.Linear(input_dimension, 1) if cross_layers else None
         # PyTorch's default unit-variance embedding initialization makes the FM
         # interaction term explode with eight categorical fields.  Match the
         # organizer FM's small 0.01 initialization so the neural extension
@@ -266,18 +289,27 @@ class SequenceDeepFM(nn.Module):
                 linear.weight.data[linear.padding_idx].zero_()
         if self.history_positions is not None:
             nn.init.normal_(self.history_positions.weight, mean=0.0, std=0.01)
-        for layer in list(self.deep_hidden) + [self.deep_out, self.auxiliary_out]:
+        if self.history_feedback is not None:
+            nn.init.normal_(self.history_feedback.weight, mean=0.0, std=0.01)
+            self.history_feedback.weight.data[2].zero_()
+        for layer in list(self.deep_hidden) + [self.deep_out, self.auxiliary_out, self.watchtime_out, *self.cross_layers, self.cross_out]:
+            if layer is None:
+                continue
             if isinstance(layer, nn.Linear):
                 nn.init.xavier_uniform_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
-    def forward(self, features, history_authors, return_auxiliary=False):
+    def forward(self, features, history_authors, history_feedback=None, return_heads=False):
         embeddings = [embedding(features[:, index]) for index, embedding in enumerate(self.embeddings)]
         stacked = torch.stack(embeddings, dim=1)
         fm = 0.5 * ((stacked.sum(dim=1) ** 2).sum(dim=1) - (stacked**2).sum(dim=(1, 2)))
         linear = sum(layer(features[:, index]).squeeze(1) for index, layer in enumerate(self.linear))
         history_embeddings = self.embeddings[2](history_authors)
         history_mask = (history_authors != self.embeddings[2].padding_idx).unsqueeze(-1)
+        if self.history_feedback is not None:
+            if history_feedback is None:
+                raise RuntimeError("Feedback-conditioned history requires feedback inputs")
+            history_embeddings = history_embeddings + self.history_feedback(history_feedback)
         if self.history_encoder == "candidate_attention":
             # Relative positions are recomputed per row: zero is the oldest
             # observed event and history_length - 1 is the most recent one.
@@ -298,19 +330,31 @@ class SequenceDeepFM(nn.Module):
         else:
             history_mean = (history_embeddings * history_mask).sum(dim=1) / history_mask.sum(dim=1).clamp_min(1)
         sequence_match = (history_mean * (embeddings[1] + embeddings[2])).sum(dim=1)
-        hidden = self.deep_hidden(torch.cat(embeddings + [history_mean], dim=1))
-        primary = self.bias + linear + fm + sequence_match + self.deep_out(hidden).squeeze(1)
-        return (primary, self.auxiliary_out(hidden)) if return_auxiliary else primary
+        deep_input = torch.cat(embeddings + [history_mean], dim=1)
+        hidden = self.deep_hidden(deep_input)
+        cross_term = 0.0
+        if self.cross_out is not None:
+            crossed = deep_input
+            for layer in self.cross_layers:
+                crossed = deep_input * layer(crossed) + crossed
+            cross_term = self.cross_out(crossed).squeeze(1)
+        primary = self.bias + linear + fm + sequence_match + self.deep_out(hidden).squeeze(1) + cross_term
+        if return_heads:
+            return primary, (self.auxiliary_out(hidden) if self.auxiliary_out is not None else None), (
+                self.watchtime_out(hidden).squeeze(1) if self.watchtime_out is not None else None
+            )
+        return primary
 
 
-def predict(model, features, history, device, batch_size):
+def predict(model, features, history, feedback, device, batch_size):
     values = []
     model.eval()
     with torch.inference_mode():
         for start in range(0, len(features), batch_size):
             batch_features = torch.from_numpy(features[start : start + batch_size]).to(device)
             batch_history = torch.from_numpy(history[start : start + batch_size]).to(device)
-            values.append(model(batch_features, batch_history).cpu().numpy())
+            batch_feedback = torch.from_numpy(feedback[start : start + batch_size]).to(device)
+            values.append(model(batch_features, batch_history, batch_feedback).cpu().numpy())
     return np.concatenate(values)
 
 
@@ -329,13 +373,16 @@ def run(args):
     device = torch.device("cpu")
     rows = load_rows(args.data_dir)
     add_positive_content_features(rows, args.positive_content_features)
-    add_history(rows, args.history_length, args.validation_history_mode, args.history_source)
-    encoded, field_dimensions, author_padding = encode(rows, args.history_length)
-    train_x, train_history, train_y, train_auxiliary, train_users = encoded["train"]
-    valid_x, valid_history, valid_y, _, valid_users = encoded["valid"]
+    add_history(rows, args.history_length, args.validation_history_mode, args.history_source, args.history_feedback)
+    encoded, field_dimensions, author_padding, fields = encode(
+        rows, args.history_length, args.positive_content_features, args.history_feedback
+    )
+    train_x, train_history, train_feedback, train_y, train_auxiliary, train_watch, train_censored, train_users = encoded["train"]
+    valid_x, valid_history, valid_feedback, valid_y, _, _, _, valid_users = encoded["valid"]
     model = SequenceDeepFM(
         field_dimensions, author_padding, args.embedding_dim, args.hidden_dim, args.dropout,
-        args.history_recency_decay, args.history_encoder, args.history_length,
+        args.history_recency_decay, args.history_encoder, args.history_length, bool(args.auxiliary_weight), args.history_feedback,
+        bool(args.watchtime_aux_weight), args.cross_layers,
     ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
@@ -352,19 +399,32 @@ def run(args):
             indices = order[start : start + args.batch_size]
             features = torch.from_numpy(train_x[indices]).to(device)
             history = torch.from_numpy(train_history[indices]).to(device)
+            feedback = torch.from_numpy(train_feedback[indices]).to(device)
             labels = torch.from_numpy(train_y[indices]).to(device)
             optimizer.zero_grad(set_to_none=True)
-            primary_logits, auxiliary_logits = model(features, history, return_auxiliary=True)
+            if args.auxiliary_weight or args.watchtime_aux_weight:
+                primary_logits, auxiliary_logits, watch_predictions = model(features, history, feedback, return_heads=True)
+            else:
+                primary_logits = model(features, history, feedback)
+                auxiliary_logits = None
+                watch_predictions = None
             loss = functional.binary_cross_entropy_with_logits(primary_logits, labels)
             if args.auxiliary_weight:
                 auxiliary_labels = torch.from_numpy(train_auxiliary[indices]).to(device)
                 loss = loss + args.auxiliary_weight * functional.binary_cross_entropy_with_logits(
                     auxiliary_logits, auxiliary_labels
                 )
+            if args.watchtime_aux_weight:
+                watch_targets = torch.from_numpy(train_watch[indices]).to(device)
+                censored = torch.from_numpy(train_censored[indices]).to(device)
+                watch_loss = torch.where(
+                    censored, functional.relu(watch_targets - watch_predictions).square(), (watch_predictions - watch_targets).square()
+                ).mean()
+                loss = loss + args.watchtime_aux_weight * watch_loss
             loss.backward()
             optimizer.step()
             losses.append(loss.item())
-        scores = predict(model, valid_x, valid_history, device, args.batch_size)
+        scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
         metrics = {name: float(value) for name, value in evaluate(valid_users, valid_y, scores).items()}
         event = {"epoch": epoch, "train_loss": round(float(np.mean(losses)), 7), "metrics": metrics}
         trajectory.append(event)
@@ -398,16 +458,18 @@ def run(args):
                 pos_scores = model(
                     torch.from_numpy(train_x[positive_indices_batch]).to(device),
                     torch.from_numpy(train_history[positive_indices_batch]).to(device),
+                    torch.from_numpy(train_feedback[positive_indices_batch]).to(device),
                 )
                 neg_scores = model(
                     torch.from_numpy(train_x[negative_indices_batch]).to(device),
                     torch.from_numpy(train_history[negative_indices_batch]).to(device),
+                    torch.from_numpy(train_feedback[negative_indices_batch]).to(device),
                 )
                 loss = functional.softplus(-(pos_scores - neg_scores)).mean()
                 loss.backward()
                 optimizer.step()
                 losses.append(loss.item())
-            scores = predict(model, valid_x, valid_history, device, args.batch_size)
+            scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
             metrics = {name: float(value) for name, value in evaluate(valid_users, valid_y, scores).items()}
             event = {"phase": "pairwise_finetune", "epoch": epoch, "train_loss": round(float(np.mean(losses)), 7), "metrics": metrics}
             trajectory.append(event)
@@ -417,7 +479,7 @@ def run(args):
                 best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
                 best_event = event
     model.load_state_dict(best_state)
-    selected_scores = predict(model, valid_x, valid_history, device, args.batch_size)
+    selected_scores = predict(model, valid_x, valid_history, valid_feedback, device, args.batch_size)
     if args.validation_scores_out:
         score_path = Path(args.validation_scores_out)
         if score_path.exists():
@@ -427,9 +489,12 @@ def run(args):
     record = {
         "phase": "causal_sequence_deepfm",
         "hypothesis": HYPOTHESIS,
-        "fields": FIELDS,
+        "fields": fields,
         "history_length": args.history_length,
         "history_encoder": args.history_encoder,
+        "history_feedback": args.history_feedback,
+        "watchtime_aux_weight": args.watchtime_aux_weight,
+        "cross_layers": args.cross_layers,
         "positive_content_features": args.positive_content_features,
         "best": best_event,
         "trajectory": trajectory,
@@ -472,6 +537,10 @@ def parse_args():
         "--history_encoder", choices=("mean", "candidate_attention"), default="mean",
         help="Pool causal author history uniformly/recency-weighted, or attend using the candidate author.",
     )
+    parser.add_argument(
+        "--history_feedback", action="store_true",
+        help="Encode prior train long-view outcomes alongside causal author history; validation history stays frozen at train end.",
+    )
     parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--weight_decay", type=float, default=1e-6)
     parser.add_argument("--ranking_finetune_epochs", type=int, default=0)
@@ -481,6 +550,11 @@ def parse_args():
         "--auxiliary_weight", type=float, default=0.0,
         help="Training-only loss weight for click/profile-entry/like/follow prediction heads.",
     )
+    parser.add_argument(
+        "--watchtime_aux_weight", type=float, default=0.0,
+        help="Training-only censor-aware watch-time loss weight; long_view BCE remains the scored head.",
+    )
+    parser.add_argument("--cross_layers", type=int, default=0, help="Number of explicit CrossNet layers alongside the FM and MLP.")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=8192)
