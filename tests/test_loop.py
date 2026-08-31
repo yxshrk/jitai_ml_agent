@@ -942,3 +942,68 @@ def test_normalize_envelope_accepts_edits_for_script():
         normalize_proposal_envelope(
             {"execution_kind": "script", "code": "x",
              "edits": [{"search": "x", "replace": "y"}]})
+
+
+# ---------- failure replays: tonight's real defects through the new machinery ----------
+# Each test replicates a specific observed failure (run/node named) with its
+# real artifacts or measured values — deterministic, no LLM.
+
+FF1_RUN = ROOT / "logs/run_ff1"
+F7_RUN = ROOT / "logs/run_farm_f7"
+
+
+@pytest.mark.skipif(not (FF1_RUN / "nodes/002.py").exists(), reason="ff1 artifacts absent")
+def test_replay_ff1_full_rewrite_is_gate_rejected():
+    # ff1 node_002 (the 0.5884 debug-bypass script) replayed as an improve
+    # proposal on f7's accepted node_001: a wholesale re-implementation must
+    # fail the rewrite gate, not reach training.
+    from harness.loop import rewrite_ratio
+    parent = (F7_RUN / "nodes/001.py").read_text()
+    rewrite = (FF1_RUN / "nodes/002.py").read_text()
+    assert rewrite_ratio(parent, rewrite) < 0.40
+
+
+@pytest.mark.skipif(not (F7_RUN / "nodes/001.py").exists(), reason="f7 artifacts absent")
+def test_replay_paraphrased_search_fails_loudly():
+    # The observed model failure mode: "editing" a line it paraphrased from
+    # memory instead of copying exactly (indentation lost). Must be a loud
+    # apply error naming the hunk, never a silent partial application.
+    from harness.loop import EditApplyError, apply_edits
+    parent = (F7_RUN / "nodes/001.py").read_text()
+    # take a real indented statement and "paraphrase" it by dropping one level
+    # of indentation — the classic transcription-from-memory error
+    paraphrased = next(
+        line.replace("    ", "\t", 1) for line in parent.splitlines()
+        if line.startswith("    ") and line.strip()
+        and line.replace("    ", "\t", 1) not in parent)
+    with pytest.raises(EditApplyError, match="edit 0.*not found"):
+        apply_edits(parent, [{"search": paraphrased, "replace": "x"}])
+
+
+@pytest.mark.skipif(not (F7_RUN / "nodes/001.py").exists(), reason="f7 artifacts absent")
+def test_replay_ambiguous_hunk_fails_loudly():
+    from collections import Counter
+    from harness.loop import EditApplyError, apply_edits
+    parent = (F7_RUN / "nodes/001.py").read_text()
+    dup = next((l for l, c in Counter(parent.splitlines()).items() if c > 1 and l.strip()), None)
+    assert dup is not None, "fixture assumption: real script has a repeated line"
+    with pytest.raises(EditApplyError, match="occurs"):
+        apply_edits(parent, [{"search": dup, "replace": "y"}])
+
+
+def test_replay_smoke_gate_margin_on_measured_populations(tmp_path):
+    # Real measured values, 31 Aug-1 Sep: broken scripts (ff1 node_001 0.5901,
+    # ff1 node_002 0.5884) must FAIL the gate at margin 0.010; every sane
+    # 1-epoch implementation from the fidelity sweep (worst rep 0.5919, best
+    # 0.6001) must PASS. Baseline probe: 0.6018.
+    loop = make_loop(tmp_path, fake_brain(), max_iters=1)
+    loop.run_dir.mkdir(parents=True, exist_ok=True)
+    (loop.run_dir / "smoke_reference.json").write_text(
+        json.dumps({"gauc": 0.6676, "ndcg5": 0.536, "primary": 0.6018377479019454}))
+    def gate(primary, gauc=0.66):
+        return loop._smoke_sanity_error({"gauc": gauc, "ndcg5": 0.53, "primary": primary})
+    assert gate(0.5901) is not None            # ff1 node_001 (caught live)
+    assert gate(0.5884, gauc=0.649) is not None  # ff1 node_002 (debug bypass, now gated)
+    for sane in (0.5919, 0.5923, 0.5937, 0.5949, 0.5970, 0.6001):  # sweep reps
+        assert gate(sane) is None, sane
+    assert gate(0.60, gauc=0.49) is not None   # below-chance GAUC always fails
