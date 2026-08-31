@@ -396,7 +396,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: untried
 - status_1k: untried
 
-### gbdt-diversity-member: LightGBM/CatBoost member for ensemble diversity
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] gbdt-diversity-member: LightGBM/CatBoost member for ensemble diversity
 - mechanism: Train a GBDT on train-only encodings of the 5 IDs (frequency counts, train-window rates per user/author/tab-duration) and add it as ONE member of the rank-average ensemble. Alone it will likely be weaker than the neural champion; the play is decorrelated errors. All encodings computed on the train window only (no leakage; no external data).
 - kind: opportunity
 - reference_primary: none
@@ -417,7 +417,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win (novel_r1)
 - status_1k: untried
 
-### signed-sketch-residual: Signed co-consumption sketch rank blend
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] signed-sketch-residual: Signed co-consumption sketch rank blend
 - mechanism: Compute recency-weighted per-user long-view residuals r_ui = sqrt(w)(y - user_mean); give each user a fixed 64-dim Rademacher hash vector; video sketch z_i = normalize(sum_u r_ui * h_u); user taste p_u = normalize(sum_j r_uj * z_j); graph score = p_u . z_i with self-contribution removed. Blend WITHIN-USER RANKS: final = rank(champion) + alpha * rank(graph), alpha in {0.05,0.1,0.2} chosen on a train-only rolling holdout. Numpy index_add over a [7600,64] array — minutes of compute.
 - kind: opportunity
 - reference_primary: none
@@ -438,7 +438,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 
 
 
-### broad-to-recent-curriculum: Phase-scheduled recency
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] broad-to-recent-curriculum: Phase-scheduled recency
 - mechanism: Same rows and model; phase the recency weighting — first half-epoch uniform, then one epoch at 7d half-life, final half-epoch at 3.5d with LR x0.3, optimizer not reset; keep half-epoch validation-best checkpointing so the broad checkpoint can still win.
 - reference_primary: none
 - treats: data-shift
@@ -498,7 +498,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - status_pure: measured-win (run_qb_b n1 package: 0.60466)
 - status_1k: untried
 
-### small-batch-diversity: Batch-size ensemble-diversity experiment
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] small-batch-diversity: Batch-size ensemble-diversity experiment
 - mechanism: Freeze the champion config; train 3 fixed seeds at each of {current, half, quarter} batch size; compare member quality, pairwise correlation, and midrank-ensemble payoff. Target: similar member quality with disagreement concentrated on correctable pairs (NOT maximum disagreement). One controlled experiment, not a search.
 - kind: opportunity
 - reference_primary: none
@@ -538,7 +538,7 @@ Proposer invocation pattern: generate a node that execs `zoo/ensemble_node.py` a
 ## Lower-confidence cards (selectable; screen at ONE seed before investing)
 Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5 impressions/user, so nDCG@5 is full-slate ordering, not top-of-many); full-slate-gauc-loss contradicts the measured "additional negatives hurt" evidence.
 
-### top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] top-tail-rider: Smooth top-negative tail (CVaR-style) loss rider
 - mechanism: After a half-epoch warm-up, per user take the top-M (M<=8) scoring negatives, form a smooth softmax-tail score t_u (tau=0.25), and add softplus(0.25 + t_u - s_pos) averaged over that user's positives, ramping weight 0->0.10 taken from BPR. Targets exactly what nDCG@5 punishes: observed negatives entering the top of the slate.
 - kind: opportunity
 - reference_primary: none
@@ -548,7 +548,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: untried
 - status_1k: untried
 
-### full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] full-slate-gauc-loss: Positive-weighted all-pairs within-user loss
 - mechanism: Replace sampled BPR with ALL observed pos-neg pairs per user slate, weight sqrt(w_p*w_n), normalize per user, aggregate users weighted by positive count (exactly GAUC's weighting). ~42 impressions/user makes full enumeration cheap. Keep the pointwise term at current weight.
 - reference_primary: none
 - treats: metric-mismatch
@@ -666,7 +666,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: measured-win (run_final_s4 n3: 0.60521, +0.0015 from 0.6038 gauge base — largest single-mechanism gain of the final wave; NO ensemble close attempted on this base yet — highest-priority follow-up)
 - status_1k: untried
 
-### directional-temporal-pair-weighting: Forward-time pair emphasis
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] directional-temporal-pair-weighting: Forward-time pair emphasis
 - mechanism: In temporally-local BPR, weight pairs where the negative is LATER than the positive more heavily than earlier-negative pairs — the deployed model always ranks into the future, so future-negative comparisons match the test-time direction of drift.
 - treats: data-shift | ranking-mismatch
 - reference_primary: none
@@ -696,7 +696,7 @@ Skepticism on record: top-tail-rider may mis-model our slates (validation has ~5
 - status_pure: untried
 - status_1k: untried
 
-### wr-pair-coverage: Without-replacement balanced pair coverage
+#### [archived — attention hygiene 1 Sep; never adopted, speculative] wr-pair-coverage: Without-replacement balanced pair coverage
 - mechanism: Sample BPR negatives without replacement per epoch (cycling through each user's negative pool) instead of iid draws, guaranteeing every negative constrains the model each epoch; balances gradient exposure on small slates.
 - treats: variance | ranking-mismatch
 - reference_primary: none

@@ -145,7 +145,7 @@ You diagnose an ML run and select exactly one implementation method from a
 method-card library. Respect cards whose active status marks them unavailable.
 Use learning-curve shape, journal outcomes, remaining iterations, and honest
 expected gain. Return one JSON object only:
-{"diagnosis":"overfit|underfit|flat-signal|metric-mismatch|data-shift",
+{"diagnosis":"overfit|underfit|flat-signal|metric-mismatch|data-shift|insufficient-telemetry",
  "chosen_method_id":"<exact card id>", "citation":"<card citation>",
  "why":"<why this card fits now>",
  "rejected":[{"method_id":"<alternative id>","reason":"<why rejected>"}]}
@@ -250,7 +250,9 @@ def selector_user_prompt(
             "Diagnose from evidence: a validation peak followed by decline is overfit; "
             "a curve still rising at stop is underfit; a flat curve is flat-signal; "
             "objective/evaluator disagreement is metric-mismatch; temporal degradation "
-            "is data-shift. Selection policy: TREATMENT cards should match your "
+            "is data-shift; and when the learning curve is missing or unusable, the "
+            "honest diagnosis is insufficient-telemetry — say so rather than "
+            "guessing, and lean on evidence-ranked opportunities. Selection policy: TREATMENT cards should match your "
             "diagnosis; OPPORTUNITY cards are diagnosis-independent upgrades — weigh "
             "them by their measured evidence every iteration, especially when your "
             "diagnosis is low-confidence (e.g. missing or unusable learning-curve "
