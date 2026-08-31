@@ -854,12 +854,15 @@ class Loop:
         candidate. Returns the iteration counter to continue from (at - 1)."""
         src = Path(src)
         journal = src / "journal.jsonl"
+        if self.config.knowledge_mode == "clean":
+            raise ValueError("clean-mode runs cannot be resumed (they must be unassisted end to end)")
         if at < 1:
             raise ValueError("--at must be >= 1 (iteration 0 is the baseline)")
         if not journal.exists():
             raise FileNotFoundError(f"resume source has no journal: {journal}")
         records = [json.loads(line) for line in journal.read_text().splitlines() if line.strip()]
-        by_n = {int(r["n"]): r for r in records}
+        by_n = {r["n"]: r for r in records
+                if isinstance(r.get("n"), int) and not isinstance(r.get("n"), bool)}
         if 0 not in by_n:
             raise ValueError("resume source journal lacks the baseline record (n=0)")
         max_n = max(by_n)
@@ -885,24 +888,30 @@ class Loop:
                 if k < at:
                     shutil.copytree(item, self.run_dir / name, dirs_exist_ok=True)
         for k in range(at):
-            script = src / "nodes" / f"{k:03d}.py"
-            if script.exists():
-                shutil.copy2(script, self.nodes_dir / f"{k:03d}.py")
+            for suffix in (".py", ".farm.json"):
+                sidecar = src / "nodes" / f"{k:03d}{suffix}"
+                if sidecar.exists():
+                    shutil.copy2(sidecar, self.nodes_dir / f"{k:03d}{suffix}")
 
         # --- replay journal verbatim + lineage marker
         with self.journal_path.open("w") as handle:
             for k in range(at):
                 handle.write(json.dumps(by_n[k]) + "\n")
-            handle.write(json.dumps({
-                "resumed_from": str(src), "resumed_at": at, "intervention": False,
-                "note": "resumed lineage: continued from the prior run's state under "
-                        "current agent code; experiment, not a designation candidate",
-            }) + "\n")
+        (self.run_dir / "resume.json").write_text(json.dumps({
+            "resumed_from": str(src), "resumed_at": at, "intervention": False,
+            "designation_eligible": False,
+            "note": "resumed lineage: continued from the prior run's state under "
+                    "current agent code; experiment, not a designation candidate",
+        }, indent=2) + "\n")
 
         # --- reconstruct state with the loop's own rules
         base = by_n[0]
-        self.sigma = float((base.get("baseline_reproduction") or {}).get("sigma")
-                           or self.config.sigma or 0.0)
+        calib = sorted(self.run_dir.glob("calib_seed*/metrics.json"))
+        if len(calib) >= 2:
+            self.sigma = float(np.std([json.loads(c.read_text())["primary"] for c in calib]))
+        else:
+            self.sigma = float((base.get("baseline_reproduction") or {}).get("sigma")
+                               or self.config.sigma or 0.0)
         self.calibration_result = base.get("baseline_reproduction")
         node0 = Node("node_000", "baseline", "draft", "baseline FM (zoo/fm_torch.py)",
                      self.nodes_dir / "000.py")
@@ -933,6 +942,17 @@ class Loop:
             node.method_selection = r.get("method_selection")
             node.change_summary = r.get("change_summary", "")
             node.recovery = r.get("recovery")
+            node.failure_stage = r.get("failure_stage")
+            node.fixer_eligible = bool(r.get("fixer_eligible", False))
+            node.verdict_note = r.get("verdict_note")
+            node.expected_delta = r.get("expected_delta")
+            node.expected_delta_basis = r.get("expected_delta_basis")
+            if r.get("action") == "debug":
+                parent_node = self.nodes.get(node.parent)
+                node.debug_depth = (parent_node.debug_depth + 1) if parent_node else 1
+            if r.get("farm_close_plan") is not None:
+                node.farm_close_plan = r["farm_close_plan"]
+                node.execution_kind = r.get("execution_kind", "farm_close")
             best_before = self.champion.primary
             if node.status == "accepted":
                 self.accepted_deltas.append(node.primary - best_before)
@@ -948,9 +968,6 @@ class Loop:
                 f'{node.node_id} [<-{node.parent}] {node.action} "{node.hypothesis}" '
                 f"{metric_text} {node.status.upper()}"
             )
-        self.initial_draft_slots = min(self.initial_draft_slots,
-                                       len([n for n in self.nodes.values()
-                                            if n.action == "draft" and n.node_id != "node_000"]))
         print(f"[loop] resumed {src} at iteration {at}: best {self.champion.node_id} "
               f"{self.champion.primary:.6f}, streak {self.no_improve_streak}, sigma {self.sigma:.4f}",
               file=sys.stderr)
@@ -1006,6 +1023,7 @@ class Loop:
             summary["resumed_from"] = str(self.config.resume_from)
             summary["resumed_at"] = self.config.resume_at
             summary["lineage"] = "resumed experiment; not a designation candidate"
+            summary["designation_eligible"] = False
         (self.run_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         self.append_cross_run(summary, self_critique)
         return summary

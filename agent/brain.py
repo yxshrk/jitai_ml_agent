@@ -394,6 +394,16 @@ class Brain:
         worst_output = max_tokens
         self.budget.precheck(model, est_input, worst_output)
         text, tokens_in, tokens_out = self.backend.call(model, system_text, user_text, max_tokens)
+        log_dir = os.environ.get("AGENT_PROMPT_LOG_DIR")
+        if log_dir:
+            # verbatim record of everything the model saw and said, per call
+            from pathlib import Path as _P
+            import time as _t
+            d = _P(log_dir); d.mkdir(parents=True, exist_ok=True)
+            stamp = _t.strftime("%H%M%S")
+            (d / f"{stamp}_{role}.md").write_text(
+                f"# role: {role} | model: {model}\n\n## SYSTEM\n{system_text}\n\n"
+                f"## USER\n{user_text}\n\n## REPLY\n{text}\n")
         self.meter.add(f"{self.provider}/{model}/{role}", tokens_in, tokens_out)
         self.usd_run += self.budget.record(self.provider, model, tokens_in, tokens_out, note=role)
         return text

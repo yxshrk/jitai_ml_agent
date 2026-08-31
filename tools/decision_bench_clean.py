@@ -37,6 +37,24 @@ NARROW_BETS = {"finalmlp", "covisit-svd-init", "duration-regime-heads",
 
 SCENARIOS = [
     dict(
+        name="close_across_families",
+        note="strong single model, single-model moves stopped clearing the bar, "
+             "streak building; strategy property tested: close by combining "
+             "DIFFERENT mechanism families rather than re-seeding one family or "
+             "spending the last iteration on another small treatment",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.7105 ACCEPTED (sigma=0.0004)',
+            'node_001 [draft] "hyperparam-random-search" primary=0.7161 ACCEPTED (+0.0056)',
+            'node_002 [draft] "bpr-hybrid" primary=0.7170 ACCEPTED (+0.0009, below epsilon: strike 1)',
+            'node_003 [draft] "recency-weighting" primary=0.7166 REJECTED (strike 2)',
+        ],
+        history=CURVE_PEAKED,
+        streak={"no_improve_streak": 2, "iterations_done": 4, "max_iters": 16},
+        good={"heterogeneous-ensemble-design"},
+        bad={"regularization-schedule", "item-aggregates", "session-time-features",
+             "finalmlp", "covisit-svd-init", "dndcg-lambda"},
+    ),
+    dict(
         name="opening_screen_first",
         note="one baseline node exists; strategy property tested: open with a "
              "broad cheap screen, not a single narrow mechanism bet",

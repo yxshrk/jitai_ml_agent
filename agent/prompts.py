@@ -123,11 +123,11 @@ reference a script path you have not been shown in this conversation). Return th
 hypothesis/expected-delta/action/parent fields in a farm-close envelope. The
 harness accepts the legacy `farm_close_plan` alias, but prefer `ensemble_plan`:
 {"execution_kind":"farm_close",
- "hypothesis":"...", "expected_delta":0.0035,
+ "hypothesis":"...", "expected_delta":<honest numeric expectation>,
  "expected_delta_basis":"...", "action":"<draft|improve>", "parent":"node_NNN",
  "timeout_s":7200,
  "ensemble_plan":{
-   "probe_epochs":2, "admission_primary":0.6040,
+   "probe_epochs":2,
    "full_member_limit":3, "min_probe_blend_gain":0.0,
    "members":[
      {"family":"<distinct-family-id>",

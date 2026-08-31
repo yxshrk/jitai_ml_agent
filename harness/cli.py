@@ -78,6 +78,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="prior run dir to continue from (disclosed experiment lineage)")
     run.add_argument("--at", type=int, default=0,
                      help="with --resume-from: continue from just before this iteration (>= 1)")
+    run.add_argument("--no-cross-run", action="store_true",
+                     help="do not read or write the cross-run memory digest (memory-free run)")
     farm = sub.add_parser(
         "farm-close", help="execute one validated typed farm-close plan directly"
     )
@@ -108,6 +110,12 @@ def main(argv: list[str] | None = None) -> int:
             parent_predictions=args.parent_predictions,
         )
         return 0
+    if (args.at and not args.resume_from) or (args.resume_from and args.at < 1):
+        print("error: --resume-from and --at (>= 1) must be supplied together", file=sys.stderr)
+        return 2
+    if args.resume_from and args.knowledge == "clean":
+        print("error: clean-mode runs cannot be resumed", file=sys.stderr)
+        return 2
     if args.knowledge == "clean" and (args.seed_scripts or args.draft_tiers):
         print(
             "error: --knowledge clean cannot be combined with --seed-scripts or --draft-tiers; "
@@ -139,6 +147,8 @@ def main(argv: list[str] | None = None) -> int:
         knowledge_mode=args.knowledge,
         **({"resume_from": args.resume_from.resolve(), "resume_at": args.at}
            if args.resume_from else {}),
+        **({"cross_run_path": (args.run_dir or Path("logs")) / "CROSS_RUN_disabled.md"}
+           if args.no_cross_run else {}),
         plan_budget=args.plan_budget,
     )
     if args.dry_run:

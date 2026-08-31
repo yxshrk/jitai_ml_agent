@@ -256,3 +256,13 @@ literature-reported expectations only.
 - expected_gain / cost: Benchmark-suite literature reports that measured screening across mechanism families avoids committing budget to a mismatched family and typically finds the dataset's dominant lever early / medium runtime, one node.
 - status_pure: untried
 - status_1k: untried
+
+### heterogeneous-ensemble-design: Cross-family ensemble close (probe, map complementarity, full-train, verify)
+- kind: opportunity
+- mechanism: Combine models from DIFFERENT mechanism families (for example a regularized cross-network, a pairwise-ranking model, a sequence-aware model, a recency-weighted factorization model) by per-user rank averaging. Executed by the harness in three phases from a typed plan: (1) train a short probe of every candidate family; (2) rank-average every probe subset to map which families complement each other (blending saved score vectors costs nothing); (3) fully retrain only the complementary families from scratch, blend, and re-verify the winning combination at full fidelity before emitting. The incumbent is kept if no blend beats it.
+- treats: flat-signal | plateau
+- preconditions: A strong single model already exists and single-model moves have stopped clearing the convergence bar; at least two genuinely different mechanism families are available to field. This is a closing move: play it when the remaining headroom for any one model is smaller than the gain diversity can supply, not as an opener. Members must be single fits (no internal search), with distinct seeds and families.
+- citation: Dietterich, Ensemble Methods in Machine Learning (2000): diversity of errors, not member count, drives ensemble gain; Netflix Prize blending reports (Koren 2009; Töscher et al. 2009): heterogeneous model blends outperform homogeneous ones; Breiman, Bagging Predictors (1996) for variance cancellation.
+- expected_gain / cost: Ensemble literature consistently reports that decorrelated members gain more than additional seeds of one model; gain is bounded by the strength of the best member / high training (several fits), low implementation (harness-executed).
+- status_pure: untried
+- status_1k: untried

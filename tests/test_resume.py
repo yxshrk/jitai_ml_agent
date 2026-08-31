@@ -58,9 +58,10 @@ def test_resume_reconstructs_state_and_continues(tmp_path):
     assert not (resumed.run_dir / "nodes" / "002.py").exists()
 
     lines = (resumed.run_dir / "journal.jsonl").read_text().splitlines()
-    assert lines[:2] == orig_records[:2]  # verbatim history
-    marker = json.loads(lines[2])
+    assert lines == orig_records[:2]  # verbatim history, nothing else in the journal
+    marker = json.loads((resumed.run_dir / "resume.json").read_text())
     assert marker["resumed_at"] == 2 and marker["intervention"] is False
+    assert marker["designation_eligible"] is False
 
     # now let the real run() drive the continuation from scratch (fresh loop)
     resumed2 = _loop(tmp_path, "resumed2", max_iters=3,
@@ -72,7 +73,8 @@ def test_resume_reconstructs_state_and_continues(tmp_path):
     assert summary["iterations"] == 3
     out = [json.loads(l) for l in (resumed2.run_dir / "journal.jsonl").read_text().splitlines()]
     iteration_ns = [r["n"] for r in out if "n" in r]
-    assert iteration_ns == [0, 1, 2, 3]  # history 0-1, marker, then new 2-3
+    assert iteration_ns == [0, 1, 2, 3]  # history 0-1, then new 2-3
+    assert summary["designation_eligible"] is False
     assert (resumed2.run_dir / "nodes" / "003.py").exists()
 
 
