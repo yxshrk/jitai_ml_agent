@@ -86,6 +86,22 @@ SCENARIOS = [
              "dndcg-lambda", "finalmlp", "covisit-svd-init"},
     ),
     dict(
+        name="opening_expected_value",
+        note="farm_f2 iter-1 state (31 Aug): fresh calibrated baseline, full clock. "
+             "The opening treatment should be the highest evidence-expected-gain "
+             "broad package (measured +0.002-0.003 class), not a small single "
+             "treatment that spends an iteration on a likely sub-epsilon strike",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 0, "iterations_done": 1, "max_iters": 16},
+        good={"seq-deepfm-composite", "package-dial-sweep", "stage-matrix-sweep",
+              "context-stratified-pairs", "temporal-pair-kernel"},
+        bad={"regularization-schedule", "freq-adaptive-reg", "embedding-dim-down",
+             "swa-then-ensemble", "seed-ensemble", "session-time-features"},
+    ),
+    dict(
         name="endgame_eps_math",
         note="farm_f1 failure state (31 Aug): streak=2 so the run ends unless THIS "
              "iteration gains >= eps=0.002; same-family seed closes measure well "
@@ -100,6 +116,24 @@ SCENARIOS = [
         good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
         bad={"ensemble-design-sweep", "seed-ensemble", "swa-then-ensemble",
              "regularization-schedule", "freq-adaptive-reg", "session-time-features"},
+        expect_plan=True,
+    ),
+    dict(
+        name="endgame_margin_not_reach",
+        note="farm_f2 iter-3 state (31 Aug): LOW base (0.6026) so single atoms "
+             "marginally reach eps on paper; the right move is still the close "
+             "whose evidence clears eps with margin, not the atom that barely "
+             "touches the bar",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [draft] "regularization-schedule" primary=0.6026 ACCEPTED (+0.0007, grey z-pass; below eps: strike 1)',
+            'node_002 [draft] "context-stratified-pairs" primary=0.6021 REJECTED (strike 2)',
+        ],
+        history=CURVE_OVERFIT,
+        streak={"no_improve_streak": 2, "iterations_done": 3, "max_iters": 16},
+        good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
+        bad={"gauge-fixed-bce", "regularization-schedule", "seed-ensemble",
+             "ensemble-design-sweep", "freq-adaptive-reg"},
         expect_plan=True,
     ),
     dict(
