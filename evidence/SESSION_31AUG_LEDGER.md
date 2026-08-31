@@ -155,3 +155,12 @@ ctx-pairs node) = 0.60546. CONCLUSION: even perfect endgame banking leaves f9
 ~0.0001-0.0005 short of the 0.605575 designation; the single-run ceiling
 0.6055-0.6060 stands. Cross-run blend WITH other runs' artifacts (earlier
 exhibit) = 0.605765 remains the only number above the designation tonight.
+
+## 1 Sep ~03:40 — f8 iteration-4 counterfactual EXECUTED (evidence only)
+The selector's 3/3-consistent pick for f8's 503-killed iteration
+(social-mtl-heads aux bundle, emitted as 20 edit hunks on f8 node_002, 94%
+preserved) was trained fully on the laptop: primary 0.605087 (+0.00037 over
+f8's champion; sub-floor, would have been grey-zone). Artifacts:
+logs/counterfactual_f8_iter4_spec0.json, logs/counterfactual_f8_iter4_node.py,
+logs/counterfactual_f8_iter4_out/. Confirms: sane decision, modest gain, the
+503 did not cost the designation.

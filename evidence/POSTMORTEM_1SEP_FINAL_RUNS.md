@@ -54,9 +54,13 @@ Designations are UNCHANGED: Pure = bigclock_07 **0.605575**, 1K = omega_1k
   blend-complementary (+0.0003 over the best pair without it).
 - Fixes triggered: transient provider errors now retry once and never count as
   a convergence strike (tested with an exact replay).
-- Counterfactual (replayed state through the live selector, 3 reps): iteration
-  4 would have been social-mtl-heads via 17–20 minimal edit hunks — a new-family
-  strengthener per the retry-close doctrine, i.e. a sane move, not a blunder.
+- Counterfactual (replayed state through the live selector, 3/3 consistent
+  reps): iteration 4 would have been social-mtl-heads via 17–20 minimal edit
+  hunks — a new-family strengthener per the retry-close doctrine. EXECUTED the
+  emitted proposal (edits applied, 94% of parent preserved, full train with its
+  internal dial probe): **0.605087** — a real +0.00037 over f8's 0.604714,
+  though below the 0.0009 accept floor (would have been grey-zone) and still
+  under the designation. The 503 stole a good move, not a winning one.
 
 ### f9 (adds edits-mode improves, 503 fix, rewrite gate)
 - n1 package-dial-sweep ACCEPTED **0.605102 as a SINGLE MODEL** — best opener
