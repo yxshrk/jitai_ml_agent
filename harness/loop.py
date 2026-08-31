@@ -141,8 +141,10 @@ def normalize_history(history) -> list[dict]:
         }
     def usable(rows: list[dict]) -> bool:
         return any(r.get("val_primary") is not None for r in rows)
+    # sweep-shaped entries carry nested curves; those beat config-level summaries
+    has_nested = any(isinstance(e.get("epochs") or e.get("checkpoints"), list) for e in entries)
     direct = [flat(e) for e in entries]
-    if usable(direct):
+    if usable(direct) and not has_nested:
         return direct
     # sweep-shaped: pick the nested curve whose best val_primary is highest
     best_rows: list[dict] = []
@@ -155,7 +157,7 @@ def normalize_history(history) -> list[dict]:
         top = max(r["val_primary"] for r in rows if r.get("val_primary") is not None)
         if top > best_score:
             best_score, best_rows = top, rows
-    return best_rows
+    return best_rows if best_rows else (direct if usable(direct) else [])
 
 
 class LeakageError(RuntimeError):
