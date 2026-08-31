@@ -121,6 +121,11 @@ SCENARIOS = [
              "regularization-schedule", "freq-adaptive-reg", "session-time-features"},
         expect_plan=True,
     ),
+    # Weak-base endgames (best ~0.6026-0.6029): a strong PACKAGE is neutral, not
+    # bad. Two measured facts (31 Aug): the farm-close precondition requires an
+    # established champion to derive members from, which a 0.603 base barely is,
+    # and farm_f4r2 from that exact base yielded a package-class singleton anyway.
+    # The close is still the reference answer; atoms and same-family seeds stay bad.
     dict(
         name="endgame_margin_not_reach",
         note="farm_f2 iter-3 state (31 Aug): LOW base (0.6026) so single atoms "
@@ -153,7 +158,7 @@ SCENARIOS = [
         history=CURVE_NONE,
         streak={"no_improve_streak": 2, "iterations_done": 3, "max_iters": 16},
         good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
-        bad={"seq-deepfm-composite", "package-dial-sweep", "gauge-fixed-bce",
+        bad={"seq-deepfm-composite", "gauge-fixed-bce",
              "regularization-schedule", "seed-ensemble", "ensemble-design-sweep"},
         expect_plan=True,
     ),
@@ -171,7 +176,7 @@ SCENARIOS = [
         history=F4_NODE002_CURVE,
         streak={"no_improve_streak": 2, "n_converge": 3, "iters_left": 13},
         good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
-        bad={"seq-deepfm-composite", "package-dial-sweep", "gauge-fixed-bce",
+        bad={"seq-deepfm-composite", "gauge-fixed-bce",
              "regularization-schedule", "seed-ensemble", "ensemble-design-sweep"},
         expect_plan=True,
     ),

@@ -123,10 +123,11 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-title" data-title="Title" data-cap="an autonomous ML research agent on KuaiRand-Pure · <b>0.6016 → 0.6056</b> · 0 mid-run interventions">
   <div class="kicker">TIKTOK TECHJAM 2026 · TRACK 2 · KUAIRAND-PURE</div>
   <div class="team">jit.ai</div>
-  <h1>An agent that improves its own ranking model.<br>
+  <h1>An agent that runs its own ML experiments.<br>
     <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.</h1>
   <p class="what">It trains a model that predicts which videos a user will keep watching, then
-  diagnoses that model, changes it, retrains, and measures again, in a loop that no person steers.</p>
+  diagnoses that model, changes it, retrains, and measures again, in a loop that no person steers.
+  The score is the competition's ranking metric: how well the model orders each user's own videos.</p>
   <div class="names">Rohan Kulshrestha · Aditya Ghosh · Yash Raj Khandelwal · Avinash Parthiban Elangovan</div>
 </div>
 
@@ -143,37 +144,41 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-loop" data-title="The loop" data-cap="diagnose → treat → retrain → measure · no human picks the next move">
   <div class="wrap">
     <div class="eyebrow">the machine</div>
-    <h2>Diagnose, treat, retrain, measure. Repeat until the rule says stop.</h2>
+    <h2>Diagnose, treat, retrain, measure. Repeat until the stopping rule fires.</h2>
     <div class="stages" id="stages">
       <div class="stage" data-s="0">
         <div class="snum">01</div><h3>DIAGNOSE</h3>
-        <p>Looks at how the last model trained, epoch by epoch, and names what is
-        holding it back: overfitting, underfitting, a plateau, or plain seed noise.</p>
+        <p>Looks at how the last model trained, pass by pass over the data, and names
+        what is holding it back: overfitting, undertraining, a plateau, or plain
+        run-to-run randomness (seed noise).</p>
       </div>
       <div class="stage" data-s="1">
         <div class="snum">02</div><h3>TREAT</h3>
-        <p>Selects a treatment from a library of 42 method cards: mechanism, measured
-        evidence on this dataset, and preconditions, drawn from ranking literature.</p>
+        <p>Picks a fix from a library of 42 method cards. Each card is a published
+        ranking technique written up with how it works, when it applies, and what it
+        has scored on this dataset so far.</p>
       </div>
       <div class="stage" data-s="2">
         <div class="snum">03</div><h3>RETRAIN</h3>
-        <p>The proposer LLM writes a complete training script against a frozen node
-        contract, smoke-tests it in 360 s, then trains on the fixed temporal split.</p>
+        <p>The LLM writes a complete training script to a fixed input/output contract.
+        The harness runs it for 360 s to catch crashes (a smoke test), then trains it
+        on the same time-based data split every iteration.</p>
       </div>
       <div class="stage" data-s="3">
         <div class="snum">04</div><h3>MEASURE</h3>
-        <p>The official evaluator scores GAUC and nDCG@5 per user; primary = the mean.
-        A change is kept only if it clears the calibrated acceptance gate (floor 0.0005,
-        repeat-seed z-test). The run ends when 3 consecutive iterations fail to improve
-        the best by ε = 0.002.</p>
+        <p>The official evaluator scores how well the model ranks each user's own
+        videos (GAUC and nDCG@5 per user, averaged into one primary score). A change
+        is kept only if its gain clears the acceptance gate: a 0.0005 floor, and
+        borderline gains must repeat on a second seed (a z-test). The run stops by the
+        competition's rule: 3 iterations in a row without a 0.002 gain (epsilon).</p>
       </div>
     </div>
-    <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations (ε = 0.002)</span></div>
+    <div class="loopback"><span class="lbchip">keep a change only if its gain clears the gate · otherwise a dead end · stop after 3 iterations without a 0.002 gain (the epsilon rule)</span></div>
   </div>
 </div>
 
 <!-- 4 · architecture + convergence rule -->
-<div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness disposes · convergence: 3 iterations without +0.002 on the best ends the run · hidden test has no path in">
+<div class="scene" id="s-arch" data-title="The system" data-cap="the agent proposes, the harness checks and scores · stopping rule: 3 iterations without +0.002 on the best ends the run · hidden test set has no path in">
   <div class="wrap">
     <div class="eyebrow">the system</div>
     <h2>One loop, two halves. A rule ends it, not a person.</h2>
@@ -184,7 +189,7 @@ body.present{overflow:hidden;height:100vh}
 <!-- 5 · mission log replay, one iteration per key -->
 <div class="scene" id="s-log" data-title="Log replay" data-cap="journal.jsonl replayed one iteration per key · baseline 0.6018 → 0.6042 → 0.6056 · iteration 04 VOID, loop continues">
   <div class="wrap">
-    <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
+    <div class="eyebrow">the run · bigclock_07 · replayed from its journal file</div>
     <h2>Six iterations, replayed.</h2>
     <div class="cols">
       <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
@@ -194,37 +199,40 @@ body.present{overflow:hidden;height:100vh}
 </div>
 
 <!-- 6 · six harness safeguards, in the script's order -->
-<div class="scene" id="s-harness" data-title="Harness" data-cap="six safeguards · honesty is structural, not behavioral">
+<div class="scene" id="s-harness" data-title="Harness" data-cap="six safeguards · honesty built into the plumbing, not asked for in a prompt">
   <div class="wrap">
     <div class="eyebrow">the harness</div>
     <h2>The agent is only half the system. The other half never trusts it.</h2>
     <div class="scenebody">
     <div class="enggrid">
       <div class="engcard"><div class="onum">01</div><h3>Structural leakage guard</h3>
-        <p>The hidden test window is never mounted into the agent's workspace, and
-        generated code is screened before execution. Not touching the test set is a
+        <p>The hidden test set is never copied into the agent's workspace, and
+        generated code is screened before it runs. Not touching the test set is a
         property of the filesystem, not a promise in a prompt.</p></div>
       <div class="engcard"><div class="onum">02</div><h3>Calibrated acceptance gate</h3>
-        <p>Baseline seed noise is measured first (3 seeds, σ ≈ 0.0001), so every gain
-        is read in sigmas. Grey-zone gains above the 0.0005 floor must repeat on a
-        second seed and pass a z-test before acceptance.</p></div>
+        <p>The baseline's run-to-run randomness is measured first (3 seeds, σ ≈ 0.0001),
+        so every gain is read as a multiple of that noise (sigmas). Borderline gains
+        above the 0.0005 floor must repeat on a second seed and pass a statistical
+        test (a z-test) before acceptance.</p></div>
       <div class="engcard"><div class="onum">03</div><h3>Method cards, not vibes</h3>
-        <p>The agent's knowledge is 42 cards: mechanism, preconditions, citation, and
-        measured evidence per technique. A two-tier menu separates proven treatments
-        from ranked opportunities, and a strategy layer matches them to the run phase.</p></div>
+        <p>The agent's knowledge is 42 cards: for each technique, how it works, when it
+        applies, its citation, and what it has scored here. A two-tier menu separates
+        proven fixes from promising but untested ones, and a strategy layer matches
+        them to where the run is: opening, middle, or close.</p></div>
       <div class="engcard"><div class="onum">04</div><h3>Decision benches</h3>
-        <p>Selector quality is tested like code: frozen run-state fixtures with known
-        right answers, replayed against the brain after every change, without a
-        training run. Bench fixes may only be evidence corrections or general
+        <p>The agent's judgment is tested like code: we froze real mid-run situations
+        whose right next move we know, and replay the agent against them after every
+        change, without a training run. Bench fixes may only be evidence corrections or general
         principles, never canned answers.</p></div>
-      <div class="engcard"><div class="onum">05</div><h3>Deterministic ensemble planning</h3>
-        <p>For the closing move, the agent emits a typed, schema-validated plan and a
-        deterministic assembler executes it: parallel family probes, exhaustive blend
-        enumeration, full-fidelity re-verification. No LLM in the measurement path.</p></div>
+      <div class="engcard"><div class="onum">05</div><h3>Agent plans the ensemble, code runs it</h3>
+        <p>For the final move, combining several model types into one (an ensemble),
+        the agent writes a structured, machine-checked plan and fixed code carries it
+        out: quick trial fits of each model type, every combination scored, the winner
+        retrained and re-verified in full. No LLM touches the measurement.</p></div>
       <div class="engcard"><div class="onum">06</div><h3>Telemetry-gated diagnosis</h3>
-        <p>A diagnosis may only cite curves that were actually recorded. When we found
-        stale knowledge silently mis-steering selection, we rebuilt the channel and
-        disclosed the discarded runs rather than hiding them.</p></div>
+        <p>A diagnosis may only cite training curves that were actually recorded. When
+        we found out-of-date notes quietly steering the agent's choices, we rebuilt how
+        knowledge is loaded and disclosed the affected runs rather than hiding them.</p></div>
     </div>
     </div>
   </div>
@@ -254,9 +262,9 @@ body.present{overflow:hidden;height:100vh}
         <p>Every move is one of <b>42 method cards</b>: a cited technique with a
         mechanism, preconditions, and measured evidence. No arbitrary knob-turning.</p></div>
       <div class="principle"><div class="pn">03</div><h3>Noise awareness</h3>
-        <p>Baseline noise is calibrated first (<b>σ ≈ 0.0001</b>). Gains are read in
-        sigmas; borderline gains must repeat on a fresh seed and pass a z-test
-        before they count.</p></div>
+        <p>The baseline's run-to-run noise is measured first (<b>σ ≈ 0.0001</b>). Gains
+        are read as multiples of it; borderline gains must repeat on a fresh seed and
+        pass a statistical test before they count.</p></div>
       <div class="principle"><div class="pn">04</div><h3>Learning from failure</h3>
         <p>Every hypothesis, dead end, and crash is journaled. A VOID stays on the
         chart. The <b>139-run ledger</b> feeds the cards, so the agent inherits the
@@ -273,12 +281,12 @@ body.present{overflow:hidden;height:100vh}
 <div class="scene" id="s-model" data-title="Model and effort" data-cap="decision bench per model and effort · logs/bench_model_sweep.json and the sweep logs · <b>sol at medium</b> chosen">
   <div class="wrap">
     <div class="eyebrow">model and effort</div>
-    <h2>Measured on the decision bench, not guessed.</h2>
+    <h2>Which LLM, and how hard it thinks: measured, not guessed.</h2>
     <table class="mtable" aria-label="model and reasoning effort sweep on the decision bench">
       <thead><tr><th>model</th><th>effort</th><th>temperature</th><th class="n">good</th><th class="n">ok</th><th class="n">bad</th><th class="n">error</th><th>note</th></tr></thead>
       <tbody>
         <tr class="pick"><td class="m">gpt-5.6-sol</td><td>medium</td><td>default</td><td class="n">4</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"><b>chosen</b> · no bad picks; 5 scenarios in this block</td></tr>
-        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>default</td><td class="n">5</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n">0</td><td class="note">failed <b>endgame_eps_math</b>: the ε arithmetic scenario</td></tr>
+        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>default</td><td class="n">5</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n">0</td><td class="note">failed <b>endgame_eps_math</b>: the scenario that needs the 0.002 stopping-rule arithmetic</td></tr>
         <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>0.2</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n"><span class="err">6</span></td><td class="note">HTTP 400 on every call: temperature not accepted by the API</td></tr>
         <tr><td class="m">gpt-5.6-luna</td><td>low</td><td>default</td><td class="n">5</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"></td></tr>
         <tr><td class="m">gpt-5.6-luna</td><td>medium</td><td>default</td><td class="n">3</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n"><span class="err">2</span></td><td class="note">bad pick on two_strikes_on_good_base; 2 calls refused by the spend cap</td></tr>
@@ -286,14 +294,14 @@ body.present{overflow:hidden;height:100vh}
         <tr><td class="m">gpt-5.6-terra</td><td>medium</td><td>default</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="note">passed all 6</td></tr>
       </tbody>
     </table>
-    <p class="mnotes">Six frozen run states with a known right next move. <b>sol at medium</b> is the
-    proposer for the designated run. In the run ledger, high and extra-high effort proposals
+    <p class="mnotes">The bench: six frozen mid-run situations with a known right next move. <b>sol at medium</b> is the
+    LLM that proposes each experiment (the proposer) in the designated run. In the run ledger, high and extra-high effort proposals
     truncate or fail (runs 16-22, 27, 28), so medium is a measured choice, not a default.</p>
     <div class="mstrip">
       <div><b>139</b><span>completed agent runs</span></div>
       <div><b>~250</b><span>measured experiment cells</span></div>
       <div><b>42</b><span>method cards</span></div>
-      <div><b>4/10 → 10/10</b><span>clean strategy bench, methodology fixes only</span></div>
+      <div><b>4/10 → 10/10</b><span>decision bench pass rate, from method fixes alone</span></div>
     </div>
   </div>
 </div>
@@ -304,7 +312,7 @@ body.present{overflow:hidden;height:100vh}
     <div class="eyebrow">the receipts</div>
     <h2>Everything above is measured, logged, and reproducible.</h2>
     <div class="grid" id="rgrid"></div>
-    <p class="note">Scored artifact = best validation checkpoint at rule convergence, CPU only, no GPU.
+    <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
     Test labels are never read anywhere in the pipeline. Bonus: the same agent on
     KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
     journals, the 42-card method library, and ~250 measured experiment cells from 139 runs ship in the repo.<br>

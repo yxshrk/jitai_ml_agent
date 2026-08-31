@@ -160,7 +160,7 @@ function traceUpTo(k){ // reveal the accepted line through iteration k
 function headline(n,i){
   const sel=n.selection||{};
   if(i===0)return 'Reproduce the baseline. <span class="go">0.6018</span>. Base camp.';
-  if(n.primary==null)return 'Node crashed mid-run. Logged as <span class="amber">VOID</span>, loop continues.';
+  if(n.primary==null)return 'The training script crashed. Logged as <span class="amber">VOID</span>, loop continues.';
   const m='tries <b>'+esc(nice(sel.chosen_method_id||'a new package'))+'</b>';
   return n.accepted
     ?m+' → <span class="go">'+n.primary.toFixed(4)+'</span>. Cleared the bar.'
@@ -208,7 +208,7 @@ function headline(n,i){
   // final entry: convergence
   box.insertAdjacentHTML('beforeend','<div class="entry" data-i="conv">'
     +'<span class="stamp acc">CONVERGED</span><h3>STOP</h3>'
-    +'<div>Three consecutive iterations failed to improve the best by <b>ε = 0.002</b>, so the official convergence rule fires. '
+    +'<div>Three iterations in a row failed to beat the best score by <b>0.002</b>, so the competition\'s stopping rule (epsilon) fires. '
     +'Final: <span class="go">'+BEST.toFixed(6)+'</span>, +'+(BEST-BASELINE).toFixed(4)
     +' over the baseline. No human said stop.</div></div>');
 })();
@@ -275,14 +275,14 @@ document.querySelectorAll('.entry').forEach(el=>{
   // per-metric finals come from the designated run's scored artifact
   const fin=[...N].reverse().find(n=>n.selected_ensemble)?.selected_ensemble||{};
   const cells=[
-    [BEST.toFixed(4),'final valid primary'],
-    [fin.gauc?fin.gauc.toFixed(4):'n/a','final valid GAUC'],
-    [fin.ndcg5?fin.ndcg5.toFixed(4):'n/a','final valid nDCG@5'],
+    [BEST.toFixed(4),'final validation score (primary)'],
+    [fin.gauc?fin.gauc.toFixed(4):'n/a','GAUC: per-user ranking quality'],
+    [fin.ndcg5?fin.ndcg5.toFixed(4):'n/a','nDCG@5: top-5 ranking quality'],
     ['+'+(BEST-BASELINE).toFixed(4),'gain vs validation baseline (0.6016)'],
-    [String(M.iterations||6)+' of 50','iterations to convergence'],
-    [wall,'agent wall-clock'],
+    [String(M.iterations||6)+' of 50','iterations used before the rule stopped it'],
+    [wall,'wall-clock, start to stop'],
     [(M.tokens||0).toLocaleString('en-US'),'LLM tokens, in + out'],
-    [M.stop==='converged'?'ε rule':'cap','what ended the run'],
+    [M.stop==='converged'?'ε rule':'cap','what ended the run: the competition\'s stopping rule'],
     ['0','mid-run interventions'],
   ];
   $('#rgrid').innerHTML=cells.map(c=>'<div class="cell"><div class="v">'+c[0]
@@ -415,14 +415,14 @@ function setArch(k){
   arrow(X[2]+W,my1,X[3],my1,'','');
   // part 2: the harness row, right to left, inside the workspace boundary
   cur='harness';
-  add('<text class="alane" x="'+X[1]+'" y="'+(Y2-36)+'">HARNESS · DETERMINISTIC · NEVER TRUSTS THE AGENT</text>');
+  add('<text class="alane" x="'+X[1]+'" y="'+(Y2-36)+'">HARNESS · FIXED CODE, NO LLM · NEVER TRUSTS THE AGENT</text>');
   arrow(X[3]+W/2,Y1+BH,X[3]+W/2,Y2-22,'','hands the script off');
   add('<rect class="abound" x="'+(X[2]-20)+'" y="'+(Y2-22)+'" width="'+(X[3]+W-X[2]+40)+'" height="'+(BH+44)+'" rx="10"/>');
   add('<text class="as" x="'+(X[2]-6)+'" y="'+(Y2+BH+38)+'">agent workspace boundary</text>');
   box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access · 360 s dry run']);
-  box(X[2],Y2,W,BH,'','TRAIN',['fixed temporal split:','train + valid only']);
-  box(X[1],Y2,W,BH,'','EVALUATE',['official GAUC + nDCG@5','per user · primary = mean']);
-  box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain clears calibrated noise']);
+  box(X[2],Y2,W,BH,'','TRAIN',['same time-based split:','train + validation only']);
+  box(X[1],Y2,W,BH,'','EVALUATE',['per-user ranking quality','(official GAUC + nDCG@5)']);
+  box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain beats measured noise']);
   arrow(X[3],my2,X[2]+W,my2,'','');
   arrow(X[2],my2,X[1]+W,my2,'','scores');
   arrow(X[1],my2,X[0]+W,my2,'','Δ');
@@ -437,8 +437,8 @@ function setArch(k){
   arrow(X[0]+W/2,Y2,X[0]+W/2,Y1+BH,'go','accept / dead end, journaled');
   // part 4: what ends the run, and what can never enter it
   cur='stop';
-  box(X[0],Y3,W+60,90,'go','CONVERGENCE RULE',['3 quiet iterations end the','run · no human says stop']);
-  box(X[3],Y3,W,90,'no','HIDDEN TEST WINDOW',['not mounted in the workspace:','structurally unreachable']);
+  box(X[0],Y3,W+60,90,'go','STOPPING RULE (EPSILON)',['3 iterations without a 0.002','gain end the run · no human stops it']);
+  box(X[3],Y3,W,90,'no','HIDDEN TEST SET',['never copied into the workspace:','no path can reach it']);
   arrow(X[0]+W/2,Y2+BH,X[0]+W/2,Y3,'go','');
   arrow(X[3]+W/2,Y2+BH+22,X[3]+W/2,Y3,'no','no path exists');
   svg.innerHTML=defs+ARCH_PARTS.map(p=>'<g class="apart" data-part="'+p+'">'+parts[p]+'</g>').join('');

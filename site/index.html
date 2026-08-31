@@ -15,11 +15,12 @@
 <div id="prog"></div>
 
 <header id="hero"><div class="wrap">
-  <h1>An agent that improves its own ranking model.<br>
+  <h1>An agent that runs its own ML experiments.<br>
     <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.<span class="cursor"></span></h1>
   <p class="sub">It trains a model that predicts which videos a user will keep watching, then
   diagnoses that model, changes it, retrains, and measures again, with no person steering.
-  This page is its flight recorder: every hypothesis, every dead end, every accepted fix,
+  The score is the competition's ranking metric: how well the model orders each user's
+  own videos. This page is its flight recorder: every hypothesis, every dead end, every accepted fix,
   replayed from the run journal.</p>
   <div class="flexgap"></div>
   <svg id="herochart" viewBox="0 0 1120 480" aria-label="validation score per iteration"></svg>
@@ -28,40 +29,45 @@
 
 <section id="loop"><div class="wrap">
   <div class="eyebrow">the machine</div>
-  <h2>Diagnose, treat, retrain, measure. Repeat until the rule says stop.</h2>
+  <h2>Diagnose, treat, retrain, measure. Repeat until the stopping rule fires.</h2>
   <p class="lede">No human picks the next move. The agent reads its own training
   curves, chooses a treatment from a library of cited method cards, edits the model
-  code, retrains, and keeps a change only if it clears a calibrated acceptance
-  gate. The run ends when three consecutive iterations fail to improve the best
-  by ε&nbsp;=&nbsp;0.002. A convergence rule, not a person, ends the run.</p>
+  code, retrains, and keeps a change only if the gain is bigger than measurement
+  noise (the acceptance gate). The run ends by the competition's stopping rule:
+  three iterations in a row that fail to beat the best score by 0.002 (epsilon).
+  A rule, not a person, ends the run.</p>
   <div class="stages" id="stages">
     <div class="stage" data-s="0">
       <div class="snum">01</div><h3>DIAGNOSE</h3>
-      <p>Looks at how the last model trained, epoch by epoch, and names what is
-      holding it back: overfitting, underfitting, a plateau, or plain seed noise.</p>
+      <p>Looks at how the last model trained, pass by pass over the data, and names
+      what is holding it back: overfitting, undertraining, a plateau, or plain
+      run-to-run randomness (seed noise).</p>
     </div>
     <div class="stage" data-s="1">
       <div class="snum">02</div><h3>TREAT</h3>
-      <p>Selects a treatment from a library of 42 method cards: mechanism, measured
-      evidence on this dataset, and preconditions, drawn from ranking literature.</p>
+      <p>Picks a fix from a library of 42 method cards. Each card is a published
+      ranking technique written up with how it works, when it applies, and what it
+      has scored on this dataset so far.</p>
     </div>
     <div class="stage" data-s="2">
       <div class="snum">03</div><h3>RETRAIN</h3>
-      <p>The proposer LLM writes a complete training script against a frozen node
-      contract, smoke-tests it in 360 s, then trains on the fixed temporal split.</p>
+      <p>The LLM writes a complete training script to a fixed input/output contract.
+      The harness runs it for 360 s to catch crashes (a smoke test), then trains it
+      on the same time-based data split every iteration.</p>
     </div>
     <div class="stage" data-s="3">
       <div class="snum">04</div><h3>MEASURE</h3>
-      <p>The official evaluator scores GAUC and nDCG@5 per user; primary = the mean.
-      A change is kept only if it clears the acceptance gate.</p>
+      <p>The official evaluator scores how well the model ranks each user's own
+      videos (GAUC and nDCG@5 per user, averaged into one primary score). A change
+      is kept only if its gain clears the acceptance gate.</p>
     </div>
   </div>
-  <div class="loopback"><span class="lbchip">accept only if Δ clears the gate · reject = dead end · stop after 3 quiet iterations</span></div>
+  <div class="loopback"><span class="lbchip">keep a change only if its gain clears the gate · otherwise a dead end · stop after 3 iterations without real progress</span></div>
 
 </div></section>
 
 <section id="log"><div class="wrap">
-  <div class="eyebrow">the run · bigclock_07 · replayed from journal.jsonl</div>
+  <div class="eyebrow">the run · bigclock_07 · replayed from its journal file</div>
   <h2>Six iterations, replayed.</h2>
   <div class="cols">
     <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
@@ -76,13 +82,14 @@
   inside each stage of every one of them.</p>
   <div class="deep">
     <div class="dstep"><div class="dnum">01 · DIAGNOSE</div>
-      <p>Every trained node logs a learning curve: training loss and validation score
+      <p>Every trained model logs a learning curve: training loss and validation score
       at every epoch. The agent reads that curve the way an engineer would. Validation
       peaking early and then sliding while training loss keeps falling means
       overfitting. Both still improving at the last epoch means undertraining. A flat
       curve on a changed model means the idea did nothing. And because the run
-      calibrates baseline seed noise first (3 seeds, σ ≈ 0.0001), the agent can tell
-      a real effect from a lucky seed by reading the gap in sigmas. A telemetry gate
+      measures the baseline's run-to-run randomness first (3 seeds, σ ≈ 0.0001), the
+      agent can tell a real effect from a lucky run by reading the gain as a multiple
+      of that noise (sigmas). A telemetry gate
       keeps it honest: a diagnosis may only cite a curve that was actually recorded,
       and every diagnosis is written verbatim into the journal, so wrong calls stay
       visible. The one you just saw replayed, "validation peaks at epoch 8", is what
@@ -91,53 +98,58 @@
       <p>The diagnosis selects from a library of 42 method cards, each a real
       technique from the ranking literature written down with its mechanism, when it
       applies, and what it has measured on this dataset so far. Overfitting points at
-      regularization cards; a plateau points at ensembling or a family switch. The
-      menu has two tiers, proven treatments versus evidence-ranked opportunities, and
-      a strategy layer keeps the run phase-appropriate: establish a strong base
-      first, exploit what measured, close with a cross-family ensemble.</p></div>
+      regularization cards; a plateau points at combining models or switching to a
+      different model type (a family switch). The menu has two tiers, proven fixes
+      versus promising but untested ones, and a strategy layer keeps the run
+      phase-appropriate: establish a strong base first, build on what measured,
+      close by blending different model types (a cross-family ensemble).</p></div>
     <div class="dstep"><div class="dnum">03 · RETRAIN</div>
       <p>The agent then writes a complete training script implementing the chosen
       treatment, against a frozen contract: read the prepared splits, train, emit
       validation predictions plus the per-epoch history the next diagnosis will need.
-      A 360-second smoke test catches crashes before the full train. The hidden test
-      window is never mounted into the workspace, so leakage is impossible by
-      construction rather than by instruction. If a script crashes, a fixer model
+      A 360-second trial run (smoke test) catches crashes before the full train. The
+      hidden test set, the data the final submission is scored on, is never copied
+      into the workspace, so leakage is impossible by construction rather than by
+      instruction. If a script crashes, a fixer model
       gets one repair attempt; an unrecoverable crash is logged VOID and the loop
       moves on.</p></div>
     <div class="dstep"><div class="dnum">04 · MEASURE</div>
-      <p>The official evaluator scores validation GAUC and nDCG@5 per user; the
-      primary metric is their mean. A change is kept only if it clears a calibrated
-      acceptance gate: grey zone floor 0.0005, and borderline gains must repeat on a
-      second seed and pass a z-test against the calibrated noise (the winning close
-      of bigclock_07 was accepted at +0.0013). Convergence is the official rule:
-      the run ends when three consecutive iterations fail to improve the best by
-      ε = 0.002, hard cap 50. The run you just scrolled through ended exactly that way, with no human in the
-      decision.</p></div>
+      <p>The official evaluator scores how well the model ranks each user's own
+      videos (validation GAUC and nDCG@5 per user; the primary metric is their mean).
+      A change is kept only if it clears an acceptance gate set against measured
+      noise: gains under a 0.0005 floor do not count, and borderline gains must
+      repeat on a second seed and pass a statistical test (a z-test) against that
+      noise (the winning close of bigclock_07 was accepted at +0.0013). The stop is
+      the competition's rule (epsilon): the run ends when three iterations in a row
+      fail to beat the best by 0.002, hard cap 50. The run you just scrolled through
+      ended exactly that way, with no human in the decision.</p></div>
   </div>
 </div></section>
 
 <section id="architecture"><div class="wrap">
   <div class="eyebrow">the system</div>
-  <h2>One loop, two halves: the agent proposes, the harness disposes.</h2>
-  <p class="lede">The LLM lives in the top lane: it reads recorded telemetry, picks a
-  cited method card, and writes a training script. Everything below the line is
-  deterministic harness: screening, smoke test, training on the fixed split, official
-  scoring, and a calibrated gate. The hidden test window has no path into the loop at
+  <h2>One loop, two halves: the agent proposes, the harness checks and scores.</h2>
+  <p class="lede">The LLM lives in the top lane: it reads the recorded training
+  curves, picks a cited method card, and writes a training script. Everything below
+  the line is fixed code with no LLM in it (the harness): screening, a trial run,
+  training on the fixed split, official scoring, and a gate that rejects gains
+  smaller than measurement noise. The hidden test set has no path into the loop at
   all.</p>
   <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture: agent lane, harness lane, journal, hidden test excluded"></svg>
   <ul class="archlegend" id="archlegend" aria-label="walk the diagram">
     <li data-part="agent"><span class="pn">01 · TOP LANE</span><b>The agent proposes.</b> Reads the last curves, names the bottleneck, picks a card, writes the whole training script.</li>
-    <li data-part="harness"><span class="pn">02 · BOTTOM LANE</span><b>The harness executes and scores.</b> Screens the code, smoke-tests it, trains on the fixed split, scores with the official evaluator, gates the gain against calibrated noise.</li>
+    <li data-part="harness"><span class="pn">02 · BOTTOM LANE</span><b>The harness executes and scores.</b> Screens the code, smoke-tests it, trains on the fixed split, scores with the official evaluator, keeps the change only if the gain beats measured noise.</li>
     <li data-part="journal"><span class="pn">03 · THE RETURN</span><b>Everything is journaled.</b> Accept or dead end, the verdict goes back into the run's memory, so later iterations do not relearn it.</li>
-    <li data-part="stop"><span class="pn">04 · THE EDGES</span><b>A rule ends it; the test set never enters.</b> Three quiet iterations (ε = 0.002) stop the run. The hidden test window is not mounted, so no path exists.</li>
+    <li data-part="stop"><span class="pn">04 · THE EDGES</span><b>A rule ends it; the test set never enters.</b> Three iterations in a row without a 0.002 gain (the epsilon rule) stop the run. The hidden test set is never copied into the workspace, so no path to it exists.</li>
   </ul>
 </div></section>
 
 <section id="evidence"><div class="wrap">
   <div class="eyebrow">the evidence</div>
   <h2>What the diagnosis looked like inside the model.</h2>
-  <p class="lede">While a model trains, every video grows an embedding. A video the
-  model has barely seen should keep a small one: there is not enough data to learn
+  <p class="lede">While a model trains, every video gets a learned numeric
+  fingerprint (an embedding). A video the model has barely seen should keep a small
+  one: there is not enough data to learn
   anything real about it. Watch the <span class="no">red line</span> below, the
   rarest 10% of videos. In the <b>baseline</b> it never stops growing: the model is
   memorizing those videos. After the <b>agent's treatments</b> it flattens out where
@@ -150,37 +162,42 @@
 <section id="engineering"><div class="wrap">
   <div class="eyebrow">the harness</div>
   <h2>The agent is only half the system. The other half never trusts it.</h2>
-  <p class="lede">Everything the LLM does runs inside a harness engineered so that
-  honesty is structural, not behavioral. These are the pieces we built.</p>
+  <p class="lede">Everything the LLM does runs inside a harness built so that
+  honesty is part of the plumbing, not something asked for in a prompt. These are
+  the pieces we built.</p>
   <div class="enggrid">
     <a class="engcard" href="#deep-leakage"><h3>Structural leakage guard</h3>
-      <p>The hidden test window is never mounted into the agent's workspace, and
-      generated code is screened before execution. Not touching the test set is a
+      <p>The hidden test set is never copied into the agent's workspace, and
+      generated code is screened before it runs. Not touching the test set is a
       property of the filesystem, not a promise in a prompt.</p>
       <div class="more">read the full story ↓</div></a>
     <a class="engcard" href="#deep-gate"><h3>Calibrated acceptance gate</h3>
-      <p>Baseline seed noise is measured first, so every gain is read in sigmas.
-      Borderline gains must repeat on a second seed (a z-test) before acceptance,
-      and a convergence rule ends the run, never a person.</p>
+      <p>The baseline's run-to-run randomness is measured first, so every gain is
+      read as a multiple of that noise (sigmas). Borderline gains must repeat on a
+      second seed (a z-test) before acceptance, and a stopping rule ends the run,
+      never a person.</p>
       <div class="more">read the full story ↓</div></a>
     <a class="engcard" href="#deep-methods"><h3>Method cards, not vibes</h3>
-      <p>The agent's knowledge is 42 cards: mechanism, preconditions, and measured
-      evidence per technique. A two-tier menu separates proven treatments from
-      ranked opportunities, and a strategy layer matches them to the run phase.</p>
+      <p>The agent's knowledge is 42 cards: for each technique, how it works, when it
+      applies, and what it has scored here. A two-tier menu separates proven fixes
+      from promising but untested ones, and a strategy layer matches them to where
+      the run is: opening, middle, or close.</p>
       <div class="more">read the full story ↓</div></a>
     <a class="engcard" href="#deep-telemetry"><h3>Telemetry-gated diagnosis</h3>
-      <p>A diagnosis may only cite curves that were actually recorded. When we found
-      stale knowledge silently mis-steering selection, we rebuilt the channel and
-      disclosed the discarded runs rather than hiding them.</p>
+      <p>A diagnosis may only cite training curves that were actually recorded. When
+      we found out-of-date notes quietly steering the agent's choices, we rebuilt how
+      knowledge is loaded and disclosed the affected runs rather than hiding them.</p>
       <div class="more">read the full story ↓</div></a>
-    <a class="engcard" href="#deep-plans"><h3>Typed ensemble plans</h3>
-      <p>For the closing move, the agent emits a typed, schema-validated plan and a
-      deterministic assembler executes it: parallel family probes, exhaustive blend
-      enumeration, full-fidelity re-verification. No LLM in the measurement path.</p>
+    <a class="engcard" href="#deep-plans"><h3>Agent plans the ensemble, code runs it</h3>
+      <p>For the final move, combining several model types into one (an ensemble),
+      the agent writes a structured, machine-checked plan and fixed code carries it
+      out: quick trial fits of each model type, every combination scored, the winner
+      retrained and re-verified in full. No LLM touches the measurement.</p>
       <div class="more">read the full story ↓</div></a>
     <a class="engcard" href="#deep-benches"><h3>Decision benches</h3>
-      <p>Selector quality is tested like code: frozen run-state fixtures with known
-      right answers, replayed against the brain after every change. Bench fixes may
+      <p>The agent's judgment is tested like code: we froze real mid-run situations
+      whose right next move we know, and replay the agent against them after every
+      change. Bench fixes may
       only be evidence corrections or general principles, never canned answers.</p>
       <div class="more">read the full story ↓</div></a>
   </div>
@@ -201,8 +218,8 @@
 
   <div class="dsec" id="deep-leakage">
     <h3>Structural leakage guard</h3>
-    <p>The rule "never touch the hidden test set" is enforced by architecture, not
-    by prompt. A data exporter builds the agent's workspace containing only the
+    <p>The rule "never touch the hidden test set" (the data the final submission is
+    scored on) is enforced by architecture, not by prompt. A data exporter builds the agent's workspace containing only the
     train and validation windows; the test file simply does not exist in any path
     the agent's scripts can read. On top of that, every generated script is screened
     before execution for test-window access patterns, and the two test-prediction
@@ -215,12 +232,12 @@
 
   <div class="dsec" id="deep-gate">
     <h3>Calibrated acceptance gate</h3>
-    <p>Iteration zero trains the official baseline on three seeds and measures the
-    noise floor: σ ≈ 0.0001 on validation primary. Every later delta is read in
-    those units. A candidate is accepted outright only above a floor; borderline
+    <p>Iteration zero trains the official baseline on three random seeds and
+    measures how much the score moves by chance alone: σ ≈ 0.0001 on the validation
+    primary score. Every later gain is read in those units. A candidate is accepted outright only above a floor; borderline
     gains (the grey zone, floor 0.0005) must repeat on a fresh seed and pass a
-    z-test against the calibrated noise before they count. We measured why this
-    matters: the official ε = 0.002 convergence rule silently kills honest +0.0004
+    statistical test (a z-test) against that noise before they count. We measured
+    why this matters: the competition's 0.002 stopping rule (epsilon) silently kills honest +0.0004
     steps from a strong base, so a run that chases every twinkle converges early on
     noise, and a run with no floor accepts phantoms. The gate is versioned
     (floor-v2) and its history is in the repo, including the runs the earlier
@@ -246,12 +263,12 @@
 
   <div class="dsec" id="deep-telemetry">
     <h3>Telemetry-gated diagnosis, and the bug that taught us why</h3>
-    <p>Every node script must emit its per-epoch history: train loss, validation
+    <p>Every training script must emit its per-epoch history: train loss, validation
     GAUC, nDCG@5, learning rate. The diagnosis stage may only assert curve shapes
     that exist in that record; a proposal reasoning from an unrecorded curve is
     rejected as insufficient telemetry, and the run says so in its journal. We
-    learned this the expensive way: mid-campaign we found two stale knowledge
-    channels (an outdated directive and 17 stale card statuses) had been silently
+    learned this the expensive way: mid-campaign we found two out-of-date knowledge
+    sources (an outdated directive and 17 stale card statuses) had been silently
     mis-steering selection for a day of runs. We purged them, rebuilt the channel
     so knowledge is loaded once at launch, and disclosed the two runs the earlier
     wrong doctrine had discarded rather than deleting them. Accurate memory turned
@@ -259,17 +276,18 @@
   </div>
 
   <div class="dsec" id="deep-plans">
-    <h3>Typed ensemble plans: the agent plans, the harness executes</h3>
-    <p>The campaign's strongest measured finding: cross-family blends beat
-    same-family seed ensembles by an order of magnitude (+0.0013 vs +0.0003, with
-    team evidence probes reaching 0.6058-0.6065). The farm-close capability turns
-    that into a first-class move. The agent emits a typed, schema-validated JSON
-    plan: which model families, which configs and seeds, which blend rule. A
-    deterministic assembler then runs the three phases: parallel probe-fidelity
-    fits of every family, exhaustive enumeration of every declared blend over the
-    probe score vectors (cheap: rank averages of saved arrays), full training of
-    only the complementary families, and a full-fidelity re-verification of the
-    winning combination before anything is emitted. There is no LLM call inside the
+    <h3>The final ensemble: the agent plans, the harness executes</h3>
+    <p>The campaign's strongest measured finding: blending different model types
+    (a cross-family ensemble) beats blending re-runs of the same model by an order
+    of magnitude (+0.0013 vs +0.0003, with team evidence probes reaching
+    0.6058-0.6065). The farm-close move, a final ensemble of different model types,
+    turns that into a first-class capability. The agent emits a structured,
+    machine-checked plan (typed JSON): which model types, which configs and seeds,
+    which blend rule. Fixed code (the assembler) then runs the three phases: quick
+    low-cost fits of every model type in parallel (probes), every declared blend
+    scored over those probe outputs (cheap: rank averages of saved arrays), full
+    training of only the model types that complement each other, and a full
+    re-verification of the winning combination before anything is emitted. There is no LLM call inside the
     measurement path, an anchor rule guarantees a strong singleton fallback, and a
     legitimate "the incumbent won" is recorded as such rather than punished as a
     degenerate ensemble.</p>
@@ -279,7 +297,7 @@
     <h3>Decision benches: testing judgment like code</h3>
     <p>How do you regression-test an agent's judgment? We froze real run states
     (curves, menu, history) whose right next move we knew from measurement, and
-    replay the brain against them after every harness change.
+    replay the agent's decision-maker against them after every harness change.
     The full-knowledge selector bench runs 8/8; the clean-mode strategy bench went
     4/10 to 10/10 through methodology fixes alone, under a standing constitution:
     a bench fix may only be an evidence correction or a general principle, never a
@@ -307,16 +325,17 @@
       measured evidence, updated as runs conclude.</p>
       <div class="versus"><s>ever-growing prompt of tips</s> → <b>auditable, correctable, honest states</b> (measured-dead cards cannot be re-picked)</div></div>
     <div class="decision"><h3>Medium reasoning effort</h3>
-      <p>Proposer runs at medium effort only. High and extra-high were measured:
+      <p>The proposing LLM runs at medium reasoning effort only. High and extra-high were measured:
       proposals truncate or fail (runs 16-22, 27, 28 in the ledger).</p>
       <div class="versus"><s>max effort everywhere</s> → <b>measured reliability</b> beats theoretical depth</div></div>
-    <div class="decision"><h3>Floor-v2 acceptance, in sigmas</h3>
-      <p>Baseline noise is calibrated first (3 seeds, σ ≈ 0.0001). Gains are read in
-      sigmas; borderline gains must repeat on a fresh seed and pass a z-test.</p>
-      <div class="versus"><s>accept any positive delta</s> → <b>phantoms rejected</b>; eps-only alternative kills honest +0.0004 steps</div></div>
+    <div class="decision"><h3>Accept only gains bigger than noise (floor-v2)</h3>
+      <p>Baseline run-to-run noise is measured first (3 seeds, σ ≈ 0.0001). Gains are
+      read as multiples of it (sigmas); borderline gains must repeat on a fresh seed
+      and pass a z-test.</p>
+      <div class="versus"><s>accept any positive delta</s> → <b>phantom gains rejected</b>; the 0.002 rule alone kills honest +0.0004 steps</div></div>
     <div class="decision"><h3>The agent plans, the harness executes</h3>
-      <p>For ensemble closes the agent emits a typed, schema-validated plan; a
-      deterministic assembler runs probes, blends, and re-verification.</p>
+      <p>For the final ensemble the agent writes a structured, machine-checked plan;
+      fixed code runs the trial fits, the blends, and the re-verification.</p>
       <div class="versus"><s>let the LLM run the measurement</s> → <b>no LLM in the measurement path</b>, ever</div></div>
     <div class="decision"><h3>Failure is data</h3>
       <p>A crashing script gets exactly one fixer repair attempt; an unrecoverable
@@ -332,20 +351,21 @@
   (<code>zoo/EXPERIMENTS*.md</code>, <code>logs/RUNS.md</code>), not an opinion.</p>
   <div class="findings">
     <div class="frow"><div class="fnum go">+0.0013 vs +0.0003</div>
-      <p><b>Cross-family blends beat same-family seed ensembles</b> by an order of
-      magnitude. This single finding shaped the endgame: strong package first, then a
-      cross-family ensemble close.</p></div>
+      <p><b>Blending different model types beats blending re-runs of the same model</b>
+      by an order of magnitude (cross-family vs same-family ensembles). This single
+      finding shaped the endgame: strong single model first, then a cross-family
+      ensemble close.</p></div>
     <div class="frow"><div class="fnum">k = 3 … 12 flat</div>
       <p><b>Blend member count does not matter on Pure</b>: every count from 3 to 12
       lands in 0.6048-0.6050, within ±0.0003 noise. The predeclared 5-seed recipe
       stayed.</p></div>
     <div class="frow"><div class="fnum">k = 16</div>
-      <p><b>Embedding width is dataset-sized</b>: 16 is measured optimal on Pure,
+      <p><b>The best embedding size depends on dataset size</b>: 16 is measured optimal on Pure,
       while the capacity peak sits near 48 on the 8x larger KuaiRand-1K.</p></div>
     <div class="frow"><div class="fnum no">+0.0004, killed</div>
-      <p><b>The official ε = 0.002 rule silently kills honest small steps</b> from a
-      strong base, so a run chasing every twinkle converges early on noise. This is
-      why the acceptance gate is calibrated in sigmas (floor-v2).</p></div>
+      <p><b>The competition's 0.002 stopping rule (epsilon) silently kills honest small steps</b> from a
+      strong base, so a run chasing every twinkle stops early on noise. This is
+      why the acceptance gate is set against measured noise (floor-v2).</p></div>
     <div class="frow"><div class="fnum">0.6055 - 0.6060</div>
       <p><b>The measured single-run ceiling</b> across the campaign's 139 runs. The
       designated run sits on it; nothing that beat it was clean.</p></div>
@@ -364,7 +384,7 @@
   <div class="eyebrow">the receipts</div>
   <h2>Everything above is measured, logged, and reproducible.</h2>
   <div class="grid" id="rgrid"></div>
-  <p class="note">Scored artifact = best validation checkpoint at rule convergence, CPU only, no GPU.
+  <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
   Test labels are never read anywhere in the pipeline; test features are read only by the final submission builders. Bonus: the same
   agent on KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
   journals, the method-card library, and 250+ measured experiment cells ship in the repo.</p>
