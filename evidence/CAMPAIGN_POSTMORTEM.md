@@ -81,3 +81,15 @@ demonstration that the ~0.6045 single-model wall is mechanism-saturated.
 - Accept/reject ratio 108/240; every top result across both benchmarks ends in an
   ensemble close; selector streakiness (ignoring best-card evidence) is the residual
   inefficiency — addressed in the final steered run (disclosed launch directive).
+
+## v2_r8 case study (31 Aug): diagnosis-gated menus + telemetry blindness
+Chain: n1 node script omitted epoch history -> n2/n3 selector rationales explicitly
+state curve telemetry was unusable -> fallback diagnoses (overfit, metric-mismatch)
+-> selector policy (pick cards treating the diagnosis) never surfaced
+context-stratified-pairs (treats ranking-mismatch|data-shift; the campaign's best
+new card, absent from ALL consideration sets) -> three sub-eps iterations -> converged
+0.60244. Two systemic lessons: (1) enforce the node telemetry contract mechanically
+(reject/flag history-less nodes) so diagnosis is never blind; (2) surface top
+measured-win cards to the selector regardless of diagnosis match (a "wildcard slot"),
+since diagnosis errors otherwise hide the strongest evidence. Both are future-work;
+the live steered runs (v2_s7/r9) bypass the issue via launch directives.
