@@ -183,3 +183,9 @@ below its close (0.605575). The same sampler at its own swept dials scored
 compounding requires re-sweeping the package WITH the new mechanism (combo-sweep
 principle), not grafting onto fixed dials. Evidence only; artifacts in
 logs/chain/ (laptop) and coral:~/mle-agent/logs/chain/.
+Recreatable-shape chain (bigclock close + ONE ctx-resweep node, equal z-avg, no
+selection): with a 0.6051-class ctx node (f9 n2) = 0.605791 (+0.0002); with a
+0.6047-class one (f8 n2) = 0.605138 (worse than bigclock alone). The "then some"
+exists only when the second node is itself ~0.605: member competitiveness, again.
+(Pooling all 11 strong artifacts equal-weight = 0.605359; greedy best-of-pool =
+0.605791 — cherry-pick, disclosed as optimistic, NOT a submission candidate.)
