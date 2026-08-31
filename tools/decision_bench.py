@@ -137,6 +137,24 @@ SCENARIOS = [
         expect_plan=True,
     ),
     dict(
+        name="endgame_unspent_package_trap",
+        note="farm_f4 iter-3 state (31 Aug): a measured package still unspent, "
+             "but its absolute evidence sits near the current best (little "
+             "headroom); the close with ledger-exceeding evidence is still the "
+             "margin-maximal pick",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0001)',
+            'node_001 [draft] "(proposal failed: transport timeout)" VOID (strike 1)',
+            'node_002 [draft] "gauge-fixed-bce" primary=0.6029 ACCEPTED (+0.0011, below eps: strike 2)',
+        ],
+        history=CURVE_NONE,
+        streak={"no_improve_streak": 2, "iterations_done": 3, "max_iters": 16},
+        good={"diverse-family-farm-close", "heterogeneous-ensemble-design"},
+        bad={"seq-deepfm-composite", "package-dial-sweep", "gauge-fixed-bce",
+             "regularization-schedule", "seed-ensemble", "ensemble-design-sweep"},
+        expect_plan=True,
+    ),
+    dict(
         name="farm_close_uniquely_right",
         note="two DIFFERENT families independently measured near the ceiling, "
              "plateau streak, clock half spent: the doctrine answer is the "

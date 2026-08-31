@@ -217,7 +217,10 @@ CONVERGENCE_PRESSURE = (
     "only just reaches the bar fails it about half the time, so bare arithmetic "
     "reach is not parity with a wide-margin alternative (combining decorrelated "
     "mechanism families generally out-gains both re-seeding one family and any "
-    "single atomic mechanism). A proven small-gain close is the "
+    "single atomic mechanism). Read margins against the CURRENT best, not a "
+    "card's original baseline: an unspent package whose measured absolute score "
+    "sits near the current best offers almost no headroom, while a close whose "
+    "evidence exceeds every single-model score in the ledger offers the most. A proven small-gain close is the "
     "right pick only when no eligible move has evidence reaching epsilon. Do not "
     "change what counts as an iteration in response to the streak."
 )
