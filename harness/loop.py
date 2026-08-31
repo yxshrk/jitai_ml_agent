@@ -316,7 +316,9 @@ class Loop:
                 ref = json.loads(ref_path.read_text())
             except json.JSONDecodeError:
                 return None
-            margin = 0.005  # 1-epoch probes are noisy; flag pipeline breakage only
+            margin = 0.010  # measured: sane 1-epoch screens land 0.592-0.600 vs
+            # baseline ~0.602 while broken scripts land <=0.590 (fidelity sweep
+            # 31 Aug); 0.010 separates the two populations
             ref_primary, primary = ref.get("primary"), metrics.get("primary")
             if (isinstance(ref_primary, (int, float)) and isinstance(primary, (int, float))
                     and primary < ref_primary - margin):

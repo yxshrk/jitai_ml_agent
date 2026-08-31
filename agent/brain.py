@@ -395,6 +395,23 @@ class Brain:
 
     def _call(self, role: str, system_text: str, user_text: str, max_tokens: int) -> str:
         model = self.models[role]
+        # Per-role reasoning-effort override (e.g. AGENT_REASONING_EFFORT_PROPOSER=high)
+        # so the coder can run hotter than the bench-frozen selector effort.
+        role_effort = os.environ.get(f"AGENT_REASONING_EFFORT_{role.upper()}")
+        prior_effort = os.environ.get("AGENT_REASONING_EFFORT")
+        if role_effort:
+            os.environ["AGENT_REASONING_EFFORT"] = role_effort
+        try:
+            return self._call_inner(role, model, system_text, user_text, max_tokens)
+        finally:
+            if role_effort:
+                if prior_effort is None:
+                    os.environ.pop("AGENT_REASONING_EFFORT", None)
+                else:
+                    os.environ["AGENT_REASONING_EFFORT"] = prior_effort
+
+    def _call_inner(self, role: str, model: str, system_text: str, user_text: str,
+                    max_tokens: int) -> str:
         # Hard dollar cap: refuse the call if its worst case could exceed BUDGET_USD.
         # Conservative input estimate: ~1 token per 3 chars, plus overhead margin.
         est_input = (len(system_text) + len(user_text)) // 3 + 500
