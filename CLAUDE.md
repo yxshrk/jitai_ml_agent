@@ -92,28 +92,46 @@ journals, no secrets) + ChatGPT Pro prompt (delivered via clipboard; re-copy: se
 session log) — Rohan consulting ChatGPT for new mechanism ideas -> add as cards.
 SPEND: Rohan says real total ≈ $61; per-machine ledgers double-count (sum ~$200, wrong).
 
-CURRENT STATE (Mon 31 Aug ~13:00):
-- Pure designation: bigclock_07 0.605575 (clean) UNBEATEN over ~20 challengers.
-  Near-misses: novel_l1 0.60524 (ensemble failed confirm), final_s4 0.60521
-  (context-pairs +0.0015, no close attempted), final_s2 0.60499 (hetero close).
-- STALE-KNOWLEDGE FIX (midday, see postmortem): MENU CURRENT DIRECTIVE was stale
-  (dead watch-time themes) since Fri; --draft-tiers never reached selectors
-  (proposer-only — steering illusion); 17 card statuses were obsolete (champion
-  components "running-elsewhere", winning closes "untried"). ALL FIXED; grey floor
-  0.0005 (z-gate kept); tests 121/121.
-- LIVE FINAL WAVE: menu_m3+m4 (coral, first runs with fully-correct knowledge,
-  unsteered — the best-designed runs of the campaign), v2_r9 (ruby, old knowledge,
-  lottery), v2_1k (ruby, mid session-node; if it designates an in-run ensemble close
-  that is the preferred 1K artifact "C").
-- 1K: omega_1k 0.66892 triple-audited; artifact policy in SUBMISSION_RECIPE.md
-  (C in-run > A faithful-checkpoint [reconcile 0.6772-vs-0.66892 replay gap first!]
-  > B post-run ensemble = evidence only). Probe disclosure: evidence/PROBE_MANIFEST.md.
-- Teammate: Adi claims 0.6061 on branch codex/project-2-kuairand-agent — branch
-  evidence tops at 0.6050 (seq-DeepFM 0.6046 x4 seeds, carded as
-  seq-deepfm-author-history). AWAITING his push to verify; if real+eligible it is
-  designation-relevant.
-- Docs at fill-in-the-blank readiness (DEVPOST/README/RESULTS/VIDEO_SCRIPT {{TBD}}
-  slots); ChatGPT drafting README/video/judge-QA (check Rohan's downloads).
+CURRENT STATE (Mon 31 Aug ~18:00 — read this first; RUNS.md = scoreboard, postmortem = lessons):
+- DESIGNATIONS unchanged: Pure bigclock_07 0.605575 (clean; CSV built predict_test_bc07);
+  1K omega_1k 0.66892 (triple-audited; submit FAITHFUL A-form CSV test_submission_1k_faithful.csv
+  local/gitignored; B-form 0.6802 = evidence only, NO exceptions). ~150 challenger runs
+  have not beaten Pure; measured single-run ceiling 0.6055-0.6060 (cross-family close).
+- LIVE RUNS: ruby: z1 (0.60356 base), z2 (0.60514 base — best live position), showcase
+  (final full stack, 0.60282 base), pure_clean2 (literature-only + research DOCTRINE,
+  calibrating — the purity exhibit). cpupod (157.157.221.30:45155, $0.56/hr, TERMINATE
+  post-submission): cpu_c3 (0.60437 base), pure_clean (old-doctrine clean, 0.60284).
+- TODAY'S SYSTEM WORK (all merged to master + pushed unless noted): floor-v2 grey accept
+  (0.0005 + z repeatability heuristic); two-tier menu (treatments vs evidence-ranked
+  opportunities, kind field); strategy layer + phase guidance; insufficient-telemetry
+  diagnosis; ensemble contract + no-op-collapse fixer (transactional); smoke 360s; env
+  thread-cap passthrough; stale-knowledge purge (MENU directive, 17 statuses); pruned
+  library (42 cards); seq-deepfm cards from Adi's verified research (0.606116 exact-
+  verified from his saved scores); cross-family blend evidence (best combos 0.6060-65,
+  selection-free 0.60586) -> hetero + farm-close STRATEGY BUNDLE cards; recovery-
+  journaling fix (cherry-picked). UNMERGED branch harness-v3-audit = structured verdict
+  fields + all-mode dead-card enforcement + 8 tests (parked; report exhibit).
+- EVAL TOOLING: tools/decision_bench.py (full-knowledge selector bench, 8/8 after
+  evidence fixes; LIMITATION: cannot distinguish from always-pick-close constant policy),
+  tools/decision_bench_clean.py (clean-mode strategy bench 4/10->10/10 via methodology
+  only), tools/decision_replay.py (choices over cached artifacts -> 0.60599 = OPTIMISTIC
+  CACHED-ARTIFACT COUNTERFACTUAL, not an autonomous result). Bench constitution: fixes
+  may only be evidence corrections or general principles, never state-specific answers.
+- EXTERNAL REVIEWS adopted (3x ChatGPT Pro in Downloads/, 2x codex audits): artifact
+  policy, tie audit (stable), probe manifest, claim tempering, framing = "autonomous
+  research needs accurate memory and verified execution"; autonomy spectrum presented
+  as PROVENANCE TIERS (literature-only ~0.604 / measured-memory 0.6056 / human-assisted
+  0.6059-0.6065 dev evidence), never a causal ablation.
+- MACHINE OPS: ruby=gpubox (~/mle-agent, ~/techjam27k/.venv python); cpupod ssh -p 45155
+  root@157.157.157... (see above IP); coral RETIRED (disk); laptop idle. Watchdog
+  /tmp/fleet_watchdog.sh (relaunch via run_in_background after each event); jsweep
+  helper /tmp/jsweep.py on machines. pkill -f MUST use [b]racket patterns or pid loops
+  in a SEPARATE ssh from any text containing the pattern (self-match killed 4 sessions).
+  Brain caches knowledge AT LAUNCH (mid-run file edits do NOT affect live runs; earlier
+  "re-read per iteration" taint doctrine was wrong — discards stay disclosed).
+- RunPod: API key in session history; ~$5 spent of $30; GPU pods = oversubscribed CPU
+  (unusable, measured ~1 effective core) — CPU pods fine. TERMINATE pod + rotate BOTH
+  API keys + delete KuaiRand data post-submission.
 
 REMAINING before Tue 1 Sep 12:00 noon SGT:
 1) Harvest novel_l1/clean_c1/combo_r1/omega_1k + mcsweep verdict; final designations
