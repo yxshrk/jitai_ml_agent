@@ -28,3 +28,5 @@ logs/bonus_1k_*/predictions.csv
 logs/seedext/
 evidence/test_submission_1k.csv
 MACHINES.local.md
+evidence/test_submission_1k_faithful.csv
+evidence/test_submission_1k_omega.csv

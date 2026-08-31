@@ -49,3 +49,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | v2_r8 | ruby | converged | 3 | 0.60244 | floor-v2 accepted +0.0006 foothold but 2 rejects converged it; lesson: sub-eps accepts still strike (official rule) |
 | v2_s7 | coral | converged | 3 | 0.60362 | steered run IGNORED directive — root cause: draft-tiers reach proposer only; MENU CURRENT DIRECTIVE (selector channel) was stale w/ dead watch-time themes since Fri. MENU fixed for successor runs |
 | v2_r9 | ruby | KILLED early | - | - | stale-knowledge lottery ticket cut to free GPU for v2_1k session node; corrected-knowledge GPU run queued for when v2_1k ends |
+| menu_m4 | coral | converged | 3 | 0.60335 | corrected-knowledge run GENUINELY chose seq-deepfm card (unsteered) — measured 0.6033 vs external 0.6047: one-node port shortfall or transfer gap |
