@@ -55,6 +55,12 @@ def test_pick_champion_and_confirm_stats():
     assert pooled_sigma([[0.6]]) == (None, 0) and pooled_sigma([]) == (None, 0)   # nothing of its own yet -> caller uses the node's own SD
     assert not hasattr(C, 'SEED_SD_PRIOR') and not hasattr(C, 'SEED_SD_PRIOR_DF')
     assert 'no prior' in C.rules_text() or 'no other' in C.rules_text().lower() or 'OF THIS RUN' in C.rules_text()
+    from harness.loop import needs_more_seeds                      # ADR-0020
+    assert needs_more_seeds(2.5, False, 20, 3) is True             # borderline z: the rule that already existed
+    assert needs_more_seeds(4.0, True, 20, 3) is False             # accepts on a well-estimated sigma: decide now
+    assert needs_more_seeds(4.0, True, 4, 3) is True               # accepts on a 4-df sigma: buy degrees of freedom first
+    assert needs_more_seeds(4.0, True, 4, C.MAX_CONFIRM_SEEDS) is False   # no seeds left to spend
+    assert needs_more_seeds(0.5, False, 4, 3) is False             # a clear rejection is not worth more seeds
     m1, m2, diff, se, z, ok = confirm_stats([0.60447, 0.6045, 0.60399], [0.60304, 0.60232, 0.60261], 0.0003)   # live_04 node_015
     assert diff == pytest.approx(0.00166, abs=1e-5) and z > 6 and ok
     assert confirm_stats([0.6035, 0.6036, 0.6034], [0.6030, 0.6031, 0.6029], 0.0003)[5] is False   # +0.0005 at z ~ 2: borderline, not accepted

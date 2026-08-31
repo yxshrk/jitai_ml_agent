@@ -64,6 +64,15 @@ def pooled_sigma(samples):
             ss += (len(v) - 1) * statistics.variance(v); df += len(v) - 1
     return ((ss / df) ** 0.5 if df else None), df
 
+def needs_more_seeds(z, accepted, df, n_seeds):
+    """Whether a candidate must spend its remaining fresh seeds before the verdict stands. Two reasons: the z-score is
+    borderline (Z_BORDER <= z < Z_CRIT), or the verdict ACCEPTS on a pooled seed SD this run has barely estimated
+    (df < MIN_SIGMA_DF, ADR-0020) — with no prior carried in from other runs the opening confirmation pools only 4 df,
+    where a fixed Z_CRIT is really a ~2 % test rather than 0.13 %. The fix is degrees of freedom, not a higher bar:
+    measured on live_08/09's BPR nodes, two more seeds take df 4 -> 6 and z 3.39 -> 4.42 and 5.47 -> 4.19, both still
+    accepted. Normally only the first candidate of a run pays, since its extra seeds raise df for everyone after it."""
+    return (C.Z_BORDER <= z < C.Z_CRIT or (accepted and df < C.MIN_SIGMA_DF)) and n_seeds < C.MAX_CONFIRM_SEEDS
+
 def confirm_stats(v_node, v_ch, sigma):
     """z-test of the difference of fresh-seed means with the pooled seed SD: returns
     (mean_node, mean_champion, diff, se, z, accepted). Seeds are not paired across different scripts (they consume the
@@ -851,7 +860,8 @@ class Loop:
         """ADR-0012 statistics: FRESH seeds (1..CONFIRM_SEEDS) for the candidate and the champion (cached), a z-test of
         the difference of their means with the seed SD pooled over this run's own seed runs (no outside prior, ADR-0020),
         acceptance iff the gain
-        is >= MIN_EFFECT and z >= Z_CRIT; a borderline z gets two more seeds first. Seed 0 is the selected screen and is
+        is >= MIN_EFFECT and z >= Z_CRIT; a borderline z — or an accepting one on a sigma with < MIN_SIGMA_DF df — gets
+        two more seeds first. Seed 0 is the selected screen and is
         reported but not counted. Measured reason: the best of k single-seed branches is biased upward — +0.0022 on one
         seed was +0.0017 over three; a 3-vs-3 t-test at 2.5 passed 3-6 % of null candidates."""
         base = [self.seed + i for i in range(1, C.CONFIRM_SEEDS + 1)]
@@ -870,7 +880,8 @@ class Loop:
         sigma, df, own = sigma_for(v_node)
         m_node, m_ch, diff, se, z, accepted = confirm_stats(v_node, v_ch, sigma)
         adaptive = False
-        if C.Z_BORDER <= z < C.Z_CRIT and len(v_node) < C.MAX_CONFIRM_SEEDS:
+        thin = accepted and df < C.MIN_SIGMA_DF
+        if needs_more_seeds(z, accepted, df, len(v_node)):
             adaptive = True
             self._ensure_seeds(n, [self.seed + i for i in range(C.CONFIRM_SEEDS + 1, C.MAX_CONFIRM_SEEDS + 1)])
             v_node = self.fresh_seeds(n); sigma, df, own = sigma_for(v_node)
@@ -880,7 +891,7 @@ class Loop:
                  f"{', node-own SD' if own else ''}{', adaptive' if adaptive else ''}) -> {'ACCEPTED' if accepted else 'rejected'}")
         return accepted, {'node_seed0': self.node(n)['metrics']['primary'], 'node_seeds': v_node, 'champion_seeds': v_ch,
                           'delta_mean': round(diff, 5), 'se': round(se, 6), 'z': round(z, 2), 'sigma_pooled': round(sigma, 6),
-                          'sigma_df': df, 'sigma_from_node_only': own, 'adaptive': adaptive,
+                          'sigma_df': df, 'sigma_from_node_only': own, 'adaptive': adaptive, 'thin_df': thin,
                           'rule': f'fresh-seed mean gain >= {C.MIN_EFFECT} and z >= {C.Z_CRIT} with the seed SD pooled over '
                                   f'this run only (ADR-0020: no prior from other runs)'}
 

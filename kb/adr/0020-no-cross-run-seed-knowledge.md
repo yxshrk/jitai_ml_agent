@@ -56,3 +56,21 @@ sigma estimated from 4 df, which is a t-statistic read on a normal table (nomina
 honest fixes are a df-dependent critical value or a minimum df before deciding; both raise the bar in generation 1,
 where the strongest and most reproducible gain of the project (BPR) lives, so both need their own replay before being
 adopted. This ADR deliberately changes one thing only.
+
+## Amendment (same day, after review): degrees of freedom, not a higher threshold
+The open question above is closed the way the reviewer proposed. `Z_CRIT` stays at 3.0 — a t-critical at a run's
+opening df would veto real effects (6.62 at 4 df would reject BPR outright). Instead `MIN_SIGMA_DF = 6`: an
+**accepting** verdict resting on a pooled SD with fewer degrees of freedom than that spends the adaptive seeds before
+it stands, reusing the existing `Z_BORDER <= z < Z_CRIT` machinery rather than adding a rule. The predicate is one
+function, `loop.needs_more_seeds(z, accepted, df, n_seeds)`.
+
+Measured rather than assumed — live_08 and live_09's node_001 (BPR, the project's most reproducible gain and the
+node most exposed to this, since it is confirmed first at 4 df) re-run at fresh seeds 4 and 5:
+
+| run | 3 fresh seeds (ADR-0020 alone) | 5 fresh seeds (with the guard) |
+|---|---|---|
+| live_08 | diff +0.00103, sigma 0.000374, 4 df, z 3.39 → accept | diff +0.00113, sigma 0.000349, 6 df, **z 4.42 → accept** |
+| live_09 | diff +0.00168, sigma 0.000376, 4 df, z 5.47 → accept | diff +0.00151, sigma 0.000493, 6 df, **z 4.19 → accept** |
+
+So the guard preserves both verdicts and costs two extra seed runs — normally only for the first candidate of a run,
+whose extra seeds raise the pooled df for every confirmation after it. `thin_df` is journalled next to `adaptive`.

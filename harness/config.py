@@ -20,6 +20,10 @@ MAX_CONFIRM_SEEDS = 5             # adaptive: two more fresh seeds when the z-sc
 MIN_EFFECT = 0.0005               # acceptance: the fresh-seed mean gain over the champion must be at least this ...
 Z_CRIT = 3.0                      # ... and at least Z_CRIT standard errors with the POOLED seed SD (a z-test, not a 3-vs-3 t-test)
 Z_BORDER = 2.0                    # below this the candidate is rejected outright; between Z_BORDER and Z_CRIT more seeds decide
+MIN_SIGMA_DF = 6                  # an ACCEPTING verdict resting on a pooled seed SD with fewer degrees of freedom than this spends the
+                                  # adaptive seeds first (ADR-0020): with no outside prior the opening confirmation of a run estimates
+                                  # sigma from 4 df, where z >= Z_CRIT is really a ~2 % test rather than 0.13 %; the fix is degrees of
+                                  # freedom, not a higher threshold, and only the first candidate of a run normally pays for it
 N_CONVERGE = 3                    # official N
 RESET_MIN_GAIN = 0.001            # the convergence streak resets when the champion's fresh-seed mean has risen by at least this since
                                   # the last reset (cumulative, like min_delta against best-seen): eps/2 on a statistic with ~1/3 the
@@ -68,7 +72,8 @@ def rules_text():
             f"FRESH seeds; it is accepted iff its fresh-seed mean gain over the champion's fresh-seed mean is >= {MIN_EFFECT} AND "
             f"z >= {Z_CRIT}, where z uses the seed SD pooled over every seed run OF THIS RUN and no prior from any other run "
             f"(ADR-0020: the run decides on its own evidence); a borderline "
-            f"z in [{Z_BORDER}, {Z_CRIT}) gets {MAX_CONFIRM_SEEDS - CONFIRM_SEEDS} more seeds before the decision; a node whose "
+            f"z in [{Z_BORDER}, {Z_CRIT}) gets {MAX_CONFIRM_SEEDS - CONFIRM_SEEDS} more seeds before the decision, as does any "
+            f"accepting z while the pooled SD rests on fewer than {MIN_SIGMA_DF} degrees of freedom; a node whose "
             f"predictions are byte-identical to its parent's is a no-op and is rejected without seeds. "
             f"CONVERGENCE (code, ADR-0012): the streak resets when the champion's fresh-seed mean has risen by >= {RESET_MIN_GAIN} since "
             f"the last reset (cumulative); {N_CONVERGE} consecutive generations without such a rise stop the run. Smaller confirmed "
