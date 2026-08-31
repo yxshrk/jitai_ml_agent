@@ -1,4 +1,20 @@
-# Final submission recipe (FINAL, Sun morning)
+# Final submission recipe (FINAL, Sun morning; 1K artifact policy updated Mon per external review)
+
+## 1K ARTIFACT POLICY (Mon 31 Aug, per decision memo):
+- Preferred (C): if run_v2_1k designates an in-run ensemble close, submit THAT exact
+  artifact (member checkpoints + aggregation as recorded in its journal).
+- Fallback (A): faithful reproduction of run_omega_1k node_005's converged checkpoint
+  (0.66892). NOTE: our first replay scored 0.6772 — reconcile the procedure difference
+  (final-fit epochs/early-stop state) or disclose reconstruction limitations; never
+  label a differing rerun as the 0.66892 checkpoint.
+- Rejected (B): the post-run 3-seed ensemble (val 0.6802) is DEVELOPMENT EVIDENCE ONLY
+  (better-than-converged artifact violates checkpoint-at-convergence absent an explicit
+  organizer ruling). evidence/test_submission_1k_omega.csv is therefore NOT the
+  submission unless C fails AND A proves unreconstructable (then disclose fully).
+- Receipt fields per artifact: run/node id, stop reason, config+preprocessing hashes,
+  member seeds/epochs, aggregation + tie policy, exact validation metrics, CSV row
+  count + sha256, selected in-run vs reconstructed. Probe disclosure: evidence/PROBE_MANIFEST.md.
+
 
 ## DESIGNATED CHAMPIONS (agent-designated, compliant with "checkpoint at convergence")
 - **Pure: 0.60558 — run_bigclock_07 (coral) node_006, FULLY UNSEEDED.** Arc:
