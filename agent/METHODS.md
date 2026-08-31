@@ -34,7 +34,7 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
   only. Never commit a config on the basis of short-budget scores (measured failure:
   a 208-probe sweep that skipped the full-fidelity final round finished at 0.6024,
   losing to a 59-probe sweep that ranked at full length, 0.6043).
-- SNAPSHOT ENSEMBLING (Huang et al., ICLR 2017) — USE IT in every ensemble close: with a cyclic or restarted LR,
+- SNAPSHOT ENSEMBLING (Huang et al., ICLR 2017) — CONSIDER it in ensemble closes (untried here; card status governs): with a cyclic or restarted LR,
   save several checkpoints from ONE training and use them as extra ensemble members
   free of retraining cost. The ensemble-design sweep may mix seed-members and
   snapshot-members and let validation pick the blend.
@@ -89,7 +89,10 @@ run's progress.log). The productive basin for the DCN package:
 - weight_decay 5e-5..5e-4 (log-uniform)
 - lr 0.0003..0.0014 with StepLR gamma 0.45-0.68, step 1-2 epochs
 - recency half_life 4-15 days (7 +/- a few is safe)
-- probe scores in-basin: 0.6026-0.6044 single-model; out-of-basin drops fast.
+- probe scores in-basin: 0.6026-0.6044 single-model; out-of-basin USUALLY drops fast
+  — but not always: the best single model ever measured (run_f9 n1, 0.605102) won at
+  dropout 0.34, OUTSIDE this band (lr 0.0012, gamma 0.57, hl 8.4), found by a 48-probe
+  wide search. The basin is where winners cluster, not a boundary.
 Champion configs measured: (0.18, 9e-5, lr 0.001, gamma 0.57/2, hl 7.0) -> 0.6042
 single / 0.6056 ensembled.
 Guidance: draw ~50% of stage-1 samples from this basin, ~50% wide exploration
@@ -115,15 +118,21 @@ Interaction facts, each replicated across >= 3 seeds unless noted:
 - recency-weighting (7d) on the regularized package: +0.001 mean (+0.004 at best seed);
   on a weak parent its grey-zone confirms fail — needs >= 3 seeds to detect.
 - regularization-schedule alone on baseline FM: +0.0015 (works standalone).
-- seed-ensemble (5 consecutive seeds, per-user rank average) on any champion: +0.0004..+0.001.
-  On the full package champion: 0.6051. Ensemble of baseline: only ~0.6028.
-- duration-regime-heads on baseline: +0.0014 (agent-discovered, replicated).
+- seed-ensemble gain is BASE-DEPENDENT: +0.0014 off a 0.6042 single (bigclock n6 ->
+  0.6056); +0.0004..+0.001 off mid-strength champions; only +0.0002 off a heavily
+  tuned 0.6051 single (f9 exhibit, 1 Sep). Ensemble of baseline: only ~0.6028.
+- duration-regime-heads on baseline: +0.0014 in the unseeded wave, but NEVER confirmed above eps since (card verdict: measured-flat on Pure).
 - Measured DEAD on this benchmark (do not re-try in measured form): extra feature
-  fields (all variants), sequence/history models, watch-time regression losses,
-  larger embeddings (k>16 on Pure), deeper crosses, SWA/EMA, listwise softmax.
-- The full winning stack (package + half-epoch checkpoint + 5-seed ensemble) = 0.6051;
-  a from-scratch run must bundle the package in ONE node to have iteration budget left
-  for checkpointing + ensemble.
+  fields (all variants), larger embeddings (k>16 on Pure), deeper crosses, SWA/EMA
+  single-model, listwise softmax UNDER OUR SHORT-PEAK REGIME (see listwise-regime
+  card for the untried regime). ARCHITECTURE-CONDITIONAL, NOT DEAD: sequence/history
+  models and watch-time auxiliaries measured dead on FM/DCN but ALIVE inside the
+  seq-deepfm-composite package (see card) — the dead-list is conditional on the base
+  architecture.
+- Records: best ENSEMBLE = 0.605575 (bigclock_07: package + half-epoch checkpoint +
+  5-seed close); best SINGLE model = 0.605102 (f9 n1: 48-probe swept package, no
+  ensemble). A from-scratch run must bundle the package in ONE node to keep iteration
+  budget for the close — but note the close's gain shrinks the better the single.
 
 ## Combination & interaction guidance (literature-grounded)
 
@@ -424,7 +433,7 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - treats: flat-signal
 - citation: signed-feedback CF + lightweight graph propagation (LightGCN lineage), compressed to sketches; NOT covered by the measured-dead co-visitation SVD INIT (this is a separate scorer blended at rank level, not an initialization).
 - expected_gain / cost: +0.0003..+0.0012 if errors decorrelate; possibly flat / low-med.
-- status_pure: measured-win (run_novel_r1 n3: 0.60447, +0.0026)
+- status_pure: untried (an earlier status here wrongly duplicated gauge-fixed-bce's novel_r1 n3 win; corrected 1 Sep)
 - status_1k: untried
 
 ### temporal-pair-kernel: Temporally-local pair sampling
@@ -475,8 +484,11 @@ Published methods ship as PACKAGES, not atoms — evaluate them the way their pa
 - reference_primary: none
 - treats: flat-signal | overfit
 - citation: ensemble-diversity theory (Krogh & Vedelsby); observed working in a public Track 2 solution (github.com/Rpkw789/autorec-lab: BPR + multi-task + LambdaLoss rank ensemble, single 0.6042 -> ensemble 0.6060 valid); public solutions in-scope per the resource policy. Apply OUR ensemble gate (rescue/harm) before accepting.
-- expected_gain / cost: their +0.0018 over best single; ours unknown / med (2-3 full trainings).
-- status_pure: untried
+- expected_gain / cost: their +0.0018 over best single; our two in-run attempts with
+  FRESH members measured BELOW the champion (f7 n4 0.6041 vs 0.6045; f9 n4 0.6046 vs
+  0.6051) — fresh-member fidelity tax again; see member-source calibration on the
+  close cards / med (2-3 full trainings).
+- status_pure: measured-flat with fresh in-run members (two attempts, both sub-champion); untried with polished script_source members
 - status_1k: untried
 
 ### lambda-weighted-pairs: nDCG-weighted pairwise loss (LambdaLoss-style)

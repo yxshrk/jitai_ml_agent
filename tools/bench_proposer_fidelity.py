@@ -15,7 +15,6 @@ import argparse
 import concurrent.futures as cf
 import json
 import os
-import re
 import subprocess
 import sys
 import time
