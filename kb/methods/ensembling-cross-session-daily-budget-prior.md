@@ -7,8 +7,8 @@ applies_when:
   - impression date and time_ms permit equal-time-safe cumulative user-day exposure features
   - session-local features reset after 30 minutes but cross-session fatigue within the same day remains plausible
   - a competitive base ranker is available to anchor a low-weight behavioral-prior blend
-expected_delta: [0.0, 0.0]
-expected_delta_basis: attribution from the archived wildcard was flat (single-seed Δ -0.00003, no seed confirmation),
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: attribution from the archived wildcard was flat (single-seed Δ -0.00003, no seed confirmation),
   so no positive gain can be promised for the daily-budget expert itself
 cost: 84 changed lines; one train-only aggregate table and rank fusion; measured total runtime 162 s on a ten-member parent; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, ensembling-multiseed-heterogeneous-rank-blend]

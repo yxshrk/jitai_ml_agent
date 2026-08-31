@@ -7,8 +7,8 @@ applies_when:
   - impression date and legal video upload_dt are available, allowing candidate age at show time to be computed
   - upload ages vary across a user's candidate rows, so a tab-conditioned age term can alter within-user ordering
   - a field-aware branch can receive the temporal term while an unchanged ensemble branch anchors ID-based rankings
-expected_delta: [0.0, 0.0]
-expected_delta_basis: attribution-adjusted measurement: the only measured fresh-seed mean was -0.00015 on an existing
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0001 over 1 measurement(s), so the promise is capped at the record; was: attribution-adjusted measurement: the only measured fresh-seed mean was -0.00015 on an existing
   BPR heterogeneous ensemble, so no positive gain can be promised for the upload-age bias
 cost: 106 changed lines on the heterogeneous parent; ten training phases; measured runtime 165 s; numpy and datetime
 composes_with: [model-field-aware-fm-embeddings, loss-bpr-pairwise-within-user, ensembling-multiseed-heterogeneous-rank-blend]

@@ -7,8 +7,8 @@ applies_when:
   - impression timestamps, durations, and author IDs are available at scoring time
   - a same-user BPR model is competitive and can serve as an unchanged anchor
   - repeated or consecutive-author exposures may carry short-term behavioral state
-expected_delta: [0.0, 0.0]
-expected_delta_basis: attribution-calibrated archival prior; the complete independent-expert plus 15% rank-fusion
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0001 over 1 measurement(s), so the promise is capped at the record; was: attribution-calibrated archival prior; the complete independent-expert plus 15% rank-fusion
   mechanism was flat on one seed, so no positive gain is assigned without changed-stack evidence
 cost: ~124 changed lines; two independently stopped BPR phases; measured runtime about 28 s; numpy only
 composes_with: [loss-bpr-pairwise-within-user, ensembling-seed-average, model-field-aware-fm-embeddings]

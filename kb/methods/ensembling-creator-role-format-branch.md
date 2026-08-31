@@ -7,8 +7,8 @@ applies_when:
   - a heterogeneous ensemble contains field-aware and standard FM branches
   - legal user creator-role fields and candidate video-format fields are available from the side tables
   - the standard branch can remain unchanged as an anchor while the field-aware branch receives pooled cohort context
-expected_delta: [0.0, 0.0]
-expected_delta_basis: the only run was single-seed flat at −0.00002 with no seed confirmation, so no positive gain can
+expected_delta: [0.0, 0.0000]
+expected_delta_basis: measured (ADR-0018): best seed-mean gain -0.0000 over 1 measurement(s), so the promise is capped at the record; was: the only run was single-seed flat at −0.00002 with no seed confirmation, so no positive gain can
   be claimed; the parent already contained BPR, five-member branch averaging, field-aware embeddings, and rank fusion
 cost: 51 changed lines; ten training phases; measured runtime 211 s versus 121 s for the parent; numpy only
 composes_with: [ensembling-multiseed-heterogeneous-rank-blend, model-field-aware-fm-embeddings,
