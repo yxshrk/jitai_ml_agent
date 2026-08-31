@@ -131,6 +131,71 @@ SCENARIOS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# REAL-STATE TRACK (--real): replay the REAL frozen decision states from
+# tools/decision_bench.py against the CLEAN brain. The real journals (with
+# their real metric values) are imported AT RUNTIME and presented as the run's
+# OWN ledger — a clean agent legitimately sees its own journal's numbers; the
+# taboo is campaign knowledge in the LIBRARY, which stays METHODS_CLEAN.md.
+# Scoring stays property-based, translated to clean card ids per scenario.
+# This file contains no campaign values (fixtures are imported, not inlined).
+# ---------------------------------------------------------------------------
+
+_ENS_CROSS = {"heterogeneous-ensemble-design", "seed-architecture-ensemble"}
+_ENS_ANY = _ENS_CROSS | {"seed-ensemble"}
+_NARROW = {"mtl-shared-bottom", "cwm-censored-fm", "dndcg-lambda",
+           "covisit-svd-init", "duration-regime-heads", "embedding-dim-down"}
+
+REAL_STATE_RUBRIC = {
+    # scenario name -> (good clean ids, bad clean ids); property in comment
+    "strong_opener_full_streak": (  # exploit the accepted direction / big composite, not a small atom
+        {"seq-deepfm-composite", "context-stratified-pairs",
+         "hyperparam-random-search"} | _ENS_CROSS, _NARROW),
+    "two_strikes_on_good_base": (  # only sane move is an ensemble close
+        _ENS_ANY, {"regularization-schedule", "embedding-dim-down",
+                   "recency-weighting", "listwise-regime"}),
+    "blind_telemetry": (  # no curve -> honest diagnosis + broad low-risk move
+        SCREEN | {"item-aggregates", "session-time-features",
+                  "regularization-schedule"},
+        {"embedding-dim-down", "finalmlp", "duration-regime-heads",
+         "covisit-svd-init"}),
+    "dead_family_temptation": (  # journal shows aux family dead twice: do not retry it
+        SCREEN | {"dcn-lite", "bpr-hybrid", "regularization-schedule",
+                  "recency-weighting"}, AUX),
+    "opening_expected_value": (  # full clock, fresh baseline: broad opener, not a narrow bet
+        SCREEN | {"regularization-schedule"}, _NARROW - {"embedding-dim-down"}),
+    "endgame_eps_math": (  # streak 2, must clear eps THIS iteration: cross-family close
+        _ENS_CROSS, {"seed-ensemble", "regularization-schedule",
+                     "recency-weighting", "swa-ema", "item-aggregates"}),
+    "endgame_margin_not_reach": (  # pick the move whose evidence clears eps WITH margin
+        _ENS_CROSS, _NARROW),
+    "endgame_unspent_package_trap": (  # near-ceiling package is a trap; close anyway
+        _ENS_ANY, {"finalmlp", "covisit-svd-init", "duration-regime-heads",
+                   "embedding-dim-down"}),
+    "f4r_exact_state": (  # the real f4r prompt state: margin-maximal close
+        _ENS_CROSS, {"mtl-shared-bottom", "cwm-censored-fm", "dndcg-lambda",
+                     "listwise-regime"}),
+    "close_rejected_strengthen_first": (  # failed-confirm close: strengthen members, do not re-roll
+        {"seq-deepfm-composite", "dcn-lite", "bpr-hybrid",
+         "context-stratified-pairs", "hyperparam-random-search"}, _ENS_ANY),
+    "farm_close_uniquely_right": (  # two families near ceiling + plateau: cross-family close
+        _ENS_CROSS, {"seed-ensemble", "regularization-schedule",
+                     "recency-weighting", "swa-ema"}),
+}
+
+
+def real_state_scenarios():
+    from tools.decision_bench import SCENARIOS as REAL  # runtime import keeps this file value-free
+    out = []
+    for sc in REAL:
+        rubric = REAL_STATE_RUBRIC.get(sc["name"])
+        if rubric is None:
+            continue
+        good, bad = rubric
+        out.append(dict(sc, good=set(good), bad=set(bad)))
+    return out
+
+
 def build_clean_brain() -> Brain:
     menu = CLEAN_TASK_CONTEXT.format(dataset="pure")
     brain = Brain(menu, provider="openai", knowledge_mode="clean")
@@ -142,10 +207,14 @@ def build_clean_brain() -> Brain:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=1)
+    ap.add_argument("--real", action="store_true",
+                    help="replay the REAL frozen states (imported at runtime) "
+                         "against the clean brain, property-scored in clean ids")
     args = ap.parse_args()
     brain = build_clean_brain()
+    scenarios = real_state_scenarios() if args.real else SCENARIOS
     score = {"good": 0, "ok": 0, "bad": 0}
-    for sc in SCENARIOS:
+    for sc in scenarios:
         for rep in range(args.n):
             sel = brain.select_method(
                 sc["journal"], sc["history"], sc["streak"],
@@ -159,9 +228,11 @@ def main():
             if verdict == "bad":
                 print(f"    why: {(sel.get('why') or '')[:180]}")
     total = sum(score.values())
-    print(f"\nCLEAN BENCH: {score['good']}/{total} good, {score['ok']} neutral, "
+    tag = "CLEAN BENCH (REAL STATES)" if args.real else "CLEAN BENCH"
+    out = "decision_bench_clean_real_result.json" if args.real else "decision_bench_clean_result.json"
+    print(f"\n{tag}: {score['good']}/{total} good, {score['ok']} neutral, "
           f"{score['bad']} bad")
-    json.dump(score, open(ROOT / "logs/decision_bench_clean_result.json", "w"))
+    json.dump(score, open(ROOT / "logs" / out, "w"))
 
 
 if __name__ == "__main__":
