@@ -36,7 +36,7 @@ The endgame is a typed capability: the agent emits a cross-family ensemble plan 
 
 ## Autonomy & feasibility
 
-The intervention count is machine-verifiable: every journal record has an `intervention` boolean and each run report aggregates it. The designated runs record **0 mid-run interventions**; runs tainted by mid-run knowledge edits were discarded and disclosed rather than argued. Recorded converged Pure runs took roughly 10-25 minutes on CPU. The designated Pure run (bigclock_07, six iterations) used **115,315 tokens and 17.0 minutes wall-clock** with no GPU; the designated 1K run (omega_1k, eight iterations) used **320,048 tokens and 344.8 minutes** with ~5.7 RTX-4090 GPU-hours (wall-clock is the scored measure). Campaign aggregate: **~9.9M tokens, ~140 run-hours** across 139 completed runs.
+The intervention count is machine-verifiable: every journal record has an `intervention` boolean and each run report aggregates it. The designated runs record **0 mid-run interventions**; runs tainted by mid-run knowledge edits were discarded and disclosed rather than argued. Recorded converged Pure runs took roughly 10-25 minutes on CPU. The designated Pure run (bigclock_07, six iterations) used **115,315 tokens and 17.0 minutes wall-clock** with no GPU; the designated 1K run (omega_1k, eight iterations) used **320,048 tokens and 344.8 minutes** with ~5.7 RTX-4090 GPU-hours (wall-clock is the scored measure). Campaign aggregate: **~10.6M tokens, ~143 run-hours** across ~146 completed runs (139 at the 31 Aug snapshot plus the 1 Sep hardening wave, whose runs and post-mortem are disclosed in evidence/POSTMORTEM_1SEP_FINAL_RUNS.md).
 
 `gpt-5.6-sol` serves as selector, proposer, and reflector; `gpt-5.4-mini` is the fixer. The harness owns seeding, timeouts, acceptance, best-node selection, and convergence.
 
@@ -50,6 +50,10 @@ The intervention count is machine-verifiable: every journal record has an `inter
 ## The knowledge loop
 
 The system is not one run but a research loop across runs. An unseeded run invented a temporal pair-sampling kernel (an untried speculative card that realized +0.0014, double its predicted gain); that measurement was distilled back into the method library; later clean runs draw on it as cited evidence. The same loop worked on 1K: the causal session-feature discovery was audited, carded, and then measured on Pure by a subsequent run at +0.0002, an honest negative (Pure's sessions are too sparse, exactly as a consulted reviewer predicted). Negative results are first-class: watch-time objectives, listwise losses, attention, feature crosses, hard-negative BPR, and post-hoc run blending are all measured dead and disclosed.
+
+## The final-night stress test (1 Sep)
+
+After freezing the designation we spent the last night trying to beat it with progressively hardened harnesses — and treating every failure as data. Five more runs (three memory-tier, two literature-only) plus a one-epoch "fast-forward" shakeout produced: a smoke sanity gate calibrated on measured broken-vs-sane populations; constrained-patch "improve" proposals (accepted artifacts evolve byte-identically instead of being re-typed); retry-without-penalty for provider outages after a 503 ended a run mid-decision; and six general decision principles verified on real-state benches (for example: on a probable-final iteration, bank the reliable measured gain instead of chasing a streak reset). None of it beat the designation — the best single model ever (0.605102) and exhaustive post-hoc banking of that run's own artifacts (0.60546) both landed under it — which is itself the report's cleanest finding: the designated champion sits at the measured single-run ceiling (0.6055-0.6060), and the campaign's remaining gap to human-assisted evidence (0.6061) is implementation fidelity and artifact persistence, not decision quality. Full dissection: evidence/POSTMORTEM_1SEP_FINAL_RUNS.md.
 
 ## Limitations & what's next
 

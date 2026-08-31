@@ -302,3 +302,14 @@ Each line: what V2 said, what V3 says, and the source file that settles it.
 4. Farm-close: V3 describes the capability in the harness section (item five) because it is built and benched, but the run you narrate closed with the classic ensemble-design sweep. If you would rather not describe a capability the designated run did not use, replace item five with V2's shorter wording: "the ensemble is chosen deterministically from validation; no LLM picks the members or the weights", which is exactly what node_006 did.
 5. The optional 15-second judgment beat is not in the 3:00 timing. Include only if the first take lands under 2:45.
 6. The 1K bonus result (0.66892, triple-audited) is not mentioned at all in your structure. It is the second-strongest number we have; a one-line mention in the close ("on the bonus 1K dataset, 0.669, triple-audited") costs about five seconds if you want it. Source: evidence/RESULTS_AND_RESOURCES.md.
+
+## OPTIONAL ADDENDUM (1 Sep, post-final-night — one extra beat if you want it)
+After the "clean runs" ethos beat, you can add (~20s):
+"And on the very last night, we turned the agent on itself: five more hardened
+runs trying to beat our own designated champion. None did — the best single
+model ever, and even exhaustively re-combining that run's own artifacts by
+hand, both landed just under it. Which is exactly the finding: our champion
+sits at the measured ceiling of what one run can do, we can prove where that
+ceiling is, and we know precisely which two engineering gaps — implementation
+fidelity and artifact persistence — separate it from human-level research.
+Every failure that taught us that is journaled, benched, and fixed in the repo."

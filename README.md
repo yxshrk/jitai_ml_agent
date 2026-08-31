@@ -90,8 +90,9 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 - Train on train; validation used for tuning/selection only (organizer-endorsed).
 - The hidden-test window's **labels are never read**: the export writes features
   only and the predictors assert the archive contains no label-like arrays.
-- The COMPLETE development campaign is disclosed: 139 completed runs (snapshot 31 Aug, plus incomplete/
-  aborted ones), ~9.9M LLM tokens, ~140 aggregate run-hours — machine-inventoried by
+- The COMPLETE development campaign is disclosed: ~146 completed runs (139 at the
+  31 Aug snapshot + the 1 Sep hardening wave, plus incomplete/aborted ones),
+  ~10.6M LLM tokens, ~143 aggregate run-hours — machine-inventoried by
   `tools/audit_runs.py` (logs/RUNS_INVENTORY.md, evidence/run_inventory.csv). The
   submission is the clearly designated best run, per the organizers' webinar guidance.
 - Human/agent boundary: humans built the harness and curated measured method-card
@@ -116,16 +117,22 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 
 ## Team contributions
 
-Team jit.ai. Roles below are placeholders; each member fills in their own line
-before submission. Keep claims specific and traceable (name the runs, files, or
-experiments you own).
+Team jit.ai.
 
-- **{{NAME}}** — {{e.g. harness architecture and acceptance/convergence logic;
-  named files or subsystems}}
-- **{{NAME}}** — {{e.g. agent prompts, method-card library and knowledge loop;
-  named cards or runs}}
-- **{{NAME}}** — {{e.g. experiment campaign operations, fleet, audits;
-  named ledgers}}
-- **{{NAME}}** — {{e.g. evidence site, video, Devpost, figures}}
+- **Rohan Kulshreshth** — research direction and campaign operations: the
+  method-card knowledge base and its audits (`agent/METHODS*.md`), designation
+  policy and compliance decisions (`SUBMISSION_RECIPE.md`), multi-machine fleet
+  and run designations (`logs/RUNS.md`), external-review integration, evidence
+  site and video, Devpost.
+- **Aditya Ghosh** — independent model research line: the corrected causal
+  Sequence-DeepFM, censored watch-time auxiliary, and session-context findings
+  (branch `codex/project-2-kuairand-agent`, `runs/RESULTS.md`), independently
+  verified and distilled into cited method cards (`seq-deepfm-*` cards).
+- **Yashraj Khandelwal** — a second, independently designed agent harness
+  (branches `yash-attempt` … `no-cross-run-seed-prior`: generation-based search,
+  ADR discipline, strict designation rule, runs live_01–live_09 with its own
+  validated submission artifact) — convergent evidence for the winning
+  BPR+ensemble shape from a separate codebase.
+- **Avinash Parthiban Elangovan** — {{fill: own line before repo goes public}}.
 
-Shared: {{anything genuinely joint — designation decisions, compliance review}}.
+Shared: designation decisions, compliance review, and the webinar/rules audit.

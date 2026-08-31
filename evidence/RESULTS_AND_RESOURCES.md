@@ -31,11 +31,13 @@ are never read anywhere in the pipeline (see tools/predict_test*.py guards).
 
 ## Full development disclosure (voluntary)
 
-The complete campaign comprises 139 completed runs plus incomplete/aborted ones
-(machine-generated inventory: logs/RUNS_INVENTORY.md, evidence/run_inventory.csv):
-aggregate ≈9.9M LLM tokens and ≈140 run-hours wall-clock across all completed runs,
-≈US$61 real LLM spend (per-machine ledgers double-count shared work; the console
-totals are the authority) plus ≈US$5 of rented CPU-pod time. The designated runs' own usage is the scored figure; the
+The complete campaign comprises ~146 completed runs (139 at the 31 Aug snapshot +
+the 1 Sep hardening wave; post-mortem: evidence/POSTMORTEM_1SEP_FINAL_RUNS.md) plus
+incomplete/aborted ones (machine-generated inventory: logs/RUNS_INVENTORY.md,
+evidence/run_inventory.csv): aggregate ≈10.6M LLM tokens and ≈143 run-hours
+wall-clock across all completed runs, ≈US$122 real LLM spend for the whole campaign
+(per-machine ledgers overcount by design — conservative pricing, rounded up; the
+provider console totals are the authority) plus ≈US$5 of rented CPU-pod time. The designated runs' own usage is the scored figure; the
 campaign totals are disclosed because cross-run knowledge from the campaign
 informed the designated runs' method cards. GPU usage (RTX 4090): the designated 1K run (~5.7 GPU-hours) plus development and
 bonus work (hyperparameter farms, 27K scaling demo, some development runs) —
