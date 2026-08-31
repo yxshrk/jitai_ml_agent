@@ -110,3 +110,16 @@ menu_m3/m4 are the first runs with fully-correct knowledge. Lesson for the repor
 knowledge-base freshness is as load-bearing as the acceptance statistics — a
 research system needs mechanical status regeneration from the ledger, not manual
 curation.
+
+## Full-campaign error post-mortem + reliability fixes (31 Aug evening, 128 runs)
+Failure census: llm_parse/truncation 65 (dominant; mitigated by token headroom),
+timeout 17, exec errors 10 (fixer-recovered), telemetry-emission bugs 5, provider 3,
+budget 1, smoke-timeout kills >=2 (120s cap killed heavy-architecture first attempts,
+incl. ruby_x1's first composite try), no-op ensemble collapse 2 (member training real
+but aggregation collapsed to anchor; caught by the byte-identical guard — integrity
+worked, close lost). Fixes shipped for subsequent launches: smoke timeout 360s;
+proposer ENSEMBLE_CONTRACT (distinct member seeds + member-distinctness assertion +
+per-member logging); no-op collapse now fixer-eligible (one repair shot instead of a
+burned node). Report lesson: the two highest-cost reliability defects were both
+*silent success-shaped failures* (identical-output ensembles, missing telemetry) —
+guards that make degeneracy loud are worth more than retries.
