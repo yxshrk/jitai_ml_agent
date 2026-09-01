@@ -519,7 +519,14 @@ class Loop:
         drafts = [n for n in self.nodes.values() if n.action == "draft" and n.node_id != "node_000"]
         last = self.nodes[max(self.nodes, key=lambda k: int(k.split("_")[1]))]
         if last.status in ("failed", "suspect_implementation") and last.debug_depth < 2:
-            return "debug", last, None
+            # A smoke-stage BUILD failure already consumed its one fixer attempt;
+            # a debug iteration would be a forced second build of the same card
+            # with no selector in the loop (c9/c11: three identical failed builds,
+            # run converged at baseline). Return to selection instead so the
+            # implementation-dead pivot principle can act. Full-stage failures
+            # and suspected implementations still get a debug child.
+            if not (last.status == "failed" and last.failure_stage == "smoke"):
+                return "debug", last, None
         if len(drafts) < self.initial_draft_slots:
             slot = len(drafts)
             if slot < len(self.config.draft_tiers):

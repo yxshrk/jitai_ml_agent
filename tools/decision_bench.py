@@ -291,6 +291,22 @@ SCENARIOS = [
         bad={"diverse-family-farm-close", "regularization-schedule", "recency-weighting",
              "bpr-hybrid", "dcn-lite", "package-dial-sweep"},
     ),
+    dict(
+        name="pivot_after_two_failed_builds",
+        note="c11 real state (1 Sep): the SAME card crashed at smoke twice in this run "
+             "(implementation-dead). Right = a mechanically simpler, different card; "
+             "wrong = a third build of the same card.",
+        journal=[
+            'node_000 [baseline] draft "baseline FM" primary=0.6018 ACCEPTED (sigma=0.0002)',
+            'node_001 [<-node_000] draft "package-dial-sweep" FAILED at smoke (IndexError: index out of range in embedding; fixer reverted): strike 1',
+            'node_002 [<-node_000] draft "package-dial-sweep" FAILED at smoke (IndexError: index out of range in embedding; fixer reverted): strike 2',
+        ],
+        history=CURVE_NONE,
+        streak={"no_improve_streak": 2, "iterations_done": 2, "max_iters": 16},
+        good={"regularization-schedule", "bpr-hybrid", "dcn-lite", "recency-weighting",
+              "gauge-fixed-bce", "temporal-pair-kernel"},
+        bad={"package-dial-sweep", "stage-matrix-sweep"},
+    ),
 ]
 
 

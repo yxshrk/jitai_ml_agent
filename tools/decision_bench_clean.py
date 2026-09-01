@@ -178,6 +178,9 @@ REAL_STATE_RUBRIC = {
     "close_rejected_strengthen_first": (  # failed-confirm close: strengthen members, do not re-roll
         {"seq-deepfm-composite", "dcn-lite", "bpr-hybrid",
          "context-stratified-pairs", "hyperparam-random-search"}, _ENS_ANY),
+    "pivot_after_two_failed_builds": (  # two crashed builds of the sweep card: pivot
+        {"regularization-schedule", "bpr-hybrid", "dcn-lite", "recency-weighting"},
+        {"hyperparam-random-search"}),
     "chain_open": (  # swept opener first
         {"hyperparam-random-search"}, {"seed-ensemble", "seed-architecture-ensemble",
                                        "heterogeneous-ensemble-design", "recency-weighting"}),
