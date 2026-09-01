@@ -352,7 +352,7 @@ Two, a calibrated acceptance gate: three baseline seeds set the noise floor, and
 Three, method cards. Forty-two, from cited literature, each carrying its measured status from about 250 experiment cells across roughly 146 runs.
 Four, decision benches on real states. We freeze the exact situations where a live run went wrong and replay the agent against them after every change. Fixes may only be evidence corrections or general principles, never canned answers.
 Five, typed ensemble plans: the agent writes the plan, deterministic code runs it, and if nothing beats the incumbent, the incumbent stays. No LLM in the measurement path.
-Six, it fails safely: a one-epoch smoke test with a sanity gate calibrated on measured code rejects defective scripts before any full training; improvements are constrained patches, so working code is never re-typed; and a provider outage is retried, never counted as a failed experiment.
+Six, it fails safely. Every new script first runs a one-epoch smoke test, and a gate throws out anything that scores like broken code before we spend a full training on it. When the agent improves its best script, it edits that script instead of rewriting it, so working code stays working. And if the API drops a call, we retry it instead of counting it as a failed experiment.
 
 ### What we learned on the last night (2:27 to 2:52) [#s-model, "The ceiling"]
 On the final night we turned the agent on itself: three hardened harness generations tried to beat our own champion. None did. The best single model ever, 0.6051, and even re-combining that run's artifacts by hand, 0.6055, both landed under it. A clean run with only literature, no measured memory, found the same opener from principles alone.
