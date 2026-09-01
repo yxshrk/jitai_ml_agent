@@ -1,4 +1,4 @@
-# Recording cheat sheet: present.html vs Script Version 4 (1 Sep morning)
+# Recording cheat sheet: present.html vs Script Version 5 (1 Sep morning, with the honest-choices beat)
 
 Open http://localhost:8642/present.html, window 1920x1080, browser UI hidden (full screen).
 Keys: `→` / `space` = next beat, `←` = back one beat, `1`..`9` and `0` = jump to scene,
@@ -16,8 +16,8 @@ Where a scene has beats, `←` steps back within the scene, so a fluff is recove
 | 5b | `#s-noperson` | `→` | Full-screen statement: "No person chose an experiment, edited a script, or restarted anything." Hold while you say that line. | "No person chose an experiment, edited a script, or restarted anything." (last line of the run walkthrough) | 1:42 |
 | 6 | `#s-harness` | `→` | Header "The agent's judgment matters, but the harness matters just as much." Six cards: 01 leakage guard, 02 acceptance gate, 03 method cards, 04 decision benches on real states, 05 "Agent plans the ensemble, code runs it", 06 Fails safely (smoke sanity gate, constrained patches, fixer, outages retried). Point as each is named. | V4 harness section, six items in this order. | 1:45 |
 | 7 | `#s-methods` | `→` | Header "Exactly 42 cards, from cited literature and our own measured evidence. One was invented by a run itself." Card library pre-filtered to "ensemble": ensemble cards with citations and measured status (0.6047, 0.605575, untried) | No dedicated line. Show it under "Our first principle is the clean run." or skip with a second `→` if the take is tight. | 2:17 |
-| 8 | `#s-principles` | `→` | Header "We never learn the recipe ourselves and hand it to the agent." Five principle cards: Clean runs, Grounded action, Noise awareness, Learning from failure, Bounded authority | "Our first principle is the clean run. We never learn the recipe ourselves and hand it to the agent; that's giving someone the map and watching them walk out of the maze. Every turn you just saw was the agent's own." | 2:20 |
-| 9 | `#s-model` ("The ceiling") | `→` (or `0`) | Header "Three harder harnesses could not beat it. The champion sits at the measured ceiling." Table: bigclock_07 0.605575 designated; f7 0.60447; f8 0.60471; f9 best single 0.6051; c10 clean 0.6042; human-assisted 0.6061 evidence only. Strip: ~146 runs / ~250 cells / 42 cards / 0 bad on the real-state bench. | V4 "What we learned on the last night" section. | 2:27 |
+| 8 | `#s-principles` | `→` | Header "We never learn the recipe ourselves and hand it to the agent." Five principle cards; card 01 now lists the declined numbers (0.6061, 0.6058, 0.6802). | V5 "Honest choices" beat. | 2:27 |
+| 9 | `#s-model` ("The ceiling") | `→` (or `0`) | Header "Three harder harnesses could not beat it. The champion sits at the measured ceiling." Table: bigclock_07 0.605575 designated; f7 0.60447; f8 0.60471; f9 best single 0.6051; c10 clean 0.6042; human-assisted 0.6061 evidence only. Strip: ~146 runs / ~250 cells / 42 cards / 0 bad on the real-state bench. | V5 "What we learned on the last night" section. | 2:50 |
 | 10 | `#s-receipts` | `→` (or `End`) | Header "Six of a possible fifty iterations, seventeen minutes, no GPU, zero mid-run interventions." Nine cells: 0.6056 primary, 0.6728 GAUC, 0.5383 nDCG@5, +0.0040, 6 of 50, 17.0 min, 115,315 tokens, "ε rule" (labelled the competition's stopping rule), 0 mid-run interventions; note with 1K 0.66892 and the team line | "That run: six of a possible fifty iterations, seventeen minutes wall-clock, 115 thousand LLM tokens, no GPU, zero mid-run interventions. From 0.6016 to 0.6056, plus 0.0040 on validation primary. We're team jit.ai. Thank you." | 2:42 |
 
 ## Before you hit record
@@ -25,7 +25,7 @@ Where a scene has beats, `←` steps back within the scene, so a fluff is recove
 - Reload the page once (`Cmd+R`) then `Home`: the run chart and the replay reset only on reload.
 - Scene 3 and scene 4 each swallow three extra keys; if you press once too many you land on the next scene, press `←` to come back (it returns to the last beat of the previous scene).
 - Scene 5 needs exactly seven `→` after arrival. The eighth moves to the "No person" statement; the ninth to the harness.
-- Every scene header is now a sentence from the V4 script, spoken on that scene. Read the header as you land on it and the cut stays in sync.
+- Every scene header is now a sentence from the V5 script, spoken on that scene. Read the header as you land on it and the cut stays in sync.
 - Scene 7 has a search box; do not click inside it, the keys go to the box instead of the deck.
 - Mouse pointer: keep it parked at the bottom edge except on scene 6 where you point at cards.
 

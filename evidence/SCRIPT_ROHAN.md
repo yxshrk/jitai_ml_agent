@@ -368,3 +368,25 @@ We're team jit.ai. Thank you.
 3. Scene 9: drop the clean-run sentence ("A clean run with only literature ... principles alone."). ~6 s.
 4. Scene 4: cut "with its own two-stage search inside one iteration". ~3 s.
 5. Scene 3: drop the acceptance-gate sentence. ~4 s.
+
+## Version 5 — 1 Sep, adds the honest-choices beat (RECORD THIS ONE)
+
+Same as V4 through the harness beat (0:00 to 2:27). Then:
+
+### Honest choices (2:27 to 2:50) [#s-principles]
+Our first principle is the clean run: no seed scripts, no recipe handed over; every turn you saw was the agent's own. And we chose honesty over score more than once. A teammate's hand-built model reached 0.6061; a blend I could assemble from run artifacts reaches 0.6058; a post-run ensemble on the bonus benchmark hit 0.6802. None was the agent's, so none is submitted. All are disclosed. Even the agent's own gains have to repeat on a fresh seed before they count.
+
+### What we learned on the last night (2:50 to 3:10) [#s-model, "The ceiling"]
+On the final night we turned the agent on itself: five hardened harness generations tried to beat our own champion, and none did. The best single model ever, 0.6051, and everything that run built re-combined by hand, 0.6055, both landed under it. So the champion sits at the measured ceiling of one run, and we know exactly what separates it from human-level research: implementation fidelity and keeping what it builds, not judgment. Every failure that taught us that is journaled, benched, and fixed.
+
+### Close (3:10 to 3:22) [#s-receipts]
+That run: six of a possible fifty iterations, seventeen minutes, 115 thousand tokens, no GPU, zero mid-run interventions. From 0.6016 to 0.6056. We're team jit.ai. Thank you.
+
+### Where the innovation is said (no extra beat needed; judges' "Innovation & Insight" criterion)
+Scene 6 already names the novel pieces in order: benches on real states with a fix constitution (04), typed ensemble plans with a deterministic can't-lose executor (05), the measured-margin smoke gate + constrained patches + outage retry (06). Scene 7's caption says one card was invented by a run itself. Scene 9's table is the insight: the ceiling, the tiers, and the named gap.
+
+### Priority cuts (V5 runs ~3:20 at 180 wpm; cut in this order to reach ~3:05)
+1. Scene 8: drop "Even the agent's own gains ... before they count." ~4 s
+2. Scene 9: drop "Every failure that taught us that is journaled, benched, and fixed." ~4 s
+3. Scene 6, item six: drop the outage clause. ~4 s
+4. Scene 6, item three: drop "One card was invented by a run itself." ~3 s
