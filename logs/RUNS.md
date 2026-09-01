@@ -95,3 +95,4 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | f16 | ruby | KILLED n=2 | - | 0.60372 | fixed card, plain bigclock profile; iteration 2 died on a proposer error ('int' not iterable, unresolved) |
 | f17 | coral | KILLED n=1 | - | 0.60343 | fixed card, 554 s opener (bigclock pace) but heavy-reg basin; replaced by f18 |
 | f18 | coral | converged | 5 | 0.60400 | bigclock-plus profile: first draw below baseline, second draft gauge-fixed-bce 0.6040 (eps-clearing), ctx/reg riders flat, final ensemble close BLOCKED by the rewrite gate (bug, fixed) (166741 tokens, 38 min) |
+| f19 | ruby | converged | 4 | 0.60469 | bigclock-plus profile, last exhibit: opener 0.6039 (DCN-lite package), gauge-fixed-bce rider flat, 7-seed anchored ensemble close +0.0008 -> 0.60469; below designation (146514 tokens, 78 min) |
