@@ -67,3 +67,11 @@ Rotate OpenAI + Anthropic keys; delete KuaiRand data copies everywhere
 (rules require); terminate cpupod from RunPod console (it's unreachable via
 ssh — likely already stopped, verify in console); coral/ruby: delete
 ~/mle-agent data/real_ws copies.
+
+## 09:20 update (you're awake and recording)
+- Designation unchanged: bigclock_07. Tickets f16 (ruby) / f17 (coral) running with the
+  fixed opener card; switch only if one converges >= 0.6058 by ~10:00.
+- Record SCRIPT V5 (not V3/V4) against the refreshed present.html; cheatsheet matches V5.
+- Public branch = clean-agent. Make it the default branch (or ask Claude to push it
+  over main). Then Pages, then Devpost paste (evidence/DEVPOST.md) before 12:00.
+- Avinash's README line still needs your words.
