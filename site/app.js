@@ -219,6 +219,33 @@ function typeIn(el){
   el.innerHTML=el.dataset.full||'';
 }
 
+
+/* "model so far" tracker: accepted mechanisms stack up as the replay advances;
+   the current iteration's rejected try shows struck through, then drops off */
+function paintTracker(maxI,conv){
+  const box=document.getElementById('tchips');if(!box||!window.RECIPE)return;
+  let h='';
+  for(let k=0;k<=maxI;k++){
+    (window.RECIPE[k]||[]).forEach(c=>{
+      if(c.k==='add'||c.k==='base')h+='<span class="tchip '+c.k+'" data-iter="'+k+'"><i>'+String(k).padStart(2,'0')+'</i>'+c.t+'</span>';
+      else if(k===maxI&&!conv)h+='<span class="tchip '+c.k+'" data-iter="'+k+'"><i>'+String(k).padStart(2,'0')+'</i>'+c.t+'</span>';
+    });
+  }
+  if(maxI<0)h='<span class="tchip empty">nothing yet</span>';
+  if(conv)h+='<span class="tchip done">= 0.6056 · converged</span>';
+  box.innerHTML=h;
+}
+function gotoIter(k){
+  const el=document.querySelector('.entry[data-i="'+k+'"]');if(!el)return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.tchip[data-iter],.iterlink[data-iter]');
+  if(t){e.preventDefault();gotoIter(t.dataset.iter);}
+});
+paintTracker(-1,false);
+
 /* scroll activation: draws on the way down, undraws on the way back up */
 const active=new Set();
 function repaint(){
@@ -234,6 +261,7 @@ function repaint(){
   N.forEach((n,k)=>{if((k<=maxI||conv)&&n.accepted&&n.primary!=null)best=Math.max(best,n.primary);});
   if(conv)best=BEST;
   const _bs=$('#barscore');if(_bs)_bs.textContent=best.toFixed(4);
+  paintTracker(conv?N.length-1:maxI,conv);
   // label the iteration the reader is currently on
   const pt=$('#curpt'),lb=$('#curlbl');
   let cur=conv?-1:maxI;

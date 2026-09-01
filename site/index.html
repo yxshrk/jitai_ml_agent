@@ -40,10 +40,11 @@
       checkpoint, or tuned configuration is handed to it as a starting point.</p>
       <div class="versus"><s>start from our best model and call the delta autonomous</s> → <b>iteration zero is the organisers' baseline</b>, journaled</div></div>
     <div class="decision"><h3>No recipe in the prompt</h3>
-      <p>Method cards say what a technique is, when it applies, and what it measured. They never carry
-      a config to copy. Runs given only the cards, with nothing carried over from earlier runs, reached 0.6051
-      on their own.</p>
-      <div class="versus"><s>bake earlier runs' winning dials into the system prompt</s> → <b>knowledge as cited cards, with what each has measured disclosed</b></div></div>
+      <p>Method cards say what a technique is, when it applies, and how it has performed on this dataset
+      in earlier runs. They carry no configuration and no instruction to use it: the agent still has to
+      diagnose, choose, and implement. Runs given only the cards, with nothing else carried over, reached
+      0.6051 on their own.</p>
+      <div class="versus"><s>bake earlier runs' winning dials into the system prompt</s> → <b>knowledge as cited cards, past performance disclosed, no recipe</b></div></div>
     <div class="decision"><h3>No contact with the hidden test set</h3>
       <p>Test data is never copied into the agent's workspace. Nothing was tuned, selected, or stopped
       on a test score. The final model was trained on train only and applied to test exactly once, for the CSV.</p>
@@ -106,7 +107,9 @@
   <div class="eyebrow">the run · bigclock_07 · replayed from its journal file</div>
   <h2>Six iterations, replayed.</h2>
   <div class="cols">
-    <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg></div>
+    <div id="chartpin"><svg id="bigchart" viewBox="0 0 760 560"></svg>
+      <div id="tracker"><div class="tlbl">model so far · fills in as you read</div><div id="tchips"></div></div>
+    </div>
     <div class="entries" id="entries"></div>
   </div>
 </div></section>
@@ -115,7 +118,8 @@
   <div class="eyebrow">the model it ended with</div>
   <h2>Six mechanisms, chosen one iteration at a time.</h2>
   <p class="lede">This is the model behind 0.6056, read straight from the accepted nodes' journals and
-  metrics. Each piece is a published technique from the card library; the agent picked it against a
+  metrics: the same pieces the "model so far" tracker stacked up during the replay above, each linked back
+  to the iteration that added it. Each piece is a published technique from the card library; the agent picked it against a
   diagnosis, and the dials were found by its own search, not written down for it.</p>
   <div class="decisions">
     <div class="decision"><h3>01 · DCN-lite instead of plain FM</h3>
@@ -123,36 +127,36 @@
       pairwise dot products score the impression. DCN-lite keeps that and adds one cross layer plus a small
       MLP (128 → 64 → 1), so the model can learn feature interactions beyond pairs at almost no extra cost.
       Same five official fields, same k = 16 (measured optimal on Pure).</p>
-      <div class="versus">iteration 3 · diagnosis: overfit at epoch 8 · <b>chosen as the base of the "package"</b></div></div>
+      <div class="versus"><a class="iterlink" data-iter="3">iteration 3 ↑</a> · diagnosis: overfit at epoch 8 · <b>chosen as the base of the "package"</b></div></div>
     <div class="decision"><h3>02 · A pairwise (BPR) term next to the pointwise loss</h3>
       <p>The metric ranks each user's own videos, but binary cross-entropy (BCE) trains on absolute
       probabilities. The loss becomes 0.5 · BCE + 0.5 · BPR: for pairs of one positive and one negative
       impression from the same user, penalise the negative scoring higher. This aligns training with
       the per-user ranking the evaluator measures.</p>
-      <div class="versus">iteration 3 · from the <i>bpr-hybrid</i> card · <b>the mix, 0.5, came from the in-node search</b></div></div>
+      <div class="versus"><a class="iterlink" data-iter="3">iteration 3 ↑</a> · from the <i>bpr-hybrid</i> card · <b>the mix, 0.5, came from the in-node search</b></div></div>
     <div class="decision"><h3>03 · Recency weighting</h3>
       <p>Validation is the week after training. Each training row is weighted by 2<sup>−age / half-life</sup>
       with a 7-day half-life, so the model leans towards recent behaviour and the temporal drift the
       diagnosis kept pointing at. Tried alone in iteration 2 it did nothing (−0.0002, rejected); inside the package it
       was kept because the sweep measured it as a component that helped.</p>
-      <div class="versus">iteration 2 alone: rejected · iteration 3 in combination: <b>kept, half-life 7 days</b></div></div>
+      <div class="versus"><a class="iterlink" data-iter="2">iteration 2 ↑</a> alone: rejected · <a class="iterlink" data-iter="3">iteration 3 ↑</a> in combination: <b>kept, half-life 7 days</b></div></div>
     <div class="decision"><h3>04 · Strong regularization plus rapid learning-rate decay</h3>
       <p>The overfit diagnosis is answered directly: dropout on the embeddings, AdamW weight decay, and a
       step schedule that multiplies the learning rate by 0.57 every two epochs, so the model settles before
       it starts memorising. The exact dials (dropout 0.18, weight decay 9e-5, decay ×0.57) are not from any
       card. The node ran its own two-stage random search, 8 coarse then 6 refining probes, and picked them.</p>
-      <div class="versus">iteration 3 · <i>package-dial-sweep</i> card · <b>0.6018 → 0.6042, accepted at +0.0024</b></div></div>
+      <div class="versus"><a class="iterlink" data-iter="3">iteration 3 ↑</a> · <i>package-dial-sweep</i> card · <b>0.6018 → 0.6042, accepted at +0.0024</b></div></div>
     <div class="decision"><h3>05 · An auxiliary watch-time objective, tried and rejected</h3>
       <p>Iteration 5 added an ordinal watch-ratio head on top of the accepted model, hoping duration
       structure would help ranking. It scored 0.6030, below the incumbent, and the harness threw it away.
       It is in the recipe as a negative: the final model uses nothing but the long_view label.</p>
-      <div class="versus">iteration 5 · <b>rejected, journaled</b> · iteration 4 was a failed proposal (VOID)</div></div>
+      <div class="versus"><a class="iterlink" data-iter="5">iteration 5 ↑</a> · <b>rejected, journaled</b> · <a class="iterlink" data-iter="4">iteration 4 ↑</a> was a failed proposal (VOID)</div></div>
     <div class="decision"><h3>06 · A seed ensemble, designed by the agent</h3>
       <p>With the single model settled, remaining variance is seed noise. The closing node retrained the
       accepted recipe with seven different seeds, then chose on validation how many to keep (3, 5 or 7) and
       how to combine them (averaged probabilities versus per-user rank average). It picked three members,
       seeds 42-44, rank-averaged within each user.</p>
-      <div class="versus">iteration 6 · <i>seed-ensemble</i> card · <b>0.6042 → 0.6056, accepted at +0.0013</b> · then three flat iterations ended the run</div></div>
+      <div class="versus"><a class="iterlink" data-iter="6">iteration 6 ↑</a> · <i>seed-ensemble</i> card · <b>0.6042 → 0.6056, accepted at +0.0013</b> · then three flat iterations ended the run</div></div>
   </div>
   <p class="lede" style="margin-top:28px">The test CSV was rebuilt from this recipe by <code>tools/predict_test_bc07.py</code>: the same three members retrained on train only, applied to test once. Four other runs with no cross-run memory found the same shape (DCN-lite, BPR hybrid, recency, strong regularization, seed close) at 0.6045-0.6052, which is the sense in which the campaign converged on a technique rather than a number.</p>
 </div></section>
@@ -477,6 +481,17 @@
   every number on this page has a run directory behind it
 </div></footer>
 
+<script>
+window.RECIPE={
+  0:[{t:"FM · k=16 · BCE",k:"base"}],
+  1:[{t:"factorial screen of 4 factors",k:"rej"}],
+  2:[{t:"recency weighting alone",k:"rej"}],
+  3:[{t:"DCN-lite",k:"add"},{t:"0.5 BCE + 0.5 BPR",k:"add"},{t:"recency, 7-day half-life",k:"add"},{t:"dropout .18 · wd 9e-5 · lr decay ×.57",k:"add"}],
+  4:[{t:"proposal failed",k:"void"}],
+  5:[{t:"watch-time auxiliary head",k:"rej"}],
+  6:[{t:"3-seed per-user rank ensemble",k:"add"}]
+};
+</script>
 <script src="rundata.js"></script>
 <script src="methods.js"></script>
 <script src="weights.js"></script>

@@ -121,7 +121,7 @@ h2{font-size:clamp(23px,2.7vw,34px);font-weight:600;margin-bottom:16px;line-heig
 /* mission log: pinned chart + cards */
 #log .cols{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,1fr);gap:56px}
 #chartpin{position:sticky;top:64px;align-self:start;min-width:0;padding-top:8px}
-#chartpin svg{width:100%;height:auto;max-height:calc(100vh - 96px);
+#chartpin svg{width:100%;height:auto;max-height:calc(100vh - 210px);
   background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
 .axis{stroke:var(--cgrid)} .axistext{font:11.5px "Switzer",sans-serif;fill:var(--dim)}
 .baseline-l{stroke:var(--no);stroke-dasharray:5 4;opacity:.7}
@@ -313,7 +313,7 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 @media (max-width:900px){.archlegend{grid-template-columns:repeat(2,1fr)}}
 
 /* provenance table (shared with the presenter) */
-.mtable{margin-top:30px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+.mtable{margin-top:30px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .mtable th,.mtable td{padding:12px 18px;text-align:left;border-top:1px solid var(--grid2)}
 .mtable th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:600;border-top:0}
 .mtable td.n{text-align:right;font-variant-numeric:tabular-nums}
@@ -331,3 +331,23 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 
 /* repo link in the hero */
 .repolink{display:inline-block;margin-top:18px;padding:10px 16px;border:1px solid var(--ink);border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;background:#fff;box-shadow:var(--shadow)} .repolink:hover{background:var(--ink);color:#fff}
+
+/* model-so-far tracker under the pinned chart */
+#tracker{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+#tracker .tlbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:560;margin-bottom:8px}
+#tchips{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);cursor:pointer;transition:opacity .3s,transform .3s}
+.tchip i{font-style:normal;font-size:10px;letter-spacing:.1em;color:var(--dim)}
+.tchip.base{color:var(--dim)}
+.tchip.add{border-color:var(--go);color:var(--go);background:rgba(11,143,92,.06)}
+.tchip.add i{color:var(--go)}
+.tchip.rej{border-color:var(--no);color:var(--no);text-decoration:line-through;background:rgba(229,72,77,.05)}
+.tchip.rej i{color:var(--no);text-decoration:none}
+.tchip.void{border-color:var(--amber);color:var(--amber);background:rgba(148,106,12,.05)}
+.tchip.done{border-color:var(--ink);font-weight:620;cursor:default}
+.tchip.empty{color:var(--dim);cursor:default}
+.tchip:hover{transform:translateY(-1px)}
+.entry.flash{border-color:var(--go);box-shadow:0 0 0 3px rgba(11,143,92,.18)}
+.iterlink{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);cursor:pointer}
+.iterlink:hover{color:var(--go);text-decoration-color:var(--go)}
