@@ -1,0 +1,101 @@
+{
+  "run_dir": "logs/run_c11",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 7.735239067783332e-05,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 4526,
+      "out": 665,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 16463,
+      "out": 16909,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/fixer": {
+      "in": 7564,
+      "out": 9180,
+      "calls": 3
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 1074,
+      "out": 1028,
+      "calls": 2
+    }
+  },
+  "tokens_total": 57409,
+  "wall_s": 1016.2,
+  "self_critique": "The run did not meaningfully optimize beyond the baseline. Its apparent \u201cconvergence\u201d reflects repeated execution failure, not evidence that 0.601838 is near an optimum.\n\nWhat was suboptimal:\n- Node 001 proposed an overly broad ASHA-style sweep before establishing that the tuning path and individual configurations could execute successfully.\n- Nodes 002 and 003 repeated essentially the same hypothesis after no-metric failures. Debug nodes should have changed the execution plan, isolated the failure, or fallen back to a minimal known-good run.\n- No failure details were preserved in the summary: exception, exit code, timeout/OOM status, last log lines, and whether training or metric parsing failed. Without these, the repeated debug attempts were unguided.\n- The claim of a roughly +0.0030 gain was unsupported by prior experiments.\n- \u201cConverged\u201d is the wrong stop classification. The run exhausted a broken branch; it should be marked execution-failed or no-progress.\n- Only one measured result exists, so there is no evidence about variance, hyperparameter sensitivity, or overfitting beyond the stated learning-curve observation.\n\nScaffold changes:\n- Require every no-metric node to emit a structured failure record and classify the failure as configuration, runtime, resource, data, or metric-extraction related.\n- Make the first debug retry reproduce the baseline configuration through the proposed sweep/training pathway. This distinguishes infrastructure failure from bad hyperparameters.\n- After one repeated failure, force decomposition: one configuration, one seed, reduced epochs, no scheduler, and no parallel search. Do not retry an unchanged proposal.\n- Add fallback rules: if ASHA fails, run sequential trials; if those fail, revert to a baseline smoke test; if that fails, terminate explicitly as infrastructure failure.\n- Separate scientific hypotheses from execution changes, and only estimate expected gains when supported by measurements.\n- Require at least a few successful comparable trials before declaring convergence.\n\nWhat the next run should try first:\n1. Re-run the exact baseline with the same seed to verify reproducibility and the metric pipeline.\n2. Run one minimal controlled variant targeting the observed overfitting: retain the baseline FM and add slightly stronger regularization or earlier stopping, changing only one factor.\n3. If successful, perform a small sequential sweep\u2014rather than ASHA\u2014over learning rate, weight decay, and embedding dropout, with fixed capacity and short budgets.\n4. Repeat the best candidate across multiple seeds and compare it against the baseline using uncertainty estimates.\n\nThe highest-priority issue is not model design; it is making failed experiments diagnosable and preventing the policy from repeating an unchanged, non-executing branch."
+}

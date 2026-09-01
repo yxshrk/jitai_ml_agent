@@ -1,0 +1,101 @@
+{
+  "run_dir": "logs/run_ff1",
+  "dataset": "pure",
+  "knowledge_mode": "clean",
+  "stop_reason": "converged",
+  "iterations": 3,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 0.0004,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 13306,
+      "out": 1537,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 15789,
+      "out": 20986,
+      "calls": 3
+    },
+    "openai/gpt-5.4-mini/fixer": {
+      "in": 8423,
+      "out": 12480,
+      "calls": 2
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 1251,
+      "out": 1328,
+      "calls": 2
+    }
+  },
+  "tokens_total": 75100,
+  "wall_s": 2042.5,
+  "self_critique": "Overall assessment\n\nThe run stopped far too early to justify \u201cconverged.\u201d It established a stable baseline, then evaluated only two unsuccessful variants, both based on the same overfitting diagnosis. That demonstrates that those particular interventions were worse\u2014not that the search space was exhausted.\n\nWhat the harness/policy did suboptimally\n\n- Treated an infrastructure/evaluation failure as a research node. node_001 produced no metric, yet node_002 continued from it rather than retrying cleanly from node_000.\n- Explored too few independent hypotheses. The evaluated branches both targeted regularization; there was no meaningful test of the other ideas listed in node_001.\n- Bundled many changes together. Dropout, embedding L2, dense decay, and LR decay were changed coherently but simultaneously, making the regression uninterpretable.\n- Used ambitious improvement claims before screening. A +0.002 to +0.0025 target is much larger than the reported baseline sigma, but there was no staged process for first detecting promising directions.\n- Declared convergence after two rejections. Scores of 0.5884 and 0.5976 only establish that two configurations underperformed.\n- Apparently did not prioritize the simplest implication of the learning curves: selecting/restoring the epoch-8 checkpoint with explicit early stopping before changing model capacity or regularization.\n\nWhat I would change in the scaffold\n\n- Separate execution failures from scientific results; automatically retry missing-metric runs and do not advance the hypothesis lineage from them.\n- Require each experiment to specify one primary change, exact parameter deltas, a causal prediction, and an ablation plan.\n- Add a minimum exploration budget before convergence, such as several valid trials across at least three distinct hypothesis families.\n- Make acceptance uncertainty-aware using repeated seeds or paired runs, not only a single baseline sigma estimate.\n- Persist best-checkpoint metrics, full train/validation curves, and the selected epoch so overfitting claims can be verified.\n- Use staged search: cheap single-factor screens, then combinations only among individually promising factors.\n- Avoid prose that lists a broad \u201cscreening matrix\u201d unless the harness actually schedules and reports that matrix.\n\nWhat the next run should try first\n\nFirst, reproduce the baseline across multiple seeds with explicit best-validation checkpoint restoration and patience-based early stopping around the observed epoch-8 peak. This is the lowest-risk test and clarifies whether 0.601838 is robust and whether the baseline already benefits from checkpoint selection.\n\nThen run controlled, single-factor tests from node_000:\n\n1. Slightly stronger early stopping or fewer maximum epochs.\n2. One regularization axis at a time: embedding L2, dense weight decay, or dropout.\n3. Learning-rate schedule independently of regularization.\n4. Only after those, test ranking loss, recency weighting, or leakage-safe aggregates as separate hypotheses.\n\nDo not begin with another combined regularization package. The strongest immediate lesson from this run is that broad coupled changes obscured attribution and made premature convergence likely."
+}

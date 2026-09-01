@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_ff3",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "max_iters",
+  "iterations": 1,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 0.0004,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 10761,
+      "out": 621,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 7206,
+      "out": 10953,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 242,
+      "out": 683,
+      "calls": 1
+    }
+  },
+  "tokens_total": 30466,
+  "wall_s": 549.2,
+  "self_critique": "Run critique\n\n- The run made no progress beyond the baseline: node_001 scored 0.6003, about 0.0015 below node_000\u2019s 0.601838.\n- The only follow-up bundled too many changes at once: DCNv2-lite, mixed BPR/BCE loss, dropout, AdamW, rapid LR decay, and recency weighting. This prevented attribution and made failure hard to diagnose.\n- The hypothesis jumped from \u201cvalidation declines after an early peak\u201d to an architecture/loss/data-weighting package. Early decline primarily suggests checkpointing, training duration, or regularization should be tested first; it does not specifically justify DCNv2, BPR, or recency weighting.\n- Recency weighting appears especially weakly motivated for the \u201cpure\u201d dataset unless temporal drift had been measured.\n- Claiming an expected gain of at least 0.0024 was overconfident given a baseline sigma of 0.0004 and no supporting ablations.\n- Stopping at max_iters after only one challenger left essentially no opportunity to learn from the failed package. If node cost caused this, the policy chose an experiment that was too broad and expensive for the available budget.\n- The journal does not show replicated challenger runs, learning curves, best-checkpoint versus final-checkpoint scores, or component-level diagnostics.\n\nScaffold changes\n\n- Enforce atomic or narrowly grouped changes: one architecture, optimizer, loss, weighting, or regularization change per node.\n- Require each hypothesis to cite an observed diagnostic and explain why the proposed intervention follows from it.\n- Preserve best-validation checkpoints and report both peak and final validation scores.\n- Allocate budget to several cheap baseline-centered probes before attempting a large architecture package.\n- Use repeated seeds for improvements near the noise floor and compare confidence intervals, not only point estimates.\n- After a failed compound experiment, automatically schedule rollback ablations rather than terminating without attribution.\n\nWhat the next run should try first\n\nStart from the FM baseline and exploit the observed early validation peak. Keep architecture, loss, and sampling unchanged; add best-checkpoint early stopping and tune only training duration/LR schedule around the peak. Then test weight decay or dropout individually. Run the strongest setting across multiple seeds. Only after establishing whether ordinary overfitting control helps should the run explore DCNv2, BPR mixing, or recency weighting as separate experiments."
+}

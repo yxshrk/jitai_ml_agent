@@ -1,0 +1,96 @@
+{
+  "run_dir": "logs/run_ff2",
+  "dataset": "pure",
+  "knowledge_mode": "full",
+  "stop_reason": "max_iters",
+  "iterations": 1,
+  "best_node": "node_000",
+  "best_metrics": {
+    "gauc": 0.6675962829277592,
+    "ndcg5": 0.5360792128761318,
+    "primary": 0.6018377479019454,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.57954,
+        "val_gauc": 0.649846,
+        "val_primary": 0.588885
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.52013,
+        "val_gauc": 0.661034,
+        "val_primary": 0.596914
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.50487,
+        "val_gauc": 0.664894,
+        "val_primary": 0.599873
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.50204,
+        "val_gauc": 0.666306,
+        "val_primary": 0.600912
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.49487,
+        "val_gauc": 0.667447,
+        "val_primary": 0.601449
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.48704,
+        "val_gauc": 0.667443,
+        "val_primary": 0.601641
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.4904,
+        "val_gauc": 0.667123,
+        "val_primary": 0.601379
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.46744,
+        "val_gauc": 0.667596,
+        "val_primary": 0.601838
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.49261,
+        "val_gauc": 0.66651,
+        "val_primary": 0.601065
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.46233,
+        "val_gauc": 0.666294,
+        "val_primary": 0.600686
+      }
+    ]
+  },
+  "sigma": 0.0004,
+  "tokens": {
+    "openai/gpt-5.6-sol/selector": {
+      "in": 10672,
+      "out": 710,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/proposer": {
+      "in": 7232,
+      "out": 12096,
+      "calls": 1
+    },
+    "openai/gpt-5.6-sol/reflector": {
+      "in": 241,
+      "out": 607,
+      "calls": 1
+    }
+  },
+  "tokens_total": 31558,
+  "wall_s": 617.6,
+  "self_critique": "Run critique\n\n- The policy spent its only post-baseline trial on an overpacked intervention: DCN-lite, BPR mixing, dropout, AdamW scheduling, and recency weighting all changed simultaneously. This made the result uninterpretable and created too many ways to regress.\n- The hypothesis correctly noticed overfitting, but most proposed changes were not tightly implied by that diagnosis. Early stopping or one regularization adjustment would have been the direct test; architecture, objective, and weighting changes were speculative.\n- The claimed +0.0029 improvement was insufficiently grounded. The actual result, 0.6009, was 0.0009 below baseline\u2014roughly 2.25 times the reported baseline sigma\u2014so rejection was appropriate.\n- A \u201cvalidation-selected sweep\u201d risks selection bias unless candidates are evaluated consistently and confirmed across seeds. No confirmation or uncertainty estimate for node_001 was reported.\n- Reaching max_iters after only one challenger indicates poor budget granularity. The harness should favor several cheap, attributable experiments over one bundled package.\n\nScaffold changes\n\n- Enforce one major change per node, with bundles allowed only after individual components show gains.\n- Translate diagnostics into minimal interventions: observed early validation peak should first trigger checkpoint/epoch tuning, then regularization.\n- Reserve budget for baseline replication and multi-seed confirmation of small gains.\n- Require hypotheses to state mechanism, isolated variable, expected effect size based on prior evidence, and rollback criteria.\n- Use staged search: cheap epoch/regularization sweeps first, objective changes second, architecture changes last.\n- Record best epoch, train-validation gap, seed variance, and component-level ablations so failures are actionable.\n\nWhat the next run should try first\n\nReproduce the baseline across a few seeds, then keep the FM architecture and objective fixed while selecting an earlier checkpoint or reducing the training horizon. If that is already optimized, run a small isolated sweep over embedding dropout or weight decay\u2014not both. Only after establishing a stable improvement should the run test BPR mixing, recency weighting, or DCN-lite individually."
+}
