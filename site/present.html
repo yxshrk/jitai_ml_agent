@@ -231,20 +231,23 @@ body.present{overflow:hidden;height:100vh}
         applies, its citation, and what it has scored here. A two-tier menu separates
         proven fixes from promising but untested ones, and a strategy layer matches
         them to where the run is: opening, middle, or close.</p></div>
-      <div class="engcard"><div class="onum">04</div><h3>Decision benches</h3>
-        <p>The agent's judgment is tested like code: we froze real mid-run situations
-        whose right next move we know, and replay the agent against them after every
-        change, without a training run. Bench fixes may only be evidence corrections or general
-        principles, never canned answers.</p></div>
+      <div class="engcard"><div class="onum">04</div><h3>Decision benches on real states</h3>
+        <p>The agent's judgment is tested like code: real mid-run situations are frozen
+        as fixtures and the agent is replayed against them after every change, no
+        training run needed. Fixes may only be evidence corrections or general
+        principles, never canned answers. On the final night every wrong call became
+        a fixture; the real-state bench went from 1 bad pick to 0.</p></div>
       <div class="engcard"><div class="onum">05</div><h3>Agent plans the ensemble, code runs it</h3>
         <p>For the final move, combining several model types into one (an ensemble),
         the agent writes a structured, machine-checked plan and fixed code carries it
         out: quick trial fits of each model type, every combination scored, the winner
         retrained and re-verified in full. No LLM touches the measurement.</p></div>
-      <div class="engcard"><div class="onum">06</div><h3>Telemetry-gated diagnosis</h3>
-        <p>A diagnosis may only cite training curves that were actually recorded. When
-        we found out-of-date notes quietly steering the agent's choices, we rebuilt how
-        knowledge is loaded and disclosed the affected runs rather than hiding them.</p></div>
+      <div class="engcard"><div class="onum">06</div><h3>Fails safely</h3>
+        <p>A one-epoch smoke test with a sanity gate calibrated on measured broken-vs-sane
+        code rejects defective scripts before any full training. Improvements are
+        constrained patches to the accepted script, so working code is never re-typed.
+        A fixer gets one repair; a provider outage is retried and never counted as a
+        failed experiment.</p></div>
     </div>
     </div>
   </div>
@@ -279,7 +282,7 @@ body.present{overflow:hidden;height:100vh}
         pass a statistical test before they count.</p></div>
       <div class="principle"><div class="pn">04</div><h3>Learning from failure</h3>
         <p>Every hypothesis, dead end, and crash is journaled. A VOID stays on the
-        chart. The <b>139-run ledger</b> feeds the cards, so the agent inherits the
+        chart. The <b>146-run ledger</b> feeds the cards, so the agent inherits the
         useful lessons and not the noise.</p></div>
       <div class="principle"><div class="pn">05</div><h3>Bounded authority</h3>
         <p>The agent chooses the next experiment and writes the script. The
@@ -290,30 +293,29 @@ body.present{overflow:hidden;height:100vh}
 </div>
 
 <!-- 9 · model and effort choice -->
-<div class="scene" id="s-model" data-title="Model and effort" data-cap="decision bench per model and effort · logs/bench_model_sweep.json and the sweep logs · <b>sol at medium</b> chosen">
+<div class="scene" id="s-model" data-title="The ceiling" data-cap="final night, 1 Sep · five hardened harness generations tried to beat the champion · every number has a run directory behind it">
   <div class="wrap">
-    <div class="eyebrow">model and effort</div>
-    <h2>The model is gpt-5.6-sol at medium effort. Medium was the measured sweet spot.</h2>
-    <table class="mtable" aria-label="model and reasoning effort sweep on the decision bench">
-      <thead><tr><th>model</th><th>effort</th><th>temperature</th><th class="n">good</th><th class="n">ok</th><th class="n">bad</th><th class="n">error</th><th>note</th></tr></thead>
+    <div class="eyebrow">what we learned on the last night</div>
+    <h2>Three harder harnesses could not beat it. The champion sits at the measured ceiling.</h2>
+    <table class="mtable" aria-label="final-night runs versus the designated champion">
+      <thead><tr><th>run (1 Sep)</th><th>knowledge</th><th class="n">best single</th><th class="n">converged</th><th>note</th></tr></thead>
       <tbody>
-        <tr class="pick"><td class="m">gpt-5.6-sol</td><td>medium</td><td>default</td><td class="n">4</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"><b>chosen</b> · no bad picks; 5 scenarios in this block</td></tr>
-        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>default</td><td class="n">5</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n">0</td><td class="note">failed <b>endgame_eps_math</b>: the scenario that needs the 0.002 stopping-rule arithmetic</td></tr>
-        <tr><td class="m">gpt-5.6-sol</td><td>low</td><td>0.2</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n"><span class="err">6</span></td><td class="note">HTTP 400 on every call: temperature not accepted by the API</td></tr>
-        <tr><td class="m">gpt-5.6-luna</td><td>low</td><td>default</td><td class="n">5</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="note"></td></tr>
-        <tr><td class="m">gpt-5.6-luna</td><td>medium</td><td>default</td><td class="n">3</td><td class="n">0</td><td class="n"><span class="bad">1</span></td><td class="n"><span class="err">2</span></td><td class="note">bad pick on two_strikes_on_good_base; 2 calls refused by the spend cap</td></tr>
-        <tr><td class="m">gpt-5.6-terra</td><td>low</td><td>default</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="note">passed all 6</td></tr>
-        <tr><td class="m">gpt-5.6-terra</td><td>medium</td><td>default</td><td class="n">6</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="note">passed all 6</td></tr>
+        <tr class="pick"><td class="m">bigclock_07</td><td>measured memory</td><td class="n">0.6042</td><td class="n"><b>0.605575</b></td><td class="note"><b>designated</b> · 14-probe sweep, then a 7-member seed close, 3 selected</td></tr>
+        <tr><td class="m">f7</td><td>measured memory</td><td class="n">0.6045</td><td class="n">0.60447</td><td class="note">judgment fixes held; a +0.0005 branch failed the repeat-seed confirm</td></tr>
+        <tr><td class="m">f8</td><td>measured memory</td><td class="n">0.6047</td><td class="n">0.60471</td><td class="note">first two-mechanism lineage; a provider 503 ended it mid-decision (now retried, never a strike)</td></tr>
+        <tr><td class="m">f9</td><td>measured memory</td><td class="n"><b>0.6051</b></td><td class="n">0.60510</td><td class="note">best single model ever; re-banking all of its own artifacts by hand reaches only 0.60546</td></tr>
+        <tr><td class="m">c10</td><td>literature only, no digest</td><td class="n">0.6042</td><td class="n">0.60425</td><td class="note">principles alone: the same opener as the champion, from a clean library</td></tr>
+        <tr><td class="m">human-assisted</td><td>teammate research</td><td class="n">0.6058</td><td class="n">0.6061</td><td class="note">evidence only, never submitted: the gap is implementation fidelity and artifact persistence, not judgment</td></tr>
       </tbody>
     </table>
-    <p class="mnotes">The bench: six frozen mid-run situations with a known right next move. <b>sol at medium</b> is the
-    LLM that proposes each experiment (the proposer) in the designated run. In the run ledger, high and extra-high effort proposals
-    truncate or fail (runs 16-22, 27, 28), so medium is a measured choice, not a default.</p>
+    <p class="mnotes">Everything that broke on the way was journaled, frozen as a bench fixture, and fixed in the repo as a
+    general principle: a smoke sanity gate calibrated on measured code populations, constrained patches instead of
+    rewrites, outages retried without penalty, and six decision principles verified on real states.</p>
     <div class="mstrip">
-      <div><b>139</b><span>completed agent runs</span></div>
+      <div><b>~146</b><span>completed agent runs</span></div>
       <div><b>~250</b><span>measured experiment cells</span></div>
       <div><b>42</b><span>method cards</span></div>
-      <div><b>4/10 → 10/10</b><span>decision bench pass rate, from method fixes alone</span></div>
+      <div><b>0 bad</b><span>real-state decision bench after the final night</span></div>
     </div>
   </div>
 </div>
@@ -327,7 +329,7 @@ body.present{overflow:hidden;height:100vh}
     <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
     Test labels are never read anywhere in the pipeline. Bonus: the same agent on
     KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run
-    journals, the 42-card method library, and ~250 measured experiment cells from 139 runs ship in the repo.<br>
+    journals, the 42-card method library, and ~250 measured experiment cells from ~146 runs ship in the repo.<br>
     team <b>jit.ai</b> · Rohan Kulshrestha · Aditya Ghosh · Yash Raj Khandelwal · Avinash Parthiban Elangovan</p>
   </section>
 </div>
