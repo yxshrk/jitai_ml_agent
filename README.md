@@ -44,6 +44,19 @@ members and validation-selected a 3-member per-user rank average → 0.605575 (t
 7-member designs scored within 0.0004 — disclosed), stopping under the rule. The dials it found are non-obvious (dropout 0.18, weight decay 9e-5,
 LR ×0.57 every 2 epochs) and were later reproduced from scratch (0.60561).
 
+## Which code produced the designated run
+
+`run_bigclock_07` was produced by the harness as of commit `dc354b6` (tag
+`designated-run-harness`, 30 Aug). Every later commit on this branch is
+hardening that came *after* the designation and did not touch the run:
+smoke sanity gate, constrained-patch improves, provider-outage retry,
+recalibrated method-card expectations, and the 1 Sep decision principles
+(evidence/POSTMORTEM_1SEP_FINAL_RUNS.md). To replay the designated run's
+exact behaviour, check out the tag; to reproduce its *artifact*,
+`tools/predict_test_bc07.py` rebuilds the submission CSV from the recorded
+recipe on any commit. Runs launched after the designation (f7 to f15, c9 to
+c11) are disclosed in logs/RUNS.md; none was designated.
+
 ## Layout
 
 - `harness/` — the loop (proposal → smoke test → train with timeout → official

@@ -12,7 +12,7 @@
 | KuaiRand-1K (bonus) | n/a (no official baseline; our tuned single: 0.6208) | **primary 0.66892** (designated, triple-audited) | +0.048 vs single-model start |
 | KuaiRand-27K (bonus, out-of-protocol scaling demo) | n/a | primary 0.67263 | — (GPU demo, not an agent run) |
 
-Designated runs: Pure = `logs/run_bigclock_07` (no executable seed; stopped under the ε=0.002/N=3 rule);
+Designated runs: Pure = `logs/run_bigclock_07` (no executable seed; stopped under the ε=0.002/N=3 rule; harness at commit `dc354b6`, tag `designated-run-harness` — later commits are post-designation hardening);
 1K = `logs/run_omega_1k` (causal session features; faithful A-form artifact). Submission CSVs:
 `evidence/test_submission_pure.csv` (170,588 rows) and `evidence/test_submission_1k_faithful.csv`
 (4,132,081 rows), both built by
