@@ -75,3 +75,8 @@ ssh — likely already stopped, verify in console); coral/ruby: delete
 - Public branch = clean-agent. Make it the default branch (or ask Claude to push it
   over main). Then Pages, then Devpost paste (evidence/DEVPOST.md) before 12:00.
 - Avinash's README line still needs your words.
+
+## 10:40 final
+Upload bundle: evidence/submission_bundle/ (Pure CSV, 1K .csv.gz, checksums, receipt).
+Script V6 = recorded version. Designation unchanged. Three human actions remain (README line,
+default branch + Pages, Devpost submit).
