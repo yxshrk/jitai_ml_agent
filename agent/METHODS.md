@@ -54,11 +54,15 @@ Measured openers: 14 probes -> 0.6042 (bigclock_07), 48 probes -> 0.6051 (f9),
 48 probes -> 0.6036 (f10b). Beyond ~20 well-ranked probes the sweep's outcome is
 dominated by the random draw, not by depth, while wall-clock is a scored resource.
 Therefore:
-- Stage-1: 16-24 SHORT probes (2-3 epochs), half from the measured basins, half
-  wide; STOP EARLY when the best-found has not improved over the last 8 probes.
-- One refinement pass (4-6 probes) around the winner; the top 2 candidates get
-  full-length final trainings; commit only on full-length scores.
-- Target: an opener node in ~10-15 minutes. Spend the saved clock on the NEXT
+- HARD CAPS (measured 1 Sep, f11b: 24 coarse + 512 short 'refine' probes + only
+  2 full-length finals -> 0.6031, the worst opener of the campaign; short probes
+  mis-rank configs near the optimum, and finals are where the score is made):
+  * stage-1: 16-24 probes at 3-4 epochs on FULL rows (no subsampling), half from
+    the measured basins, half wide; stop early after 8 non-improving probes.
+  * refine: AT MOST 6 probes perturbing the winner — never a grid.
+  * finals: AT LEAST 3 full-length trainings of the top candidates; commit only
+    on full-length scores. TOTAL probes across all stages <= 40.
+- Target: an opener node in ~15 minutes. Spend the saved clock on the NEXT
   iterations (a re-swept rider mechanism, then the close), not on more probes.
 
 ## Depth policy (overrides brevity instincts)
