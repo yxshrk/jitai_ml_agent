@@ -49,21 +49,21 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
   mechanisms probed ON the tuned champion, incl. pairs) is the highest-expected-value
   next play, BEFORE the ensemble close. The record run skipped it — do not.
 
-## Depth policy (FAST — measured 1 Sep: depth buys variance, not score)
-Measured openers: 14 probes -> 0.6042 (bigclock_07), 48 probes -> 0.6051 (f9),
-48 probes -> 0.6036 (f10b). Beyond ~20 well-ranked probes the sweep's outcome is
-dominated by the random draw, not by depth, while wall-clock is a scored resource.
-Therefore:
-- HARD CAPS (measured 1 Sep, f11b: 24 coarse + 512 short 'refine' probes + only
-  2 full-length finals -> 0.6031, the worst opener of the campaign; short probes
-  mis-rank configs near the optimum, and finals are where the score is made):
-  * stage-1: 16-24 probes at 3-4 epochs on FULL rows (no subsampling), half from
-    the measured basins, half wide; stop early after 8 non-improving probes.
-  * refine: AT MOST 6 probes perturbing the winner — never a grid.
-  * finals: AT LEAST 3 full-length trainings of the top candidates; commit only
-    on full-length scores. TOTAL probes across all stages <= 40.
-- Target: an opener node in ~15 minutes. Spend the saved clock on the NEXT
-  iterations (a re-swept rider mechanism, then the close), not on more probes.
+## Depth policy (BIGCLOCK PROFILE — the measured recipe of the designated champion)
+The designated champion run_bigclock_07 (0.605575) used exactly this shape and
+finished in 17 minutes; deeper sweeps measured 1 Sep did NOT beat it (48 probes
+-> 0.6051/0.6036; a 512-short-probe refine -> 0.6031). Depth buys variance, not
+score; wall-clock is a scored resource. Use this profile:
+- Stage-1: 8-12 coarse probes at 4-6 epochs on FULL rows (no subsampling), half
+  from the measured basins, half wide log-uniform.
+- Stage-2: 4-6 refinement probes perturbing the winner (small jitter per dial);
+  NEVER a grid.
+- Final: 1-2 full-length trainings with half-epoch checkpointing; commit only on
+  full-length scores. TOTAL probes <= 20.
+- Then, as LATER iterations (not inside the opener): one orthogonal rider
+  re-swept on the champion (sampler/objective), and the close = ensemble-design
+  sweep over the champion's own config at several seeds (bigclock n6: 7 members
+  trained, 3 validation-selected, per-user rank average, +0.0013).
 
 ## Depth policy (overrides brevity instincts)
 - PROBE PARALLELISM: probes are small models — run them CONCURRENTLY, not one at a
