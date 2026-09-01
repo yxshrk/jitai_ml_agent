@@ -178,6 +178,22 @@ REAL_STATE_RUBRIC = {
     "close_rejected_strengthen_first": (  # failed-confirm close: strengthen members, do not re-roll
         {"seq-deepfm-composite", "dcn-lite", "bpr-hybrid",
          "context-stratified-pairs", "hyperparam-random-search"}, _ENS_ANY),
+    "pivot_after_two_failed_builds": (  # two crashed builds of the sweep card: pivot
+        {"regularization-schedule", "bpr-hybrid", "dcn-lite", "recency-weighting"},
+        {"hyperparam-random-search"}),
+    "chain_open": (  # swept opener first
+        {"hyperparam-random-search"}, {"seed-ensemble", "seed-architecture-ensemble",
+                                       "heterogeneous-ensemble-design", "recency-weighting"}),
+    "chain_after_strong_opener": (  # compound a NEW mechanism before closing; in the
+        # clean world the swept opener is the logloss FM, so a pairwise objective
+        # (bpr-hybrid) is a new mechanism, as is the sampler
+        {"context-stratified-pairs", "bpr-hybrid", "dcn-lite"},
+        {"seed-ensemble", "seed-architecture-ensemble", "heterogeneous-ensemble-design",
+         "regularization-schedule", "recency-weighting"}),
+    "chain_after_ctx_tie": (  # close over own lineage (or one more rider)
+        {"seed-ensemble", "seed-architecture-ensemble", "heterogeneous-ensemble-design"},
+        {"regularization-schedule", "recency-weighting", "bpr-hybrid", "dcn-lite",
+         "hyperparam-random-search"}),
     "farm_close_uniquely_right": (  # two families near ceiling + plateau: cross-family close
         _ENS_CROSS, {"seed-ensemble", "regularization-schedule",
                      "recency-weighting", "swa-ema"}),
@@ -192,7 +208,12 @@ def real_state_scenarios():
         if rubric is None:
             continue
         good, bad = rubric
-        out.append(dict(sc, good=set(good), bad=set(bad)))
+        # the clean brain has never seen full-library ids: render the journal in
+        # clean-card vocabulary (same events, its own names for them)
+        journal = [line.replace("package-dial-sweep",
+                                "hyperparam-random-search (wide dial sweep: lr, weight decay, dropout, k)")
+                   for line in sc["journal"]]
+        out.append(dict(sc, journal=journal, good=set(good), bad=set(bad)))
     return out
 
 
