@@ -133,7 +133,7 @@
     <div class="decision"><h3>03 · Recency weighting</h3>
       <p>Validation is the week after training. Each training row is weighted by 2<sup>−age / half-life</sup>
       with a 7-day half-life, so the model leans towards recent behaviour and the temporal drift the
-      diagnosis kept pointing at. Tried alone in iteration 2 it did nothing (+0.0000); inside the package it
+      diagnosis kept pointing at. Tried alone in iteration 2 it did nothing (−0.0002, rejected); inside the package it
       was kept because the sweep measured it as a component that helped.</p>
       <div class="versus">iteration 2 alone: rejected · iteration 3 in combination: <b>kept, half-life 7 days</b></div></div>
     <div class="decision"><h3>04 · Strong regularization plus rapid learning-rate decay</h3>
