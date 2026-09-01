@@ -1,0 +1,1068 @@
+"""Two-stage dial search for a regularized DCN-lite/BPR/recency package.
+
+Uses only the official five offset-encoded fields from the npz fast path. Coarse
+probes locate a regularization basin, longer full-row refinement selects the
+configuration, and one full-length run checkpoints validation every half epoch.
+"""
+import argparse
+import datetime
+import json
+import math
+import os
+import sys
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data.official.evaluate import evaluate
+
+
+class DCNLite(torch.nn.Module):
+    def __init__(self, total_dim, fields=5, k=16, hidden=96, cross_layers=1,
+                 dropout=0.25):
+        super().__init__()
+        self.fields = fields
+        self.k = k
+        self.dropout = float(dropout)
+        width = fields * k
+        self.emb = torch.nn.Embedding(total_dim, k)
+        self.lin = torch.nn.Embedding(total_dim, 1)
+        self.bias = torch.nn.Parameter(torch.zeros(1))
+        self.cross_w = torch.nn.ParameterList([
+            torch.nn.Parameter(torch.empty(width)) for _ in range(cross_layers)
+        ])
+        self.cross_b = torch.nn.ParameterList([
+            torch.nn.Parameter(torch.zeros(width)) for _ in range(cross_layers)
+        ])
+        self.deep = torch.nn.Sequential(
+            torch.nn.Linear(width, hidden),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(self.dropout),
+            torch.nn.Linear(hidden, hidden // 2),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(self.dropout),
+        )
+        self.out = torch.nn.Linear(width + hidden // 2, 1)
+        torch.nn.init.normal_(self.emb.weight, std=0.01)
+        torch.nn.init.zeros_(self.lin.weight)
+        for w in self.cross_w:
+            torch.nn.init.normal_(w, std=0.01)
+        torch.nn.init.normal_(self.out.weight, std=0.01)
+        torch.nn.init.zeros_(self.out.bias)
+
+    def forward(self, x):
+        raw = self.emb(x)
+        e = F.dropout(raw, p=self.dropout, training=self.training)
+        summed = e.sum(1)
+        fm = 0.5 * (summed.square() - e.square().sum(1)).sum(1)
+        linear = self.lin(x).sum((1, 2))
+        x0 = e.reshape(e.shape[0], -1)
+        xl = x0
+        for w, b in zip(self.cross_w, self.cross_b):
+            xl = x0 * (xl * w).sum(1, keepdim=True) + b + xl
+        deep = self.deep(x0)
+        nonlinear = self.out(torch.cat((xl, deep), dim=1)).squeeze(1)
+        return self.bias + linear + fm + nonlinear
+
+
+def seed_everything(seed):
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    if hasattr(torch.backends, "cudnn"):
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+
+def date_ages(values):
+    vals = np.asarray(values)
+    unique = np.unique(vals)
+    ordinal = {}
+    try:
+        for value in unique:
+            text = str(int(value)).zfill(8)
+            ordinal[value] = datetime.date(
+                int(text[:4]), int(text[4:6]), int(text[6:8])
+            ).toordinal()
+    except (TypeError, ValueError):
+        ordinal = {
+            value: rank for rank, value in enumerate(sorted(unique.tolist()))
+        }
+    newest = max(ordinal.values())
+    return np.asarray(
+        [newest - ordinal[value] for value in vals], dtype=np.float32
+    )
+
+
+def build_pair_tables(users, labels):
+    users = np.asarray(users)
+    labels = np.asarray(labels) >= 0.5
+    order = np.argsort(users, kind="stable")
+    sorted_users = users[order]
+    cuts = np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1
+    bounds = np.concatenate(([0], cuts, [len(order)]))
+    positives = []
+    negative_chunks = []
+    negative_starts = []
+    negative_counts = []
+    cursor = 0
+    for left, right in zip(bounds[:-1], bounds[1:]):
+        idx = order[left:right]
+        pos = idx[labels[idx]]
+        neg = idx[~labels[idx]]
+        if len(pos) and len(neg):
+            positives.append(pos.astype(np.int64, copy=False))
+            negative_chunks.append(neg.astype(np.int64, copy=False))
+            negative_starts.append(
+                np.full(len(pos), cursor, dtype=np.int64)
+            )
+            negative_counts.append(
+                np.full(len(pos), len(neg), dtype=np.int64)
+            )
+            cursor += len(neg)
+    if not positives:
+        return (np.empty(0, dtype=np.int64),) * 4
+    return (
+        np.concatenate(positives),
+        np.concatenate(negative_chunks),
+        np.concatenate(negative_starts),
+        np.concatenate(negative_counts),
+    )
+
+
+def metric_values(metric):
+    return {
+        "gauc": float(metric.get("GAUC", metric.get("gauc", 0.0))),
+        "ndcg5": float(metric.get("nDCG@5", metric.get("ndcg5", 0.0))),
+        "primary": float(metric["primary"]),
+    }
+
+
+def make_coarse_configs(seed):
+    rng = np.random.default_rng(seed + 1701)
+    count = 12
+    dropouts = np.linspace(0.17, 0.39, count)[rng.permutation(count)]
+    decays = np.geomspace(4.0e-5, 2.4e-3, count)[rng.permutation(count)]
+    lrs = np.geomspace(4.8e-4, 1.35e-3, count)[rng.permutation(count)]
+    gammas = np.linspace(0.36, 0.76, count)[rng.permutation(count)]
+    half_lives = np.asarray([3.5, 7.0, 14.0] * 4)[rng.permutation(count)]
+    steps = np.asarray([1, 2, 3, 2] * 3)[rng.permutation(count)]
+    hidden = np.asarray([64, 96, 128, 96] * 3)[rng.permutation(count)]
+    crosses = np.asarray([1, 1, 2, 1, 2, 1] * 2)[rng.permutation(count)]
+    configs = []
+    for i in range(count):
+        configs.append({
+            "dropout": float(dropouts[i]),
+            "weight_decay": float(decays[i]),
+            "lr": float(lrs[i]),
+            "decay_gamma": float(gammas[i]),
+            "decay_step": int(steps[i]),
+            "half_life": float(half_lives[i]),
+            "hidden": int(hidden[i]),
+            "cross_layers": int(crosses[i]),
+            "bpr_mix": 0.5,
+        })
+    return configs
+
+
+def make_refine_configs(base, seed):
+    rng = np.random.default_rng(seed + 2903)
+    configs = [dict(base)]
+    hidden_choices = np.asarray([64, 80, 96, 112, 128])
+    for _ in range(5):
+        cfg = dict(base)
+        cfg["dropout"] = float(np.clip(
+            base["dropout"] + rng.normal(0.0, 0.035), 0.13, 0.43
+        ))
+        cfg["weight_decay"] = float(np.clip(
+            base["weight_decay"] * math.exp(rng.normal(0.0, 0.42)),
+            2.5e-5,
+            3.2e-3,
+        ))
+        cfg["lr"] = float(np.clip(
+            base["lr"] * math.exp(rng.normal(0.0, 0.18)),
+            3.5e-4,
+            1.7e-3,
+        ))
+        cfg["decay_gamma"] = float(np.clip(
+            base["decay_gamma"] + rng.normal(0.0, 0.075), 0.28, 0.84
+        ))
+        cfg["decay_step"] = int(np.clip(
+            base["decay_step"] + rng.choice([-1, 0, 1]), 1, 4
+        ))
+        cfg["half_life"] = float(np.clip(
+            base["half_life"] * math.exp(rng.normal(0.0, 0.24)),
+            2.8,
+            18.0,
+        ))
+        nearest = int(np.argmin(np.abs(hidden_choices - base["hidden"])))
+        shift = int(rng.choice([-1, 0, 1]))
+        cfg["hidden"] = int(hidden_choices[
+            np.clip(nearest + shift, 0, len(hidden_choices) - 1)
+        ])
+        cfg["cross_layers"] = int(np.clip(
+            base["cross_layers"] + rng.choice([-1, 0, 1]), 1, 2
+        ))
+        configs.append(cfg)
+    return configs
+
+
+def append_progress(path, record):
+    with open(path, "a") as fh:
+        fh.write(json.dumps(record, sort_keys=True) + "\n")
+
+
+def stable_sigmoid(values):
+    values = np.asarray(values, dtype=np.float64)
+    return 1.0 / (1.0 + np.exp(-np.clip(values, -35.0, 35.0)))
+
+
+def grouped_indices(users):
+    order = np.argsort(np.asarray(users), kind="stable")
+    sorted_users = np.asarray(users)[order]
+    cuts = np.flatnonzero(sorted_users[1:] != sorted_users[:-1]) + 1
+    bounds = np.concatenate(([0], cuts, [len(order)]))
+    return [
+        order[left:right]
+        for left, right in zip(bounds[:-1], bounds[1:])
+    ]
+
+
+def average_ranks(values):
+    values = np.asarray(values)
+    order = np.argsort(values, kind="stable")
+    ranks = np.empty(len(values), dtype=np.float64)
+    left = 0
+    while left < len(order):
+        right = left + 1
+        while (
+            right < len(order)
+            and values[order[right]] == values[order[left]]
+        ):
+            right += 1
+        ranks[order[left:right]] = 0.5 * (left + right - 1)
+        left = right
+    if len(values) > 1:
+        ranks /= float(len(values) - 1)
+    return ranks
+
+
+def rank_average(member_scores, groups):
+    result = np.zeros_like(np.asarray(member_scores[0]), dtype=np.float64)
+    for idx in groups:
+        local = np.zeros(len(idx), dtype=np.float64)
+        for scores in member_scores:
+            local += average_ranks(np.asarray(scores)[idx])
+        result[idx] = local / float(len(member_scores))
+    return result
+
+
+def margin_temperature(scores, groups):
+    margins = []
+    for idx in groups:
+        local = np.asarray(scores)[idx]
+        if len(local) < 2:
+            continue
+        rows, cols = np.triu_indices(len(local), 1)
+        diff = np.abs(local[rows] - local[cols])
+        diff = diff[diff > 0.0]
+        if len(diff):
+            margins.append(diff)
+    if not margins:
+        return 1.0
+    return max(1.0e-5, float(np.median(np.concatenate(margins))))
+
+
+def combine_member_scores(member_scores, groups, rule, anchor_index):
+    if rule == "probability_average":
+        return np.mean(
+            np.stack([stable_sigmoid(scores) for scores in member_scores]),
+            axis=0,
+        )
+    if rule == "per_user_rank_average":
+        return rank_average(member_scores, groups)
+    if rule.startswith("anchored_soft_"):
+        anchor_weight = float(rule.rsplit("_", 1)[1]) / 100.0
+        count = len(member_scores)
+        weights = np.full(
+            count,
+            (1.0 - anchor_weight) / max(1, count - 1),
+            dtype=np.float64,
+        )
+        weights[anchor_index] = anchor_weight
+        temperatures = [
+            margin_temperature(scores, groups) for scores in member_scores
+        ]
+        result = np.zeros_like(
+            np.asarray(member_scores[0]), dtype=np.float64
+        )
+        for idx in groups:
+            if len(idx) == 1:
+                result[idx] = 0.5
+                continue
+            utility = np.zeros(len(idx), dtype=np.float64)
+            for weight, temperature, scores in zip(
+                weights, temperatures, member_scores
+            ):
+                local = np.asarray(scores)[idx]
+                margins = (
+                    local[:, None] - local[None, :]
+                ) / temperature
+                votes = stable_sigmoid(margins)
+                votes[margins == 0.0] = 0.5
+                utility += weight * (
+                    (votes.sum(1) - 0.5) / float(len(idx) - 1)
+                )
+            result[idx] = utility
+        return result
+    raise ValueError("unknown ensemble rule")
+
+
+def rescue_harm(anchor_scores, candidate_scores, labels, groups):
+    labels = np.asarray(labels)
+    rescue = 0.0
+    harm = 0.0
+    for idx in groups:
+        if len(idx) < 2:
+            continue
+        rows, cols = np.triu_indices(len(idx), 1)
+        left = idx[rows]
+        right = idx[cols]
+        truth = np.sign(labels[left] - labels[right])
+        usable = truth != 0
+        if not np.any(usable):
+            continue
+        left = left[usable]
+        right = right[usable]
+        truth = truth[usable]
+        anchor_margin = (
+            np.asarray(anchor_scores)[left]
+            - np.asarray(anchor_scores)[right]
+        ) * truth
+        candidate_margin = (
+            np.asarray(candidate_scores)[left]
+            - np.asarray(candidate_scores)[right]
+        ) * truth
+        anchor_correct = (anchor_margin > 0.0).astype(np.float64)
+        anchor_correct[anchor_margin == 0.0] = 0.5
+        candidate_correct = (candidate_margin > 0.0).astype(np.float64)
+        candidate_correct[candidate_margin == 0.0] = 0.5
+        pair_weight = float(len(idx)) / float(len(left))
+        rescue += pair_weight * np.maximum(
+            candidate_correct - anchor_correct, 0.0
+        ).sum()
+        harm += pair_weight * np.maximum(
+            anchor_correct - candidate_correct, 0.0
+        ).sum()
+    ratio = (
+        rescue / harm
+        if harm > 0.0
+        else (1.0e9 if rescue > 0.0 else 0.0)
+    )
+    return float(rescue), float(harm), float(ratio)
+
+
+def tie_statistics(scores, groups):
+    exact = 0
+    quantized = 0
+    total = 0
+    for idx in groups:
+        local = np.asarray(scores)[idx]
+        if len(local) < 2:
+            continue
+        rows, cols = np.triu_indices(len(local), 1)
+        exact += int(np.sum(local[rows] == local[cols]))
+        rounded = np.round(local, 6)
+        quantized += int(np.sum(rounded[rows] == rounded[cols]))
+        total += len(rows)
+    denom = max(1, total)
+    return float(exact / denom), float(quantized / denom)
+
+
+def jitter_config(base, seed):
+    rng = np.random.default_rng(seed + 47011)
+    config = dict(base)
+    config["dropout"] = float(np.clip(
+        base["dropout"] + rng.normal(0.0, 0.018), 0.13, 0.43
+    ))
+    config["weight_decay"] = float(np.clip(
+        base["weight_decay"] * math.exp(rng.normal(0.0, 0.18)),
+        2.5e-5,
+        3.2e-3,
+    ))
+    config["lr"] = float(np.clip(
+        base["lr"] * math.exp(rng.normal(0.0, 0.075)),
+        3.5e-4,
+        1.7e-3,
+    ))
+    config["decay_gamma"] = float(np.clip(
+        base["decay_gamma"] + rng.normal(0.0, 0.035), 0.28, 0.84
+    ))
+    config["half_life"] = float(np.clip(
+        base["half_life"] * math.exp(rng.normal(0.0, 0.08)),
+        2.8,
+        18.0,
+    ))
+    return config
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data-dir", required=True)
+    ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--epochs", type=int, default=14)
+    args = ap.parse_args()
+
+    seed_everything(args.seed)
+    device = torch.device(
+        "cuda" if torch.cuda.is_available() else "cpu"
+    )
+    os.makedirs(args.out_dir, exist_ok=True)
+    progress_path = os.path.join(args.out_dir, "progress.log")
+    if os.path.exists(progress_path):
+        os.remove(progress_path)
+
+    train_path = os.path.join(args.data_dir, "train.npz")
+    val_path = os.path.join(args.data_dir, "val.npz")
+    tr = np.load(train_path)
+    va = np.load(val_path)
+
+    field_dims = tr["field_dims"].astype(np.int64)
+    total_dim = int(field_dims.sum())
+    xt_np = tr["X"].astype(np.int64)
+    yt_np = tr["y"].astype(np.float32)
+    xv_np = va["X"].astype(np.int64)
+    val_users = va["user"]
+    val_labels = va["y"].astype(int)
+    ages_np = date_ages(tr["date"])
+
+    (
+        pair_pos_np,
+        pair_neg_np,
+        pair_start_np,
+        pair_count_np,
+    ) = build_pair_tables(tr["user"], yt_np)
+
+    Xt = torch.from_numpy(xt_np).to(device)
+    yt = torch.from_numpy(yt_np).to(device)
+    Xv = torch.from_numpy(xv_np).to(device)
+    ages = torch.from_numpy(ages_np).to(device)
+    pair_pos = torch.from_numpy(pair_pos_np).to(device)
+    pair_neg = torch.from_numpy(pair_neg_np).to(device)
+    pair_start = torch.from_numpy(pair_start_np).to(device)
+    pair_count = torch.from_numpy(pair_count_np).to(device)
+
+    smoke = os.environ.get("SMOKE_EPOCHS")
+    smoke_cap = int(smoke) if smoke is not None else None
+    coarse_epochs = min(3, smoke_cap) if smoke_cap is not None else 3
+    refine_epochs = min(6, smoke_cap) if smoke_cap is not None else 6
+    final_epochs = (
+        min(args.epochs, smoke_cap)
+        if smoke_cap is not None
+        else args.epochs
+    )
+    coarse_epochs = max(1, coarse_epochs)
+    refine_epochs = max(1, refine_epochs)
+    final_epochs = max(1, final_epochs)
+
+    n = len(yt_np)
+    batch_size = 8192
+    history = []
+
+    def predict(model):
+        model.eval()
+        chunks = []
+        with torch.no_grad():
+            for left in range(0, len(Xv), 65536):
+                chunks.append(
+                    model(Xv[left:left + 65536])
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
+        return np.concatenate(chunks)
+
+    def train_candidate(config, epochs, row_fraction, run_seed, stage,
+                        probe_index, half_epoch_checks=False,
+                        keep_snapshot=False):
+        seed_everything(run_seed)
+        model = DCNLite(
+            total_dim=total_dim,
+            fields=xt_np.shape[1],
+            k=16,
+            hidden=int(config["hidden"]),
+            cross_layers=int(config["cross_layers"]),
+            dropout=float(config["dropout"]),
+        ).to(device)
+        optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=float(config["lr"]),
+            weight_decay=float(config["weight_decay"]),
+        )
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer,
+            step_size=int(config["decay_step"]),
+            gamma=float(config["decay_gamma"]),
+        )
+
+        recency = torch.pow(
+            torch.tensor(2.0, device=device),
+            -ages / float(config["half_life"]),
+        )
+        recency = recency / recency.mean().clamp_min(1e-8)
+        take = max(batch_size, min(n, int(round(n * row_fraction))))
+        total_batches = int(math.ceil(take / batch_size))
+        best_primary = -1.0
+        best_scores = None
+        best_metric = None
+        best_event = 0.0
+        best_state = None
+        events = []
+
+        for epoch in range(epochs):
+            model.train()
+            permutation = torch.randperm(n, device=device)[:take]
+            midpoint = max(1, int(math.ceil(total_batches / 2.0)))
+            checkpoints = {total_batches}
+            if half_epoch_checks:
+                checkpoints.add(midpoint)
+            loss_sum = 0.0
+            seen_batches = 0
+            for batch_number, left in enumerate(
+                range(0, take, batch_size), start=1
+            ):
+                idx = permutation[left:left + batch_size]
+                optimizer.zero_grad(set_to_none=True)
+                logits = model(Xt[idx])
+                point_loss = F.binary_cross_entropy_with_logits(
+                    logits, yt[idx], reduction="none"
+                )
+                bce_loss = (
+                    point_loss * recency[idx]
+                ).sum() / recency[idx].sum().clamp_min(1e-8)
+
+                if len(pair_pos):
+                    selected = torch.randint(
+                        len(pair_pos), (len(idx),), device=device
+                    )
+                    pos_idx = pair_pos[selected]
+                    counts = pair_count[selected]
+                    offsets = torch.floor(
+                        torch.rand(len(idx), device=device)
+                        * counts.to(torch.float32)
+                    ).to(torch.long)
+                    neg_idx = pair_neg[pair_start[selected] + offsets]
+                    pair_logits = model(torch.cat(
+                        (Xt[pos_idx], Xt[neg_idx]), dim=0
+                    ))
+                    pos_logits = pair_logits[:len(idx)]
+                    neg_logits = pair_logits[len(idx):]
+                    pair_weights = 0.5 * (
+                        recency[pos_idx] + recency[neg_idx]
+                    )
+                    pair_loss = (
+                        F.softplus(-(pos_logits - neg_logits))
+                        * pair_weights
+                    ).sum()
+                    pair_loss = (
+                        pair_loss
+                        / pair_weights.sum().clamp_min(1e-8)
+                    )
+                    mix = float(config["bpr_mix"])
+                    loss = (
+                        (1.0 - mix) * bce_loss + mix * pair_loss
+                    )
+                else:
+                    loss = bce_loss
+
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), 5.0
+                )
+                optimizer.step()
+                loss_sum += float(loss.detach().item())
+                seen_batches += 1
+
+                if batch_number in checkpoints:
+                    scores = predict(model)
+                    metric = metric_values(
+                        evaluate(val_users, val_labels, scores)
+                    )
+                    event_epoch = (
+                        epoch + batch_number / total_batches
+                    )
+                    event = {
+                        "checkpoint_epoch": round(
+                            float(event_epoch), 3
+                        ),
+                        "train_loss": round(
+                            loss_sum / max(1, seen_batches), 6
+                        ),
+                        "lr": float(
+                            optimizer.param_groups[0]["lr"]
+                        ),
+                        "gauc": metric["gauc"],
+                        "ndcg5": metric["ndcg5"],
+                        "primary": metric["primary"],
+                    }
+                    events.append(event)
+                    if metric["primary"] > best_primary + 1e-9:
+                        best_primary = metric["primary"]
+                        best_scores = scores.copy()
+                        best_metric = metric
+                        best_event = event_epoch
+                        if keep_snapshot:
+                            best_state = {
+                                key: value.detach().cpu().clone()
+                                for key, value
+                                in model.state_dict().items()
+                            }
+                    if batch_number != total_batches:
+                        model.train()
+            scheduler.step()
+
+        record = {
+            "stage": stage,
+            "probe": int(probe_index),
+            "seed": int(run_seed),
+            "epochs": int(epochs),
+            "row_fraction": float(row_fraction),
+            "config": dict(config),
+            "best_epoch": round(float(best_event), 3),
+            "gauc": best_metric["gauc"],
+            "ndcg5": best_metric["ndcg5"],
+            "primary": best_metric["primary"],
+            "checkpoints": events,
+        }
+        history.append(record)
+        append_progress(progress_path, {
+            "stage": stage,
+            "probe": int(probe_index),
+            "config": dict(config),
+            "primary": best_metric["primary"],
+        })
+        del model, optimizer, scheduler, recency, best_state
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+        return best_primary, best_scores, best_metric, record
+
+    coarse_configs = make_coarse_configs(args.seed)
+    coarse_results = []
+    for index, config in enumerate(coarse_configs):
+        result = train_candidate(
+            config=config,
+            epochs=coarse_epochs,
+            row_fraction=0.62,
+            run_seed=args.seed + 101,
+            stage="coarse",
+            probe_index=index,
+        )
+        coarse_results.append((result[0], config))
+    coarse_results.sort(key=lambda item: item[0], reverse=True)
+    coarse_winner = dict(coarse_results[0][1])
+
+    refine_configs = make_refine_configs(coarse_winner, args.seed)
+    refine_results = []
+    refine_seed = args.seed + 202
+    for index, config in enumerate(refine_configs):
+        result = train_candidate(
+            config=config,
+            epochs=refine_epochs,
+            row_fraction=1.0,
+            run_seed=refine_seed,
+            stage="refine",
+            probe_index=index,
+        )
+        refine_results.append(
+            (result[0], dict(config), result[3])
+        )
+    refine_results.sort(key=lambda item: item[0], reverse=True)
+    winning_config = dict(refine_results[0][1])
+    winning_refine_primary = float(refine_results[0][0])
+
+    (
+        final_primary,
+        final_scores,
+        final_metric,
+        final_record,
+    ) = train_candidate(
+        config=winning_config,
+        epochs=final_epochs,
+        row_fraction=1.0,
+        run_seed=refine_seed,
+        stage="final",
+        probe_index=0,
+        half_epoch_checks=True,
+        keep_snapshot=True,
+    )
+
+    groups = grouped_indices(val_users)
+    incumbent_entry = {
+        "kind": "incumbent",
+        "index": -1,
+        "seed": int(refine_seed),
+        "scores": final_scores.copy(),
+        "metric": dict(final_metric),
+        "config": dict(winning_config),
+    }
+    member_entries = []
+    members_per_family = 24
+    for family_index, family in enumerate(
+        ("exact", "dial_jitter")
+    ):
+        for member_index in range(members_per_family):
+            run_seed = (
+                args.seed + 10000 + member_index
+                if family == "exact"
+                else args.seed + 20000 + member_index
+            )
+            member_config = (
+                dict(winning_config)
+                if family == "exact"
+                else jitter_config(winning_config, run_seed)
+            )
+            (
+                member_primary,
+                member_scores,
+                member_metric,
+                member_record,
+            ) = train_candidate(
+                config=member_config,
+                epochs=final_epochs,
+                row_fraction=1.0,
+                run_seed=run_seed,
+                stage="ensemble_member_" + family,
+                probe_index=member_index,
+                half_epoch_checks=True,
+            )
+            entry = {
+                "kind": family,
+                "index": int(member_index),
+                "seed": int(run_seed),
+                "scores": member_scores.copy(),
+                "metric": dict(member_metric),
+                "config": dict(member_config),
+            }
+            member_entries.append(entry)
+            append_progress(progress_path, {
+                "stage": "ensemble_member_result",
+                "family": family,
+                "member": int(member_index),
+                "seed": int(run_seed),
+                "primary": float(member_primary),
+            })
+
+    all_entries = [incumbent_entry] + member_entries
+    for entry in all_entries:
+        exact_ties, quantized_ties = tie_statistics(
+            entry["scores"], groups
+        )
+        entry["exact_tie_rate"] = exact_ties
+        entry["quantized_tie_rate"] = quantized_ties
+    member_primaries = np.asarray([
+        entry["metric"]["primary"] for entry in all_entries
+    ])
+    exact_rates = np.asarray([
+        entry["exact_tie_rate"] for entry in all_entries
+    ])
+    quantized_rates = np.asarray([
+        entry["quantized_tie_rate"] for entry in all_entries
+    ])
+    median_primary = float(np.median(member_primaries))
+    median_exact = float(np.median(exact_rates))
+    median_quantized = float(np.median(quantized_rates))
+    exact_mad = float(
+        np.median(np.abs(exact_rates - median_exact))
+    )
+    quantized_mad = float(
+        np.median(np.abs(quantized_rates - median_quantized))
+    )
+    exact_limit = median_exact + max(0.002, 6.0 * exact_mad)
+    quantized_limit = (
+        median_quantized + max(0.02, 6.0 * quantized_mad)
+    )
+    for entry in all_entries:
+        entry["eligible"] = bool(
+            entry["metric"]["primary"] >= median_primary - 0.0010
+            and entry["exact_tie_rate"] <= exact_limit
+            and entry["quantized_tie_rate"] <= quantized_limit
+        )
+
+    quality_record = {
+        "stage": "ensemble_quality_gate",
+        "median_primary": median_primary,
+        "minimum_primary": median_primary - 0.0010,
+        "exact_tie_limit": exact_limit,
+        "quantized_tie_limit": quantized_limit,
+        "members": [{
+            "kind": entry["kind"],
+            "index": entry["index"],
+            "seed": entry["seed"],
+            "primary": entry["metric"]["primary"],
+            "exact_tie_rate": entry["exact_tie_rate"],
+            "quantized_tie_rate": entry["quantized_tie_rate"],
+            "eligible": entry["eligible"],
+        } for entry in all_entries],
+    }
+    history.append(quality_record)
+    append_progress(progress_path, quality_record)
+
+    incumbent_prefix = (
+        [incumbent_entry] if incumbent_entry["eligible"] else []
+    )
+    exact_source = [
+        entry for entry in member_entries
+        if entry["kind"] == "exact" and entry["eligible"]
+    ]
+    jitter_source = [
+        entry for entry in member_entries
+        if entry["kind"] == "dial_jitter" and entry["eligible"]
+    ]
+    mixed_source = []
+    for index in range(max(len(exact_source), len(jitter_source))):
+        if index < len(exact_source):
+            mixed_source.append(exact_source[index])
+        if index < len(jitter_source):
+            mixed_source.append(jitter_source[index])
+
+    rules = (
+        "per_user_rank_average",
+        "probability_average",
+        "anchored_soft_55",
+        "anchored_soft_60",
+        "anchored_soft_65",
+    )
+    design_candidates = []
+    design_summaries = []
+    for diversity, source in (
+        ("consecutive_seeds", exact_source),
+        ("seed_dial_jitter", mixed_source),
+    ):
+        for member_count in (3, 5, 7):
+            needed = member_count - len(incumbent_prefix)
+            if needed > len(source) or not source:
+                continue
+            by_rule = {rule: [] for rule in rules}
+            for replicate in range(3):
+                start = (
+                    replicate * max(1, needed)
+                ) % len(source)
+                selected_members = list(incumbent_prefix)
+                selected_members.extend(
+                    source[(start + offset) % len(source)]
+                    for offset in range(needed)
+                )
+                anchor_index = int(np.argmax([
+                    entry["metric"]["primary"]
+                    for entry in selected_members
+                ]))
+                anchor = selected_members[anchor_index]
+                vectors = [
+                    entry["scores"] for entry in selected_members
+                ]
+                for rule in rules:
+                    candidate_scores = combine_member_scores(
+                        vectors, groups, rule, anchor_index
+                    )
+                    metric = metric_values(evaluate(
+                        val_users, val_labels, candidate_scores
+                    ))
+                    rescue, harm, ratio = rescue_harm(
+                        anchor["scores"],
+                        candidate_scores,
+                        val_labels,
+                        groups,
+                    )
+                    gate_pass = bool(
+                        rescue > harm
+                        and rescue > 0.0
+                        and ratio > 1.2
+                    )
+                    record = {
+                        "stage": "ensemble_design_probe",
+                        "diversity": diversity,
+                        "member_count": int(member_count),
+                        "rule": rule,
+                        "replicate": int(replicate),
+                        "member_seeds": [
+                            int(entry["seed"])
+                            for entry in selected_members
+                        ],
+                        "anchor_seed": int(anchor["seed"]),
+                        "anchor_primary": float(
+                            anchor["metric"]["primary"]
+                        ),
+                        "rescue": rescue,
+                        "harm": harm,
+                        "rescue_harm_ratio": ratio,
+                        "gate_pass": gate_pass,
+                        "gauc": metric["gauc"],
+                        "ndcg5": metric["ndcg5"],
+                        "primary": metric["primary"],
+                    }
+                    history.append(record)
+                    append_progress(progress_path, record)
+                    candidate = {
+                        "record": record,
+                        "scores": candidate_scores,
+                        "metric": metric,
+                        "anchor_primary": float(
+                            anchor["metric"]["primary"]
+                        ),
+                    }
+                    by_rule[rule].append(candidate)
+                    design_candidates.append(candidate)
+            for rule in rules:
+                candidates = by_rule[rule]
+                valid = [
+                    candidate for candidate in candidates
+                    if candidate["record"]["gate_pass"]
+                ]
+                summary = {
+                    "diversity": diversity,
+                    "member_count": int(member_count),
+                    "rule": rule,
+                    "mean_primary": float(np.mean([
+                        candidate["metric"]["primary"]
+                        for candidate in candidates
+                    ])),
+                    "mean_rescue_harm_ratio": float(np.mean([
+                        min(
+                            candidate["record"][
+                                "rescue_harm_ratio"
+                            ],
+                            1.0e6,
+                        )
+                        for candidate in candidates
+                    ])),
+                    "valid_count": int(len(valid)),
+                    "candidates": candidates,
+                }
+                design_summaries.append(summary)
+
+    eligible_designs = [
+        summary for summary in design_summaries
+        if summary["valid_count"] > 0
+    ]
+    selection_fallback = False
+    if eligible_designs:
+        winning_design = max(
+            eligible_designs,
+            key=lambda summary: (
+                summary["mean_primary"],
+                summary["mean_rescue_harm_ratio"],
+            ),
+        )
+        winning_candidates = [
+            candidate
+            for candidate in winning_design["candidates"]
+            if candidate["record"]["gate_pass"]
+        ]
+    elif design_summaries:
+        selection_fallback = True
+        winning_design = max(
+            design_summaries,
+            key=lambda summary: (
+                summary["mean_primary"],
+                summary["mean_rescue_harm_ratio"],
+            ),
+        )
+        winning_candidates = list(
+            winning_design["candidates"]
+        )
+    else:
+        selection_fallback = True
+        winning_design = {
+            "diversity": "incumbent",
+            "member_count": 1,
+            "rule": "incumbent",
+            "mean_primary": float(
+                incumbent_entry["metric"]["primary"]
+            ),
+            "mean_rescue_harm_ratio": 0.0,
+            "valid_count": 0,
+            "candidates": [],
+        }
+        winning_candidates = []
+
+    if winning_candidates:
+        selected_candidate = max(
+            winning_candidates,
+            key=lambda candidate: (
+                candidate["anchor_primary"],
+                candidate["metric"]["primary"],
+                -candidate["record"]["replicate"],
+            ),
+        )
+        final_scores = selected_candidate["scores"]
+        final_metric = selected_candidate["metric"]
+        selected_record = selected_candidate["record"]
+    else:
+        final_scores = incumbent_entry["scores"]
+        final_metric = incumbent_entry["metric"]
+        selected_record = {
+            "replicate": -1,
+            "member_seeds": [incumbent_entry["seed"]],
+            "anchor_seed": incumbent_entry["seed"],
+            "rescue": 0.0,
+            "harm": 0.0,
+            "rescue_harm_ratio": 0.0,
+        }
+
+    metrics_payload = {
+        "gauc": final_metric["gauc"],
+        "ndcg5": final_metric["ndcg5"],
+        "primary": final_metric["primary"],
+        "winning_config": winning_config,
+        "coarse_winner_primary": float(coarse_results[0][0]),
+        "winning_refine_primary": winning_refine_primary,
+        "final_best_epoch": final_record["best_epoch"],
+        "incumbent_primary": incumbent_entry["metric"]["primary"],
+        "ensemble_design": {
+            "diversity": winning_design["diversity"],
+            "member_count": winning_design["member_count"],
+            "rule": winning_design["rule"],
+            "mean_probe_primary": winning_design["mean_primary"],
+            "valid_probe_count": winning_design["valid_count"],
+            "selected_replicate": selected_record["replicate"],
+            "selected_member_seeds": selected_record["member_seeds"],
+            "anchor_seed": selected_record["anchor_seed"],
+            "rescue": selected_record["rescue"],
+            "harm": selected_record["harm"],
+            "rescue_harm_ratio": selected_record[
+                "rescue_harm_ratio"
+            ],
+            "selection_fallback": selection_fallback,
+            "selection_policy": (
+                "design by mean validation primary; cohort by anchor "
+                "quality among gate-passing predetermined cohorts, "
+                "falling back to the best available design or incumbent"
+            ),
+        },
+        "history": history,
+    }
+    with open(
+        os.path.join(args.out_dir, "metrics.json"), "w"
+    ) as fh:
+        json.dump(metrics_payload, fh)
+
+    video_offset = int(field_dims[0])
+    video_ids = xv_np[:, 1] - video_offset
+    with open(
+        os.path.join(args.out_dir, "predictions.csv"), "w"
+    ) as fh:
+        fh.write("row_id,user_id,video_id,score\n")
+        for row_id, score in enumerate(final_scores):
+            fh.write(
+                f"{row_id},{val_users[row_id]},"
+                f"{video_ids[row_id]},{score:.8g}\n"
+            )
+
+
+if __name__ == "__main__":
+    main()
