@@ -140,22 +140,6 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
 
 ## Team contributions
 
-Team jit.ai.
-
-- **Rohan Kulshreshth** — research direction and campaign operations: the
-  method-card knowledge base and its audits (`agent/METHODS*.md`), designation
-  policy and compliance decisions (`SUBMISSION_RECIPE.md`), multi-machine fleet
-  and run designations (`logs/RUNS.md`), external-review integration, evidence
-  site and video, Devpost.
-- **Aditya Ghosh** — independent model research line: the corrected causal
-  Sequence-DeepFM, censored watch-time auxiliary, and session-context findings
-  (branch `codex/project-2-kuairand-agent`, `runs/RESULTS.md`), independently
-  verified and distilled into cited method cards (`seq-deepfm-*` cards).
-- **Yashraj Khandelwal** — a second, independently designed agent harness
-  (branches `yash-attempt` … `no-cross-run-seed-prior`: generation-based search,
-  ADR discipline, strict designation rule, runs live_01–live_09 with its own
-  validated submission artifact) — convergent evidence for the winning
-  BPR+ensemble shape from a separate codebase.
-- **Avinash Parthiban Elangovan** — {{fill: own line before repo goes public}}.
-
-Shared: designation decisions, compliance review, and the webinar/rules audit.
+Team jit.ai: Aditya Ghosh, Avinash Parthiban Elangovan, Rohan Kulshreshth, Yashraj Khandelwal.
+All work (harness, agent knowledge base, model research lines, runs and designations,
+compliance review, evidence site, video and Devpost) was done jointly by the team.
