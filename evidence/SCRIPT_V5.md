@@ -33,7 +33,7 @@ No person chose an experiment, edited a script, or restarted anything.
 The agent's judgment matters, but the harness matters just as much. Six things.
 One, a structural leakage guard: the hidden test window is never mounted in the agent's workspace.
 Two, a calibrated acceptance gate: three baseline seeds set the noise floor, and borderline gains must repeat.
-Three, method cards. Forty-two, from cited literature, each carrying its measured status from about 250 experiment cells across roughly 146 runs. One card was invented by a run itself.
+Three, method cards. Forty-two, from cited literature, each carrying its measured status from about 250 experiment cells across roughly 146 runs.
 Four, decision benches on real states. We freeze the exact situations where a live run went wrong and replay the agent against them after every change. Fixes may only be evidence corrections or general principles, never canned answers.
 Five, typed ensemble plans: the agent writes the plan, deterministic code runs it, and if nothing beats the incumbent, the incumbent stays. No LLM in the measurement path.
 Six, it fails safely: a one-epoch smoke test with a sanity gate calibrated on measured code rejects defective scripts before any full training; improvements are constrained patches, so working code is never re-typed; and a provider outage is retried, never counted as a failed experiment.
@@ -48,10 +48,9 @@ On the final night we turned the agent on itself: three hardened harness generat
 That run: six of a possible fifty iterations, seventeen minutes, 115 thousand tokens, no GPU, zero mid-run interventions. From 0.6016 to 0.6056. We're team jit.ai. Thank you.
 
 ### Where the innovation is said (no extra beat needed; judges' "Innovation & Insight" criterion)
-Scene 6 already names the novel pieces in order: benches on real states with a fix constitution (04), typed ensemble plans with a deterministic can't-lose executor (05), the measured-margin smoke gate + constrained patches + outage retry (06). Scene 7's caption says one card was invented by a run itself. Scene 9's table is the insight: the ceiling, the tiers, and the named gap.
+Scene 6 already names the novel pieces in order: benches on real states with a fix constitution (04), typed ensemble plans with a deterministic can't-lose executor (05), the measured-margin smoke gate + constrained patches + outage retry (06). Scene 9's table is the insight: the ceiling, the tiers, and the named gap.
 
 ### Priority cuts (V5 runs ~3:20 at 180 wpm; cut in this order to reach ~3:05)
 1. Scene 8: drop "Even the agent's own gains ... before they count." ~4 s
 2. Scene 9: drop "Every failure that taught us that is journaled, benched, and fixed." ~4 s
 3. Scene 6, item six: drop the outage clause. ~4 s
-4. Scene 6, item three: drop "One card was invented by a run itself." ~3 s
