@@ -337,7 +337,10 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 #tracker .tlbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:560;margin-bottom:8px}
 #tchips{display:flex;flex-wrap:wrap;gap:6px}
 .tchip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);
-  background:var(--surface);color:var(--ink);cursor:pointer;transition:opacity .3s,transform .3s}
+  background:var(--surface);color:var(--ink);cursor:pointer;opacity:0;transform:translateY(6px) scale(.96);
+  transition:opacity .35s ease,transform .35s ease}
+.tchip.onn{opacity:1;transform:none}
+.tchip.out{opacity:0;transform:translateY(-4px) scale(.96)}
 .tchip i{font-style:normal;font-size:10px;letter-spacing:.1em;color:var(--dim)}
 .tchip.base{color:var(--dim)}
 .tchip.add{border-color:var(--go);color:var(--go);background:rgba(11,143,92,.06)}
@@ -347,7 +350,7 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .tchip.void{border-color:var(--amber);color:var(--amber);background:rgba(148,106,12,.05)}
 .tchip.done{border-color:var(--ink);font-weight:620;cursor:default}
 .tchip.empty{color:var(--dim);cursor:default}
-.tchip:hover{transform:translateY(-1px)}
+.tchip.onn:hover{transform:translateY(-1px)}
 .entry.flash{border-color:var(--go);box-shadow:0 0 0 3px rgba(11,143,92,.18)}
 .iterlink{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);cursor:pointer}
 .iterlink:hover{color:var(--go);text-decoration-color:var(--go)}

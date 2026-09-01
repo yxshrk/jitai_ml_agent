@@ -224,16 +224,35 @@ function typeIn(el){
    the current iteration's rejected try shows struck through, then drops off */
 function paintTracker(maxI,conv){
   const box=document.getElementById('tchips');if(!box||!window.RECIPE)return;
-  let h='';
+  // desired chips, keyed so repaint can diff instead of rebuilding (fade in/out, staggered)
+  const want=[];
   for(let k=0;k<=maxI;k++){
-    (window.RECIPE[k]||[]).forEach(c=>{
-      if(c.k==='add'||c.k==='base')h+='<span class="tchip '+c.k+'" data-iter="'+k+'"><i>'+String(k).padStart(2,'0')+'</i>'+c.t+'</span>';
-      else if(k===maxI&&!conv)h+='<span class="tchip '+c.k+'" data-iter="'+k+'"><i>'+String(k).padStart(2,'0')+'</i>'+c.t+'</span>';
+    (window.RECIPE[k]||[]).forEach((c,j)=>{
+      const keep=c.k==='add'||c.k==='base';
+      if(keep||(k===maxI&&!conv))want.push({id:k+':'+j,cls:'tchip '+c.k,html:'<i>'+String(k).padStart(2,'0')+'</i>'+c.t,iter:k});
     });
   }
-  if(maxI<0)h='<span class="tchip empty">nothing yet</span>';
-  if(conv)h+='<span class="tchip done">= 0.6056 · converged</span>';
-  box.innerHTML=h;
+  if(maxI<0)want.push({id:'empty',cls:'tchip empty',html:'nothing yet'});
+  if(conv)want.push({id:'done',cls:'tchip done',html:'= 0.6056 · converged'});
+  const wantIds=new Set(want.map(w=>w.id));
+  // fade out chips no longer wanted
+  box.querySelectorAll('.tchip').forEach(el=>{
+    if(!wantIds.has(el.dataset.id)&&!el.classList.contains('out')){
+      el.classList.remove('onn');el.classList.add('out');
+      setTimeout(()=>el.remove(),380);
+    }
+  });
+  // add missing chips, staggered
+  let added=0;
+  want.forEach(w=>{
+    let el=box.querySelector('.tchip[data-id="'+w.id+'"]');
+    if(el){ if(el.classList.contains('out')){el.classList.remove('out');el.classList.add('onn');} return; }
+    el=document.createElement('span');el.className=w.cls;el.dataset.id=w.id;
+    if(w.iter!=null)el.dataset.iter=w.iter;
+    el.innerHTML=w.html;box.appendChild(el);
+    const delay=90*added++;
+    requestAnimationFrame(()=>setTimeout(()=>el.classList.add('onn'),delay));
+  });
 }
 function gotoIter(k){
   const el=document.querySelector('.entry[data-i="'+k+'"]');if(!el)return;
