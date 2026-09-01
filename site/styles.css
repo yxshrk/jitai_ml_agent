@@ -401,3 +401,8 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .mmore{display:block;width:100%;margin-top:10px;padding:11px 14px;border:1px dashed var(--line);border-radius:10px;background:transparent;
   color:var(--dim);font:inherit;font-size:13px;letter-spacing:.04em;cursor:pointer}
 .mmore:hover{color:var(--ink);border-color:var(--ink);border-style:solid}
+
+.links{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.links .repolink{margin-top:16px}
+.repolink.alt{border-color:var(--line);color:var(--ink)} .repolink.alt:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+#receipts .links .repolink{margin-top:28px}
