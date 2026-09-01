@@ -1,4 +1,4 @@
-# Recording cheat sheet: present.html vs Script Version 5 (1 Sep morning, with the honest-choices beat)
+# Recording cheat sheet: present.html vs Script Version 6 (2:45 cut)
 
 Open http://localhost:8642/present.html, window 1920x1080, browser UI hidden (full screen).
 Keys: `→` / `space` = next beat, `←` = back one beat, `1`..`9` and `0` = jump to scene,
