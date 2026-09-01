@@ -346,24 +346,35 @@ document.querySelectorAll('.entry').forEach(el=>{
 /* ---------- method-card library ------------------------------------------ */
 (function methods(){
   const lib=document.getElementById('methodslib');if(!lib||!window.METHODS)return;
-  const cls=st=>/measured-win|external-win/.test(st)?'win':/dead|superseded/.test(st)?'mdead':'try';
+  const isWin=st=>/measured-win|external-win/.test(st||'');
+  const cls=st=>isWin(st)?'win':/dead|superseded/.test(st)?'mdead':'try';
   // Only measured wins carry a badge; every other card stays unlabelled (the
   // full status text remains in the card body and in agent/METHODS.md).
-  const short=st=>/measured-win|external-win/.test(st)?'measured win':'';
+  const short=st=>isWin(st)?'measured win':'';
   const esc2=t=>{const d=document.createElement('div');d.textContent=t;return d.innerHTML;};
+  const ALL=window.METHODS, WINS=ALL.filter(c=>isWin(c.status));
+  let expanded=false;
+  const more=document.getElementById('mmore');
   function render(q){
     q=(q||'').toLowerCase();
-    const rows=window.METHODS.filter(c=>!q||JSON.stringify(c).toLowerCase().includes(q));
+    // default view: the measured wins; a filter or "show all" opens the whole library
+    const base=(q||expanded)?ALL:WINS;
+    const rows=base.filter(c=>!q||JSON.stringify(c).toLowerCase().includes(q));
     lib.innerHTML=rows.map(c=>'<div class="mrow">'
       +'<div><div class="mid">'+esc2(c.title||c.id)+'</div><div class="mcite">'+esc2((c.citation||'').replace(/`/g,''))+'</div></div>'
       +'<div class="mmech">'+esc2((c.mechanism||'').slice(0,240))+((c.mechanism||'').length>240?'…':'')+'</div>'
       +'<div class="mstat">'+(short(c.status)?'<span class="'+cls(c.status)+'">'+esc2(short(c.status))+'</span>':'')
       +(c.evidence&&c.evidence!=='none'?'<div class="mcite">'+esc2(c.evidence.split(' ')[0])+'</div>':'')+'</div>'
       +'</div>').join('')||'<div class="mrow"><div class="mmech">no cards match</div></div>';
+    if(more){
+      more.hidden=!!q;
+      more.textContent=expanded?'Show only the '+WINS.length+' measured wins ↑':'Show all '+ALL.length+' cards ↓  ('+(ALL.length-WINS.length)+' more: untried, dead ends, conditional)';
+    }
   }
   render('');
   const inp=document.getElementById('msearch');
   if(inp)inp.addEventListener('input',()=>render(inp.value));
+  if(more)more.addEventListener('click',()=>{expanded=!expanded;render(inp?inp.value:'');});
 })();
 
 /* ---------- evidence: rare-video memorization, baseline vs treated -------- */

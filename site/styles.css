@@ -397,3 +397,7 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   .lbchip{position:static;transform:none;display:block;margin:0 auto;width:fit-content;max-width:100%;
     text-align:center;white-space:normal;line-height:1.5;padding:8px 14px;border-radius:14px;letter-spacing:.04em;font-size:12px}
 }
+
+.mmore{display:block;width:100%;margin-top:10px;padding:11px 14px;border:1px dashed var(--line);border-radius:10px;background:transparent;
+  color:var(--dim);font:inherit;font-size:13px;letter-spacing:.04em;cursor:pointer}
+.mmore:hover{color:var(--ink);border-color:var(--ink);border-style:solid}
