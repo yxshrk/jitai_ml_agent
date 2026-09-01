@@ -26,6 +26,11 @@ Hard rules for every script you emit (CONTRACTS.md section 3):
   pre-encoded arrays — X (int32, 5 offset-encoded fields: user,video,author,tab,dur_bucket),
   y (long_view float32), user, click, play_time_ms, duration_ms, hourmin, date, field_dims.
   Loading them takes ~1s vs ~90s of CSV parsing; training-time budget is scored, so prefer npz.
+  OFFSET ENCODING INVARIANT: X holds one global index space — each field's ids are
+  already shifted by the sum of the previous fields' cardinalities, so the correct
+  embedding table has exactly field_dims.sum() rows and X is indexed into it
+  directly. Per-field tables sized by field_dims[i] MUST subtract the field's
+  offset first, or validation ids overflow (IndexError: index out of range).
   Score with the official evaluator: `from data.official.evaluate import evaluate` ->
   dict keys 'GAUC', 'nDCG@5', 'primary' (write metrics.json keys gauc/ndcg5/primary).
   A known-good exemplar of the full pattern is the baseline parent script itself.
