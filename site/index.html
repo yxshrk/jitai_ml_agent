@@ -30,7 +30,7 @@
 
 <section id="rules"><div class="wrap">
   <div class="eyebrow">what this number is not</div>
-  <h2>Six ways to get a higher score. We took none of them.</h2>
+  <h2>Six ways to get a higher number, and why we took none of them.</h2>
   <p class="lede">The gap between a real autonomous result and a dressed-up one is small on the leaderboard
   and large in the logs. Before the run is replayed below, here is what it was not allowed to do.
   Every line is checkable in the repo.</p>
@@ -111,6 +111,52 @@
   </div>
 </div></section>
 
+<section id="recipe"><div class="wrap">
+  <div class="eyebrow">the model it ended with</div>
+  <h2>Six mechanisms, chosen one iteration at a time.</h2>
+  <p class="lede">This is the model behind 0.6056, read straight from the accepted nodes' journals and
+  metrics. Each piece is a published technique from the card library; the agent picked it against a
+  diagnosis, and the dials were found by its own search, not written down for it.</p>
+  <div class="decisions">
+    <div class="decision"><h3>01 · DCN-lite instead of plain FM</h3>
+      <p>The baseline is a factorization machine (FM): every field gets a 16-dimensional embedding, and
+      pairwise dot products score the impression. DCN-lite keeps that and adds one cross layer plus a small
+      MLP (128 → 64 → 1), so the model can learn feature interactions beyond pairs at almost no extra cost.
+      Same five official fields, same k = 16 (measured optimal on Pure).</p>
+      <div class="versus">iteration 3 · diagnosis: overfit at epoch 8 · <b>chosen as the base of the "package"</b></div></div>
+    <div class="decision"><h3>02 · A pairwise (BPR) term next to the pointwise loss</h3>
+      <p>The metric ranks each user's own videos, but binary cross-entropy (BCE) trains on absolute
+      probabilities. The loss becomes 0.5 · BCE + 0.5 · BPR: for pairs of one positive and one negative
+      impression from the same user, penalise the negative scoring higher. This aligns training with
+      the per-user ranking the evaluator measures.</p>
+      <div class="versus">iteration 3 · from the <i>bpr-hybrid</i> card · <b>the mix, 0.5, came from the in-node search</b></div></div>
+    <div class="decision"><h3>03 · Recency weighting</h3>
+      <p>Validation is the week after training. Each training row is weighted by 2<sup>−age / half-life</sup>
+      with a 7-day half-life, so the model leans towards recent behaviour and the temporal drift the
+      diagnosis kept pointing at. Tried alone in iteration 2 it did nothing (+0.0000); inside the package it
+      was kept because the sweep measured it as a component that helped.</p>
+      <div class="versus">iteration 2 alone: rejected · iteration 3 in combination: <b>kept, half-life 7 days</b></div></div>
+    <div class="decision"><h3>04 · Strong regularization plus rapid learning-rate decay</h3>
+      <p>The overfit diagnosis is answered directly: dropout on the embeddings, AdamW weight decay, and a
+      step schedule that multiplies the learning rate by 0.57 every two epochs, so the model settles before
+      it starts memorising. The exact dials (dropout 0.18, weight decay 9e-5, decay ×0.57) are not from any
+      card. The node ran its own two-stage random search, 8 coarse then 6 refining probes, and picked them.</p>
+      <div class="versus">iteration 3 · <i>package-dial-sweep</i> card · <b>0.6018 → 0.6042, accepted at +0.0024</b></div></div>
+    <div class="decision"><h3>05 · An auxiliary watch-time objective, tried and rejected</h3>
+      <p>Iteration 5 added an ordinal watch-ratio head on top of the accepted model, hoping duration
+      structure would help ranking. It scored 0.6030, below the incumbent, and the harness threw it away.
+      It is in the recipe as a negative: the final model uses nothing but the long_view label.</p>
+      <div class="versus">iteration 5 · <b>rejected, journaled</b> · iteration 4 was a failed proposal (VOID)</div></div>
+    <div class="decision"><h3>06 · A seed ensemble, designed by the agent</h3>
+      <p>With the single model settled, remaining variance is seed noise. The closing node retrained the
+      accepted recipe with seven different seeds, then chose on validation how many to keep (3, 5 or 7) and
+      how to combine them (averaged probabilities versus per-user rank average). It picked three members,
+      seeds 42-44, rank-averaged within each user.</p>
+      <div class="versus">iteration 6 · <i>seed-ensemble</i> card · <b>0.6042 → 0.6056, accepted at +0.0013</b> · then three flat iterations ended the run</div></div>
+  </div>
+  <p class="lede" style="margin-top:28px">The test CSV was rebuilt from this recipe by <code>tools/predict_test_bc07.py</code>: the same three members retrained on train only, applied to test once. Four other runs with no cross-run memory found the same shape (DCN-lite, BPR hybrid, recency, strong regularization, seed close) at 0.6045-0.6052, which is the sense in which the campaign converged on a technique rather than a number.</p>
+</div></section>
+
 <section id="anatomy"><div class="wrap">
   <div class="eyebrow">how it worked</div>
   <h2>The four stages, in depth.</h2>
@@ -153,9 +199,10 @@
       <p>The official evaluator scores how well the model ranks each user's own
       videos (validation GAUC and nDCG@5 per user; the primary metric is their mean).
       A change is kept only if it clears an acceptance gate set against measured
-      noise: gains under a 0.0005 floor do not count, and borderline gains must
-      repeat on a second seed and pass a statistical test (a z-test) against that
-      noise (the winning close of bigclock_07 was accepted at +0.0013). The stop is
+      noise: in the designated run gains under a 0.0009 floor (well above 2σ) did not count on
+      their own, and borderline gains had to repeat on a fresh seed with the mean still clearing
+      0.001 (iteration 1 failed exactly that check); later harness versions lowered the floor to
+      0.0005 and added a z-test. The winning close of bigclock_07 was accepted at +0.0013. The stop is
       the competition's rule (epsilon): the run ends when three iterations in a row
       fail to beat the best by 0.002, hard cap 50. The run you just scrolled through
       ended exactly that way, with no human in the decision.</p></div>
