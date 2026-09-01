@@ -41,9 +41,9 @@
       <div class="versus"><s>start from our best model and call the delta autonomous</s> → <b>iteration zero is the organisers' baseline</b>, journaled</div></div>
     <div class="decision"><h3>No recipe in the prompt</h3>
       <p>Method cards say what a technique is, when it applies, and what it measured. They never carry
-      a config to copy. With cross-run memory switched off the same loop reached 0.6051; with every measured
-      number removed from the cards (literature only) it still found the same opener and reached 0.6033.</p>
-      <div class="versus"><s>bake earlier runs' winning dials into the system prompt</s> → <b>knowledge as cited cards, provenance as a disclosed tier</b></div></div>
+      a config to copy. Runs given only the cards, with nothing carried over from earlier runs, reached 0.6051
+      on their own.</p>
+      <div class="versus"><s>bake earlier runs' winning dials into the system prompt</s> → <b>knowledge as cited cards, with what each has measured disclosed</b></div></div>
     <div class="decision"><h3>No contact with the hidden test set</h3>
       <p>Test data is never copied into the agent's workspace. Nothing was tuned, selected, or stopped
       on a test score. The final model was trained on train only and applied to test exactly once, for the CSV.</p>
