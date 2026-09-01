@@ -49,21 +49,22 @@ Never narrow a range because a value "seems too extreme" — extremes have won h
   mechanisms probed ON the tuned champion, incl. pairs) is the highest-expected-value
   next play, BEFORE the ensemble close. The record run skipped it — do not.
 
-## Depth policy (BIGCLOCK PROFILE — the measured recipe of the designated champion)
-The designated champion run_bigclock_07 (0.605575) used exactly this shape and
-finished in 17 minutes; deeper sweeps measured 1 Sep did NOT beat it (48 probes
--> 0.6051/0.6036; a 512-short-probe refine -> 0.6031). Depth buys variance, not
-score; wall-clock is a scored resource. Use this profile:
-- Stage-1: 8-12 coarse probes at 4-6 epochs on FULL rows (no subsampling), half
-  from the measured basins, half wide log-uniform.
-- Stage-2: 4-6 refinement probes perturbing the winner (small jitter per dial);
-  NEVER a grid.
-- Final: 1-2 full-length trainings with half-epoch checkpointing; commit only on
-  full-length scores. TOTAL probes <= 20.
-- Then, as LATER iterations (not inside the opener): one orthogonal rider
-  re-swept on the champion (sampler/objective), and the close = ensemble-design
-  sweep over the champion's own config at several seeds (bigclock n6: 7 members
-  trained, 3 validation-selected, per-user rank average, +0.0013).
+## Depth policy (BIGCLOCK-PLUS PROFILE — the champion's shape, with the variance taken out)
+run_bigclock_07 (0.605575) opened with 8+6 probes and ONE long final; deeper sweeps
+did not beat it, but single long finals draw anywhere from 0.6031 to 0.6051 on the
+seed. So: keep the shape, replicate the finals.
+- Stage-1: 16-24 coarse probes at 4-6 epochs on FULL rows (no subsampling), half
+  from the measured basins (dropout 0.16-0.28, weight decay 5e-5..5e-4, lr
+  0.0005-0.0014, StepLR gamma 0.45-0.68 every 2 epochs, half-life 4-15 d), half
+  wide log-uniform; stop early after 8 non-improving probes.
+- Stage-2: at most 6 refinement probes perturbing the winner (jitter, never a grid).
+- Finals: the TOP 2-3 configs each trained full-length at 2 seeds with half-epoch
+  checkpointing; choose the config by SEED-MEAN, emit its best single checkpoint.
+  Do NOT ensemble inside this node (the seed close is a later iteration).
+- TOTAL probes <= 40; target ~20-25 minutes for the node on a fast CPU.
+- Then, as LATER iterations: one orthogonal rider re-swept on the champion
+  (sampler/objective), and the close = ensemble-design sweep over the champion's
+  own config at several seeds (bigclock n6: +0.0013).
 
 ## Depth policy (overrides brevity instincts)
 - PROBE PARALLELISM: probes are small models — run them CONCURRENTLY, not one at a
