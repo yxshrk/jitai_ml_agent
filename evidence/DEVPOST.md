@@ -6,7 +6,7 @@
 
 We built an autonomous ML research pipeline that turns each iteration into an auditable solution-tree node: a hypothesis, runnable script, diff, learning curve, official metrics, and any recovery event. The loop is **diagnose, select from cited method cards, implement, sigma-gated acceptance, official convergence**. A selector diagnoses the parent curve, chooses one eligible card from `agent/METHODS.md`, cites it, and records a rejected alternative. The proposer implements the smallest coherent whole-file change; the harness owns execution, rollback, and stopping.
 
-Seeds are mechanical: seed 42 explores, promising changes are confirmed at seeds 42/43/44, and closes are agent-designed. The designated run trained 7 ensemble members and validation-selected 3 (seeds 42-44, per-user rank average). Compact cross-run memory prevents repeated failures; a reflector runs during stagnation and stores a final self-critique without automatically applying it. The designated runs recorded **zero mid-run human interventions** (the official definition: only behavior-changing actions during a run count).
+Seeds are mechanical: seed 42 explores, promising changes are confirmed at seeds 42/43/44, and closes are agent-designed. The designated run trained 7 ensemble members and validation-selected 3 (seeds 42-44, per-user rank average). The card library carries what earlier runs measured, so failures are not repeated; a reflector runs during stagnation and stores a final self-critique without automatically applying it. The designated runs recorded **zero mid-run human interventions** (the official definition: only behavior-changing actions during a run count).
 
 ## How it addresses the problem statement
 
