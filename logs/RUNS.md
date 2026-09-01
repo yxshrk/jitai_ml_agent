@@ -84,3 +84,14 @@ All journals in logs/run_*/; cross-machine copies rsynced back on completion.
 | f8 | ruby | converged | 4 | 0.60471 | first stacked-accept lineage (snippet-backed ctx-pairs); killed by 503-as-strike; state extends to 0.60576 with cross-run artifacts (132067 tokens, 39 min) |
 | f9 | ruby | converged | 4 | 0.60510 | best autonomous single model ever (48-probe opener); endgame banking gap found+fixed; own-artifact ceiling 0.60546 (177285 tokens, 36 min) |
 | c9 | coral | converged | 4 | 0.60332 | clean/no-digest arm: 2 failed screen builds (gate-caught) then accepted screen; converged on build-failure strikes; snippet+pivot fixes landed post-launch (87296 tokens, 30 min) |
+| f10b | ruby | KILLED n=3 | - | 0.60358 | weak opener 0.6036; killed for time (menu/cards inconsistent at launch) |
+| f11b | ruby | KILLED n=2 | - | 0.60306 | lean+FAST: 24 coarse + 512 short 'refine' probes + 2 finals = worst opener; root cause of FAST rewrite |
+| f12 | ruby | KILLED n=0 | - | - | relaunched as f14/f15 per plan |
+| c11 | coral | converged | 3 | 0.60184 | clean lean: three failed builds of the same card (offset-encoding IndexError x2, gate x1) via forced debug routing; both bugs fixed (TASK_BRIEF invariant; smoke failures return to selection) |
+| c11b | coral | KILLED n=1 | - | - | relaunched with fixes then retired: clean arm dropped for the final tickets |
+| f13 | laptop | KILLED n=1 | - | - | parallel ticket, killed for the fixed-card relaunch |
+| f14 | coral | KILLED n=2 | - | 0.60305 | bigclock profile: opener ensembled 5 weak members in-node (card text); root cause of the card fix |
+| f15 | ruby | KILLED n=2 | - | 0.60326 | same as f14 |
+| f16 | ruby | KILLED n=2 | - | 0.60372 | fixed card, plain bigclock profile; iteration 2 died on a proposer error ('int' not iterable, unresolved) |
+| f17 | coral | KILLED n=1 | - | 0.60343 | fixed card, 554 s opener (bigclock pace) but heavy-reg basin; replaced by f18 |
+| f18 | coral | converged | 5 | 0.60400 | bigclock-plus profile: first draw below baseline, second draft gauge-fixed-bce 0.6040 (eps-clearing), ctx/reg riders flat, final ensemble close BLOCKED by the rewrite gate (bug, fixed) (166741 tokens, 38 min) |

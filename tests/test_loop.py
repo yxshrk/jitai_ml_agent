@@ -409,11 +409,17 @@ def test_debug_policy_after_persistent_failure(tmp_path):
     records = [json.loads(l) for l in (loop.run_dir / "journal.jsonl").read_text().splitlines()]
     records = [r for r in records if r.get("action") != "reproduce_baseline"]
     assert records[0]["recovery"] == "reverted"
-    assert records[1]["action"] == "debug"
-    assert records[1]["parent"] == "node_001"
+    # 1 Sep policy: a smoke-stage build failure returns to selection (fresh draft
+    # from the champion), never a forced debug rebuild of the same card
+    assert records[1]["action"] == "draft"
+    assert records[1]["parent"] == "node_000"
     assert records[0]["method_selection"] is not None
-    assert records[1]["method_selection"] == records[0]["method_selection"]
-    assert len(brain.selection_streak_states) == 1
+    # a fresh selection ran (no debug inheritance); the harness pivoted away
+    # from the card whose build just failed
+    assert records[1]["method_selection"] is not None
+    assert (records[1]["method_selection"]["chosen_method_id"]
+            != records[0]["method_selection"]["chosen_method_id"])
+    assert len(brain.selection_streak_states) == 2  # selection ran again after the build failure
 
 
 def test_streak_state_reaches_selector_and_proposer_prompts():
@@ -638,7 +644,7 @@ def test_journal_and_summary_record_knowledge_mode(tmp_path, knowledge_mode):
 
 def test_every_method_card_declares_parseable_reference_primary():
     brain = fake_brain()
-    assert len(brain.method_cards) >= 21
+    assert len(brain.method_cards) >= 10  # lean library on bigclock-plus
     for card in brain.method_cards.values():
         assert "- reference_primary:" in card
         metadata = parse_method_card_metadata(card)
@@ -1037,3 +1043,28 @@ def test_hard_proposer_error_still_takes_strike(tmp_path):
     loop = make_loop(tmp_path, brain, max_iters=1, draft_tiers=())
     loop.run()
     assert loop.no_improve_streak == 1
+
+
+def test_smoke_build_failure_returns_to_selection_not_debug(tmp_path):
+    # c11 replay: after a smoke-stage build failure (fixer already tried), the
+    # next move must go back through the selector, not force a debug rebuild.
+    brain = fake_brain(scripts=[{"hypothesis": "broken build", "code": BAD_SMOKE_SCRIPT}],
+                       fixes=[])
+    loop = make_loop(tmp_path, brain, max_iters=1)
+    loop.run()
+    failed = loop.nodes["node_001"]
+    assert failed.status == "failed" and failed.failure_stage == "smoke"
+    mode, parent, _ = loop.next_move()
+    assert mode != "debug"
+
+
+def test_rewrite_gate_exempts_close_cards(tmp_path):
+    # f18 replay: an ensemble-design-sweep node wraps the champion script (low
+    # line overlap by nature) and must not be blocked by the rewrite gate.
+    from harness.loop import rewrite_ratio
+    parent = "\n".join(f"line{i} = {i}" for i in range(60))
+    wrapper = "import subprocess\n" + "\n".join(f"member{i} = {i}" for i in range(60))
+    assert rewrite_ratio(parent, wrapper) < 0.40  # would trip the gate for a normal improve
+    # the exemption is keyed on the selected card id; assert the set is wired in
+    src = open("harness/loop.py").read()
+    assert '"ensemble-design-sweep"' in src and "chosen not in CLOSE_CARDS" in src

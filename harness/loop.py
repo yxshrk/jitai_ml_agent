@@ -1306,7 +1306,14 @@ class Loop:
                         recovery = "edit-apply: repaired"
                 else:
                     code = spec["code"]
-                if mode == "improve" and parent.node_id != "node_000":
+                CLOSE_CARDS = {"ensemble-design-sweep", "seed-ensemble", "swa-then-ensemble",
+                               "snapshot-ensemble", "seed-architecture-ensemble",
+                               "heterogeneous-ensemble-design", "hetero-objective-ensemble"}
+                chosen = (node.method_selection or {}).get("chosen_method_id")
+                # Close-type cards legitimately WRAP the champion (an ensemble node keeps
+                # the trainer but adds member/aggregation scaffolding), so the minimal-
+                # diff gate must not apply to them (f18 lost its banking close to it).
+                if mode == "improve" and parent.node_id != "node_000" and chosen not in CLOSE_CARDS:
                     # The rule protects the agent's OWN accepted artifacts;
                     # the first improve on the organizer baseline is the
                     # agent's first authorship and may restructure freely.
