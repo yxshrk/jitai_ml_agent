@@ -140,3 +140,41 @@ margin arithmetic, bank-the-last-gain, implementation-dead pivot, own-lineage
 farm members · 3 literature-only clean cards · real-state clean bench track
 (8/11 good, 0 bad) · failure-replay test suite · fast-forward mode · per-role
 effort override · fixer promoted to sol.
+
+## Morning addendum (1 Sep, 07:00-09:30): the bigclock-plus branch
+
+Goal: reproduce the designated champion's recipe autonomously ("get back to
+bigclock and then some") with a lean library and every fix from the night.
+
+- **Chain exhibit (human-assisted, negative):** grafting context-stratified
+  pairs onto bigclock's fixed dials gave singles 0.6027-0.6034 and a 3-seed
+  close of 0.60405 — worse than bigclock's plain single. The same sampler at
+  its own swept dials scored 0.6047 (f8) / 0.6051 (f9): sampler changes move
+  the optimal dials, so compounding means re-sweeping the package WITH the
+  mechanism, never grafting onto fixed dials. Recreatable-shape ceiling:
+  bigclock close + one 0.6051-class ctx node = 0.605791; + a 0.6047-class one
+  = 0.605138 (member competitiveness again).
+- **Lean libraries + real-state chain benches:** full-lean 6/6 on the real f9
+  states (open -> ctx re-sweep -> own-lineage close); clean-lean 3/3 after a
+  "dosage is exhausted by a sweep" principle and a rubric correction.
+- **Harness bug found by c11:** a smoke-stage build failure routed to a DEBUG
+  iteration that skips the selector and preserves the failed card, so failed
+  cards were rebuilt up to three times (c9, c11, ff1). Fixed: smoke build
+  failures return to selection; the pivot principle can act. Also documented
+  the npz offset-encoding invariant in the task brief (the recurring clean-run
+  IndexError).
+- **Search shape:** FAST/bigclock-profile caps verified by fast-forward runs
+  (ff2: 12+6+1 probes; ff3: 10+4). But the three live bigclock-profile openers
+  (f11b 0.6031, f14 0.6031, f15 0.6033) landed ~0.001 below the deeper sweeps'
+  draws (0.6036-0.6051) — dissection: the package-dial-sweep card still said
+  "close by rank-averaging 5 seeds inside the same node", so openers spent the
+  seed close on weak 0.602-class members, and selected fast-decay basins on
+  3-epoch probes; bigclock's opener trained ONE long final with half-epoch
+  checkpointing (+0.0016 over its best probe). Card fixed after the fact.
+- **Not done, on purpose:** submitting any hand-assembled blend (0.6058) or the
+  human-assisted 0.6061; a harness-owned sweep executor (zoo/sweep_node.py,
+  the natural third executor); another designation ticket after 09:00 (a new
+  designation needs ~1 h for its own test-CSV build).
+- Outcome: designation unchanged (bigclock_07 0.605575). Runs f10b, f11b, f12,
+  c11, c11b were killed for time; f13/f14/f15 ran out as exhibits of the
+  recalibrated close (see logs/RUNS.md).
