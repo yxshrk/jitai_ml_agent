@@ -22,6 +22,16 @@ features; triple-audited: exact independent re-evaluation, fresh-seed
 replications 0.674/0.677, within-hour shuffle 0.66517).
 KuaiRand-27K 0.67263 (out-of-protocol GPU scaling demo).
 
+## Final submission files (what the organizers score)
+
+| Benchmark | File | Rows | Source run |
+|---|---|---|---|
+| KuaiRand-Pure (required) | [`evidence/submission_bundle/kuairand_pure_submission.csv`](evidence/submission_bundle/kuairand_pure_submission.csv) | 170,588 | `run_bigclock_07` (validation 0.605575), trained train-only |
+| KuaiRand-1K (bonus) | [`evidence/submission_bundle/kuairand_1k_submission.csv.gz`](evidence/submission_bundle/kuairand_1k_submission.csv.gz) | 4,132,081 | `run_omega_1k` (validation 0.66892) |
+
+Checksums in `evidence/submission_bundle/SHA256SUMS.txt`; provenance in `evidence/submission_bundle/RECEIPT.md`.
+Both files follow the starter-kit schema `row_id,user_id,video_id,score` and were validated with the starter-kit checker. The hidden test split was never read during development.
+
 ## How the agent works
 
 Each iteration is one research decision, executed as deeply as needed:
