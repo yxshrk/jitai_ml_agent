@@ -10,13 +10,14 @@
 <body>
 <div id="bar"><div class="wrap">
   <div class="l">TIKTOK TECHJAM 2026 · TRACK 2 · KUAIRAND-PURE</div>
-  <div class="r"><b class="team">jit.ai</b><span class="dim names"> · Aditya Ghosh · Rohan Kulshrestha · Yash Raj Khandelwal · Avinash Parthiban Elangovan</span></div>
+  <div class="r"><b class="team">jit.ai</b><span class="dim names"> · Aditya Ghosh · Avinash Parthiban Elangovan · Rohan Kulshrestha · Yash Raj Khandelwal</span></div>
 </div></div>
 <div id="prog"></div>
 
 <header id="hero"><div class="wrap">
   <h1>An agent that runs its own ML experiments.<br>
     <span class="go">0.6016&nbsp;→&nbsp;0.6056</span>, zero mid-run interventions.<span class="cursor"></span></h1>
+  <a class="repolink" href="https://github.com/yxshrk/jitai_ml_agent" target="_blank" rel="noopener">Code, journals and cards on GitHub →</a>
   <p class="sub">It trains a model that predicts which videos a user will keep watching, then
   diagnoses that model, changes it, retrains, and measures again, with no person steering.
   The score is the competition's ranking metric: how well the model orders each user's
@@ -367,7 +368,7 @@
       <tr><td class="m">human-assisted</td><td>a cross-run blend assembled by hand from seeded runs: what an agent could reach if it kept artifacts across runs and ignored the convergence rule</td><td class="n">0.6059 to <b>0.6065</b></td><td class="note">evidence only, never submitted</td></tr>
     </tbody>
   </table>
-  <p class="lede" style="margin-top:18px">On the final night five hardened harness generations tried to beat the
+  <p class="lede" style="margin-top:18px">On the final night three hardened harness generations tried to beat the
   champion and none did: converged 0.6045, 0.6047, 0.6051, and re-combining the best run's own artifacts by
   hand reaches 0.6055. The single-run ceiling is measured at 0.6055 to 0.6060, and the gap to the human-assisted
   tier is implementation fidelity and keeping what a run builds, not decision quality. A second, independently
@@ -379,7 +380,7 @@
 </div></section>
 
 <section id="receipts"><div class="wrap">
-  <div class="eyebrow">the receipts</div>
+  <div class="eyebrow">conclusion</div>
   <h2>Everything above is measured, logged, and reproducible.</h2>
   <div class="grid" id="rgrid"></div>
   <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
@@ -390,7 +391,7 @@
 
 <footer><div class="wrap">
   mle-agent · TikTok TechJam 2026 Track 2 · team <b>jit.ai</b>: Aditya Ghosh,
-  Rohan Kulshrestha, Yash Raj Khandelwal, Avinash Parthiban Elangovan ·
+  Avinash Parthiban Elangovan, Rohan Kulshrestha, Yash Raj Khandelwal ·
   every number on this page has a run directory behind it
 </div></footer>
 

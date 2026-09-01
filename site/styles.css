@@ -311,3 +311,23 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .archlegend .pn{display:block;font-size:11px;letter-spacing:.16em;color:var(--go);font-weight:620;margin-bottom:6px}
 .archlegend b{color:var(--ink);font-weight:600}
 @media (max-width:900px){.archlegend{grid-template-columns:repeat(2,1fr)}}
+
+/* provenance table (shared with the presenter) */
+.mtable{margin-top:30px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+.mtable th,.mtable td{padding:12px 18px;text-align:left;border-top:1px solid var(--grid2)}
+.mtable th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:600;border-top:0}
+.mtable td.n{text-align:right;font-variant-numeric:tabular-nums}
+.mtable th.n{text-align:right}
+.mtable td.m{font-family:'PP Mori',"Switzer",sans-serif;font-weight:600}
+.mtable tr.pick td{background:rgba(11,143,92,.05)}
+.mtable tr.pick td.m,.mtable tr.pick td.note{color:var(--go)}
+.mtable td.note{color:var(--dim);font-size:13px}
+.mtable td.note b{font-weight:620}
+.mtable .bad{color:var(--no);font-weight:620}
+.mtable .err{color:var(--amber);font-weight:620}
+  .mtable th,.mtable td{padding:9px 16px}
+  .mtable{font-size:13.5px}
+.mtable{width:100%;border-collapse:collapse;background:#fff;box-shadow:var(--shadow)} .mtable td.n,.mtable th.n{text-align:right;font-variant-numeric:tabular-nums} .mtable td.note{color:var(--dim)} .mtable tr.pick td{background:rgba(11,143,92,.05)} .mtable td.m{font-weight:600}
+
+/* repo link in the hero */
+.repolink{display:inline-block;margin-top:18px;padding:10px 16px;border:1px solid var(--ink);border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;background:#fff;box-shadow:var(--shadow)} .repolink:hover{background:var(--ink);color:#fff}
