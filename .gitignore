@@ -36,3 +36,6 @@ logs/run_*/workspace/
 evidence/rejected/*.csv
 CLAUDE.md
 MACHINES.local.md
+
+evidence/submission_bundle/*.csv
+evidence/submission_bundle/*.gz
