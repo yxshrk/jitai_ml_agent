@@ -188,7 +188,7 @@ The agent reads the last model's validation curve and names the failure mode, th
 
 Here is the full system. The agent proposes; the harness executes, scores and journals.
 
-The competition's convergence rule ends the run: an iteration only counts as progress if it beats the best so far by more than 0.002. Three in a row that fail, and the run stops. Hard cap fifty iterations, six hours. Whether a single change is kept is a separate, noise-calibrated gate.
+The competition's convergence rule ends the run: an iteration only counts as progress if it beats the best so far by more than 0.002. Three in a row that fail, and the run stops. Hard cap fifty iterations, six hours.
 
 Every iteration is journaled: what it saw, hypothesised, changed, and whether it worked, so later iterations don't relearn it.
 
@@ -327,11 +327,11 @@ We built an autonomous research agent that trains models to rank videos by how l
 Our team is Rohan Kulshrestha, Aditya Ghosh, Yash Raj Khandelwal and Avinash Parthiban Elangovan. Let's get into it.
 
 ### The loop (0:18 to 0:30) [#s-loop, one key per word]
-Every iteration has four steps: diagnose, treat, retrain, measure. The agent reads the last model's validation curve and names the failure mode, picks a treatment aimed at it, the harness retrains and measures, and that measurement feeds the next diagnosis.
+Every iteration has four steps: diagnose, treat, retrain, measure. The agent reads the last model's validation curve and names the failure mode, and picks a treatment aimed at it; each measurement feeds the next diagnosis.
 
 ### The system and the rule (0:30 to 0:50) [#s-arch, three keys]
 Here is the full system. The agent proposes; the harness executes, scores and journals.
-The competition's convergence rule ends the run: an iteration only counts as progress if it beats the best so far by more than 0.002. Three in a row that fail, and the run stops. Whether a single change is kept is a separate, noise-calibrated gate.
+The competition's convergence rule ends the run: an iteration only counts as progress if it beats the best so far by more than 0.002. Three in a row that fail, and the run stops.
 
 ### The run we submitted (0:50 to 1:40) [#s-log, one key per iteration]
 Now the run we submitted. Six iterations, seventeen minutes, on a CPU. It reproduces the baseline at 0.6018.
@@ -355,7 +355,7 @@ Five, typed ensemble plans: the agent writes the plan, deterministic code runs i
 Six, it fails safely: a one-epoch smoke test with a sanity gate calibrated on measured code rejects defective scripts before any full training; improvements are constrained patches, so working code is never re-typed; and a provider outage is retried, never counted as a failed experiment.
 
 ### What we learned on the last night (2:27 to 2:52) [#s-model, "The ceiling"]
-On the final night we turned the agent on itself: five hardened harness generations tried to beat our own champion. None did. The best single model ever, 0.6051, and even re-combining that run's artifacts by hand, 0.6055, both landed under it. A clean run with only literature, no measured memory, found the same opener from principles alone.
+On the final night we turned the agent on itself: three hardened harness generations tried to beat our own champion. None did. The best single model ever, 0.6051, and even re-combining that run's artifacts by hand, 0.6055, both landed under it. A clean run with only literature, no measured memory, found the same opener from principles alone.
 So the champion sits at the measured ceiling of what one run can do, and we know precisely what separates it from human-assisted research: implementation fidelity and keeping what it builds, not judgment. Every failure that taught us that is journaled, benched, and fixed in the repo.
 
 ### Close (2:52 to 3:05) [#s-receipts]
@@ -377,7 +377,7 @@ Same as V4 through the harness beat (0:00 to 2:27). Then:
 Our first principle is the clean run: no seed scripts, no recipe handed over; every turn you saw was the agent's own. And we chose honesty over score more than once. By blending across seeded runs by hand I reached 0.6065, which shows what an agent could do if it kept artifacts across runs and ignored the convergence rule; a blend of the agent's own artifacts reaches 0.6058; a post-run ensemble on the bonus benchmark hit 0.6802. None was the agent's own single run, so none is submitted. All are disclosed. Even the agent's own gains have to repeat on a fresh seed before they count.
 
 ### What we learned on the last night (2:50 to 3:10) [#s-model, "The ceiling"]
-On the final night we turned the agent on itself: five hardened harness generations tried to beat our own champion, and none did. The best single model ever, 0.6051, and everything that run built re-combined by hand, 0.6055, both landed under it. So the champion sits at the measured ceiling of one run, and we know exactly what separates it from human-level research: implementation fidelity and keeping what it builds, not judgment. Every failure that taught us that is journaled, benched, and fixed.
+On the final night we turned the agent on itself: three hardened harness generations tried to beat our own champion, and none did. The best single model ever, 0.6051, and everything that run built re-combined by hand, 0.6055, both landed under it. So the champion sits at the measured ceiling of one run, and we know exactly what separates it from human-level research: implementation fidelity and keeping what it builds, not judgment. Every failure that taught us that is journaled, benched, and fixed.
 
 ### Close (3:10 to 3:22) [#s-receipts]
 That run: six of a possible fifty iterations, seventeen minutes, 115 thousand tokens, no GPU, zero mid-run interventions. From 0.6016 to 0.6056. We're team jit.ai. Thank you.
