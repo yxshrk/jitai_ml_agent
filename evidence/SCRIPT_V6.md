@@ -4,7 +4,7 @@ Target 2:45 (about 460 spoken words). Same scene order. Bracketed directions are
 
 ### Opening (0:00 to 0:14) [#s-title]
 
-Hi, we're team jit.ai, and this is our submission for TikTok TechJam 2026, Track 2. We built an autonomous research agent that trains models to rank videos by how likely a user is to long-watch them. In one clean run, with zero mid-run interventions, it took the official baseline from 0.6016 to 0.6056.
+Hi, we're team jit.ai. We built an autonomous research agent that trains models to rank videos by how likely a user is to long-watch them. In one clean run, with zero mid-run interventions, it took the official baseline from 0.6016 to 0.6056.
 
 ### The loop (0:14 to 0:23) [#s-loop, one key per word]
 
@@ -24,15 +24,15 @@ No human intervention at all. No one chose an experiment, edited a script, or to
 
 ### The harness (1:22 to 1:55) [#s-harness, point at cards]
 
-The agent's judgment matters, but the harness matters just as much. Six things. One, a structural leakage guard: the hidden test window is never mounted in the agent's workspace. Two, a calibrated acceptance gate: three baseline seeds set the noise floor, and borderline gains must repeat. Three, method cards: forty-two methods from cited literature, each carrying its measured status across roughly 146 runs. Four, decision benches: we freeze the exact situations where a live run went wrong and replay the agent against them after every change. Five, typed ensemble plans: the agent writes the plan, deterministic code runs it, and a losing blend can never replace the champion. Six, it fails safely: a one-epoch smoke test throws out broken scripts before any full training, and improvements edit the best script instead of rewriting it.
+The agent's judgment matters, but the harness matters just as much. Six things. One, a structural leakage guard: the hidden test window is never mounted in the agent's workspace. Two, a calibrated acceptance gate: three baseline seeds set the noise floor, and borderline gains must repeat. Three, method cards: forty-two methods from cited literature, each carrying its measured status. Four, decision benches: we freeze the situations where a live run went wrong and replay the agent against them. Five, typed ensemble plans: the agent writes the plan, deterministic code runs it, and a losing blend can never replace the champion. Six, it fails safely: a one-epoch smoke test throws out broken scripts before any full training, and improvements edit the best script instead of rewriting it.
 
 ### Honest choices (1:55 to 2:12) [#s-principles]
 
-Our first principle is the clean run: no seed scripts, no recipe handed over; every turn you saw was the agent's own. And we chose honesty over score. Blending across seeded runs by hand, I reached 0.6065; a blend of the agent's own artifacts reaches 0.6058. Neither was the agent's own single run, so neither is submitted. Both are disclosed.
+Our first principle is the clean run: no seed scripts, no recipe handed over. And we chose honesty over score. Blending across seeded runs by hand, I reached 0.6065; a blend of the agent's own artifacts reaches 0.6058. Neither was the agent's own single run, so neither is submitted. Both are disclosed.
 
 ### What we learned on the last night (2:12 to 2:30) [#s-model, "The ceiling"]
 
-On the final night, three hardened harness generations tried to beat our own champion, and none did. The best single model ever, 0.6051, still landed under it. The champion sits at the measured ceiling of one run, and the gap to human-level research is implementation fidelity, not judgment.
+On the final night, three hardened harness generations tried to beat our champion, and none did. The best single model ever, 0.6051, still landed under it. The champion sits at the measured ceiling of one run, and the gap to human-level research is implementation fidelity, not judgment.
 
 ### Close (2:30 to 2:40) [#s-receipts]
 
