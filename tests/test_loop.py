@@ -409,11 +409,17 @@ def test_debug_policy_after_persistent_failure(tmp_path):
     records = [json.loads(l) for l in (loop.run_dir / "journal.jsonl").read_text().splitlines()]
     records = [r for r in records if r.get("action") != "reproduce_baseline"]
     assert records[0]["recovery"] == "reverted"
-    assert records[1]["action"] == "debug"
-    assert records[1]["parent"] == "node_001"
+    # 1 Sep policy: a smoke-stage build failure returns to selection (fresh draft
+    # from the champion), never a forced debug rebuild of the same card
+    assert records[1]["action"] == "draft"
+    assert records[1]["parent"] == "node_000"
     assert records[0]["method_selection"] is not None
-    assert records[1]["method_selection"] == records[0]["method_selection"]
-    assert len(brain.selection_streak_states) == 1
+    # a fresh selection ran (no debug inheritance); the harness pivoted away
+    # from the card whose build just failed
+    assert records[1]["method_selection"] is not None
+    assert (records[1]["method_selection"]["chosen_method_id"]
+            != records[0]["method_selection"]["chosen_method_id"])
+    assert len(brain.selection_streak_states) == 2  # selection ran again after the build failure
 
 
 def test_streak_state_reaches_selector_and_proposer_prompts():
