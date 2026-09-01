@@ -150,6 +150,7 @@ function traceUpTo(k){ // reveal the accepted line through iteration k
 (function pinCenter(){
   const pin=document.getElementById('chartpin');if(!pin||PRESENT)return;
   const set=()=>{
+    if(matchMedia('(max-width:700px)').matches){pin.style.top='';return;} // phone: CSS pins the tracker strip under the bar
     const h=pin.getBoundingClientRect().height;
     pin.style.top=Math.max(64,Math.round((innerHeight-h)/2))+'px';
   };

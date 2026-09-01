@@ -330,7 +330,7 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .mtable{width:100%;border-collapse:collapse;background:#fff;box-shadow:var(--shadow)} .mtable td.n,.mtable th.n{text-align:right;font-variant-numeric:tabular-nums} .mtable td.note{color:var(--dim)} .mtable tr.pick td{background:rgba(11,143,92,.05)} .mtable td.m{font-weight:600}
 
 /* repo link in the hero */
-.repolink{display:inline-block;margin-top:18px;padding:10px 16px;border:1px solid var(--ink);border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;background:#fff;box-shadow:var(--shadow)} .repolink:hover{background:var(--ink);color:#fff}
+.repolink{display:inline-block;margin-top:16px;padding:7px 13px;border:1px solid var(--ink);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;font-size:13px;background:#fff;box-shadow:var(--shadow)} .repolink:hover{background:var(--ink);color:#fff}
 
 /* model-so-far tracker under the pinned chart */
 #tracker{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
@@ -354,3 +354,38 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
 .entry.flash{border-color:var(--go);box-shadow:0 0 0 3px rgba(11,143,92,.18)}
 .iterlink{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);cursor:pointer}
 .iterlink:hover{color:var(--go);text-decoration-color:var(--go)}
+
+/* ---------- phone pass ---------- */
+.archscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.archhint{display:none;text-align:center;font-size:12px;color:var(--dim);margin-top:8px;letter-spacing:.08em}
+@media (max-width:700px){
+  .wrap{padding-left:18px;padding-right:18px}
+  #hero h1{font-size:clamp(26px,7.4vw,34px)}
+  #hero .sub{font-size:15px;text-align:left}
+  .repolink{font-size:12.5px;padding:7px 12px}
+  #bar .l{font-size:11px;letter-spacing:.08em;line-height:1.25}
+  h2{font-size:clamp(22px,6.4vw,30px)}
+  .lede{font-size:15.5px}
+  /* the replay: keep the model-so-far tracker pinned while the entries scroll under it; the chart already ran in the hero */
+  #log .cols{display:block}
+  #chartpin{position:sticky;top:48px;z-index:6;background:rgba(247,247,245,.94);backdrop-filter:blur(6px);padding:8px 0 10px;margin:0 -18px;padding-left:18px;padding-right:18px;border-bottom:1px solid var(--line)}
+  #chartpin svg{display:none}
+  #tracker{margin-top:0;border-top:0;padding-top:0}
+  #tracker .tlbl{font-size:10px;margin-bottom:6px}
+  .tchip{font-size:11.5px;padding:3px 7px}
+  .entries{gap:22px;padding:18px 0 26px}
+  .entry{padding:20px 18px;font-size:15.5px}
+  .entry .quote{font-size:14px}
+  /* diagrams and tables scroll sideways instead of shrinking */
+  #archdiagram{min-width:900px;margin-top:22px}
+  .archhint{display:block}
+  .mtable-wrap,.tablewrap{overflow-x:auto}
+  .dstat{grid-template-columns:1fr 1fr}
+  .dstat b{font-size:22px}
+  .stages{gap:18px;margin-top:28px}
+  .decisions{gap:14px;margin-top:26px}
+  .decision{padding:18px 16px}
+  #receipts .grid{grid-template-columns:1fr}
+  #receipts .cell:last-child{grid-column:auto}
+  footer{padding:40px 0 60px}
+}

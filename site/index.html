@@ -222,7 +222,7 @@
   training on the fixed split, official scoring, and a gate that rejects gains
   smaller than measurement noise. The hidden test set has no path into the loop at
   all.</p>
-  <svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture: agent lane, harness lane, journal, hidden test excluded"></svg>
+  <div class="archscroll"><svg id="archdiagram" viewBox="0 0 1180 760" aria-label="system architecture: agent lane, harness lane, journal, hidden test excluded"></svg></div><div class="archhint">← scroll the diagram sideways on a phone →</div>
   <ul class="archlegend" id="archlegend" aria-label="walk the diagram">
     <li data-part="agent"><span class="pn">01 · TOP LANE</span><b>The agent proposes.</b> Reads the last curves, names the bottleneck, picks a card, writes the whole training script.</li>
     <li data-part="harness"><span class="pn">02 · BOTTOM LANE</span><b>The harness executes and scores.</b> Screens the code, smoke-tests it, trains on the fixed split, scores with the official evaluator, keeps the change only if the gain beats measured noise.</li>
