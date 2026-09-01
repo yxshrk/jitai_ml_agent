@@ -410,7 +410,7 @@ function setArch(k){
   add('<text class="alane" x="'+(X[3]+W)+'" y="60" text-anchor="end">AGENT · THE LLM PROPOSES</text>');
   box(X[1],Y1,W,BH,'agent','DIAGNOSE',['reads the last training','curves, names the bottleneck']);
   box(X[2],Y1,W,BH,'agent','TREAT',['picks a treatment from the','42-card method library']);
-  box(X[3],Y1,W,BH,'agent','WRITE SCRIPT',['full training script,','against a frozen contract']);
+  box(X[3],Y1,W,BH,'agent','WRITE SCRIPT',['a whole script, or a patch','against a frozen contract']);
   arrow(X[1]+W,my1,X[2],my1,'','');
   arrow(X[2]+W,my1,X[3],my1,'','');
   // part 2: the harness row, right to left, inside the workspace boundary
@@ -419,7 +419,7 @@ function setArch(k){
   arrow(X[3]+W/2,Y1+BH,X[3]+W/2,Y2-22,'','hands the script off');
   add('<rect class="abound" x="'+(X[2]-20)+'" y="'+(Y2-22)+'" width="'+(X[3]+W-X[2]+40)+'" height="'+(BH+44)+'" rx="10"/>');
   add('<text class="as" x="'+(X[2]-6)+'" y="'+(Y2+BH+38)+'">agent workspace boundary</text>');
-  box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access · 360 s dry run']);
+  box(X[3],Y2,W,BH,'','SCREEN + SMOKE',['code screened for test','access · smoke + sanity gate']);
   box(X[2],Y2,W,BH,'','TRAIN',['same time-based split:','train + validation only']);
   box(X[1],Y2,W,BH,'','EVALUATE',['per-user ranking quality','(official GAUC + nDCG@5)']);
   box(X[0],Y2,W,BH,'go','GATE',['keeps a change only if the','gain beats measured noise']);

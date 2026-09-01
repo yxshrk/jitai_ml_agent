@@ -44,6 +44,8 @@ def main():
             except Exception: continue
             c = e.get('config') or {}
             s = e.get('val_primary') or e.get('primary') or e.get('best_primary') or e.get('score')
+            if not isinstance(c, dict):
+                continue
             g = c.get('gamma') or c.get('lr_gamma') or c.get('step_decay_factor')
             if isinstance(c, dict) and isinstance(s, (int, float)) and 0.55 < s < 0.62 \
                and c.get('dropout') is not None and g:
