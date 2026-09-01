@@ -304,7 +304,7 @@ document.querySelectorAll('.entry').forEach(el=>{
     lib.innerHTML=rows.map(c=>'<div class="mrow">'
       +'<div><div class="mid">'+esc2(c.title||c.id)+'</div><div class="mcite">'+esc2((c.citation||'').replace(/`/g,''))+'</div></div>'
       +'<div class="mmech">'+esc2((c.mechanism||'').slice(0,240))+((c.mechanism||'').length>240?'…':'')+'</div>'
-      +'<div class="mstat"><span class="'+cls(c.status)+'">'+esc2(short(c.status))+'</span>'
+      +'<div class="mstat">'+(short(c.status)?'<span class="'+cls(c.status)+'">'+esc2(short(c.status))+'</span>':'')
       +(c.evidence&&c.evidence!=='none'?'<div class="mcite">'+esc2(c.evidence.split(' ')[0])+'</div>':'')+'</div>'
       +'</div>').join('')||'<div class="mrow"><div class="mmech">no cards match</div></div>';
   }
