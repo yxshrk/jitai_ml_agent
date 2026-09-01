@@ -272,9 +272,9 @@ body.present{overflow:hidden;height:100vh}
       <div class="principle"><div class="pn">01</div><h3>Clean runs</h3>
         <p>The submitted run starts from the <b>published baseline</b> with no seed
         scripts; the agent must find each turn itself. We also declined every higher
-        number that was not the agent's own: a teammate's 0.6061 model, a 0.6058
-        hand-assembled blend of run artifacts, a 0.6802 post-run 1K ensemble. All are
-        disclosed as evidence; none is submitted.</p></div>
+        number that was not the agent's own: a 0.6065 cross-run blend assembled by hand
+        from seeded runs, a 0.6058 blend of agent artifacts, a 0.6802 post-run 1K
+        ensemble. All are disclosed as evidence; none is submitted.</p></div>
       <div class="principle"><div class="pn">02</div><h3>Grounded action</h3>
         <p>Every move is one of <b>42 method cards</b>: a cited technique with a
         mechanism, preconditions, and measured evidence. No arbitrary knob-turning.</p></div>
@@ -307,7 +307,7 @@ body.present{overflow:hidden;height:100vh}
         <tr><td class="m">f8</td><td>measured memory</td><td class="n">0.6047</td><td class="n">0.60471</td><td class="note">first two-mechanism lineage; a provider 503 ended it mid-decision (now retried, never a strike)</td></tr>
         <tr><td class="m">f9</td><td>measured memory</td><td class="n"><b>0.6051</b></td><td class="n">0.60510</td><td class="note">best single model ever; re-banking all of its own artifacts by hand reaches only 0.60546</td></tr>
         <tr><td class="m">c10</td><td>literature only, no digest</td><td class="n">0.6042</td><td class="n">0.60425</td><td class="note">principles alone: the same opener as the champion, from a clean library</td></tr>
-        <tr><td class="m">human-assisted</td><td>teammate research</td><td class="n">0.6058</td><td class="n">0.6061</td><td class="note">evidence only, never submitted: the gap is implementation fidelity and artifact persistence, not judgment</td></tr>
+        <tr><td class="m">human-assisted</td><td>cross-run blend, seeded, by hand</td><td class="n">0.6059</td><td class="n"><b>0.6065</b></td><td class="note">evidence only, never submitted: what an agent could reach if it kept artifacts across runs and was not bound by the convergence rule. The gap is artifact persistence and implementation fidelity, not judgment</td></tr>
       </tbody>
     </table>
     <p class="mnotes">Everything that broke on the way was journaled, frozen as a bench fixture, and fixed in the repo as a
