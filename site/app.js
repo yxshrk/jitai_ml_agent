@@ -235,23 +235,28 @@ function paintTracker(maxI,conv){
   if(maxI<0)want.push({id:'empty',cls:'tchip empty',html:'nothing yet'});
   if(conv)want.push({id:'done',cls:'tchip done',html:'= 0.6056 · converged'});
   const wantIds=new Set(want.map(w=>w.id));
-  // fade out chips no longer wanted
+  // fade out chips no longer wanted; newcomers wait until the exit has finished
+  let leaving=0;
   box.querySelectorAll('.tchip').forEach(el=>{
     if(!wantIds.has(el.dataset.id)&&!el.classList.contains('out')){
-      el.classList.remove('onn');el.classList.add('out');
+      el.classList.remove('onn');el.classList.add('out');leaving++;
       setTimeout(()=>el.remove(),380);
     }
   });
-  // add missing chips, staggered
+  const wait=leaving?400:0;
+  const gen=(paintTracker.gen=(paintTracker.gen||0)+1); // a newer repaint cancels pending inserts
   let added=0;
   want.forEach(w=>{
     let el=box.querySelector('.tchip[data-id="'+w.id+'"]');
     if(el){ if(el.classList.contains('out')){el.classList.remove('out');el.classList.add('onn');} return; }
-    el=document.createElement('span');el.className=w.cls;el.dataset.id=w.id;
-    if(w.iter!=null)el.dataset.iter=w.iter;
-    el.innerHTML=w.html;box.appendChild(el);
-    const delay=90*added++;
-    requestAnimationFrame(()=>setTimeout(()=>el.classList.add('onn'),delay));
+    const delay=wait+90*added++;
+    setTimeout(()=>{
+      if(paintTracker.gen!==gen||box.querySelector('.tchip[data-id="'+w.id+'"]'))return;
+      const n=document.createElement('span');n.className=w.cls;n.dataset.id=w.id;
+      if(w.iter!=null)n.dataset.iter=w.iter;
+      n.innerHTML=w.html;box.appendChild(n);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>n.classList.add('onn')));
+    },delay);
   });
 }
 function gotoIter(k){
