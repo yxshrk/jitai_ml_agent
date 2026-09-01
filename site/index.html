@@ -262,10 +262,7 @@
 
   <div class="dsec" id="deep-plans">
     <h3>The final ensemble: the agent plans, the harness executes</h3>
-    <p>The campaign's strongest measured finding: blending different model types
-    (a cross-family ensemble) beats blending re-runs of the same model by an order
-    of magnitude (+0.0013 vs +0.0003, with team evidence probes reaching
-    0.6058-0.6065). The farm-close move, a final ensemble of different model types,
+    <p> A seed close pays by how much variance the single left: +0.0013 off a 0.6042 single (bigclock_07), +0.0002 off a tuned 0.6051 single (f9); cross-family blends beat that only when every member is individually competitive, and closes built from fresh in-run members fell back to the incumbent every time.6058-0.6065). The farm-close move, a final ensemble of different model types,
     turns that into a first-class capability. The agent emits a structured,
     machine-checked plan (typed JSON): which model types, which configs and seeds,
     which blend rule. Fixed code (the assembler) then runs the three phases: quick
@@ -335,11 +332,8 @@
   <p class="lede">Every row is a measured result from the campaign ledger
   (<code>zoo/EXPERIMENTS*.md</code>, <code>logs/RUNS.md</code>), not an opinion.</p>
   <div class="findings">
-    <div class="frow"><div class="fnum go">+0.0013 vs +0.0003</div>
-      <p><b>Blending different model types beats blending re-runs of the same model</b>
-      by an order of magnitude (cross-family vs same-family ensembles). This single
-      finding shaped the endgame: strong single model first, then a cross-family
-      ensemble close.</p></div>
+    <div class="frow"><div class="fnum">+0.0013 / +0.0002</div>
+      <p><b>A seed close pays by how much variance the single left</b>: +0.0013 off a 0.6042 single (bigclock), +0.0002 off a tuned 0.6051 single (f9). Cross-family blends beat that only with individually competitive members; fresh in-run members fell back every time.</p></div>
     <div class="frow"><div class="fnum">k = 3 … 12 flat</div>
       <p><b>Blend member count does not matter on Pure</b>: every count from 3 to 12
       lands in 0.6048-0.6050, within ±0.0003 noise. The predeclared 5-seed recipe
