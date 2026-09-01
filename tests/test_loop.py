@@ -1056,3 +1056,15 @@ def test_smoke_build_failure_returns_to_selection_not_debug(tmp_path):
     assert failed.status == "failed" and failed.failure_stage == "smoke"
     mode, parent, _ = loop.next_move()
     assert mode != "debug"
+
+
+def test_rewrite_gate_exempts_close_cards(tmp_path):
+    # f18 replay: an ensemble-design-sweep node wraps the champion script (low
+    # line overlap by nature) and must not be blocked by the rewrite gate.
+    from harness.loop import rewrite_ratio
+    parent = "\n".join(f"line{i} = {i}" for i in range(60))
+    wrapper = "import subprocess\n" + "\n".join(f"member{i} = {i}" for i in range(60))
+    assert rewrite_ratio(parent, wrapper) < 0.40  # would trip the gate for a normal improve
+    # the exemption is keyed on the selected card id; assert the set is wired in
+    src = open("harness/loop.py").read()
+    assert '"ensemble-design-sweep"' in src and "chosen not in CLOSE_CARDS" in src
