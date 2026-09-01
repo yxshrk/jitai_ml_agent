@@ -1,6 +1,6 @@
 ## Inspiration
 
-Track 2 asks for an agent that does ML research on its own: reproduce a baseline, iterate, submit one converged winner. The easy version is a loop that calls an LLM and keeps whatever scores higher. We had all seen that version produce numbers nobody could trust. We wanted the hard version: an agent whose every claim we could audit, whose gains beat measured noise, whose run could be replayed decision by decision, and whose failures were recorded as carefully as its wins. The line that ended up on the site is the design brief: **half of this system is an agent; the other half exists to check its work.**
+Track 2 asks for an agent that does ML research on its own: reproduce a baseline, iterate, submit one converged winner. The easiest version is a loop that calls an LLM and keeps whatever scores higher. We did a little more than that: an agent whose every claim we could audit, whose gains beat measured noise, whose run could be replayed decision by decision, and whose failures were recorded as carefully as its wins. The line that ended up on the site is the design brief: **half of this system is an agent, and the other half exists to check its work.**
 
 ## What it does
 
@@ -15,15 +15,15 @@ The designated run, `bigclock_07`, went **0.6016 → 0.605575** in six iteration
 
 ## How we built it
 
-Five days, 354 commits, ~146 completed runs across a laptop, a 4090 box and a Mac mini.
+Five days, 354 commits, ~146 completed runs, and many many more incompleted.
 
 **Day 1 (28 Aug): contracts before code.** We wrote the node-script contract, the journal schema and the acceptance policy first, then reproduced the official evaluator on real data with tests. Only then did an LLM touch anything.
 
-**Days 2-3: the search space is human, the search is not.** We measured the levers by hand (DCN-lite, seven-day recency weighting, strong joint regularization with rapid LR decay) and distilled them into method cards with their evidence. Sequence modelling, watch-time auxiliaries and kitchen-sink feature sets were measured dead and carded as such. A five-field model with strong regularization beat every richer variant ("less is more": L0 0.604660 ± 0.000309 vs L5 0.602991).
+**Days 2-3: the search space is human, the search is not.** We measured the levers by hand (DCN-lite, seven-day recency weighting, strong joint regularization with rapid LR decay) and distilled them into method cards with their evidence. A five-field model with strong regularization beat every richer variant ("less is more": L0 0.604660 ± 0.000309 vs L5 0.602991).
 
 **Day 4 (31 Aug, 121 commits): testing judgment like code.** Every time a live run made a measurably wrong decision, we froze that exact state (verbatim journal lines, the real curve) as a benchmark fixture and fixed it with a general principle, never a scenario-specific answer. The clean-knowledge bench went 4/10 → 10/10 on methodology alone. We also added a typed endgame: the agent emits an ensemble plan as data and a deterministic harness executes it.
 
-**Day 5 (1 Sep): the stress test.** With the designation frozen, we spent the final night trying to beat it with five progressively hardened harness generations: a smoke sanity gate calibrated on measured broken-vs-sane populations, constrained-patch improves (accepted code evolves byte-identically instead of being re-typed), retry-without-penalty for provider outages, reference snippets injected only for the selected card. None beat 0.605575. The best single model ever (0.605102) and exhaustive post-hoc banking of that run's own artifacts (0.60546) both landed under it.
+**Day 5 (1 Sep): the stress test.** With the designation frozen, we spent the final night trying to beat it with five progressively hardened harness generations: a smoke sanity gate calibrated on measured broken-vs-sane populations, constrained-patch improves (accepted code evolves byte-identically instead of being re-typed), retry-without-penalty for provider outages, reference snippets injected only for the selected card. None beat 0.605575. The best single model ever (0.605102) and exhaustive post-hoc banking of that run's own artefacts (0.60546) both landed under it.
 
 **The harness (fixed code, no LLM, never trusts the agent):** screens scripts for test-set access, smoke-runs them for 360 s behind a sanity gate, trains under a timeout, evaluates officially, gates on three-seed sigma with grey-zone reseeds, journals hypothesis/diff/metrics/recovery, and owns convergence. The hidden test set is physically absent from the workspace. 160 tests and the decision benches gate every prompt or knowledge change.
 
@@ -43,11 +43,11 @@ A clean, unseeded, converged run at 0.605575 that sits at the measured single-ru
 
 ## What we learned
 
-Autonomous research needs accurate memory and verified execution more than clever prompting. Mechanisms must be re-swept, not grafted onto fixed dials. Negative results are first-class knowledge. The agent is an executor, not a director: a human designed the method space, the levers, the constraints and the acceptance policy; within that boundary the agent's autonomy is real, and the boundary is what makes its results trustworthy.
+Autonomous research needs accurate memory and verified execution more than clever prompting. Mechanisms must be re-swept, and never grafted onto fixed dials. Negative results are invaluable. The agent is an executor, not a director: a human designed the method space, the levers, the constraints and the acceptance policy; within that boundary the agent's autonomy is real, and the boundary is what makes its results trustworthy.
 
 ## What's next
 
-A harness-owned sweep executor (the agent plans searches as data and never re-implements them), search beyond greedy improve-best, and the same loop on the larger KuaiRand variants.
+A harness-owned sweep executor (the agent plans searches as data and never re-implements them), search beyond greedy improve-best, and the same loop on the larger KuaiRand variants. Also, the ability to share memory between runs, rather than just iterations, and ideally, no convergence limit or wall clock, so experiments can be run more freely, and a blend approach can be used.
 
 ## Resources used
 

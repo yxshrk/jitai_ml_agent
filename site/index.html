@@ -469,6 +469,7 @@
   <div class="eyebrow">conclusion</div>
   <h2>Everything above is measured, logged, and reproducible.</h2>
   <div class="grid" id="rgrid"></div>
+  <p class="note">What we would build next: memory and artifacts shared between runs, not only between iterations (the card library already carries evidence across runs; trained members do not); a harness-owned sweep executor so a search is planned as data and never re-implemented; and, without a convergence limit or wall-clock cap, an endgame the run keeps open as a cross-family blend until it decides to close.</p>
   <p class="note">Reported score = the best validation checkpoint when the stopping rule fired, CPU only, no GPU.
   Test labels are never read anywhere in the pipeline; test features are read only by the final submission builders. Bonus: the same
   agent on KuaiRand-1K (11.7M rows) reached <span class="go">0.66892</span>. Full run

@@ -137,6 +137,20 @@ spend is hard-capped by an in-code ledger (`BUDGET_USD`).
   the obvious next step.
 - 27K was only demonstrated out-of-protocol; a compliant 27K agent run needs
   either subsampled calibration or bigger hardware.
+- Memory is per run. The card library carries measured evidence across runs, but
+  artifacts (trained members, probe predictions) do not: a run cannot bank a member
+  another run trained. Sharing artifacts between runs, not just between iterations,
+  is the cheapest known route above the single-run ceiling (the 0.6065 cross-run
+  blend, disclosed as human-assisted, is exactly that move done by hand).
+- The convergence rule and the wall-clock cap are the binding constraints on
+  what a run can try. Without them, a run could keep a blend-style endgame open
+  (train members across families, close once, on a clock it sets itself) rather
+  than spending its last three iterations proving it should stop.
+- A harness-owned sweep executor: the agent plans a search as data (families, dials,
+  seeds) and fixed code runs it, so a sweep is never re-implemented from scratch.
+- ~146 runs completed; many more were started and killed (weak openers, harness
+  bugs, budget). The killed ones are disclosed in `logs/RUNS.md` where they were
+  informative, but the count of aborted launches is not tracked precisely.
 
 ## Team contributions
 
