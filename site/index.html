@@ -144,21 +144,6 @@
   </ul>
 </div></section>
 
-<section id="evidence"><div class="wrap">
-  <div class="eyebrow">the evidence</div>
-  <h2>What the diagnosis looked like inside the model.</h2>
-  <p class="lede">While a model trains, every video gets a learned numeric
-  fingerprint (an embedding). A video the model has barely seen should keep a small
-  one: there is not enough data to learn
-  anything real about it. Watch the <span class="no">red line</span> below, the
-  rarest 10% of videos. In the <b>baseline</b> it never stops growing: the model is
-  memorizing those videos. After the <b>agent's treatments</b> it flattens out where
-  it belongs, and the validation score rises from 0.6015 to 0.6044.</p>
-  <div id="evgrid"></div>
-  <p class="lede" style="margin-top:18px">Same videos, same data. The only
-  difference between the two charts is the treatments the agent chose.</p>
-</div></section>
-
 <section id="engineering"><div class="wrap">
   <div class="eyebrow">the harness</div>
   <h2>The agent is only half the system. The other half never trusts it.</h2>
@@ -377,7 +362,31 @@
       <p><b>Judgment is tested like code</b>: the clean-mode strategy bench went from
       4/10 to 10/10 through methodology fixes alone, under a constitution that bans
       canned answers.</p></div>
+    <div class="frow"><div class="fnum">0 bad</div>
+      <p><b>Then on real states</b>: on the final night every wrong live call became
+      a bench fixture; the real-state bench ended at 0 bad picks.</p></div>
   </div>
+
+  <div class="eyebrow" style="margin-top:56px">provenance, and the ceiling</div>
+  <h2>Where each number's knowledge came from, and how far one run can go.</h2>
+  <p class="lede">Every score below is labelled by what the agent knew. These are
+  provenance tiers, not a causal ablation: the runs differ in more than knowledge.</p>
+  <table class="mtable" aria-label="provenance tiers">
+    <thead><tr><th>tier</th><th>what the agent had</th><th class="n">reached</th><th>status</th></tr></thead>
+    <tbody>
+      <tr><td class="m">literature only</td><td>cited method cards, research doctrine, no measured numbers</td><td class="n">0.6041 / 0.6042</td><td class="note">clean exhibits (pure_clean2, c10): the same opener as the champion, found from principles</td></tr>
+      <tr class="pick"><td class="m">measured memory</td><td>the same cards annotated with this campaign's own measurements</td><td class="n"><b>0.605575</b></td><td class="note"><b>designated</b> (bigclock_07); best single model of any run 0.6051 (f9)</td></tr>
+      <tr><td class="m">human-assisted</td><td>a teammate's independently built model; hand-assembled blends of run artifacts</td><td class="n">0.6058 to 0.6061</td><td class="note">evidence only, never submitted</td></tr>
+    </tbody>
+  </table>
+  <p class="lede" style="margin-top:18px">On the final night five hardened harness generations tried to beat the
+  champion and none did: converged 0.6045, 0.6047, 0.6051, and re-combining the best run's own artifacts by
+  hand reaches 0.6055. The single-run ceiling is measured at 0.6055 to 0.6060, and the gap to the human-assisted
+  tier is implementation fidelity and keeping what a run builds, not decision quality. A second, independently
+  designed harness by a teammate converged on the same BPR + ensemble shape at 0.6046. Full dissection:
+  evidence/POSTMORTEM_1SEP_FINAL_RUNS.md.</p>
+  <p class="lede">We declined every higher number that was not the agent's own: the teammate's 0.6061 model,
+  a 0.6058 hand blend, a 0.6802 post-run ensemble on the bonus benchmark. All disclosed, none submitted.</p>
 </div></section>
 
 <section id="receipts"><div class="wrap">
