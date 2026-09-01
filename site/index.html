@@ -360,14 +360,14 @@
   <h2>Where each number's knowledge came from, and how far one run can go.</h2>
   <p class="lede">Every score below is labelled by what the agent knew. These are
   provenance tiers, not a causal ablation: the runs differ in more than knowledge.</p>
-  <table class="mtable" aria-label="provenance tiers">
-    <thead><tr><th>tier</th><th>what the agent had</th><th class="n">reached</th><th>status</th></tr></thead>
-    <tbody>
-      <tr><td class="m">literature only</td><td>cited method cards, research doctrine, no measured numbers</td><td class="n">0.6041 / 0.6042</td><td class="note">clean exhibits (pure_clean2, c10): the same opener as the champion, found from principles</td></tr>
-      <tr class="pick"><td class="m">measured memory</td><td>the same cards annotated with this campaign's own measurements</td><td class="n"><b>0.605575</b></td><td class="note"><b>designated</b> (bigclock_07); best single model of any run 0.6051 (f9)</td></tr>
-      <tr><td class="m">human-assisted</td><td>a cross-run blend assembled by hand from seeded runs: what an agent could reach if it kept artifacts across runs and ignored the convergence rule</td><td class="n">0.6059 to <b>0.6065</b></td><td class="note">evidence only, never submitted</td></tr>
-    </tbody>
-  </table>
+  <div class="findings">
+    <div class="frow"><div class="fnum">0.6041 / 0.6042</div>
+      <p><b>Literature only</b>: cited method cards and the research doctrine, no measured numbers. Clean exhibits (pure_clean2, c10) found the same opener as the champion from principles alone.</p></div>
+    <div class="frow"><div class="fnum go">0.605575</div>
+      <p><b>Measured memory, designated</b>: the same cards annotated with this campaign's own measurements. run_bigclock_07 is the submission; the best single model of any run is 0.6051 (f9).</p></div>
+    <div class="frow"><div class="fnum">0.6059 to 0.6065</div>
+      <p><b>Human-assisted, evidence only</b>: a cross-run blend assembled by hand from seeded runs, never submitted. It shows what an agent could reach if it kept artifacts across runs and ignored the convergence rule.</p></div>
+  </div>
   <p class="lede" style="margin-top:18px">On the final night three hardened harness generations tried to beat the
   champion and none did: converged 0.6045, 0.6047, 0.6051, and re-combining the best run's own artifacts by
   hand reaches 0.6055. The single-run ceiling is measured at 0.6055 to 0.6060, and the gap to the human-assisted
