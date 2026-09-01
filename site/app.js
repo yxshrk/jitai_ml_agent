@@ -316,7 +316,7 @@ document.querySelectorAll('.entry').forEach(el=>{
 
 /* ---------- evidence: rare-video memorization, baseline vs treated -------- */
 (function evidence(){
-  const Wt=window.WEIGHTS;const grid=document.getElementById('evgrid');
+  const Wt=window.WEIGHTS;const grid=document.getElementById('evgrid');if(!grid)return;
   if(!grid)return;
   if(!Wt){grid.innerHTML='<p class="lede">(instrumented data missing: run tools/instrument_weights.py)</p>';return;}
   const panels=[['baseline','BASELINE','rare-video embeddings balloon'],
