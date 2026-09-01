@@ -389,3 +389,11 @@ footer{padding:60px 0 80px;border-top:1px solid var(--line);color:var(--dim);fon
   #receipts .cell:last-child{grid-column:auto}
   footer{padding:40px 0 60px}
 }
+
+@media (max-width:700px){
+  /* loop caption: a wrapped centered pill instead of a one-line chip hanging off a dashed rule */
+  .loopback{margin-top:22px;border-top:0;max-width:100%}
+  .loopback::before{display:none}
+  .lbchip{position:static;transform:none;display:block;margin:0 auto;width:fit-content;max-width:100%;
+    text-align:center;white-space:normal;line-height:1.5;padding:8px 14px;border-radius:14px;letter-spacing:.04em;font-size:12px}
+}
