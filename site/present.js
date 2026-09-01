@@ -14,7 +14,7 @@ const archScene=scenes.findIndex(s=>s.id==='s-arch');
 const ARCH_STEPS=4;
 let arch=0; // lit part of the architecture diagram while inside that scene
 const methodsScene=scenes.findIndex(s=>s.id==='s-methods');
-const METHOD_FILTER='measured-win'; // pre-typed glimpse: one slice of the 42 cards, no table scroll on video
+const METHOD_FILTER='ensemble'; // pre-typed glimpse: one slice of the 42 cards, no table scroll on video
 const STAGES=4;
 let stage=0; // lit stage card while inside the loop scene
 /* log substeps: iterations 0..N-1 then convergence */
