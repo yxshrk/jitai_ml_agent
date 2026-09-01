@@ -294,10 +294,9 @@ document.querySelectorAll('.entry').forEach(el=>{
 (function methods(){
   const lib=document.getElementById('methodslib');if(!lib||!window.METHODS)return;
   const cls=st=>/measured-win|external-win/.test(st)?'win':/dead|superseded/.test(st)?'mdead':'try';
-  const short=st=>/measured-win|external-win/.test(st)?'measured win'
-    :/measured-alive/.test(st)?'measured alive'
-    :/measured-dead/.test(st)?'measured dead':/superseded/.test(st)?'superseded'
-    :/conditional/i.test(st)?'conditional':/untried/.test(st)?'untried':(st||'untried').split('(')[0].slice(0,24);
+  // Only measured wins carry a badge; every other card stays unlabelled (the
+  // full status text remains in the card body and in agent/METHODS.md).
+  const short=st=>/measured-win|external-win/.test(st)?'measured win':'';
   const esc2=t=>{const d=document.createElement('div');d.textContent=t;return d.innerHTML;};
   function render(q){
     q=(q||'').toLowerCase();
