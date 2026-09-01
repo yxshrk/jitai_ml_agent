@@ -28,6 +28,41 @@
   <div class="scrollhint">▼ SCROLL TO REPLAY THE RUN</div>
 </div></header>
 
+<section id="rules"><div class="wrap">
+  <div class="eyebrow">what this number is not</div>
+  <h2>Six ways to get a higher score. We took none of them.</h2>
+  <p class="lede">The gap between a real autonomous result and a dressed-up one is small on the leaderboard
+  and large in the logs. Before the run is replayed below, here is what it was not allowed to do.
+  Every line is checkable in the repo.</p>
+  <div class="decisions">
+    <div class="decision"><h3>No seeded solution</h3>
+      <p>The run starts from the published FM baseline, reproduced on three seeds. No champion script,
+      checkpoint, or tuned configuration is handed to it as a starting point.</p>
+      <div class="versus"><s>start from our best model and call the delta autonomous</s> → <b>iteration zero is the organisers' baseline</b>, journaled</div></div>
+    <div class="decision"><h3>No recipe in the prompt</h3>
+      <p>Method cards say what a technique is, when it applies, and what it measured. They never carry
+      a config to copy. With cross-run memory switched off the same loop reached 0.6051; with every measured
+      number removed from the cards (literature only) it still found the same opener and reached 0.6033.</p>
+      <div class="versus"><s>bake earlier runs' winning dials into the system prompt</s> → <b>knowledge as cited cards, provenance as a disclosed tier</b></div></div>
+    <div class="decision"><h3>No contact with the hidden test set</h3>
+      <p>Test data is never copied into the agent's workspace. Nothing was tuned, selected, or stopped
+      on a test score. The final model was trained on train only and applied to test exactly once, for the CSV.</p>
+      <div class="versus"><s>score the public test slice while developing</s> → <b>one touch, after convergence</b></div></div>
+    <div class="decision"><h3>The stopping rule is the competition's, applied literally</h3>
+      <p>Three iterations without a 0.002 gain end the run. The run stopped at six. No override, no
+      continue-past-convergence flag, no rule rewritten until a run survived.</p>
+      <div class="versus"><s>reset the counter on every accept, or keep going</s> → <b>converged, not peak</b></div></div>
+    <div class="decision"><h3>No hand-picked run</h3>
+      <p>All 146 runs are in the ledger with their scores, including the ones that lost. The designated run is
+      the best converged clean run by the rule, not the best of many with the rest deleted.</p>
+      <div class="versus"><s>publish one run, git-ignore the other forty</s> → <b>every run disclosed</b></div></div>
+    <div class="decision"><h3>No human blend</h3>
+      <p>The ensemble in the final node was designed and validated by the agent inside the run. We had higher
+      numbers built by hand (0.6065, 0.6058, 0.6802 on the bonus set) and submitted none of them.</p>
+      <div class="versus"><s>blend the best artifacts across runs by hand</s> → <b>declined, labelled human-assisted, shown as evidence only</b></div></div>
+  </div>
+</div></section>
+
 <section id="loop"><div class="wrap">
   <div class="eyebrow">the machine</div>
   <h2>Diagnose, treat, retrain, measure. Repeat until the stopping rule fires.</h2>
